@@ -1,0 +1,9 @@
+{
+	"imports": {
+		"modules/": "./modules/",
+		"modules/database": "./modules/database/index.js",
+		"modules/server": "./modules/server/index.js",
+
+		"eta/": "https://deno.land/x/eta@v3.5.0/src/"
+	}
+}
