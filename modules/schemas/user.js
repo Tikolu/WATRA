@@ -23,8 +23,10 @@ const schema = new mongoose.Schema({
 			return this.accessCode
 		},
 		updateName(first="", last="") {
-			this.name.first = Text.capitalise(first.trim())
-			this.name.last = Text.capitalise(last.trim())
+			first = first.trim()
+			last = last.trim()
+			if(!first || Text.validName(first)) this.name.first = Text.capitalise(first)
+			if(!last || Text.validName(last)) this.name.last = Text.capitalise(last)
 		}
 	},
 	virtuals: {

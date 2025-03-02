@@ -9,11 +9,9 @@ const eta = new Eta({
 	views: "./html",
 	defaultExtension: ".html",
 	varName: "$",
-	functionHeader: `
-		for(const importName in $.ETA_IMPORTS) {
-			globalThis[importName] = $.ETA_IMPORTS[importName]
-		}
-	`,
+	functionHeader: `for(const importName in $.ETA_IMPORTS) {
+		globalThis[importName] = $.ETA_IMPORTS[importName]
+	}`,
 })
 
 /**

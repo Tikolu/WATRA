@@ -7,5 +7,5 @@ export default async function({userID}) {
 	const user = await User.findById(userID)
 	if(!user) throw new HTTPError(404, "Użytkownik nie istnieje")
 
-	return html("user/main", {user})
+	return html("user/page", {user})
 }

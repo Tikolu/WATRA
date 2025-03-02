@@ -50,3 +50,10 @@ for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])"
 	}
 	META[metaTag.name] = metaContent
 }
+
+// Custom input fields
+for(const input of document.querySelectorAll("input[type=text]")) {
+	input.addEventListener("keypress", event => {
+		if(event.key == "Enter") input.blur()
+	})
+}

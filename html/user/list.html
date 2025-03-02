@@ -1,0 +1,12 @@
+<% layout("/body", {
+	title: "Lista użytkowników",
+	styles: ["user/list"]
+}) %>
+<h1>Lista użytkowników</h1>
+<div id="user-list">
+	<% for(const user of $.users || []) { %>
+		<a href="/users/<%= user.id %>">
+			<b><%= user.displayName %></b>
+		</a>
+	<% } %>
+</div>

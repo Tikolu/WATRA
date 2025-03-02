@@ -4,16 +4,7 @@
 	styles: ["home"]
 }) %>
 <h1>Strona główna</h1>
-<p><b>User ID:</b> <%= $.userID %></p>
 <button id="logout-button">Wyloguj</button>
 
 <hr>
-<h2>Users</h2>
-<div id="user-list">
-	<% for(const user of $.users || []) { %>
-		<a href="/users/<%= user.id %>">
-			<h3><%= user.displayName %></h3>
-			<p><b>User ID:</b> <%= user.id %></p>
-		</a>
-	<% } %>
-</div>
+<a href="/users">Lista użytkowników</a>

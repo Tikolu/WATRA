@@ -40,6 +40,9 @@ export default class HTTPError extends Error {
 			stack = stack.replaceAll(SERVER_ROOT, "")
 			this.stack = stack
 		}
+
+		// Clean up message
+		if(this.message.includes("\n")) this.message = this.message.split("\n")[0]
 		this.message = this.message.replaceAll(SERVER_ROOT, "")
 	}
 }

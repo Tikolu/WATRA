@@ -16,11 +16,7 @@ export default async function({request, response}) {
 		return
 	}
 
-	// Get list of all users
-	const users = await User.find()
-	
 	return html("main", {
-		userID,
-		users
+		userID
 	})
 }

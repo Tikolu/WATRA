@@ -1,14 +1,12 @@
 <% layout("/body", {
 	title: $.user.displayName,
-	scripts: ["user"],
-	styles: ["user"],
+	scripts: ["user/page"],
+	styles: ["user/page"],
 	meta: {
-		userID: $.user.id,
-		test: {name:"omnom"}
+		userID: $.user.id
 	}
 }) %>
 <h1 id="user-title"><%= $.user.displayName %></h1>
-<p><b>User ID:</b> <%= $.user.id %></p>
 
 <button id="delete-user-button">Usuń użytkownika</button>
 <button id="generate-access-code-button">Wygeneruj kod dostępu</button>

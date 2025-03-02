@@ -14,9 +14,13 @@ async function updateName() {
 }
 
 firstNameInput.onblur = async () => {
-	updateName()
+	firstNameInput.disabled = true
+	await updateName()
+	firstNameInput.disabled = false
 }
 
 lastNameInput.onblur = async () => {
-	updateName()
+	lastNameInput.disabled = true
+	await updateName()
+	lastNameInput.disabled = false
 }
