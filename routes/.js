@@ -1,8 +1,18 @@
 import html from "modules/html.js"
+import User from "modules/schemas/user.js";
 
-export default function({request, response}) {
-	const user = request.token?.user
-	if(!user) return response.redirect("/login")
+export default async function({request, response}) {
+	const userID = request.token?.user
+	if(!userID) {
+		response.redirect("/login")
+		return
+	}
 
-	return html("main", {user})
+	const user = await User.findById(userID)
+	if(!user) {
+		response.redirect("/logout")
+		return
+	}
+
+	return html("main", {userID})
 }

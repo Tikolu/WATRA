@@ -6,4 +6,7 @@ export default function({request, response}) {
 
 	// Clear cookie token
 	response.token = {}
+
+	// Redirect to login
+	response.redirect("/login")
 }
