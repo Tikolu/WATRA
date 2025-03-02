@@ -1,15 +1,8 @@
-<html>
-	<head>
-		<title>Error</title>
-	</head>
-	<body>
-		<h1>Error <%= $.error.code %></h1>
-		<h2><%= $.error.title %></h2>
-		<p><%= $.error.message %></p>
-		<% if($.error.stack) { %>
-			<pre>
-<%= $.error.stack %>
-			</pre>
-		<% } %>
-	</body>
-</html>
+<% layout("body", {
+	title: `Error ${$.error.code}`
+}) %>
+<h1>Error <%= $.error.code %> - <%= $.error.title %></h2>
+<h2><%= $.error.message %></h2>
+<% if($.error.stack) { %>
+	<pre><%= $.error.stack %></pre>
+<% } %>

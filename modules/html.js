@@ -1,9 +1,19 @@
 import { Eta } from "eta/index.ts"
+import * as Base64 from "modules/base64.js"
+
+const etaImports = {
+	Base64
+}
 
 const eta = new Eta({
 	views: "./html",
 	defaultExtension: ".html",
-	varName: "$"
+	varName: "$",
+	functionHeader: `
+		for(const importName in $.ETA_IMPORTS) {
+			globalThis[importName] = $.ETA_IMPORTS[importName]
+		}
+	`,
 })
 
 /**
@@ -13,6 +23,7 @@ const eta = new Eta({
  * @returns {string} The rendered HTML
  */
 export default function(file, data={}) {
+	data.ETA_IMPORTS = etaImports
 	const output = eta.render(file, data)
 	return output
 }
