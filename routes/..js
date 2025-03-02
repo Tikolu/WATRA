@@ -7,20 +7,12 @@ const errorMessages = {
 	500: ["Internal server error 💀", "Something went wrong on the server"]
 }
 
-export async function open({request, response, addRouteData}) {
-	// If a cookie header is present, parse cookies
-	if(request.headers.has("Cookie")) {
-		request.getCookies()
-		// If a token cookie is present, parse token
-		if(request.cookies.token) await request.parseToken()
-	}
-	// Add token to route data
-	addRouteData({token: request.token})
+export function open({response}) {
 	// Set content type to text/html
 	response.headers.set("Content-Type", "text/html; charset=utf-8")
 }
 
-export async function exit({response, lastOutput, lastError}) {
+export function exit({response, lastOutput, lastError}) {
 	if(!response.open) return
 	
 	if(lastError) {
@@ -39,8 +31,6 @@ export async function exit({response, lastOutput, lastError}) {
 		})
 	}
 
-	// Send the token, if one is present
-	if(response.token) await response.sendToken()
 	// Convert output to string
 	if(typeof lastOutput != "string") lastOutput = String(lastOutput)
 	

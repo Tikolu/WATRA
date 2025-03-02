@@ -34,6 +34,13 @@ async function handler(req) {
 	const request = new ServerRequest(req)
 	const response = new ServerResponse()
 
+	// If a cookie header is present, parse cookies
+	if(request.headers.has("Cookie")) {
+		request.getCookies()
+		// If a token cookie is present, parse token
+		if(request.cookies.token) await request.parseToken()
+	}
+
 	// If URL ends with a file extension, check if a matching file exists
 	if(/.\.[a-z]{2,4}$/.test(request.address.pathname)) await handlePublicFile(request.address.pathname, response)
 
@@ -42,6 +49,10 @@ async function handler(req) {
 
 	// Final fallback, if reponse has not been closed, close it
 	if(response.open && response.headers.get("Connection") != "keep-alive") response.close();
+
+	// Send the token, if one is present
+	if(response.token) await response.sendToken()
+	
 	return response.toResponse()
 }
 

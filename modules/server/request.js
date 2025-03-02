@@ -10,8 +10,8 @@ export default class extends Request {
 	constructor(request) {
 		super(request)
 		
+		// Parse request URL
 		this.address = new URL(request.url)
-
 	}
 	
 	async getBody() {
