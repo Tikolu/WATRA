@@ -24,3 +24,24 @@ lastNameInput.onblur = async () => {
 	await updateName()
 	lastNameInput.disabled = false
 }
+
+deleteUserButton.onclick = async () => {
+	if(!confirm(`Usunąć użytkownika ${userTitle.innerText}?`)) return
+	try {
+		var response = await API(`user/${META.userID}/delete`)
+	} catch(error) {
+		alert(error)
+		return
+	}
+	history.back()
+}
+
+generateAccessCodeButton.onclick = async () => {
+	try {
+		var response = await API(`user/${META.userID}/accessCode/generate`)
+	} catch(error) {
+		alert(error)
+		return
+	}
+	alert(`Jednorazowy kod dostępu:\n${response.accessCode}`)
+}
