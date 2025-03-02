@@ -1,6 +1,7 @@
-import SERVER_PRIVATE_KEY from "modules/key.js"
 import * as Base64 from "modules/base64.js";
 import sha256 from "modules/sha256.js";
+
+const SERVER_PRIVATE_KEY = "secret"
 
 export async function parse(request) {
 	request.token = {}
@@ -11,7 +12,7 @@ export async function parse(request) {
 
 	const tokenHash = await sha256(tokenData[0] + SERVER_PRIVATE_KEY)
 	if(tokenHash !== tokenData[1]) return
-
+	
 	try {
 		let token = Base64.decode(tokenData[0])
 		token = JSON.parse(token)

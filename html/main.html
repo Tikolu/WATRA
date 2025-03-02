@@ -1,5 +1,7 @@
-<html>
-	<body>
-		<h1>Main page</h1>
-	</body>
-</html>
+<% layout("body", {
+	title: "Strona główna",
+	scripts: ["home"]
+}) %>
+<h1>Strona główna</h1>
+<p><b>User ID:</b> <%= $.user %></p>
+<button id="logout-button">Wyloguj</button>

@@ -40,7 +40,7 @@ export default class extends Request {
 		return this.cookies
 	}
 
-	parseToken() {
-		Token.parse(this)
+	async parseToken() {
+		await Token.parse(this)
 	}
 }
