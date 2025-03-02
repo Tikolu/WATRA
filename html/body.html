@@ -18,6 +18,18 @@
 		<% for (const style of $.styles) { %>
 			<link rel="stylesheet" href="/css/<%= style %>.css?v=<%= assetVersion %>">
 		<% } %>
+		<% for (const metaName in $.meta || {}) { %>
+			<%
+				let metaContent = $.meta[metaName]
+				let metaBase64 = false
+				if(typeof metaContent != "string") {
+					metaContent = JSON.stringify($.meta[metaName])
+					metaContent = Base64.encode(metaContent)
+					metaBase64 = true
+				}
+			%>
+			<meta name="<%= metaName %>" content="<%= metaContent %>"<% if(metaBase64) { %> base64<% } %>>
+		<% } %>
 	</head>
 	<body>
 		<%~ $.body %>

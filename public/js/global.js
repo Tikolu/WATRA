@@ -7,7 +7,7 @@ for(const element of document.querySelectorAll("[id]")) {
 }
 
 // API function
-const API = async (get="", post=undefined) => {
+async function API(get="", post=undefined) {
 	let options = {
 		credentials: "same-origin",
 		headers: {}
@@ -32,4 +32,21 @@ const API = async (get="", post=undefined) => {
 		throw new Error(json.error.message)
 	}
 	return json
+}
+
+// Base64 helper functions
+const Base64 = {
+	encode: v => btoa(v),
+	decode: v => atob(v)
+}
+
+// META tag system
+const META = {}
+for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
+	let metaContent = metaTag.content
+	if(metaTag.hasAttribute("base64")) {
+		metaContent = Base64.decode(metaContent)
+		metaContent = JSON.parse(metaContent)
+	}
+	META[metaTag.name] = metaContent
 }
