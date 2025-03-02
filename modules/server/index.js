@@ -24,7 +24,6 @@ async function handlePublicFile(url, response) {
 
 	response.headers.set("Content-Type", `${type}; charset=utf-8`)
 	response.headers.set("Cache-Control", "max-age=31536000")
-	console.log(response.headers)
 	response.write(await Deno.readFile(url))
 	response.close()
 	return true
@@ -36,10 +35,10 @@ async function handler(req) {
 	const response = new ServerResponse()
 
 	// If URL ends with a file extension, check if a matching file exists
-	if(/.\.[a-z]{2,4}$/.test(request.address)) await handlePublicFile(request.address.pathname, response)
+	if(/.\.[a-z]{2,4}$/.test(request.address.pathname)) await handlePublicFile(request.address.pathname, response)
 
 	// Use the routing system to find the appropriate route file
-	if(response.open) await findRoute(request, response, request.address.pathname)
+	if(response.open) await findRoute(request, response)
 
 	// Final fallback, if reponse has not been closed, close it
 	if(response.open && response.headers.get("Connection") != "keep-alive") response.close();

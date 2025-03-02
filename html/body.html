@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title><%= $.title %></title>
+		<%
+			$.scripts ||= []
+			$.scripts.unshift("global")
+			$.styles ||= []
+			$.styles.unshift("global")
+
+			const assetVersion = Number(SERVER_TIME).toString(36).substring(3)
+		%>
+		<% for (const script of $.scripts) { %>
+			<script src="/js/<%= script %>.js?v=<%= assetVersion %>" defer></script>
+		<% } %>
+		<% for (const style of $.styles) { %>
+			<link rel="stylesheet" href="/css/<%= style %>.css?v=<%= assetVersion %>">
+		<% } %>
+	</head>
+	<body>
+		<%~ $.body %>
+		
+	</body>
+</html>

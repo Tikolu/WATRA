@@ -1,6 +1,7 @@
 import "./import_map.json" with {type: "json"}
 
 globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")
+globalThis.SERVER_TIME = new Date()
 
 import * as server from "modules/server"
 
