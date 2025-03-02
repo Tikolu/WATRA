@@ -25,11 +25,7 @@ export async function exit({response, lastOutput, lastError}) {
 	
 	if(lastError) {
 		// Default code for all errors is 500
-		const code = lastError.code || 500
-		let stack
-		if(lastError.stack) {
-			stack = lastError.stack?.replaceAll(SERVER_ROOT, "")
-		}
+		const code = lastError.httpCode || 500
 		// Use error message from error unless it is a default
 		let message = errorMessages[code]?.[1] || ""
 		if(!lastError.defaultMessage) message = lastError.message
@@ -38,7 +34,7 @@ export async function exit({response, lastOutput, lastError}) {
 				code,
 				title: errorMessages[code]?.[0] || `Error ${code} 🤔`,
 				message,
-				stack
+				stack: lastError.stack
 			}
 		})
 	}

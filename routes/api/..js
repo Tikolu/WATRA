@@ -1,4 +1,4 @@
-import HTTPError from "modules/server/httpError.js"
+import HTTPError from "modules/server/error.js"
 
 export async function open({request, response, addRouteData}) {
 	response.headers.set("Content-Type", "application/json")
@@ -16,15 +16,20 @@ export async function open({request, response, addRouteData}) {
 	addRouteData({input})
 }
 
+function removeANSI(text) {
+	if(!text || typeof text != "string") return
+	return text.replaceAll(/\u001b\[[0-9]+m/g, "")
+}
+
 export function exit({response, lastOutput, lastError}) {
 	if(lastError) {
 		lastOutput = {
 			error: {
-				code: lastError.code || 500,
-				message: lastError.message
+				code: lastError.httpCode || 500,
+				message: removeANSI(lastError.message),
+				stack: removeANSI(lastError.stack).split("\n")
 			}
 		}
-		if(lastError.stack) lastOutput.error.stack = lastError.stack.replaceAll(SERVER_ROOT, "").split("\n")
 		lastError.clear()
 	}
 

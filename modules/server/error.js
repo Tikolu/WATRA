@@ -15,19 +15,31 @@ function isValidCode(code) {
 
 export default class HTTPError extends Error {
 	constructor(code=500, message="") {
+		// Setup error code
 		if(!code) code = 500
 		if(!isValidCode(code)) {
 			message = code
 			code = 500
 		}
+
+		// Setup error message
 		let defaultMessage = false
 		if(!message) {
 			message = errorMessages[code] || errorMessages[500]
 			defaultMessage = true
 		}
-
+		
 		super(message)
-		this.code = code
+
+		this.httpCode = code
 		if(defaultMessage) this.defaultMessage = true
+
+		// Clean up stack trace
+		let stack = super.stack || message.stack || this.stack
+		if(stack) {
+			stack = stack.replaceAll(SERVER_ROOT, "")
+			this.stack = stack
+		}
+		this.message = this.message.replaceAll(SERVER_ROOT, "")
 	}
 }

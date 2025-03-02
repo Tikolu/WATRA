@@ -1,9 +1,9 @@
-import HTTPError from "modules/server/httpError.js";
+import HTTPError from "modules/server/error.js";
 
 const REQUIRE_PATH = "../../"
 const ILLEGAL_PATTERNS = [/^\.\.$/, /^\.|\.$/]
 
-export default async function(request, response, url) {
+export default async function(request, response) {
 	// Global routeData object
 	let routeData = {
 		request,
@@ -14,11 +14,10 @@ export default async function(request, response, url) {
 	// Function for handling errors
 	function handleError(error) {
 		// If error is a string, convert it to an Error object
-		if(typeof error == "string") {
-			error = new HTTPError(500, error)
-			error.stack = undefined
+		if(!(error instanceof HTTPError)) {
+			error = new HTTPError(error)
 		}
-		if(error.stack) error.stack = error.stack.replaceAll(SERVER_ROOT, "")
+		console.log("\nURL:", request.address.pathname)
 		console.error(error)
 		// If an error is already present, just print plain error message and send response
 		if(routeData.lastError || routeData.response.statusCode >= 400) {
@@ -31,7 +30,7 @@ export default async function(request, response, url) {
 		}
 		// Otherwise, remember the error for later
 		routeData.lastError = error
-		routeData.response.statusCode = error.code || 500
+		routeData.response.statusCode = error.httpCode || 500
 		// Add a helper function for clearing the error
 		routeData.lastError.clear = () => routeData.lastError = null
 	}
@@ -68,6 +67,18 @@ export default async function(request, response, url) {
 
 	
 	async function findRoute(sections, path) {
+		let exitFunction, fallback, foundMatch
+		const files = await Array.fromAsync(Deno.readDir(path))
+
+		// Check if directory contains a "..js" global file
+		const globalFile = files.find(file => file.name == "..js")
+		if(globalFile) {
+			const routeFile = await parseRoute(REQUIRE_PATH + path + "/..js")
+			if(routeFile?.open) await execRoute(routeFile.open)
+			if(routeData.lastError) return
+			exitFunction = routeFile?.exit
+		}
+		
 		// Try to decode the URL, otherwise set the response code to 400
 		try {
 			sections[0] = decodeURIComponent(sections[0] || "")
@@ -81,20 +92,11 @@ export default async function(request, response, url) {
 			handleError(new HTTPError(400))
 			break
 		}
-	
-		let exitFunction, fallback, foundMatch
-		const files = await Array.fromAsync(Deno.readDir(path))
-
-		// Check if directory contains a "..js" global file
-		const globalFile = files.find(file => file.name == "..js")
-		if(globalFile) {
-			const routeFile = await parseRoute(REQUIRE_PATH + path + "/..js")
-			if(routeFile?.open) await execRoute(routeFile.open)
-			exitFunction = routeFile?.exit
-		}
 
 		// Loop through all the files
 		for (const file of files) {
+			if(routeData.lastError) break
+			
 			const filePath = `${path}/${file.name}`
 			// Skip "..js"
 			if(file.name == "..js") continue
@@ -125,7 +127,7 @@ export default async function(request, response, url) {
 		}
 	
 
-		if(!foundMatch) {
+		if(!foundMatch && !routeData.lastError) {
 			// If no matches were found, try the fallback encountered earlier
 			if(fallback && sections[0]) {
 				routeData[fallback.slice(1, -1)] ||= sections[0]
@@ -144,5 +146,6 @@ export default async function(request, response, url) {
 	}
 
 	// Start the route search
-	await findRoute(url.replace(/^\//, "").split("/"), "routes")
+	const url = request.address.pathname.replace(/^\//, "")
+	await findRoute(url.split("/"), "routes")
 }

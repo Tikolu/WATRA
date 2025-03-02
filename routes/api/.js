@@ -1,3 +1,5 @@
+import HTTPError from "modules/server/error.js";
+
 export default function() {
-	return "No API specified"
+	throw new HTTPError(404, "No API specified")
 }
