@@ -1,5 +1,10 @@
 {
 	"importMap": "./import_map.json",
+	"lint": {
+		"rules": {
+			"exclude": ["no-unused-vars"]
+		}
+	},
 	"tasks": {
 		"start": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt index.js",
 		"start_watcher": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --watch index.js"

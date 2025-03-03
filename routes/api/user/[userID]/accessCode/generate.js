@@ -1,8 +1,6 @@
 export default async function({targetUser}) {
 	// Generate access code
-	const accessCode = targetUser.generateAccessCode()
-	// Save user to DB
-	await targetUser.save()
+	const accessCode = await targetUser.generateAccessCode()
 
 	return { accessCode }
 }

@@ -1,0 +1,24 @@
+<% layout("/body", {
+	title: $.jednostka.name,
+	scripts: ["jednostka/page"],
+	// styles: ["jednostka/page"],
+	meta: {
+		jednostkaID: $.jednostka.id
+	}
+}) %>
+<h1 id="jednostka-title"><%= $.jednostka.name %></h1>
+
+<button id="delete-jednostka-button">Usuń jednostkę</button>
+<button id="add-user-button">Dodaj użytkownika</button>
+
+<hr>
+<h2>Użytkownicy w tej jednostce</h2>
+<div id="jednostka-member-list">
+	<ul>
+		<% for(const user of $.jednostka.members || []) { %>
+			<li>
+				<a href="/users/<%= user.id %>"><b><%= user.displayName %></b></a> (<%= user.getFunkcjeInJednostka($.jednostka) %>)
+			</li>
+		<% } %>
+	</ul>
+</div>

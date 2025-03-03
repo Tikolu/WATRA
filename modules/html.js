@@ -1,8 +1,10 @@
 import { Eta } from "eta/index.ts"
 import * as Base64 from "modules/base64.js"
+import * as Text from "modules/text.js"
 
 const etaImports = {
-	Base64
+	Base64,
+	Text
 }
 
 const eta = new Eta({

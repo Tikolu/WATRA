@@ -1,11 +1,9 @@
 import HTTPError from "modules/server/error.js";
 import User from "modules/schemas/user.js";
 
-export default async function({input}) {
+export default async function() {
 	// Create user
-	const user = new User({
-		name: input.name
-	})
+	const user = new User()
 
 	// Save user to DB
 	await user.save()

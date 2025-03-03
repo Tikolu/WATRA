@@ -74,6 +74,10 @@ export default async function(request, response) {
 		const globalFile = files.find(file => file.name == "..js")
 		if(globalFile) {
 			const routeFile = await parseRoute(REQUIRE_PATH + path + "/..js")
+			if(typeof routeFile == "function") {
+				handleError(new HTTPError(500, "Invalid global route file"))
+				return
+			}
 			if(routeFile?.open) await execRoute(routeFile.open)
 			if(routeData.lastError) return
 			exitFunction = routeFile?.exit
@@ -110,6 +114,10 @@ export default async function(request, response) {
 			// If a match is found, run the route file
 			else if(sections.length <= 1 && file.name == `${sections[0] || ""}.js`) {
 				const routeFile = await parseRoute(REQUIRE_PATH + filePath)
+				if(routeFile?.open || routeFile?.exit) {
+					handleError(new HTTPError(500, "Invalid route file"))
+					break
+				}
 				await execRoute(routeFile)
 				
 				foundMatch = true

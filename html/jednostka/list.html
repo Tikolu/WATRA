@@ -1,0 +1,18 @@
+<% layout("/body", {
+	title: "Lista jednostek",
+	styles: ["jednostka/list"],
+	scripts: ["jednostka/list"]
+}) %>
+<h1>Lista jednostek</h1>
+<button id="create-jednostka-button">Nowa jednostka</button>
+<div id="jednostka-list">
+	<ul>
+		<% for(const jednostka of $.jednostki || []) { %>
+			<li>
+				<a href="/jednostki/<%= jednostka.id %>">
+					<b><%= jednostka.name %></b>
+				</a>
+			</li>
+		<% } %>
+	</ul>
+</div>

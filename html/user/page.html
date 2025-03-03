@@ -1,7 +1,7 @@
 <% layout("/body", {
 	title: $.user.displayName,
 	scripts: ["user/page"],
-	styles: ["user/page"],
+	// styles: ["user/page"],
 	meta: {
 		userID: $.user.id
 	}
@@ -10,6 +10,16 @@
 
 <button id="delete-user-button">Usuń użytkownika</button>
 <button id="generate-access-code-button">Wygeneruj kod dostępu</button>
+
+<% if($.user.funkcje.length > 0) { %>
+	<hr>
+	<h2>Funkcje</h2>
+	<ul>
+		<% for(const funkcja of $.user.funkcje) { %>
+			<li><%= Text.capitalise(funkcja.funkcja) %> w <a href="/jednostki/<%= funkcja.jednostka.id %>"><%= funkcja.jednostka.name %></a></li>
+		<% } %>
+	</ul>
+<% } %>
 
 <hr>
 <h2>Dane</h2>
