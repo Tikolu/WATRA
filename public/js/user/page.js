@@ -25,6 +25,19 @@ lastNameInput.onblur = async () => {
 	lastNameInput.disabled = false
 }
 
+dateOfBirthInput.onblur = async () => {
+	dateOfBirthInput.disabled = true
+	try {
+		var response = await API(`user/${META.userID}/update/dateOfBirth`, {
+			date: dateOfBirthInput.value
+		})
+	} catch(error) {
+		alert(error)
+		return
+	}
+	dateOfBirthInput.disabled = false
+}
+
 deleteUserButton.onclick = async () => {
 	if(!confirm(`Usunąć użytkownika ${userTitle.innerText}?`)) return
 	try {

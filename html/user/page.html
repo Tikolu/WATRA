@@ -25,9 +25,19 @@
 <h2>Dane</h2>
 <div>
 	<label for="first-name-input">Imię:</label>
-	<input type="text" id="first-name-input" value="<%= $.user.name.first || "" %>">
+	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.user.name.first || "" %>">
 </div>
 <div>
 	<label for="last-name-input">Nazwisko:</label>
-	<input type="text" id="last-name-input" value="<%= $.user.name.last || "" %>">
+	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.user.name.last || "" %>">
+</div>
+<div>
+	<label for="date-of-birth-input">Data urodzenia:</label>
+	<input
+		type="date" id="date-of-birth-input"
+		max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
+		<% if($.user.dateOfBirth) { %>
+			value="<%= datetime.format($.user.dateOfBirth, "yyyy-MM-dd") %>"
+		<% } %>
+	>
 </div>

@@ -9,6 +9,10 @@ const schema = new mongoose.Schema({
 		first: String,
 		last: String
 	},
+	dateOfBirth: {
+		type: Date,
+		max: Date.now
+	},
 	accessCode: String,
 	funkcje: [
 		{
@@ -35,10 +39,13 @@ const schema = new mongoose.Schema({
 		},
 
 		async updateName(first="", last="") {
-			first = first.trim()
-			last = last.trim()
-			if(!first || Text.validName(first)) this.name.first = Text.capitalise(first)
-			if(!last || Text.validName(last)) this.name.last = Text.capitalise(last)
+			this.name.first = Text.formatName(first)
+			this.name.last = Text.formatName(last)
+			await this.save()
+		},
+
+		async updateDateOfBirth(date) {
+			this.dateOfBirth = date
 			await this.save()
 		},
 		

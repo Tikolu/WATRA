@@ -1,10 +1,12 @@
-import { Eta } from "eta/index.ts"
+import { Eta } from "jsr:@eta-dev/eta"
+import * as datetime from "jsr:@std/datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
 
 const etaImports = {
 	Base64,
-	Text
+	Text,
+	datetime
 }
 
 const eta = new Eta({
@@ -14,6 +16,7 @@ const eta = new Eta({
 	functionHeader: `for(const importName in $.ETA_IMPORTS) {
 		globalThis[importName] = $.ETA_IMPORTS[importName]
 	}`,
+	debug: true
 })
 
 /**
