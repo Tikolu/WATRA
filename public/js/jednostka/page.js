@@ -1,24 +1,29 @@
 addUserButton.onclick = async () => {
-	const userID = prompt("ID użytkownika:")
-	if(!userID) return
-
-	try {
-		var response = await API(`jednostka/${META.jednostkaID}/addMember`, {userID})
-	} catch(error) {
-		alert(error)
-		return
-	}
-
-	document.location.reload()
+	document.location.href = `/jednostki/${META.jednostkaID}/addMembers`
 }
 
 deleteJednostkaButton.onclick = async () => {
 	if(!confirm(`Usunąć jednostkę ${jednostkaTitle.innerText}?`)) return
 	try {
-		var response = await API(`jednostka/${META.jednostkaID}/delete`)
+		await API(`jednostka/${META.jednostkaID}/delete`)
 	} catch(error) {
 		alert(error)
 		return
 	}
 	history.back()
+}
+
+jednostkaNameInput.onblur = async () => {
+	jednostkaNameInput.disabled = true
+	try {
+		var response = await API(`jednostka/${META.jednostkaID}/update/name`, {
+			name: jednostkaNameInput.value
+		})
+	} catch(error) {
+		alert(error)
+		return
+	}
+	jednostkaTitle.innerText = response.displayName
+	jednostkaNameInput.innerText = response.name
+	jednostkaNameInput.disabled = false
 }

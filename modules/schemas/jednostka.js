@@ -3,10 +3,7 @@ import mongoose from "npm:mongoose"
 import User from "modules/schemas/user.js"
 
 const schema = new mongoose.Schema({
-	name: {
-		type: String,
-		default: "(brak nazwy)"
-	},
+	name: String,
 	members: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +13,11 @@ const schema = new mongoose.Schema({
 },
 {
 	methods: {
+		async updateName(name) {
+			this.name = name
+			await this.save()
+		},
+		
 		async addMember(user) {
 			// Add member to jednostka, unless already added
 			if(!this.members.includes(user.id)) {
@@ -27,6 +29,14 @@ const schema = new mongoose.Schema({
 
 			await this.save()
 		} 
+	},
+
+	virtuals: {
+		displayName: {
+			get() {
+				return this.name || "(brak nazwy)"
+			}
+		}
 	}
 })
 

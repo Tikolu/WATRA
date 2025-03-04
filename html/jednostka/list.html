@@ -10,7 +10,7 @@
 		<% for(const jednostka of $.jednostki || []) { %>
 			<li>
 				<a href="/jednostki/<%= jednostka.id %>">
-					<b><%= jednostka.name %></b>
+					<b><%= jednostka.displayName %></b>
 				</a>
 			</li>
 		<% } %>
