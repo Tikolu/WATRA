@@ -23,6 +23,10 @@ function removeANSI(text) {
 
 export function exit({response, lastOutput, lastError}) {
 	if(lastError) {
+		if(lastError.httpCode == 404) {
+			lastError.message = "API not found"
+		}
+		
 		lastOutput = {
 			error: {
 				code: lastError.httpCode || 500,

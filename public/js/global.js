@@ -17,16 +17,19 @@ async function API(get="", post=undefined) {
 		options.body = JSON.stringify(post)
 		options.headers["Content-Type"] = "application/json"
 	}
-	let response
+	let response, text, json
 	try {
 		response = await fetch(`/api/${get}`, options)
-	} catch(error) { }
-	let text = await response.text()
-	let json
+	} catch(error) {
+		text = "Connection failed"
+	}
+	text ||= await response?.text()
 	try {
 		json = JSON.parse(text)
 	} catch(error) {
-		throw new Error("Error parsing API response")
+		text ||= "Error parsing API response"
+		if(text.includes("\n")) text = text.split("\n")[0]
+		throw new Error(text)
 	}
 	if(json.error) {
 		throw new Error(json.error.message)
