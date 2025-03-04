@@ -1,14 +1,18 @@
 <% layout("/body", {
 	title: "Lista użytkowników",
-	styles: ["user/list"],
+	// styles: ["user/list"],
 	scripts: ["user/list"]
 }) %>
 <h1>Lista użytkowników</h1>
 <button id="create-user-button">Nowy użytkownik</button>
 <div id="user-list">
-	<% for(const user of $.users || []) { %>
-		<a href="/users/<%= user.id %>">
-			<b><%= user.displayName %></b>
-		</a>
-	<% } %>
+	<ul>
+		<% for(const user of $.users || []) { %>
+			<li>
+				<a href="/users/<%= user.id %>">
+					<b><%= user.displayName %></b>
+				</a>
+			</li>
+		<% } %>
+	</ul>
 </div>

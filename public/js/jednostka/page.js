@@ -1,5 +1,5 @@
 addUserButton.onclick = async () => {
-	document.location.href = `/jednostki/${META.jednostkaID}/addMembers`
+	document.location.href = `/jednostki/${META.jednostkaID}/addMember`
 }
 
 deleteJednostkaButton.onclick = async () => {
@@ -22,8 +22,9 @@ jednostkaNameInput.onblur = async () => {
 	} catch(error) {
 		alert(error)
 		return
+	} finally {
+		jednostkaNameInput.disabled = false
 	}
 	jednostkaTitle.innerText = response.displayName
 	jednostkaNameInput.innerText = response.name
-	jednostkaNameInput.disabled = false
 }

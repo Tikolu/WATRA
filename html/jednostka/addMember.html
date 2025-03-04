@@ -1,0 +1,22 @@
+<% layout("/body", {
+	title: `Dodawanie użytkownika do ${$.jednostka.displayName}`,
+	scripts: ["jednostka/addMember"],
+	// styles: ["jednostka/page"],
+	meta: {
+		jednostkaID: $.jednostka.id
+	}
+}) %>
+<h1 id="jednostka-title">Dodawanie użytkownika do <%= $.jednostka.displayName %></h1>
+
+<div id="jednostka-add-user-options">
+	<table>
+		<% for(const user of $.users || []) { %>
+			<tr>
+				<td><%= user.displayName %></td>
+				<td><button data-user-id="<%= user.id %>">Dodaj do <%= $.jednostka.displayName %></button></td>
+			</tr>
+		<% } %>
+	</table>
+</div>
+<br>
+<button id="create-user-button">Dodaj nowego użytkownika</button>
