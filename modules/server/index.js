@@ -73,7 +73,10 @@ export function start(hostname, port) {
 	server = Deno.serve({
 		hostname,
 		port,
-		signal: controller.signal
+		signal: controller.signal,
+		onListen({port}) {
+			console.log(`\x1b[34m[Server]\x1b[0m  Started on port ${port}`)
+		}
 	}, handler)
 }
 

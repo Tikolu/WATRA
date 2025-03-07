@@ -80,7 +80,10 @@ export default async function(request, response) {
 				return
 			}
 			if(routeFile?.open) await execRoute(routeFile.open)
-			if(routeContext.lastError) return
+			if(routeContext.lastError) {
+				handleError(routeContext.lastError)
+				return
+			}
 			exitFunction = routeFile?.exit
 		}
 		
