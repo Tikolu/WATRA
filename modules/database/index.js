@@ -1,7 +1,15 @@
 import mongoose from "npm:mongoose"
 
+import shortID from "modules/database/shortID.js"
+
 const MONGO_URI = "mongodb://localhost:27017/main"
 const MONGO_OPTIONS = {}
+
+mongoose.plugin((schema, options) => {
+	schema.add({
+		_id: shortID
+	})
+})
 
 export async function connect(verbose=false) {
 	console.log("\x1b[32m[MongoDB]\x1b[0m Connecting...")

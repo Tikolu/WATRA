@@ -1,0 +1,22 @@
+<% layout("/body", {
+	title: `Dodawanie pod-jednostki do ${$.jednostka.displayName}`,
+	scripts: ["jednostka/addSubJednostka"],
+	// styles: ["jednostka/page"],
+	meta: {
+		jednostkaID: $.jednostka.id
+	}
+}) %>
+<h1 id="jednostka-title">Dodawanie pod-jednostki do <%= $.jednostka.displayName %></h1>
+
+<div id="jednostka-add-sub-jednostka-options">
+	<table>
+		<% for(const subJednostka of $.jednostki || []) { %>
+			<tr>
+				<td><%= subJednostka.displayName %></td>
+				<td><button data-jednostka-id="<%= subJednostka.id %>">Dodaj do <%= $.jednostka.displayName %></button></td>
+			</tr>
+		<% } %>
+	</table>
+</div>
+<br>
+<button id="create-user-button">Dodaj nową pod-jednostkę</button>

@@ -4,6 +4,9 @@ import * as Text from "modules/text.js";
 
 import Jednostka from "modules/schemas/jednostka.js";
 
+import shortID from "modules/database/shortID.js"
+
+
 const schema = new mongoose.Schema({
 	name: {
 		first: String,
@@ -18,7 +21,7 @@ const schema = new mongoose.Schema({
 		{
 			funkcja: String,
 			jednostka: {
-				type: mongoose.Schema.Types.ObjectId,
+				type: String,
 				ref: "Jednostka"
 			}
 		}
@@ -52,7 +55,7 @@ const schema = new mongoose.Schema({
 		async addFunkcja(jednostka, funkcja) {
 			// Check if user already has this funkcja
 			for(const f of this.funkcje) {
-				if(f.funkcja === funkcja && f.jednostka.equals(jednostka.id)) {
+				if(f.funkcja === funkcja && f.jednostka == jednostka.id) {
 					throw "Użytkownik już ma tę funkcję"
 				}
 			}
@@ -75,14 +78,14 @@ const schema = new mongoose.Schema({
 		getFunkcjeInJednostka(jednostka) {
 			const funkcje = []
 			for(const funkcja of this.funkcje) {
-				if(funkcja.jednostka.equals(jednostka.id)) funkcje.push(funkcja.funkcja)
+				if(funkcja.jednostka == jednostka.id) funkcje.push(funkcja.funkcja)
 			}
 
 			return funkcje
 		},
 
 		async removeFunkcjeInJednostka(jednostka) {
-			this.funkcje = this.funkcje.filter(funkcja => !funkcja.jednostka.equals(jednostka.id))
+			this.funkcje = this.funkcje.filter(funkcja => !funkcja.jednostka == jednostka.id)
 			await this.save()
 		}
 	},
@@ -103,7 +106,7 @@ schema.pre("deleteOne", {document: true}, async function() {
 	for(const funkcja of this.funkcje) {
 		const jednostka = await Jednostka.findById(funkcja.jednostka)
 		if(!jednostka) continue
-		jednostka.members = jednostka.members.filter(id => !id.equals(this.id))
+		jednostka.members = jednostka.members.filter(id => !id == this.id)
 		await jednostka.save()
 	}
 })

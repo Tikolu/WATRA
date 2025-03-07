@@ -7,22 +7,40 @@
 	}
 }) %>
 <h1 id="jednostka-title"><%= $.jednostka.displayName %></h1>
-
-<button id="delete-jednostka-button">Usuń jednostkę</button>
-<button id="add-user-button">Dodaj użytkownika</button>
-
+<% if($.jednostka.upperJednostki?.length > 0) { %>
+	<p>(część <%= $.jednostka.upperJednostki.map(jednostka => jednostka.displayName).join(", ") %>)</p>
+<% } %>
 <hr>
 <h2>Ustawienia jednostki</h2>
-<label for="jednostka-name-input">Nazwa:</label>
-<input type="text" id="jednostka-name-input" autofill="off" value="<%= $.jednostka.name || "" %>">
+<div>
+	<label for="jednostka-name-input">Nazwa:</label>
+	<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.jednostka.name || "" %>">
+</div>
+<div>
+	<button id="delete-jednostka-button">Usuń jednostkę</button>
+</div>
 
 <hr>
 <h2>Użytkownicy w tej jednostce</h2>
+<button id="add-user-button" href="/jednostki/<%= $.jednostka.id %>/addMember">Dodaj użytkownika</button>
 <div id="jednostka-member-list">
 	<ul>
 		<% for(const user of $.jednostka.members || []) { %>
 			<li>
 				<a href="/users/<%= user.id %>"><b><%= user.displayName %></b></a> (<%= user.getFunkcjeInJednostka($.jednostka) %>)
+			</li>
+		<% } %>
+	</ul>
+</div>
+
+<hr>
+<h2>Pod-jednostki</h2>
+<button id="add-sub-jednostka-button" href="/jednostki/<%= $.jednostka.id %>/addSubJednostka">Dodaj pod-jednostkę</button>
+<div id="sub-jednostka-list">
+	<ul>
+		<% for(const subJednostka of $.jednostka.subJednostki || []) { %>
+			<li>
+				<a href="/jednostki/<%= subJednostka.id %>"><b><%= subJednostka.displayName %></b></a>
 			</li>
 		<% } %>
 	</ul>

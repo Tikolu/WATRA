@@ -1,7 +1,3 @@
-addUserButton.onclick = async () => {
-	document.location.href = `/jednostki/${META.jednostkaID}/addMember`
-}
-
 deleteJednostkaButton.onclick = async () => {
 	if(!confirm(`Usunąć jednostkę ${jednostkaTitle.innerText}?`)) return
 	try {
