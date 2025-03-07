@@ -26,7 +26,7 @@ export async function open() {
 	if(userID) {
 		const user = await User.findById(userID)
 
-		if(!user) {
+		if(!user && this.routePath[0] != "logout") {
 			this.response.redirect("/logout")
 			return
 		}
@@ -40,6 +40,10 @@ export function exit({user}) {
 	if(this.lastError) {
 		// Default code for all errors is 500
 		const code = this.lastError.httpCode || 500
+		if(code == 404 && !user && this.routePath[0] != "login") {
+			this.response.redirect("/login")
+			return
+		}
 		// Use error message from error unless it is a default
 		let message = errorMessages[code]?.[1] || ""
 		if(!this.lastError.defaultMessage) message = this.lastError.message

@@ -80,10 +80,7 @@ export default async function(request, response) {
 				return
 			}
 			if(routeFile?.open) await execRoute(routeFile.open)
-			if(routeContext.lastError) {
-				handleError(routeContext.lastError)
-				return
-			}
+			if(routeContext.lastError || !response.open) return
 			exitFunction = routeFile?.exit
 		}
 		
@@ -159,5 +156,6 @@ export default async function(request, response) {
 
 	// Start the route search
 	const url = request.address.pathname.replace(/^\//, "")
-	await findRoute(url.split("/"), "routes")
+	routeContext.routePath = url.split("/")
+	await findRoute(routeContext.routePath, "routes")
 }
