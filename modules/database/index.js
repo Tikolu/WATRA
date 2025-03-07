@@ -6,7 +6,8 @@ const MONGO_URI = "mongodb://localhost:27017/main"
 const MONGO_OPTIONS = {}
 
 String.prototype.__defineGetter__("id", function() {
-	return this
+	if(!shortID.validate.test(this)) return undefined
+	else return this
 })
 Array.prototype.hasID = function hasID(id) {
 	return this.some(value => value?.id === id)
