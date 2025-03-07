@@ -55,13 +55,13 @@ const schema = new mongoose.Schema({
 		async addFunkcja(jednostka, funkcja) {
 			// Check if user already has this funkcja
 			for(const f of this.funkcje) {
-				if(f.funkcja === funkcja && f.jednostka == jednostka.id) {
+				if(f.funkcja === funkcja && f.jednostka.id == jednostka.id) {
 					throw "Użytkownik już ma tę funkcję"
 				}
 			}
 			
 			// Add user to jednostka members, if not there already
-			if(!jednostka.members.includes(this.id)) {
+			if(!jednostka.members.hasID(this.id)) {
 				jednostka.members.push(this.id)
 				await jednostka.save()
 			}

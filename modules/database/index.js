@@ -5,7 +5,14 @@ import shortID from "modules/database/shortID.js"
 const MONGO_URI = "mongodb://localhost:27017/main"
 const MONGO_OPTIONS = {}
 
-mongoose.plugin((schema, options) => {
+String.prototype.__defineGetter__("id", function() {
+	return this
+})
+Array.prototype.hasID = function hasID(id) {
+	return this.some(value => value?.id === id)
+}
+
+mongoose.plugin(schema => {
 	schema.add({
 		_id: shortID
 	})

@@ -2,8 +2,6 @@ import mongoose from "npm:mongoose"
 
 import User from "modules/schemas/user.js"
 
-import shortID from "modules/database/shortID.js"
-
 const schema = new mongoose.Schema({
 	name: String,
 	members: [
@@ -34,7 +32,7 @@ const schema = new mongoose.Schema({
 		
 		async addMember(user) {
 			// Add member to jednostka, unless already added
-			if(!this.members.includes(user.id)) {
+			if(!this.members.hasID(user.id)) {
 				this.members.push(user.id)
 			}
 
@@ -46,7 +44,7 @@ const schema = new mongoose.Schema({
 		
 		async addSubJednostka(subJednostka) {
 			// Add subJednostka to subJednostki, unless already added
-			if(!this.subJednostki.includes(subJednostka.id)) {
+			if(!this.subJednostki.hasID(subJednostka.id)) {
 				this.subJednostki.push(subJednostka.id)
 			}
 
@@ -58,7 +56,7 @@ const schema = new mongoose.Schema({
 
 		async addUpperJednostka(upperJednostka) {
 			// Add upperJednostka to upperJednostki, unless already added
-			if(!this.upperJednostki.includes(upperJednostka.id)) {
+			if(!this.upperJednostki.hasID(upperJednostka.id)) {
 				this.upperJednostki.push(upperJednostka.id)
 			}
 
@@ -66,15 +64,21 @@ const schema = new mongoose.Schema({
 		},
 
 		async removeUpperJednostka(upperJednostka) {
-			if(!this.upperJednostki.includes(upperJednostka.id)) return
+			// Return if upperJednostka is not in upperJednostki
+			if(!this.upperJednostki.hasID(upperJednostka.id)) return
+			// Remove upperJednostka from upperJednostki
 			this.upperJednostki = this.upperJednostki.filter(j => j != upperJednostka.id)
+			// Remove self from upperJednostka's subJednostki
 			upperJednostka.removeSubJednostka(this)
 			await this.save()
 		},
 
 		async removeSubJednostka(subJednostka) {
-			if(!this.subJednostki.includes(subJednostka.id)) return
+			// Return if subJednostka is not in subJednostki
+			if(!this.subJednostki.hasID(subJednostka.id)) return
+			// Remove subJednostka from subJednostki
 			this.subJednostki = this.subJednostki.filter(j => j != subJednostka.id)
+			// Remove self from subJednostka's upperJednostki
 			subJednostka.removeUpperJednostka(this)
 			await this.save()
 		}
