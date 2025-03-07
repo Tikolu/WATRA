@@ -5,10 +5,11 @@ const ILLEGAL_PATTERNS = [/^\.\.$/, /^\.|\.$/]
 
 export default async function(request, response) {
 	// Global routeData object
-	let routeData = {
+	const routeContext = {
 		request,
 		response,
-		addRouteData: data => routeData = {...data, ...routeData}
+		routeData: {},
+		addRouteData: data => routeContext.routeData = {...data, ...routeContext.routeData}
 	}
 
 	// Function for handling errors
@@ -20,19 +21,19 @@ export default async function(request, response) {
 		console.log("\nURL:", request.address.pathname)
 		console.error(error)
 		// If an error is already present, just print plain error message and send response
-		if(routeData.lastError || routeData.response.statusCode >= 400) {
-			routeData.response.headers.set("Content-Type", "text/plain")
-			routeData.response.write(routeData.lastError?.message || `Error ${routeData.response.statusCode}!`)
-			routeData.response.write("\n\n\n\nWhile handling the above error, another error occured:\n\n")
-			routeData.response.write(error.stack)
-			routeData.response.close()
+		if(routeContext.lastError || routeContext.response.statusCode >= 400) {
+			routeContext.response.headers.set("Content-Type", "text/plain")
+			routeContext.response.write(routeContext.lastError?.message || `Error ${routeContext.response.statusCode}!`)
+			routeContext.response.write("\n\n\n\nWhile handling the above error, another error occured:\n\n")
+			routeContext.response.write(error.stack)
+			routeContext.response.close()
 			return
 		}
 		// Otherwise, remember the error for later
-		routeData.lastError = error
-		routeData.response.statusCode = error.httpCode || 500
+		routeContext.lastError = error
+		routeContext.response.statusCode = error.httpCode || 500
 		// Add a helper function for clearing the error
-		routeData.lastError.clear = () => routeData.lastError = null
+		routeContext.lastError.clear = () => routeContext.lastError = null
 	}
 
 	// Function for importing route files
@@ -55,9 +56,9 @@ export default async function(request, response) {
 	
 		try {
 			// Call the route function
-			routeData.lastOutput = await fn(routeData)
+			routeContext.lastOutput = await fn.call(routeContext, routeContext.routeData)
 			// If route function returns a promise, wait for it to resolve
-			if(routeData.lastOutput instanceof Promise) routeData.lastOutput = await routeData.lastOutput
+			if(routeContext.lastOutput instanceof Promise) routeContext.lastOutput = await routeContext.lastOutput
 			
 		} catch(error) {
 			// Handle runtime errors
@@ -79,7 +80,7 @@ export default async function(request, response) {
 				return
 			}
 			if(routeFile?.open) await execRoute(routeFile.open)
-			if(routeData.lastError) return
+			if(routeContext.lastError) return
 			exitFunction = routeFile?.exit
 		}
 		
@@ -99,7 +100,7 @@ export default async function(request, response) {
 
 		// Loop through all the files
 		for (const file of files) {
-			if(routeData.lastError) break
+			if(routeContext.lastError) break
 			
 			const filePath = `${path}/${file.name}`
 			// Skip "..js"
@@ -135,14 +136,14 @@ export default async function(request, response) {
 		}
 	
 
-		if(!foundMatch && !routeData.lastError) {
+		if(!foundMatch && !routeContext.lastError) {
 			// If no matches were found, try the fallback encountered earlier
 			if(fallback && sections[0]) {
-				routeData[fallback.slice(1, -1)] ||= sections[0]
+				routeContext.routeData[fallback.slice(1, -1)] ||= sections[0]
 				await findRoute(sections.slice(1), `${path}/${fallback}`)
 			
 			// Otherwise, respond with 404
-			} else if(routeData.response.statusCode == 200) {
+			} else if(routeContext.response.statusCode == 200) {
 				handleError(new HTTPError(404))
 	
 			}

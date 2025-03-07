@@ -1,6 +1,6 @@
-export default async function({targetJednostka, input}) {
+export default async function({targetJednostka, name}) {
 	// Update name
-	await targetJednostka.updateName(input.name)
+	await targetJednostka.updateName(name)
 
 	return {
 		name: targetJednostka.name,

@@ -1,4 +1,4 @@
-export default async function({targetUser, input}) {
+export default async function({targetUser, date}) {
 	// Update date of birth
-	await targetUser.updateDateOfBirth(input.date)
+	await targetUser.updateDateOfBirth(date)
 }

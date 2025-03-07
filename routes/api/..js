@@ -1,10 +1,10 @@
 import HTTPError from "modules/server/error.js"
 
-export async function open({request, response, addRouteData}) {
-	response.headers.set("Content-Type", "application/json")
+export async function open() {
+	this.response.headers.set("Content-Type", "application/json")
 
 	let input = ""
-	if(request.method == "POST") input = await request.getBody()
+	if(this.request.method == "POST") input = await this.request.getBody()
 
 	try {
 		if(input === "") input = {}
@@ -13,7 +13,8 @@ export async function open({request, response, addRouteData}) {
 		throw new HTTPError(400, "Invalid JSON")
 	}
 
-	addRouteData({input})
+	if(typeof input != "object") throw new HTTPError(400, "Invalid input data")
+	this.addRouteData(input)
 }
 
 function removeANSI(text) {
@@ -21,30 +22,30 @@ function removeANSI(text) {
 	return text.replaceAll(/\u001b\[[0-9]+m/g, "")
 }
 
-export function exit({response, lastOutput, lastError}) {
-	if(lastError) {
-		if(lastError.httpCode == 404 && lastError.defaultMessage) {
-			lastError.message = "API not found"
+export function exit() {
+	if(this.lastError) {
+		if(this.lastError.httpCode == 404 && this.lastError.defaultMessage) {
+			this.lastError.message = "API not found"
 		}
 		
-		lastOutput = {
+		this.lastOutput = {
 			error: {
-				code: lastError.httpCode || 500,
-				message: removeANSI(lastError.message),
-				stack: removeANSI(lastError.stack).split("\n")
+				code: this.lastError.httpCode || 500,
+				message: removeANSI(this.lastError.message),
+				stack: removeANSI(this.lastError.stack).split("\n")
 			}
 		}
-		lastError.clear()
+		this.lastError.clear()
 	}
 
-	lastOutput ||= {}
+	this.lastOutput ||= {}
 
-	if(typeof lastOutput == "object") {
+	if(typeof this.lastOutput == "object") {
 		try {
-			lastOutput = JSON.stringify(lastOutput)
+			this.lastOutput = JSON.stringify(this.lastOutput)
 		} catch {
-			response.statusCode = 500
-			lastOutput = JSON.stringify({
+			this.response.statusCode = 500
+			this.lastOutput = JSON.stringify({
 				error: {
 					code: 500,
 					message: "Failed to generate API output",
@@ -53,5 +54,5 @@ export function exit({response, lastOutput, lastError}) {
 		}
 	}
 
-	return lastOutput
+	return this.lastOutput
 }
