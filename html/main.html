@@ -4,6 +4,7 @@
 	styles: ["home"]
 }) %>
 <h1>Strona główna</h1>
+<p>Cześć, <%= $.user.displayName %> 👋</p>
 <button id="logout-button">Wyloguj</button>
 
 <hr>
@@ -11,3 +12,5 @@
 	<li><a href="/users">Lista użytkowników</a></li>
 	<li><a href="/jednostki">Lista jednostek</a></li>
 </ul>
+
+<hr>

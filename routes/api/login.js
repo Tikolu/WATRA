@@ -1,12 +1,12 @@
 import HTTPError from "modules/server/error.js";
 import User from "modules/schemas/user.js";
 
-export default async function({request, response, input}) {
+export default async function({user, code}) {
 	// Check if user is already logged in
-	if(request.token?.user) throw new HTTPError(400, "Już jesteś zalogowany")
+	if(user) throw new HTTPError(400, "Już jesteś zalogowany")
 
 	// Find user matching the access code
-	const user = await User.findByAccessCode(input.code)
+	user = await User.findByAccessCode(code)
 	if(!user) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
 	
 	// Clear access code 
@@ -14,7 +14,7 @@ export default async function({request, response, input}) {
 	await user.save()
 
 	// Set cookie token
-	response.token = {
+	this.response.token = {
 		user: user.id
 	}
 		

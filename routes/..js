@@ -1,4 +1,5 @@
 import html from "modules/html.js"
+import User from "modules/schemas/user.js"
 
 const errorMessages = {
 	400: ["Nieprawidłowy URL 😳", "Wpisany przez ciebie URL nie ma sensu"],
@@ -14,34 +15,48 @@ const errorMessages = {
 // 	500: ["Internal server error 💀", "Something went wrong on the server"]
 // }
 
-export function open({response}) {
+export async function open() {
 	// Set content type to text/html
-	response.headers.set("Content-Type", "text/html; charset=utf-8")
+	this.response.headers.set("Content-Type", "text/html; charset=utf-8")
+	
+	// Get user ID from token
+	const userID = this.request.token?.user
+	
+	// If user ID is set, lookup and validate the user
+	if(userID) {
+		const user = await User.findById(userID)
+
+		if(!user) {
+			this.response.redirect("/logout")
+			return
+		}
+		this.addRouteData({user})
+	}
 }
 
-export function exit({response, lastOutput, lastError}) {
-	if(!response.open) return
+export function exit({user}) {
+	if(!this.response.open) return
 	
-	if(lastError) {
+	if(this.lastError) {
 		// Default code for all errors is 500
-		const code = lastError.httpCode || 500
+		const code = this.lastError.httpCode || 500
 		// Use error message from error unless it is a default
 		let message = errorMessages[code]?.[1] || ""
-		if(!lastError.defaultMessage) message = lastError.message
-		lastOutput = html("error", {
+		if(!this.lastError.defaultMessage) message = this.lastError.message
+		this.lastOutput = html("error", {
 			error: {
 				code,
 				title: errorMessages[code]?.[0] || `Error ${code} 🤔`,
 				message,
-				stack: lastError.stack
+				stack: this.lastError.stack
 			}
 		})
 	}
 
 	// Convert output to string
-	if(typeof lastOutput != "string") lastOutput = String(lastOutput)
+	if(typeof this.lastOutput != "string") this.lastOutput = String(this.lastOutput)
 	
-	// Write to response and close it
-	response.write(lastOutput)
-	response.close()
+	// Write to this.response and close it
+	this.response.write(this.lastOutput)
+	this.response.close()
 }

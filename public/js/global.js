@@ -55,8 +55,20 @@ for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])"
 }
 
 // Custom input fields
-for(const input of document.querySelectorAll("input[type=text]")) {
-	input.addEventListener("keypress", event => {
+for(const input of document.querySelectorAll("input")) {
+	if(input.matches("[type=text]")) input.addEventListener("keypress", event => {
 		if(event.key == "Enter") input.blur()
 	})
+	if(input.matches("[type=date]")) input.addEventListener("change", event => {
+		if(input.value) input.onblur()
+	})
+}
+
+// Link buttons
+for(const button of document.querySelectorAll("button[href]")) {
+	const a = document.createElement("a")
+	a.href = button.getAttribute("href")
+	button.removeAttribute("href")
+	button.insertAdjacentElement("beforebegin", a)
+	a.append(button)
 }

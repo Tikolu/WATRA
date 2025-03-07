@@ -1,9 +1,9 @@
 import html from "modules/html.js";
 
-export default function({request, response}) {
+export default function({user}) {
 	// Check if user is already logged in
-	if(request.token?.user) {
-		response.redirect("/")
+	if(user) {
+		this.response.redirect("/")
 		return
 	}
 

@@ -1,12 +1,7 @@
-import HTTPError from "modules/server/error.js";
-
-export default function({request, response}) {
-	// Check if user is logged in
-	if(!request.token?.user) throw new HTTPError(400, "Nie jesteś zalogowany")
-
+export default function() {
 	// Clear cookie token
-	response.token = {}
+	this.response.token = {}
 
 	// Redirect to login
-	response.redirect("/login")
+	this.response.redirect("/login")
 }
