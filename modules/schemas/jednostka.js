@@ -2,8 +2,20 @@ import mongoose from "npm:mongoose"
 
 import User from "modules/schemas/user.js"
 
+export const JednostkaType = {
+	ZASTĘP: 0,
+	DRUŻYNA: 1,
+	HUFIEC: 2,
+	CHORĄGIEW: 3
+}
+
 const schema = new mongoose.Schema({
 	name: String,
+	type: {
+		type: Number,
+		enum: Object.values(JednostkaType),
+		default: JednostkaType.HUFIEC
+	},
 	members: [
 		{
 			type: String,
@@ -43,6 +55,11 @@ const schema = new mongoose.Schema({
 		},
 		
 		async addSubJednostka(subJednostka) {
+			// Check jednostka type compatibility
+			if(subJednostka.type >= this.type) {
+				throw "Nie można dodać jednostki o wyższym lub równym typie"
+			}
+			
 			// Add subJednostka to subJednostki, unless already added
 			if(!this.subJednostki.hasID(subJednostka.id)) {
 				this.subJednostki.push(subJednostka.id)
@@ -55,6 +72,10 @@ const schema = new mongoose.Schema({
 		},
 
 		async addUpperJednostka(upperJednostka) {
+			// Check jednostka type compatibility
+			if(upperJednostka.type <= this.type) {
+				throw "Nie można dodać jednostki o wyższym lub równym typie"
+			}
 			// Add upperJednostka to upperJednostki, unless already added
 			if(!this.upperJednostki.hasID(upperJednostka.id)) {
 				this.upperJednostki.push(upperJednostka.id)
@@ -89,6 +110,12 @@ const schema = new mongoose.Schema({
 			get() {
 				return this.name || "(brak nazwy)"
 			}
+		},
+		typeName: {
+			get() {
+				const type = Object.keys(JednostkaType)[this.type]
+				return Text.capitalise(type)
+			}
 		}
 	}
 })
@@ -99,8 +126,6 @@ schema.pre("deleteOne", {document: true}, async function() {
 	for(const upperJednostka of this.upperJednostki) {
 		await upperJednostka.removeSubJednostka(this)
 	}
-
-	// Remove self 
 	
 	// Remove funkcje from all members
 	await this.populate("members")

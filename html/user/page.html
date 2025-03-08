@@ -16,7 +16,7 @@
 	<h2>Funkcje</h2>
 	<ul>
 		<% for(const funkcja of $.user.funkcje) { %>
-			<li><%= Text.capitalise(funkcja.funkcja) %> w <a href="/jednostki/<%= funkcja.jednostka.id %>"><%= funkcja.jednostka.name %></a></li>
+			<li><%= Text.capitalise(funkcja.funkcja) %> w <a href="/jednostki/<%= funkcja.jednostka?.id %>"><%= funkcja.jednostka?.name || "(nieznana jednostka)" %></a></li>
 		<% } %>
 	</ul>
 <% } %>

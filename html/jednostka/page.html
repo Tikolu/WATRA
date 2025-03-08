@@ -8,7 +8,7 @@
 }) %>
 <h1 id="jednostka-title"><%= $.jednostka.displayName %></h1>
 <% if($.jednostka.upperJednostki?.length > 0) { %>
-	<p>(część <%= $.jednostka.upperJednostki.map(jednostka => jednostka.displayName).join(", ") %>)</p>
+	<p>(<%= $.jednostka.typeName %> w <%= $.jednostka.upperJednostki.map(jednostka => jednostka.displayName).join(", ") %>)</p>
 <% } %>
 <hr>
 <h2>Ustawienia jednostki</h2>
@@ -33,15 +33,17 @@
 	</ul>
 </div>
 
-<hr>
-<h2>Pod-jednostki</h2>
-<button id="add-sub-jednostka-button" href="/jednostki/<%= $.jednostka.id %>/addSubJednostka">Dodaj pod-jednostkę</button>
-<div id="sub-jednostka-list">
-	<ul>
-		<% for(const subJednostka of $.jednostka.subJednostki || []) { %>
-			<li>
-				<a href="/jednostki/<%= subJednostka.id %>"><b><%= subJednostka.displayName %></b></a>
-			</li>
-		<% } %>
-	</ul>
-</div>
+<% if($.jednostka.type > 0) { %>
+	<hr>
+	<h2>Pod-jednostki</h2>
+	<button id="add-sub-jednostka-button" href="/jednostki/<%= $.jednostka.id %>/addSubJednostka">Dodaj pod-jednostkę</button>
+	<div id="sub-jednostka-list">
+		<ul>
+			<% for(const subJednostka of $.jednostka.subJednostki || []) { %>
+				<li>
+					<a href="/jednostki/<%= subJednostka.id %>"><b><%= subJednostka.displayName %></b></a>
+				</li>
+			<% } %>
+		</ul>
+	</div>
+<% } %>

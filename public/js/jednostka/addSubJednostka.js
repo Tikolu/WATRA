@@ -14,10 +14,9 @@ jednostkaAddSubJednostkaOptions.onclick = async event => {
 	event.target.innerText = "Dodano!"
 }
 
-createUserButton.onclick = async () => {
+createSubJednostkaButton.onclick = async () => {
 	try {
-		var response = await API("jednostka/create")
-		await API(`jednostka/${META.jednostkaID}/addSubJednostka`, {subJednostkaID: response.jednostkaID})
+		var response = await API("jednostka/create", {upperJednostkaID: META.jednostkaID})
 	} catch(error) {
 		alert(error)
 		return

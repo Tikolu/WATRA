@@ -85,7 +85,7 @@ const schema = new mongoose.Schema({
 		},
 
 		async removeFunkcjeInJednostka(jednostka) {
-			this.funkcje = this.funkcje.filter(funkcja => !funkcja.jednostka == jednostka.id)
+			this.funkcje = this.funkcje.filter(funkcja => funkcja.jednostka.id != jednostka.id)
 			await this.save()
 		}
 	},
