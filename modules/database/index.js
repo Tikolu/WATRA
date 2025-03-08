@@ -34,5 +34,17 @@ export async function connect(verbose=false) {
 }
 
 export async function setup() {
-	
+	const {default: User} = await import("modules/schemas/user.js")
+	const {default: Jednostka} = await import("modules/schemas/jednostka.js")
+
+	const user = await User.findOne()
+	const jednostka = await Jednostka.findOne()
+
+	if(!user && !jednostka) {
+		const newUser = new User()
+		const newJednostka = new Jednostka()
+
+		console.log("Test user access code:", await newUser.generateAccessCode())
+		await newJednostka.addMember(newUser)
+	}
 }

@@ -5,4 +5,6 @@ import * as server from "modules/server"
 import * as database from "modules/database"
 
 await database.connect(true)
+await database.setup()
+
 server.start("127.0.0.1", 3001)
