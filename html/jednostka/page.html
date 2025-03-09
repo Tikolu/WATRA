@@ -7,9 +7,9 @@
 	}
 }) %>
 <h1 id="jednostka-title"><%= $.jednostka.displayName %></h1>
-<% if($.jednostka.upperJednostki?.length > 0) { %>
-	<p>(<%= $.jednostka.typeName %> w <%= $.jednostka.upperJednostki.map(jednostka => jednostka.displayName).join(", ") %>)</p>
-<% } %>
+<p>(<%= $.jednostka.typeName %><% if($.jednostka.upperJednostki?.length > 0) { %>
+ w <%= $.jednostka.upperJednostki.map(jednostka => jednostka.displayName).join(", ") %>)
+<% } %>)</p>
 <hr>
 <h2>Ustawienia jednostki</h2>
 <div>
@@ -25,9 +25,9 @@
 <button id="add-user-button" href="/jednostki/<%= $.jednostka.id %>/addMember">Dodaj użytkownika</button>
 <div id="jednostka-member-list">
 	<ul>
-		<% for(const user of $.jednostka.members || []) { %>
+		<% for(const funkcja of $.jednostka.funkcje || []) { %>
 			<li>
-				<a href="/users/<%= user.id %>"><b><%= user.displayName %></b></a> (<%= user.getFunkcjeInJednostka($.jednostka) %>)
+				<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
 			</li>
 		<% } %>
 	</ul>

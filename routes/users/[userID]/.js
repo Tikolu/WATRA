@@ -7,8 +7,13 @@ export default async function({userID}) {
 	const user = await User.findById(userID)
 	if(!user) throw new HTTPError(404, "Użytkownik nie istnieje")
 
-	// Populate funkcje
-	await user.populate("funkcje.jednostka")
+	// Populate funkcje, and jednostki of funkcje
+	await user.populate({
+		path: "funkcje",
+		populate: {
+			path: "jednostka"
+		}
+	})
 
 	return html("user/page", {user})
 }

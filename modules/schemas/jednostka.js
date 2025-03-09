@@ -1,6 +1,5 @@
 import mongoose from "npm:mongoose"
-
-import User from "modules/schemas/user.js"
+import { default as Funkcja, FunkcjaType } from "modules/schemas/funkcja.js";
 
 export const JednostkaType = {
 	ZASTĘP: 0,
@@ -16,10 +15,10 @@ const schema = new mongoose.Schema({
 		enum: Object.values(JednostkaType),
 		default: JednostkaType.HUFIEC
 	},
-	members: [
+	funkcje: [
 		{
 			type: String,
-			ref: "User"
+			ref: "Funkcja"
 		}
 	],
 	subJednostki: [
@@ -42,16 +41,42 @@ const schema = new mongoose.Schema({
 			await this.save()
 		},
 		
-		async addMember(user) {
-			// Add member to jednostka, unless already added
-			if(!this.members.hasID(user.id)) {
-				this.members.push(user.id)
+		async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {
+			// Populate funkcje
+			await this.populate("funkcje")
+			
+			// Find existing funkcja of user in this jednostka
+			let funkcja = this.funkcje.find(f => f.user.id == user.id)
+			
+			// Alternatively, create new funkcja
+			if(!funkcja) funkcja = new Funkcja({
+				user: user.id,
+				jednostka: this.id
+			})
+
+			// Ensure only one funkcja główna
+			if(funkcjaType == 2) {
+				const funkcjaGłówna = this.funkcje.find(f => f.type == 2)
+				if(funkcjaGłówna) throw `${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`
+			}
+			funkcja.type = funkcjaType
+
+			// Add funkcja to jednostka, unless already added
+			if(!this.funkcje.hasID(funkcja.id)) {
+				this.funkcje.push(funkcja.id)
+			}
+			// Add funkcja to user, unless already added
+			if(!user.funkcje.hasID(funkcja.id)) {
+				user.funkcje.push(funkcja.id)
 			}
 
-			// Add funkcja szeregowego to user
-			await user.addFunkcja(this, "szeregowy")
-
 			await this.save()
+			await funkcja.save()
+			await user.save()
+		},
+
+		async addMember(user) {
+			await this.setFunkcja(user)
 		},
 		
 		async addSubJednostka(subJednostka) {
@@ -65,42 +90,11 @@ const schema = new mongoose.Schema({
 				this.subJednostki.push(subJednostka.id)
 			}
 
-			// Add jednostka to subJednostka's upperJednostki
-			await subJednostka.addUpperJednostka(this)
-
-			await this.save()
-		},
-
-		async addUpperJednostka(upperJednostka) {
-			// Check jednostka type compatibility
-			if(upperJednostka.type <= this.type) {
-				throw "Nie można dodać jednostki o wyższym lub równym typie"
-			}
-			// Add upperJednostka to upperJednostki, unless already added
-			if(!this.upperJednostki.hasID(upperJednostka.id)) {
-				this.upperJednostki.push(upperJednostka.id)
+			// Add jednostka to subJednostka's upperJednostki, unless already added
+			if(!subJednostka.upperJednostki.hasID(this.id)) {
+				subJednostka.upperJednostki.push(this.id)
 			}
 
-			await this.save()
-		},
-
-		async removeUpperJednostka(upperJednostka) {
-			// Return if upperJednostka is not in upperJednostki
-			if(!this.upperJednostki.hasID(upperJednostka.id)) return
-			// Remove upperJednostka from upperJednostki
-			this.upperJednostki = this.upperJednostki.filter(j => j != upperJednostka.id)
-			// Remove self from upperJednostka's subJednostki
-			upperJednostka.removeSubJednostka(this)
-			await this.save()
-		},
-
-		async removeSubJednostka(subJednostka) {
-			// Return if subJednostka is not in subJednostki
-			if(!this.subJednostki.hasID(subJednostka.id)) return
-			// Remove subJednostka from subJednostki
-			this.subJednostki = this.subJednostki.filter(j => j != subJednostka.id)
-			// Remove self from subJednostka's upperJednostki
-			subJednostka.removeUpperJednostka(this)
 			await this.save()
 		}
 	},

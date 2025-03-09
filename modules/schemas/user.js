@@ -2,10 +2,8 @@ import mongoose from "npm:mongoose"
 import randomID from "modules/randomID.js";
 import * as Text from "modules/text.js";
 
-import Jednostka from "modules/schemas/jednostka.js";
-
-import shortID from "modules/database/shortID.js"
-
+import Jednostka from "modules/schemas/jednostka.js"
+import Funkcja from "modules/schemas/funkcja.js"
 
 const schema = new mongoose.Schema({
 	name: {
@@ -19,11 +17,8 @@ const schema = new mongoose.Schema({
 	accessCode: String,
 	funkcje: [
 		{
-			funkcja: String,
-			jednostka: {
-				type: String,
-				ref: "Jednostka"
-			}
+			type: String,
+			ref: "Funkcja"
 		}
 	]
 },
@@ -51,29 +46,6 @@ const schema = new mongoose.Schema({
 			this.dateOfBirth = date
 			await this.save()
 		},
-		
-		async addFunkcja(jednostka, funkcja) {
-			// Check if user already has this funkcja
-			for(const f of this.funkcje) {
-				if(f.funkcja === funkcja && f.jednostka.id == jednostka.id) {
-					throw "Użytkownik już ma tę funkcję"
-				}
-			}
-			
-			// Add user to jednostka members, if not there already
-			if(!jednostka.members.hasID(this.id)) {
-				jednostka.members.push(this.id)
-				await jednostka.save()
-			}
-
-			// Add funkcja to user
-			this.funkcje.push({
-				funkcja,
-				jednostka: jednostka.id
-			})
-
-			await this.save()
-		},
 
 		getFunkcjeInJednostka(jednostka) {
 			const funkcje = []
@@ -82,11 +54,6 @@ const schema = new mongoose.Schema({
 			}
 
 			return funkcje
-		},
-
-		async removeFunkcjeInJednostka(jednostka) {
-			this.funkcje = this.funkcje.filter(funkcja => funkcja.jednostka.id != jednostka.id)
-			await this.save()
 		}
 	},
 	virtuals: {
