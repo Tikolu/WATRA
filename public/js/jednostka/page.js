@@ -24,3 +24,23 @@ jednostkaNameInput.onblur = async () => {
 	jednostkaTitle.innerText = response.displayName
 	jednostkaNameInput.innerText = response.name
 }
+
+if(this.createSubJednostkaButton) createSubJednostkaButton.onclick = async () => {
+	try {
+		var response = await API(`jednostka/${META.jednostkaID}/subJednostka/create`, {upperJednostkaID: META.jednostkaID})
+	} catch(error) {
+		alert(error)
+		return
+	}
+	document.location.href = `/jednostki/${response.subJednostkaID}`
+}
+
+if(this.createUserButton) createUserButton.onclick = async () => {
+	try {
+		var response = await API(`jednostka/${META.jednostkaID}/member/create`)
+	} catch(error) {
+		alert(error)
+		return
+	}
+	document.location.href = `/users/${response.userID}`
+}

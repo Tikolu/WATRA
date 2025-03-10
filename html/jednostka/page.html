@@ -7,11 +7,11 @@
 	}
 }) %>
 <h1 id="jednostka-title"><%= $.jednostka.displayName %></h1>
-<p>(<%= $.jednostka.typeName %><% if($.jednostka.upperJednostki?.length > 0) { %>
- w <%= $.jednostka.upperJednostki.map(jednostka => jednostka.displayName).join(", ") %>)
-<% } %>)</p>
+<% if($.jednostka.upperJednostki?.length > 0) { %>
+	<p>(<%= $.jednostka.typeName %> w <%~ include("/templates/linkList", $.jednostka.upperJednostki.map(j => [`/jednostki/${j.id}`, j.displayName])) %>)</p>
+<% } %>
 <hr>
-<h2>Ustawienia jednostki</h2>
+<h2>Ustawienia</h2>
 <div>
 	<label for="jednostka-name-input">Nazwa:</label>
 	<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.jednostka.name || "" %>">
@@ -21,8 +21,7 @@
 </div>
 
 <hr>
-<h2>Użytkownicy w tej jednostce</h2>
-<button id="add-user-button" href="/jednostki/<%= $.jednostka.id %>/addMember">Dodaj użytkownika</button>
+<h2>Użytkownicy</h2>
 <div id="jednostka-member-list">
 	<ul>
 		<% for(const funkcja of $.jednostka.funkcje || []) { %>
@@ -31,12 +30,12 @@
 			</li>
 		<% } %>
 	</ul>
+	<button id="create-user-button">Dodaj użytkownika</button>
 </div>
 
 <% if($.jednostka.type > 0) { %>
 	<hr>
-	<h2>Pod-jednostki</h2>
-	<button id="add-sub-jednostka-button" href="/jednostki/<%= $.jednostka.id %>/addSubJednostka">Dodaj pod-jednostkę</button>
+	<h2>Jednostki</h2>
 	<div id="sub-jednostka-list">
 		<ul>
 			<% for(const subJednostka of $.jednostka.subJednostki || []) { %>
@@ -45,5 +44,6 @@
 				</li>
 			<% } %>
 		</ul>
+		<button id="create-sub-jednostka-button">Dodaj jednostkę</button>
 	</div>
 <% } %>

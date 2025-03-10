@@ -1,5 +1,6 @@
 import mongoose from "npm:mongoose"
-import { default as Funkcja, FunkcjaType } from "modules/schemas/funkcja.js";
+import { default as Funkcja, FunkcjaType } from "modules/schemas/funkcja.js"
+import * as Text from "modules/text.js"
 
 export const JednostkaType = {
 	ZASTĘP: 0,
@@ -81,9 +82,8 @@ const schema = new mongoose.Schema({
 		
 		async addSubJednostka(subJednostka) {
 			// Check jednostka type compatibility
-			if(subJednostka.type >= this.type) {
-				throw "Nie można dodać jednostki o wyższym lub równym typie"
-			}
+			if(subJednostka.type >= this.type) throw "Nie można dodać jednostki o wyższym lub równym typie"
+			if(subJednostka.type < 0) throw `Nie można dodać jednostki pod ${this.typeName}`
 			
 			// Add subJednostka to subJednostki, unless already added
 			if(!this.subJednostki.hasID(subJednostka.id)) {
@@ -102,7 +102,7 @@ const schema = new mongoose.Schema({
 	virtuals: {
 		displayName: {
 			get() {
-				return this.name || "(brak nazwy)"
+				return this.name || `(${this.typeName.toLowerCase()} bez nazwy)`
 			}
 		},
 		typeName: {
