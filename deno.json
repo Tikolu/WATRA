@@ -11,6 +11,7 @@
 	},
 	"tasks": {
 		"start": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal index.js",
-		"start_watcher": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal --watch index.js"
+		"start_watcher": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal --watch index.js",
+		"clear_database": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal index.js --clear-database"
 	}
 }

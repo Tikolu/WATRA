@@ -9,9 +9,11 @@ String.prototype.__defineGetter__("id", function() {
 	if(!shortID.validate.test(this)) return undefined
 	else return this
 })
-Array.prototype.hasID = function hasID(id) {
-	return this.some(value => value?.id === id)
-}
+Object.defineProperty(Array.prototype, "hasID", {
+	value: function(id) {
+		return this.some(value => value?.id === id)
+	}
+})
 
 mongoose.plugin(schema => {
 	schema.add({
@@ -45,10 +47,15 @@ export async function setup() {
 		
 		const newUser = new User()
 		const newJednostka = new Jednostka({
-			type: JednostkaType.DRUŻYNA
+			type: JednostkaType.HUFIEC
 		})
 
 		console.log("Test user access code:", await newUser.generateAccessCode())
 		await newJednostka.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
 	}
+}
+
+export async function clear() {
+	console.log("\x1b[32m[MongoDB]\x1b[0m Clearing database...")
+	await mongoose.connection.dropDatabase()
 }
