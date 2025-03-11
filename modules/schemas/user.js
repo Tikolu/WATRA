@@ -1,6 +1,7 @@
 import mongoose from "npm:mongoose"
-import randomID from "modules/randomID.js";
-import * as Text from "modules/text.js";
+import randomID from "modules/randomID.js"
+import * as Text from "modules/text.js"
+import * as datetime from "jsr:@std/datetime"
 
 import Jednostka from "modules/schemas/jednostka.js"
 import Funkcja from "modules/schemas/funkcja.js"
@@ -15,6 +16,18 @@ const schema = new mongoose.Schema({
 		max: Date.now
 	},
 	accessCode: String,
+	parents: [
+		{
+			type: String,
+			ref: "User"
+		}
+	],
+	children: [
+		{
+			type: String,
+			ref: "User"
+		}
+	],
 	funkcje: [
 		{
 			type: String,
@@ -44,6 +57,20 @@ const schema = new mongoose.Schema({
 
 		async updateDateOfBirth(date) {
 			this.dateOfBirth = date
+			if(this.isParent && this.age < 18) {
+				throw new Error("Rodzic / opiekun musi być osobą pełnoletnią")
+			}
+			await this.save()
+		},
+
+		async addParent(parent) {
+			if(this.parents.length >= 2) throw new Error("Limit dwóch rodziców / opiekunów")
+			if(this.parents.hasID(parent.id)) return
+			this.parents.push(parent.id)
+
+			parent.children.push(this.id)
+
+			await parent.save()
 			await this.save()
 		},
 
@@ -63,6 +90,20 @@ const schema = new mongoose.Schema({
 				if(!name) return "(brak imienia)"
 				else if(this.name.last) name += " " + this.name.last
 				return name
+			}
+		},
+
+		age: {
+			get() {
+				if(!this.dateOfBirth) return null
+				const age = datetime.difference(new Date(), this.dateOfBirth)
+				return age.years
+			}
+		},
+
+		isParent: {
+			get() {
+				return this.children.length > 0
 			}
 		}
 	}

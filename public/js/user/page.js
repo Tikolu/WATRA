@@ -34,8 +34,9 @@ dateOfBirthInput.onblur = async () => {
 	} catch(error) {
 		alert(error)
 		return
+	} finally {
+		dateOfBirthInput.disabled = false
 	}
-	dateOfBirthInput.disabled = false
 }
 
 deleteUserButton.onclick = async () => {
@@ -57,4 +58,14 @@ generateAccessCodeButton.onclick = async () => {
 		return
 	}
 	alert(`Jednorazowy kod dostępu:\n${response.accessCode}`)
+}
+
+if(this.addParentButton) addParentButton.onclick = async () => {
+	try {
+		var response = await API(`user/${META.userID}/parent/create`)
+	} catch(error) {
+		alert(error)
+		return
+	}
+	document.location.href = `/users/${response.userID}`
 }

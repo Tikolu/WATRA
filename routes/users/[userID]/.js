@@ -15,5 +15,8 @@ export default async function({userID}) {
 		}
 	})
 
+	// Populate parents or children
+	await user.populate(user.isParent ? "children" : "parents")
+
 	return html("user/page", {user})
 }

@@ -29,10 +29,10 @@ async function API(get="", post=undefined) {
 	} catch(error) {
 		text ||= "Error parsing API response"
 		if(text.includes("\n")) text = text.split("\n")[0]
-		throw new Error(text)
+		throw text
 	}
 	if(json.error) {
-		throw new Error(json.error.message)
+		throw json.error.message.replace(/^Error: /, "")
 	}
 	return json
 }
@@ -60,7 +60,8 @@ for(const input of document.querySelectorAll("input")) {
 		if(event.key == "Enter") input.blur()
 	})
 	if(input.matches("[type=date]")) input.addEventListener("change", event => {
-		if(input.value) input.onblur()
+		if(!input.value || input.matches(":focus")) return
+		input.onblur()
 	})
 }
 

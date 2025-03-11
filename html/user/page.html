@@ -41,3 +41,30 @@
 		<% } %>
 	>
 </div>
+
+<hr>
+<% if($.user.isParent) { %>
+	<h2>Podopieczni</h2>
+	<div id="child-list">
+		<ul>
+			<% for(const child of $.user.children || []) { %>
+				<li>
+					<a href="/users/<%= child.id %>"><%= child.displayName %></a>
+				</li>
+			<% } %>
+		</ul>
+	</div>
+<% } else if($.user.age < 18) { %>
+	<h2>Rodzice / opiekunowie</h2>
+	<div id="parent-list">
+		<ul>
+			<% for(const parent of $.user.parents || []) { %>
+				<li>
+					<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
+				</li>
+			<% } %>
+		</ul>
+		<button id="add-parent-button">Dodaj rodzica / opiekuna</button>
+	</div>
+<% } %>
+
