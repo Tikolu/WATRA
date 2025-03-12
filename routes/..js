@@ -20,14 +20,15 @@ export async function open() {
 	this.response.headers.set("Content-Type", "text/html; charset=utf-8")
 	
 	// Get user ID from token
-	const userID = this.request.token?.user
+	const userID = this.request.token?.active
 	
 	// If user ID is set, lookup and validate the user
-	if(userID) {
+	if(userID && this.routePath[0] != "logout") {
 		const user = await User.findById(userID)
 
-		if(!user && this.routePath[0] != "logout") {
-			this.response.redirect("/logout")
+		// If user does not exist, logout fully
+		if(!user) {
+			this.response.redirect("/logout/full")
 			return
 		}
 		this.addRouteData({user})

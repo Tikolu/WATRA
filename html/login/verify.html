@@ -1,0 +1,11 @@
+<% layout("/body", {
+	title: "Weryfikacja",
+	scripts: ["login/verify"],
+	meta: {
+		userID: $.user.id
+	}
+}) %>
+<h1>Weryfikacja</h1>
+<h2><%= $.user.displayName %></h2>
+<input type="checkbox" id="verification-placeholder">
+<label for="verification-placeholder">Weryfikuj logowanie</label>

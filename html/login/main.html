@@ -1,0 +1,20 @@
+<% layout("/body", {
+	title: "Logowanie",
+	scripts: ["login/main"]
+}) %>
+<h1>Logowanie</h1>
+<% if($.savedUsers && $.savedUsers.length > 0) { %>
+	<h2>Ostatnie logowania</h2>
+	<ul>
+		<% for(const user of $.savedUsers) { %>
+			<li>
+				<p><%= user.displayName %></p>
+				<a href="/login/<%= user.id %>"><button>Zaloguj</button></a>
+				<a href="/logout/full?user=<%= user.id %>"><button>Usuń z listy</button></a>
+			</li>
+		<% } %>
+	</ul>
+	<h2>Nowy użytkownik</h2>
+<% } %>
+<label for="user-code-input">Kod dostępu:</label>
+<input type="text" id="user-code-input" placeholder="0000 0000" maxlength="9" autocomplete="off">

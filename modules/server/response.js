@@ -38,6 +38,7 @@ export default class {
 	redirect(url) {
 		this.statusCode = 302
 		this.headers.set("Location", url)
+		this.body = ""
 		this.close()
 	}
 

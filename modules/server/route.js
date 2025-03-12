@@ -8,6 +8,7 @@ export default async function(request, response) {
 	const routeContext = {
 		request,
 		response,
+		params: request.address.searchParams,
 		routeData: {},
 		addRouteData: data => routeContext.routeData = {...data, ...routeContext.routeData}
 	}
