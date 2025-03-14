@@ -5,6 +5,7 @@ import shortID from "modules/database/shortID.js"
 const MONGO_URI = "mongodb://localhost:27017/main"
 const MONGO_OPTIONS = {}
 
+// Helper functions to simplify IDs and arrays of IDs
 String.prototype.__defineGetter__("id", function() {
 	if(!shortID.validate.test(this)) return undefined
 	else return this
@@ -15,11 +16,42 @@ Object.defineProperty(Array.prototype, "hasID", {
 	}
 })
 
+// Globally use custom string IDs
 mongoose.plugin(schema => {
 	schema.add({
 		_id: shortID
 	})
 })
+
+// Event listeners
+const mongooseEvents = {
+	beforeDelete: ["pre", /delete/],
+	beforeValidate: ["pre", /validate/],
+	afterSave: ["post", /save|update/i]
+}
+mongoose.plugin(schema => {
+	for(const callbackName in mongooseEvents) {
+		const [hookType, eventPattern] = mongooseEvents[callbackName]
+		schema[hookType](eventPattern, {query: true, document: true}, async function() {
+			if(!schema[callbackName]) return
+			const documents = []
+			if(this instanceof mongoose.Query) {
+				const findQuery = this.model.find(this.getFilter())
+				documents.push(...await findQuery)
+			} else {
+				documents.push(this)
+			}
+			for(const document of documents) {
+				document.$locals.disabledListeners ||= {}
+				if(document.$locals.disabledListeners[callbackName]) continue
+				document.$locals.disabledListeners[callbackName] = true
+				await schema[callbackName].call(document)
+				document.$locals.disabledListeners[callbackName] = false
+			}
+		})
+	}
+})
+
 
 export async function connect(verbose=false) {
 	console.log("\x1b[32m[MongoDB]\x1b[0m Connecting...")
@@ -50,8 +82,8 @@ export async function setup() {
 			type: JednostkaType.HUFIEC
 		})
 
-		console.log("Test user access code:", await newUser.generateAccessCode())
 		await newJednostka.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
+		console.log("Test user access code:", await newUser.generateAccessCode())
 	}
 }
 

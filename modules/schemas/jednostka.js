@@ -50,7 +50,7 @@ const schema = new mongoose.Schema({
 			let funkcja = this.funkcje.find(f => f.user.id == user.id)
 			
 			// Alternatively, create new funkcja
-			if(!funkcja) funkcja = new Funkcja({
+			funkcja ||= new Funkcja({
 				user: user.id,
 				jednostka: this.id
 			})
@@ -96,6 +96,7 @@ const schema = new mongoose.Schema({
 			}
 
 			await this.save()
+			await subJednostka.save()
 		}
 	},
 
@@ -114,18 +115,36 @@ const schema = new mongoose.Schema({
 	}
 })
 
-schema.pre("deleteOne", {document: true}, async function() {
-	// Remove self from all upperJednostki
-	await this.populate("upperJednostki")
-	for(const upperJednostka of this.upperJednostki) {
-		await upperJednostka.removeSubJednostka(this)
+schema.beforeDelete = async function() {
+	await this.populate([
+		"upperJednostki",
+		"subJednostki",
+		{path: "funkcje", populate: "user"}
+	])
+	
+	// Chose primary upper jednostka
+	const primaryUpperJednostka = this.upperJednostki[0]
+	if(!primaryUpperJednostka) throw "Nie można usunąć jednostki bez jednostek nadrzędnych"
+
+	// Add all members to primary upper jednostka
+	for(const funkcja of this.funkcje) {
+		await primaryUpperJednostka.addMember(funkcja.user)
 	}
 	
-	// Remove funkcje from all members
-	await this.populate("members")
-	for(const member of this.members) {
-		await member.removeFunkcjeInJednostka(this)
+	// Delete funkcje
+	await Funkcja.deleteMany({jednostka: this.id})
+
+	// Remove self from all upperJednostki
+	for(const upperJednostka of this.upperJednostki) {
+		upperJednostka.subJednostki = upperJednostka.subJednostki.filter(j => j.id != this.id)
+		await upperJednostka.save()
 	}
-})
+
+	// Remove self from all subJednostki and transfer subJednostki to primary upper jednostka
+	for(const subJednostka of this.subJednostki) {
+		subJednostka.upperJednostki = subJednostka.upperJednostki.filter(j => j.id != this.id)
+		await primaryUpperJednostka.addSubJednostka(subJednostka)
+	}
+}
 
 export default mongoose.model("Jednostka", schema, "jednostki")

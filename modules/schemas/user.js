@@ -58,13 +58,13 @@ const schema = new mongoose.Schema({
 		async updateDateOfBirth(date) {
 			this.dateOfBirth = date
 			if(this.isParent && this.age < 18) {
-				throw new Error("Rodzic / opiekun musi być osobą pełnoletnią")
+				throw "Rodzic / opiekun musi być osobą pełnoletnią"
 			}
 			await this.save()
 		},
 
 		async addParent(parent) {
-			if(this.parents.length >= 2) throw new Error("Limit dwóch rodziców / opiekunów")
+			if(this.parents.length >= 2) throw "Limit dwóch rodziców / opiekunów"
 			if(this.parents.hasID(parent.id)) return
 			this.parents.push(parent.id)
 
@@ -109,15 +109,15 @@ const schema = new mongoose.Schema({
 	}
 })
 
-schema.pre("deleteOne", {document: true}, async function() {
-	// Leave all jednostki
-	for(const funkcja of this.funkcje) {
-		const jednostka = await Jednostka.findById(funkcja.jednostka)
-		if(!jednostka) continue
-		jednostka.members = jednostka.members.filter(id => !id == this.id)
-		await jednostka.save()
-	}
-})
+schema.beforeDelete = function() {
+	// Delete all funkcje
+	Funkcja.deleteMany({user: this.id})
+}
+
+schema.beforeValidate = function() {
+	// Ensure at least one funkcja
+	if(!this.isParent && this.funkcje.length == 0) throw "Użytkownik musi mieć przynajmniej jedną funkcję"
+}
 
 
 

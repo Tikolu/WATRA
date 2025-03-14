@@ -26,7 +26,11 @@
 	<ul>
 		<% for(const funkcja of $.jednostka.funkcje || []) { %>
 			<li>
-				<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
+				<% if(!funkcja || !funkcja.user) { %>
+					(nieznany użytkownik) <!-- <%= funkcja?.user?.id || funkcja?.id %> -->
+				<% } else { %>
+					<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
+				<% } %>
 			</li>
 		<% } %>
 	</ul>
@@ -40,7 +44,11 @@
 		<ul>
 			<% for(const subJednostka of $.jednostka.subJednostki || []) { %>
 				<li>
-					<a href="/jednostki/<%= subJednostka.id %>"><b><%= subJednostka.displayName %></b></a>
+					<% if(!subJednostka) { %>
+						(nieznana jednostka)
+					<% } else { %>
+						<a href="/jednostki/<%= subJednostka.id %>"><b><%= subJednostka.displayName %></b></a>
+					<% } %>
 				</li>
 			<% } %>
 		</ul>
