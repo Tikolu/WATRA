@@ -69,13 +69,14 @@ export async function connect(verbose=false) {
 
 export async function setup() {
 	const {default: User} = await import("modules/schemas/user.js")
-	const {default: Jednostka, JednostkaType} = await import("modules/schemas/jednostka.js")
+	const {default: Jednostka} = await import("modules/schemas/jednostka.js")
+	const { JednostkaType } = await import("modules/types.js")
 
 	const user = await User.findOne()
 	const jednostka = await Jednostka.findOne()
 
 	if(!user && !jednostka) {
-		const { FunkcjaType } = await import("modules/schemas/funkcja.js")
+		const { FunkcjaType } = await import("modules/types.js")
 		
 		const newUser = new User()
 		const newJednostka = new Jednostka({

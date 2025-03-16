@@ -20,17 +20,36 @@
 	<button id="delete-jednostka-button">Usuń jednostkę</button>
 </div>
 
+<% if($.jednostka.funkcje?.length > 0) { %>
+	<h3>Mianowanie na funkcję</h3>
+	<div>
+		<label for="mianowanie-user-select">Użytkownik:</label>
+		<select id="mianowanie-user-select">
+			<option selected disabled></option>
+			<% for(const funkcja of $.jednostka.funkcje || []) { %>
+				<option value="<%= funkcja.user.id %>"><%= funkcja.user.displayName %></option>
+			<% } %>
+		</select>
+	</div>
+	<div>
+		<label for="mianowanie-funkcja-select">Funkcja:</label>
+		<select id="mianowanie-funkcja-select">
+			<option selected disabled></option>
+			<% for(const [funkcjaLevel, funkcjaName] of $.jednostka.getFunkcjaOptions() || []) { %>
+				<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
+			<% } %>
+		</select>
+		<button id="mianowanie-button">Potwierdź</button>
+	</div>
+<% } %>
+
 <hr>
 <h2>Użytkownicy</h2>
 <div id="jednostka-member-list">
 	<ul>
 		<% for(const funkcja of $.jednostka.funkcje || []) { %>
 			<li>
-				<% if(!funkcja || !funkcja.user) { %>
-					(nieznany użytkownik) <!-- <%= funkcja?.user?.id || funkcja?.id %> -->
-				<% } else { %>
-					<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
-				<% } %>
+				<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
 			</li>
 		<% } %>
 	</ul>

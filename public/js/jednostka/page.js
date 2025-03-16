@@ -44,3 +44,25 @@ if(this.createUserButton) createUserButton.onclick = async () => {
 	}
 	document.location.href = `/users/${response.userID}`
 }
+
+if(this.mianowanieButton) mianowanieButton.onclick = async () => {
+	const userID = mianowanieUserSelect.value
+	if(!userID) {
+		alert("Nie wybrano użytkownika")
+		return
+	}
+	const funkcjaType = mianowanieFunkcjaSelect.value
+	if(!funkcjaType) {
+		alert("Nie wybrano funkcji")
+		return
+	}
+	try {
+		var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/mianujNaFunkcję`, {
+			funkcjaType
+		})
+	} catch(error) {
+		alert(error)
+		return
+	}
+	document.location.reload()
+}

@@ -1,13 +1,8 @@
 import mongoose from "npm:mongoose"
-import { default as Funkcja, FunkcjaType } from "modules/schemas/funkcja.js"
+import { default as Funkcja } from "modules/schemas/funkcja.js"
 import * as Text from "modules/text.js"
 
-export const JednostkaType = {
-	ZASTĘP: 0,
-	DRUŻYNA: 1,
-	HUFIEC: 2,
-	CHORĄGIEW: 3
-}
+import { FunkcjaType, JednostkaType, FunkcjaNames } from "modules/types.js"
 
 const schema = new mongoose.Schema({
 	name: String,
@@ -43,11 +38,13 @@ const schema = new mongoose.Schema({
 		},
 		
 		async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {
+			if(!Object.values(FunkcjaType).includes(funkcjaType)) throw "Nieprawidłowy typ funkcji"
 			// Populate funkcje
 			await this.populate("funkcje")
 			
 			// Find existing funkcja of user in this jednostka
 			let funkcja = this.funkcje.find(f => f.user.id == user.id)
+			if(funkcja?.type === funkcjaType) throw `Użytkownik już ma tą funkcję`
 			
 			// Alternatively, create new funkcja
 			funkcja ||= new Funkcja({
@@ -55,10 +52,13 @@ const schema = new mongoose.Schema({
 				jednostka: this.id
 			})
 
-			// Ensure only one funkcja główna
-			if(funkcjaType == 2) {
-				const funkcjaGłówna = this.funkcje.find(f => f.type == 2)
-				if(funkcjaGłówna) throw `${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`
+			// Only one drużynowy per jednostka, only one (pod)zastępowy per zastęp
+			if(funkcjaType == 2 || (this.type == JednostkaType.ZASTĘP && funkcjaType == 1)) {
+				const funkcjaGłówna = this.funkcje.find(f => f.type == funkcjaType)
+				if(funkcjaGłówna) {
+					await funkcjaGłówna.populate("jednostka")
+					throw `${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`
+				}
 			}
 			funkcja.type = funkcjaType
 
@@ -71,8 +71,8 @@ const schema = new mongoose.Schema({
 				user.funkcje.push(funkcja.id)
 			}
 
-			await this.save()
 			await funkcja.save()
+			await this.save()
 			await user.save()
 		},
 
@@ -97,6 +97,16 @@ const schema = new mongoose.Schema({
 
 			await this.save()
 			await subJednostka.save()
+		},
+
+		getFunkcjaOptions() {
+			const funkcjaOptions = []
+			for(const funkcjaLevel in FunkcjaNames[this.type]) {
+				for(const funkcjaName of FunkcjaNames[this.type][funkcjaLevel]) {
+					funkcjaOptions.push([funkcjaLevel, funkcjaName])
+				}
+			}
+			return funkcjaOptions
 		}
 	},
 
