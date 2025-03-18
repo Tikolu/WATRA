@@ -14,3 +14,9 @@ if(Deno.args[0] == "--clear-database") {
 await database.setup()
 
 server.start("127.0.0.1", 3001)
+
+globalThis.addEventListener("unhandledrejection", event => {
+	event.preventDefault()
+	console.log("\n\x1b[91m[Critical]\x1b[0m UNHANDLED REJECTION!")
+	console.error(event.reason)
+})
