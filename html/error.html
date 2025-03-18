@@ -4,5 +4,8 @@
 <h1>Error <%= $.error.code %> - <%= $.error.title %></h2>
 <h2><%= $.error.message %></h2>
 <% if($.error.stack) { %>
-	<pre><%= $.error.stack %></pre>
+	<details>
+		<summary>Szczegóły diagnostyczne</summary>
+		<pre><%= $.error.stack %></pre>
+	</details>
 <% } %>

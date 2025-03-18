@@ -3,7 +3,7 @@ import User from "modules/schemas/user.js"
 
 const errorMessages = {
 	400: ["Nieprawidłowy URL 😳", "Wpisany przez ciebie URL nie ma sensu"],
-	403: ["Zabronione 😑", "Nie masz dostępu do tej strony"],
+	403: ["Brak dostępu 🚫", "Nie masz dostępu do tej strony"],
 	404: ["Nie znaleziono 😭", "Ta strona nie istnieje"],
 	500: ["Błąd serwera 💀", "Coś poszło nie tak"]
 }

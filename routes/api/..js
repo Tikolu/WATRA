@@ -26,6 +26,7 @@ export function exit() {
 	if(this.lastError) {
 		if(this.lastError.defaultMessage) {
 			if(this.lastError.httpCode == 400) this.lastError.message = "Invalid request"
+			if(this.lastError.httpCode == 403) this.lastError.message = "Odmowa dostępu"
 			if(this.lastError.httpCode == 404) this.lastError.message = "API not found"
 		}
 		
