@@ -1,4 +1,4 @@
-import mongoose from "npm:mongoose"
+import mongoose from "mongoose"
 import randomID from "modules/randomID.js"
 import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"

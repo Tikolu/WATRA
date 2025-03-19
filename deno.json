@@ -2,7 +2,9 @@
 	"imports": {
 		"modules/": "./modules/",
 		"modules/database": "./modules/database/index.js",
-		"modules/server": "./modules/server/index.js"
+		"modules/server": "./modules/server/index.js",
+
+		"mongoose": "npm:mongoose@8.12.1"
 	},
 	"lint": {
 		"rules": {

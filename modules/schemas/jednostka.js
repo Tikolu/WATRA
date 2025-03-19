@@ -1,4 +1,4 @@
-import mongoose from "npm:mongoose"
+import mongoose from "mongoose"
 import { default as Funkcja } from "modules/schemas/funkcja.js"
 import * as Text from "modules/text.js"
 

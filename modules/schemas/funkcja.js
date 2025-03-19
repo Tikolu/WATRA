@@ -1,4 +1,4 @@
-import mongoose from "npm:mongoose"
+import mongoose from "mongoose"
 
 import { FunkcjaType, FunkcjaNames } from "modules/types.js"
 
