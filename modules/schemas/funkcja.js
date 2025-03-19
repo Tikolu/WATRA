@@ -21,7 +21,7 @@ const schema = new mongoose.Schema({
 	virtuals: {
 		displayName: {
 			get() {
-				if(!this.populated("jednostka")) throw "Jednostka must be populated to derive funkcja name"
+				if(!this.populated("jednostka")) throw Error("Jednostka must be populated to derive funkcja name")
 				if(!this.jednostka) return "(nieznana funkcja)"
 				
 				return FunkcjaNames[this.jednostka.type]?.[this.type][0] || "(nieznana funkcja)"

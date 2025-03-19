@@ -38,13 +38,13 @@ const schema = new mongoose.Schema({
 		},
 		
 		async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {
-			if(!Object.values(FunkcjaType).includes(funkcjaType)) throw "Nieprawidłowy typ funkcji"
+			if(!Object.values(FunkcjaType).includes(funkcjaType)) throw Error("Nieprawidłowy typ funkcji")
 			// Populate funkcje
 			await this.populate("funkcje")
 			
 			// Find existing funkcja of user in this jednostka
 			let funkcja = this.funkcje.find(f => f.user.id == user.id)
-			if(funkcja?.type === funkcjaType) throw `Użytkownik już ma tą funkcję`
+			if(funkcja?.type === funkcjaType) throw Error(`Użytkownik już ma tą funkcję`)
 			
 			// Alternatively, create new funkcja
 			funkcja ||= new Funkcja({
@@ -57,7 +57,7 @@ const schema = new mongoose.Schema({
 				const funkcjaGłówna = this.funkcje.find(f => f.type == funkcjaType)
 				if(funkcjaGłówna) {
 					await funkcjaGłówna.populate("jednostka")
-					throw `${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`
+					throw Error(`${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`)
 				}
 			}
 			funkcja.type = funkcjaType
@@ -82,8 +82,8 @@ const schema = new mongoose.Schema({
 		
 		async addSubJednostka(subJednostka) {
 			// Check jednostka type compatibility
-			if(subJednostka.type >= this.type) throw "Nie można dodać jednostki o wyższym lub równym typie"
-			if(subJednostka.type < 0) throw `Nie można dodać jednostki pod ${this.typeName}`
+			if(subJednostka.type >= this.type) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
+			if(subJednostka.type < 0) throw Error(`Nie można dodać jednostki pod ${this.typeName}`)
 			
 			// Add subJednostka to subJednostki, unless already added
 			if(!this.subJednostki.hasID(subJednostka.id)) {
@@ -134,7 +134,7 @@ schema.beforeDelete = async function() {
 	
 	// Chose primary upper jednostka
 	const primaryUpperJednostka = this.upperJednostki[0]
-	if(!primaryUpperJednostka) throw "Nie można usunąć jednostki bez jednostek nadrzędnych"
+	if(!primaryUpperJednostka) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
 
 	// Add all members to primary upper jednostka
 	for(const funkcja of this.funkcje) {

@@ -58,13 +58,13 @@ const schema = new mongoose.Schema({
 		async updateDateOfBirth(date) {
 			this.dateOfBirth = date
 			if(this.isParent && this.age < 18) {
-				throw "Rodzic / opiekun musi być osobą pełnoletnią"
+				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
 			}
 			await this.save()
 		},
 
 		async addParent(parent) {
-			if(this.parents.length >= 2) throw "Limit dwóch rodziców / opiekunów"
+			if(this.parents.length >= 2) throw Error("Limit dwóch rodziców / opiekunów")
 			if(this.parents.hasID(parent.id)) return
 			this.parents.push(parent.id)
 

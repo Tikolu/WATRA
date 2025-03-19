@@ -19,7 +19,7 @@ export default async function(request, response) {
 		if(!(error instanceof HTTPError)) {
 			error = new HTTPError(error)
 		}
-		console.log("\nURL:", request.address.pathname)
+		console.log("\nURL:", decodeURI(request.address.pathname))
 		console.error(error)
 		// If an error is already present, just print plain error message and send response
 		if(routeContext.lastError || routeContext.response.statusCode >= 400) {

@@ -37,8 +37,14 @@ export default class HTTPError extends Error {
 		// Clean up stack trace
 		let stack = super.stack || message.stack || this.stack
 		if(stack) {
-			stack = stack.replaceAll(SERVER_ROOT, "")
-			this.stack = stack
+			stack = stack.split("\n")
+			const newStack = []
+			for(let line of stack) {
+				if(line.includes(" (ext:")) continue
+				line = line.replaceAll(SERVER_ROOT, "")	
+				newStack.push(line)
+			}
+			this.stack = newStack.join("\n")
 		}
 
 		// Clean up message
