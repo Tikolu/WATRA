@@ -1,6 +1,9 @@
 import User from "modules/schemas/user.js"
 
-export default async function({targetUser}) {
+export default async function({user, targetUser}) {
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.MODIFY)
+	
 	// Create user
 	const newUser = new User()
 

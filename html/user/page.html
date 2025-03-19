@@ -1,12 +1,12 @@
 <% layout("/body", {
-	title: $.user.displayName,
+	title: $.targetUser.displayName,
 	scripts: ["user/page"],
 	// styles: ["user/page"],
 	meta: {
-		userID: $.user.id
+		userID: $.targetUser.id
 	}
 }) %>
-<h1 id="user-title"><%= $.user.displayName %></h1>
+<h1 id="user-title"><%= $.targetUser.displayName %></h1>
 
 <button id="delete-user-button">Usuń użytkownika</button>
 <button id="generate-access-code-button">Wygeneruj kod dostępu</button>
@@ -15,41 +15,41 @@
 <h2>Dane</h2>
 <div>
 	<label for="first-name-input">Imię:</label>
-	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.user.name.first || "" %>">
+	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.targetUser.name.first || "" %>">
 </div>
 <div>
 	<label for="last-name-input">Nazwisko:</label>
-	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.user.name.last || "" %>">
+	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.targetUser.name.last || "" %>">
 </div>
 <div>
 	<label for="date-of-birth-input">Data urodzenia:</label>
 	<input
 		type="date" id="date-of-birth-input"
 		max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
-		<% if($.user.dateOfBirth) { %>
-			value="<%= datetime.format($.user.dateOfBirth, "yyyy-MM-dd") %>"
+		<% if($.targetUser.dateOfBirth) { %>
+			value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
 		<% } %>
 	>
 </div>
 
-<% if($.user.isParent) { %>
+<% if($.targetUser.isParent) { %>
 	<hr>
 	<h2>Podopieczni</h2>
 	<div id="child-list">
 		<ul>
-			<% for(const child of $.user.children || []) { %>
+			<% for(const child of $.targetUser.children || []) { %>
 				<li>
 					<a href="/users/<%= child.id %>"><%= child.displayName %></a>
 				</li>
 			<% } %>
 		</ul>
 	</div>
-<% } else if($.user.parents.length > 0 || $.user.age < 18) { %>
+<% } else if($.targetUser.parents.length > 0 || $.targetUser.age < 18) { %>
 	<hr>
 	<h2>Rodzice / opiekunowie</h2>
 	<div id="parent-list">
 		<ul>
-			<% for(const parent of $.user.parents || []) { %>
+			<% for(const parent of $.targetUser.parents || []) { %>
 				<li>
 					<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
 				</li>
@@ -59,11 +59,11 @@
 	</div>
 <% } %>
 
-<% if($.user.funkcje.length > 0) { %>
+<% if($.targetUser.funkcje.length > 0) { %>
 	<hr>
 	<h2>Funkcje</h2>
 	<ul>
-		<% for(const funkcja of $.user.funkcje) { %>
+		<% for(const funkcja of $.targetUser.funkcje) { %>
 			<li><%= Text.capitalise(funkcja.displayName) %> w <a href="/jednostki/<%= funkcja.jednostka?.id %>"><%= funkcja.jednostka?.displayName || "(nieznana jednostka)" %></a></li>
 		<% } %>
 	</ul>

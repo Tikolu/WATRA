@@ -5,6 +5,8 @@ import * as datetime from "jsr:@std/datetime"
 
 import Jednostka from "modules/schemas/jednostka.js"
 import Funkcja from "modules/schemas/funkcja.js"
+import { FunkcjaType } from "modules/types.js"
+import HTTPError from "modules/server/error.js"
 
 const schema = new mongoose.Schema({
 	name: {
@@ -81,6 +83,29 @@ const schema = new mongoose.Schema({
 			}
 
 			return funkcje
+		},
+
+		async checkPermission(permission) {
+			this.$locals.permissionCache ||= []
+			for(const cacheEntry of this.$locals.permissionCache) {
+				if(cacheEntry[0] == permission) return cacheEntry[1]
+			}
+			const permissionState = await permission(this)
+			this.$locals.permissionCache.push([permission, permissionState])
+			return permissionState
+		},
+
+		async requirePermission(permission, message) {
+			if(await this.checkPermission(permission)) return
+			throw new HTTPError(403, message)
+		},
+
+		hasPermission(permission) {
+			this.$locals.permissionCache ||= []
+			for(const cacheEntry of this.$locals.permissionCache) {
+				if(cacheEntry[0] == permission) return cacheEntry[1]
+			}
+			throw Error(`Permission ${permission.name.replace(/^bound /, "")} not checked`)
 		}
 	},
 	virtuals: {
@@ -116,9 +141,38 @@ schema.beforeDelete = function() {
 
 schema.beforeValidate = function() {
 	// Ensure at least one funkcja
-	if(!this.isParent && this.funkcje.length == 0) throw "Użytkownik musi mieć przynajmniej jedną funkcję"
+	if(!this.isParent && this.funkcje.length == 0) throw Error("Użytkownik musi mieć przynajmniej jedną funkcję")
 }
 
+schema.permissions = {
+	async ACCESS(user) {
+		// User can access themselves
+		if(user.id == this.id) return true
+		// Parent can access their children
+		if(user.children.hasID(this.id)) return true
+		// Child can access their parents
+		if(user.parents.hasID(this.id)) return true
+		// Drużynowy can access members of their drużyna
+		await user.populate({
+			path: "funkcje",
+			populate: "jednostka"
+		})
+		for(const funkcja of user.funkcje) {
+			if(funkcja.type < FunkcjaType.PRZYBOCZNY) continue
+			if(funkcja.jednostka.hasMember(this)) return true
+		}
+		return false
+	},
 
+	async MODIFY(user) {
+		if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
+		return true
+	},
+
+	async DELETE(user) {
+		if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
+		return false
+	}
+}
 
 export default mongoose.model("User", schema)

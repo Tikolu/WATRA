@@ -27,7 +27,8 @@ mongoose.plugin(schema => {
 const mongooseEvents = {
 	beforeDelete: ["pre", /delete/],
 	beforeValidate: ["pre", /validate/],
-	afterSave: ["post", /save|update/i]
+	afterSave: ["post", /save|update/i],
+	afterLoad: ["post", /find/]
 }
 mongoose.plugin(schema => {
 	for(const callbackName in mongooseEvents) {
@@ -52,6 +53,22 @@ mongoose.plugin(schema => {
 	}
 })
 
+// Permission system
+mongoose.plugin(schema => {
+	if(!schema.permissions) return
+	schema.virtual("PERMISSIONS").get(function() {
+		if(this.$locals.boundPermissionFunctions) {
+			return this.$locals.boundPermissionFunctions
+		}
+		const PERMISSIONS = {}
+		for(const permissionName in schema.permissions) {
+			const permissionFunction = schema.permissions[permissionName].bind(this)
+			PERMISSIONS[permissionName] = permissionFunction
+		}
+		this.$locals.boundPermissionFunctions = PERMISSIONS
+		return PERMISSIONS
+	})
+})
 
 export async function connect(verbose=false) {
 	console.log("\x1b[32m[MongoDB]\x1b[0m Connecting...")

@@ -1,4 +1,7 @@
-export default async function({targetUser, first, last}) {
+export default async function({user, targetUser, first, last}) {
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.MODIFY)
+	
 	// Update names
 	await targetUser.updateName(first, last)
 

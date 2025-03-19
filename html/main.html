@@ -4,13 +4,18 @@
 	styles: ["home"]
 }) %>
 <h1>Strona główna</h1>
-<p>Cześć, <%= $.user.displayName %> 👋</p>
+<p>Czuwaj, <a href="/users/<%= $.user.id %>"><%= $.user.displayName %></a>! 👋</p>
 <button id="logout-button">Wyloguj</button>
-
 <hr>
-<ul>
-	<li><a href="/users">Lista użytkowników</a></li>
-	<li><a href="/jednostki">Lista jednostek</a></li>
-</ul>
 
-<hr>
+<% for(const funkcja of $.user.funkcje) { %>
+	<h2><a href="/jednostki/<%= funkcja.jednostka.id %>"><%= funkcja.jednostka.displayName %></a></h2>
+<% } %>
+
+<% if($.user.children.length > 0) { %>
+	<hr>
+	<h2>Podopieczni</h2>
+	<% for(const child of $.user.children) { %>
+		<h2><a href="/users/<%= child.id %>"><%= child.displayName %></a></h2>
+	<% } %>
+<% } %>

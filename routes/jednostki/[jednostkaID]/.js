@@ -1,6 +1,6 @@
 import html from "modules/html.js"
 
-export default async function({targetJednostka}) {
+export default async function({user, targetJednostka}) {
 	// Populate jednostka funkcje, as well as users and jednostki of funkcje
 	await targetJednostka.populate({
 		path: "funkcje",

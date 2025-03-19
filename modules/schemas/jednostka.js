@@ -71,6 +71,9 @@ const schema = new mongoose.Schema({
 				user.funkcje.push(funkcja.id)
 			}
 
+			// Sort funkcje
+			this.funkcje.sort((a, b) => b.type - a.type)
+
 			await funkcja.save()
 			await this.save()
 			await user.save()
@@ -78,6 +81,11 @@ const schema = new mongoose.Schema({
 
 		async addMember(user) {
 			await this.setFunkcja(user)
+		},
+
+		async hasMember(user) {
+			await this.populate({path: "funkcje", forceRepopulate: false})
+			return this.funkcje.some(f => f.user.id == user.id)
 		},
 		
 		async addSubJednostka(subJednostka) {
@@ -154,6 +162,34 @@ schema.beforeDelete = async function() {
 	for(const subJednostka of this.subJednostki) {
 		subJednostka.upperJednostki = subJednostka.upperJednostki.filter(j => j.id != this.id)
 		await primaryUpperJednostka.addSubJednostka(subJednostka)
+	}
+}
+
+schema.permissions = {
+	async ACCESS(user) {
+		// Only members can access jednostki
+		await this.hasMember(user)
+		return true
+	},
+
+	async MODIFY(user) {
+		// Only drużynowi can modify jednostki
+		await user.populate("funkcje")
+		for(const funkcja of user.funkcje) {
+			if(funkcja.jednostka.id != this.id) continue
+			if(funkcja.type >= FunkcjaType.DRUŻYNOWY) return true
+		}
+		return false
+	},
+
+	async DELETE(user) {
+		// Only drużynowi of upper jednostki can delete
+		await user.populate("funkcje")
+		for(const funkcja of user.funkcje) {
+			if(funkcja.type < FunkcjaType.DRUŻYNOWY) continue
+			if(this.upperJednostki.hasID(funkcja.jednostka)) return true
+		}
+		return false
 	}
 }
 

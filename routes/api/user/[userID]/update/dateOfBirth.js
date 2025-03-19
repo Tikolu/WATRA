@@ -1,4 +1,7 @@
-export default async function({targetUser, date}) {
+export default async function({user, targetUser, date}) {
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.MODIFY)
+	
 	// Update date of birth
 	await targetUser.updateDateOfBirth(date)
 

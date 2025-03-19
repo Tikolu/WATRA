@@ -2,13 +2,9 @@ import HTTPError from "modules/server/error.js"
 import User from "modules/schemas/user.js"
 import html from "modules/html.js"
 
-export default async function({userID}) {
-	// Get user from DB, and check if exists
-	const user = await User.findById(userID)
-	if(!user) throw new HTTPError(404, "Użytkownik nie istnieje")
-
+export default async function({targetUser}) {
 	// Populate funkcje, and jednostki of funkcje
-	await user.populate({
+	await targetUser.populate({
 		path: "funkcje",
 		populate: {
 			path: "jednostka"
@@ -16,7 +12,7 @@ export default async function({userID}) {
 	})
 
 	// Populate parents or children
-	await user.populate(user.isParent ? "children" : "parents")
+	await targetUser.populate(targetUser.isParent ? "children" : "parents")
 
-	return html("user/page", {user})
+	return html("user/page", {targetUser})
 }

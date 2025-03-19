@@ -26,6 +26,7 @@ lastNameInput.onblur = async () => {
 }
 
 dateOfBirthInput.onblur = async () => {
+	if(dateOfBirthInput.disabled) return
 	dateOfBirthInput.disabled = true
 	try {
 		var response = await API(`user/${META.userID}/update/dateOfBirth`, {
