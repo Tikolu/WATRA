@@ -48,13 +48,18 @@ export function exit({user}) {
 		// Use error message from error unless it is a default
 		let message = errorMessages[code]?.[1] || ""
 		if(!this.lastError.defaultMessage) message = this.lastError.message
+
 		this.lastOutput = html("error", {
 			error: {
 				code,
 				title: errorMessages[code]?.[0] || `Error ${code} 🤔`,
 				message,
 				stack: this.lastError.stack
-			}
+			},
+			ip: this.request.headers.get("x-forwarded-for"),
+			path: this.request.address.pathname,
+			client: this.request.token?.client,
+			user
 		})
 	}
 

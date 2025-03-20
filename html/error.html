@@ -7,5 +7,27 @@
 	<details>
 		<summary>Szczegóły diagnostyczne</summary>
 		<pre><%= $.error.stack %></pre>
+		<table>
+			<tr>
+				<th>Data i godzina:</th>
+				<td><%= datetime.format(new Date, "yyyy-MM-dd HH:mm:ss.SSS") %></td>
+			</tr>
+			<tr>
+				<th>ID przeglądarki:</th>
+				<td><%= $.client || "(nieznany)" %></td>
+			</tr>
+			<tr>
+				<th>ID użytkownika:</th>
+				<td><%= $.user?.id || "(nie zalogowany)" %></td>
+			</tr>
+			<tr>
+				<th>Adres IP:</th>
+				<td><%= $.ip || "(nieznany)" %></td>
+			</tr>
+			<tr>
+				<th>Strona:</th>
+				<td><%= $.path || "/" %></td>
+			</tr>
+		</table>
 	</details>
 <% } %>
