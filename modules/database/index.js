@@ -25,15 +25,19 @@ mongoose.plugin(schema => {
 
 // Event listeners
 const mongooseEvents = {
-	beforeDelete: ["pre", /delete/],
+	beforeDelete: ["pre", /delete/, "query"],
 	beforeValidate: ["pre", /validate/],
 	afterSave: ["post", /save|update/i],
 	afterLoad: ["post", /find/]
 }
 mongoose.plugin(schema => {
 	for(const callbackName in mongooseEvents) {
-		const [hookType, eventPattern] = mongooseEvents[callbackName]
-		schema[hookType](eventPattern, {query: true, document: true}, async function() {
+		const [hookType, eventPattern, listenerType] = mongooseEvents[callbackName]
+		const config = {
+			query: listenerType == undefined || listenerType == "query",
+			document: listenerType == undefined || listenerType == "document"
+		}
+		schema[hookType](eventPattern, config, async function() {
 			if(!schema[callbackName]) return
 			const documents = []
 			if(this instanceof mongoose.Query) {
@@ -44,6 +48,7 @@ mongoose.plugin(schema => {
 			}
 			for(const document of documents) {
 				document.$locals.disabledListeners ||= {}
+				console.log(`Calling ${callbackName} for ${document.constructor.modelName} ${document.id}`)
 				if(document.$locals.disabledListeners[callbackName]) continue
 				document.$locals.disabledListeners[callbackName] = true
 				await schema[callbackName].call(document)
@@ -68,6 +73,11 @@ mongoose.plugin(schema => {
 		this.$locals.boundPermissionFunctions = PERMISSIONS
 		return PERMISSIONS
 	})
+})
+
+// Delete function (alias of deleteOne)
+mongoose.plugin(schema => schema.methods.delete = function() {
+	return this.deleteOne()
 })
 
 export async function connect(verbose=false) {

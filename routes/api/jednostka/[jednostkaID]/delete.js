@@ -4,5 +4,5 @@ export default async function({user, targetJednostka}) {
 	// Check permissions
 	await user.requirePermission(targetJednostka.PERMISSIONS.DELETE)
 	
-	await targetJednostka.deleteOne()
+	await targetJednostka.delete()
 }

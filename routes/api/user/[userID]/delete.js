@@ -5,5 +5,5 @@ export default async function({user, targetUser}) {
 	// Check permissions
 	await user.requirePermission(targetUser.PERMISSIONS.DELETE)
 	
-	await targetUser.deleteOne()
+	await targetUser.delete()
 }

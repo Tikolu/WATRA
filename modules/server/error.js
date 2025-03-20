@@ -41,7 +41,8 @@ export default class HTTPError extends Error {
 			const newStack = []
 			for(let line of stack) {
 				if(line.includes(" (ext:")) continue
-				line = line.replaceAll(SERVER_ROOT, "")	
+				line = line.replaceAll(SERVER_ROOT, "")
+				if(line.includes(" (file:///")) continue
 				newStack.push(line)
 			}
 			this.stack = newStack.join("\n")

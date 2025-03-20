@@ -34,7 +34,7 @@ schema.beforeDelete = async function() {
 	// Remove self from user
 	await this.populate("user")
 	this.user.funkcje = this.user.funkcje.filter(f => f.id != this.id)
-	await this.user.save()
+	await this.user.save({validateBeforeSave: false})
 
 	// Remove self from jednostka
 	await this.populate("jednostka")
