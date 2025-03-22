@@ -2,8 +2,7 @@ import mongoose from "mongoose"
 
 import shortID from "modules/database/shortID.js"
 
-const MONGO_URI = "mongodb://localhost:27017/main"
-const MONGO_OPTIONS = {}
+const MONGO_URI = "mongodb://localhost:27017"
 
 // Helper functions to simplify IDs and arrays of IDs
 String.prototype.__defineGetter__("id", function() {
@@ -80,12 +79,13 @@ mongoose.plugin(schema => schema.methods.delete = function() {
 	return this.deleteOne()
 })
 
-export async function connect(verbose=false) {
+// Establish connection to database
+export async function connect(dbName="main") {
 	console.log("\x1b[32m[MongoDB]\x1b[0m Connecting...")
 	try {
-		await mongoose.connect(MONGO_URI, MONGO_OPTIONS)
+		await mongoose.connect(MONGO_URI, { dbName })
 		
-		if(verbose) console.log("\x1b[32m[MongoDB]\x1b[0m Connected!")
+		console.log("\x1b[32m[MongoDB]\x1b[0m Connected!")
 		return true
 		
 	} catch(error) {
