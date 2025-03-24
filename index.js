@@ -1,6 +1,7 @@
 // Set up globals for root directory and startup time
 globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")
 globalThis.SERVER_TIME = new Date()
+globalThis.SYSTEM_VERSION = "0.5.0"
 
 import * as server from "modules/server"
 import * as database from "modules/database"
