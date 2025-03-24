@@ -58,22 +58,22 @@ for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])"
 for(const input of document.querySelectorAll("input")) {
 	if(input.matches("[type=text]")) {
 		input.addEventListener("keypress", event => {
-			if(event.key == "Enter") input.onsubmit()
+			if(event.key == "Enter") input.onsubmit?.()
 		})
 		input.addEventListener("blur", event => {
-			input.onsubmit()
+			input.onsubmit?.()
 		})
 	}
 	if(input.matches("[type=date]")) {
 		input.addEventListener("change", event => {
 			if(!input.value || input.matches(":focus")) return
-			input.onsubmit()
+			input.onsubmit?.()
 		})
 		input.addEventListener("keypress", event => {
-			if(event.key == "Enter") input.onsubmit()
+			if(event.key == "Enter") input.onsubmit?.()
 		})
 		input.addEventListener("blur", event => {
-			input.onsubmit()
+			input.onsubmit?.()
 		})
 	}
 }

@@ -1,6 +1,4 @@
-userCodeInput.onkeypress = async event => {
-	if(event.key != "Enter") return
-
+userCodeInput.onsubmit = async event => {
 	const accessCode = userCodeInput.value
 
 	try {
