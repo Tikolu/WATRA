@@ -50,7 +50,7 @@ input, button, select {
 input:hover, button:hover, select:hover,
 input:focus-visible, button:focus-visible, select:focus-visible {
 	outline: none;
-	border-color: var(--border-color);
+	border-color: var(--border-color) !important;
 }
 
 button {

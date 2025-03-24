@@ -17,10 +17,7 @@
 	<div>
 		<label for="jednostka-name-input">Nazwa:</label>
 		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>">
-	</div>
-	<div>
-		<button id="delete-jednostka-button">Usuń jednostkę</button>
-	</div>
+	</form>
 
 	<% if($.targetJednostka.members?.length > 0) { %>
 		<h3>Mianowanie na funkcję</h3>
@@ -41,8 +38,12 @@
 					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
 				<% } %>
 			</select>
-			<button id="mianowanie-button">Potwierdź</button>
-		</div>
+
+			<button id="mianowanie-button">Potwierdź mianowanie</button>
+		</form>
+
+		<h3>Usuwanie</h3>
+		<button id="delete-jednostka-button" class="dangerous">Usuń jednostkę</button>
 	<% } %>
 <% } %>
 
