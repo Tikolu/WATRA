@@ -215,8 +215,9 @@ schema.permissions = {
 		// Members can access their jednostka
 		if(await this.hasMember(user)) return true
 
-		// Przyboczni of all upper jednostki can access
-		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.upperJednostkiTree)) return true
+		// Przyboczni of all upper jednostki and sub jednostki can access
+		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.upperJednostkiTree, this.subJednostkiTree)) return true
+
 		return false
 	},
 

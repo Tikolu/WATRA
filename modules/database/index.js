@@ -107,7 +107,7 @@ export async function setup() {
 		
 		const newUser = new User()
 		const newJednostka = new Jednostka({
-			type: JednostkaType.HUFIEC
+			type: JednostkaType.CHORĄGIEW
 		})
 
 		await newJednostka.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
