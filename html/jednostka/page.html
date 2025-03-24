@@ -19,13 +19,13 @@
 		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>">
 	</form>
 
-	<% if($.targetJednostka.members?.length > 0) { %>
+	<% if($.usersForMianowanie?.length > 0) { %>
 		<h3>Mianowanie na funkcję</h3>
 		<form>
 			<label for="mianowanie-user-select">Użytkownik:</label>
 			<select id="mianowanie-user-select">
 				<option selected disabled></option>
-				<% for(const member of $.targetJednostka.members) { %>
+				<% for(const member of $.usersForMianowanie) { %>
 					<option value="<%= member.id %>"><%= member.displayName %></option>
 				<% } %>
 			</select>

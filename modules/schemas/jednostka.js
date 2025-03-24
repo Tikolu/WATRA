@@ -155,13 +155,19 @@ const schema = new mongoose.Schema({
 				}
 			}
 		},
+		// List of all direct members
+		members: {
+			async get() {
+				await this.populate({path: "funkcje", populate: "user", forceRepopulate: false})
+				return this.funkcje.map(f => f.user)
+			}
+		},
 		// Recursive list of all members (including members of subJednostki)
 		subMembers: {
 			async * get() {
-				await this.populate({path: "funkcje", populate: "user", forceRepopulate: false})
 				// Yield all members of this jednostka
-				for(const funkcja of this.funkcje) {
-					yield funkcja.user
+				for(const member of await this.members) {
+					yield member
 				}
 				// Yield all members of the all subJednostki
 				for await(const subJednostka of this.subJednostkiTree) {
