@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<% $.styles ||= [] %>
+	<% $.styles.unshift("login") %>
+	<%~ include("/templates/head.html", $) %>
+	<body>
+		<main>
+			<%~ $.body %>
+		</main>
+	</body>
+</html>

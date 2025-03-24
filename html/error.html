@@ -1,5 +1,6 @@
-<% layout("body", {
-	title: `Error ${$.error.code}`
+<% layout("/layouts/body", {
+	title: `Error ${$.error.code}`,
+	styles: ["error"]
 }) %>
 <h1>Error <%= $.error.code %> - <%= $.error.title %></h2>
 <h2><%= $.error.message %></h2>

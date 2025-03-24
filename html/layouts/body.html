@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<% $.styles ||= [] %>
+	<% $.styles.unshift("main") %>
+	<%~ include("/templates/head.html", $) %>
+	<body>
+		<%~ include("/templates/titleBar.html", {user: $.user}) %>
+		<main>
+			<%~ $.body %>
+		</main>
+	</body>
+</html>

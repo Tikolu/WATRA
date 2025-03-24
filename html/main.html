@@ -1,7 +1,8 @@
-<% layout("body", {
+<% layout("/layouts/body", {
 	title: "Strona główna",
 	scripts: ["home"],
-	styles: ["home"]
+	styles: ["home"],
+	user: $.user
 }) %>
 <h1>Strona główna</h1>
 <p>Czuwaj, <a href="/users/<%= $.user.id %>"><%= $.user.displayName %></a>! 👋</p>
