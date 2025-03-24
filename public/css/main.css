@@ -1,0 +1,21 @@
+header {
+	position: sticky;
+	top: 0;
+	margin: -8px;
+
+	padding: 0.5em;
+	display: flex;
+
+	box-shadow: 0 0 10px var(--shadow-color);
+	background-color: var(--background-color);
+}
+
+header #system-title {
+	text-decoration: none;
+	font-weight: bold;
+}
+
+header #user-profile-link {
+	text-decoration: none;
+	margin-left: auto;
+}

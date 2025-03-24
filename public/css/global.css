@@ -1,16 +1,60 @@
+/* Imports */
+
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap);
+@import url(/css/themes/dark.css);
+
+/* Content layout */
 
 body {
 	font-family: Lato, sans-serif;
-	background-color: #222;
-	color: white;
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
+main {
+	max-width: 60em;
+	margin: 0 auto;
+}
+
+
+/* Individual element styling */
+
 a {
-	color: white;
+	color: var(--link-color);
+}
+
+a:hover {
+	color: var(--link-hover-color)
+}
+
+input, button, select {
+	font-family: Lato, sans-serif;
+	padding: 0.5em;
+	background-color: var(--background-color-secondary);
+	color: var(--text-color);
+	border: 1px solid var(--background-color-secondary);
+	border-radius: var(--border-radius);
+}
+
+input:hover, button:hover, select:hover,
+input:focus-visible, button:focus-visible, select:focus-visible {
+	outline: none;
+	border-color: var(--border-color);
+}
+
+button {
+	cursor: pointer;
 }
 
 input[type=checkbox] {
 	height: 1.5em;
 	width: 1.5em;
+}
+
+hr {
+	border: solid 1px var(--border-color);
+}
+
+pre {
+	overflow-x: auto;
 }

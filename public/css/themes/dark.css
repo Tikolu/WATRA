@@ -1,0 +1,21 @@
+/* Simple dark theme */
+:root {
+	--background-color: #122;
+	--background-color-secondary: #111;
+	--text-color: #fff;
+	--link-color: #fff;
+	--link-hover-color: #ddd;
+	--border-color: #444;
+	--shadow-color: #000;
+
+	--border-radius: 5px;
+}
+
+::selection {
+	background-color: #ddd;
+	color: #333;
+}
+
+html {
+	color-scheme: dark;
+}

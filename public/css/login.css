@@ -1,0 +1,13 @@
+main {
+	width: 30em;
+	max-width: 80%;
+	margin: 5em auto;
+
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius);
+	padding: 1em;
+}
+
+main > h1 {
+	margin-top: 0;
+}

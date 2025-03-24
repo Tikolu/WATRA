@@ -1,0 +1,10 @@
+pre {
+	background-color: var(--background-color-secondary);
+	border-radius: var(--border-radius);
+	padding: 1em;
+}
+
+table th{
+	padding-right: 1em;
+	text-align: left;
+}
