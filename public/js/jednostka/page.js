@@ -1,4 +1,4 @@
-deleteJednostkaButton.onclick = async () => {
+if(this.deleteJednostkaButton) deleteJednostkaButton.onclick = async () => {
 	if(!confirm(`Usunąć jednostkę ${jednostkaTitle.innerText}?`)) return
 	try {
 		await API(`jednostka/${META.jednostkaID}/delete`)
@@ -9,7 +9,7 @@ deleteJednostkaButton.onclick = async () => {
 	history.back()
 }
 
-jednostkaNameInput.onblur = async () => {
+if(this.jednostkaNameInput) jednostkaNameInput.onblur = async () => {
 	jednostkaNameInput.disabled = true
 	try {
 		var response = await API(`jednostka/${META.jednostkaID}/update/name`, {
@@ -51,11 +51,12 @@ if(this.mianowanieButton) mianowanieButton.onclick = async () => {
 		alert("Nie wybrano użytkownika")
 		return
 	}
-	const funkcjaType = mianowanieFunkcjaSelect.value
+	let funkcjaType = mianowanieFunkcjaSelect.value
 	if(!funkcjaType) {
 		alert("Nie wybrano funkcji")
 		return
 	}
+	funkcjaType = Number(funkcjaType)
 	try {
 		var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/mianujNaFunkcję`, {
 			funkcjaType

@@ -1,67 +1,74 @@
 <% layout("/body", {
-	title: $.jednostka.displayName,
+	title: $.targetJednostka.displayName,
 	scripts: ["jednostka/page"],
 	// styles: ["jednostka/page"],
 	meta: {
-		jednostkaID: $.jednostka.id
+		jednostkaID: $.targetJednostka.id
 	}
 }) %>
-<h1 id="jednostka-title"><%= $.jednostka.displayName %></h1>
-<% if($.jednostka.upperJednostki?.length > 0) { %>
-	<p>(<%= $.jednostka.typeName %> w <%~ include("/templates/linkList", $.jednostka.upperJednostki.map(j => [`/jednostki/${j.id}`, j.displayName])) %>)</p>
-<% } %>
-<hr>
-<h2>Ustawienia</h2>
-<div>
-	<label for="jednostka-name-input">Nazwa:</label>
-	<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.jednostka.name || "" %>">
-</div>
-<div>
-	<button id="delete-jednostka-button">Usuń jednostkę</button>
-</div>
-
-<% if($.jednostka.funkcje?.length > 0) { %>
-	<h3>Mianowanie na funkcję</h3>
-	<div>
-		<label for="mianowanie-user-select">Użytkownik:</label>
-		<select id="mianowanie-user-select">
-			<option selected disabled></option>
-			<% for(const funkcja of $.jednostka.funkcje || []) { %>
-				<option value="<%= funkcja.user.id %>"><%= funkcja.user.displayName %></option>
-			<% } %>
-		</select>
-	</div>
-	<div>
-		<label for="mianowanie-funkcja-select">Funkcja:</label>
-		<select id="mianowanie-funkcja-select">
-			<option selected disabled></option>
-			<% for(const [funkcjaLevel, funkcjaName] of $.jednostka.getFunkcjaOptions() || []) { %>
-				<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
-			<% } %>
-		</select>
-		<button id="mianowanie-button">Potwierdź</button>
-	</div>
+<h1 id="jednostka-title"><%= $.targetJednostka.displayName %></h1>
+<% if($.targetJednostka.upperJednostki?.length > 0) { %>
+	<p>(<%= $.targetJednostka.typeName %> w <%~ include("/templates/linkList", $.targetJednostka.upperJednostki.map(j => [`/jednostki/${j.id}`, j.displayName])) %>)</p>
 <% } %>
 
-<hr>
-<h2>Użytkownicy</h2>
-<div id="jednostka-member-list">
-	<ul>
-		<% for(const funkcja of $.jednostka.funkcje || []) { %>
-			<li>
-				<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
-			</li>
+<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Ustawienia</h2>
+	<div>
+		<label for="jednostka-name-input">Nazwa:</label>
+		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>">
+	</div>
+	<div>
+		<button id="delete-jednostka-button">Usuń jednostkę</button>
+	</div>
+
+	<% if($.targetJednostka.members?.length > 0) { %>
+		<h3>Mianowanie na funkcję</h3>
+		<div>
+			<label for="mianowanie-user-select">Użytkownik:</label>
+			<select id="mianowanie-user-select">
+				<option selected disabled></option>
+				<% for(const member of $.targetJednostka.members) { %>
+					<option value="<%= member.id %>"><%= member.displayName %></option>
+				<% } %>
+			</select>
+		</div>
+		<div>
+			<label for="mianowanie-funkcja-select">Funkcja:</label>
+			<select id="mianowanie-funkcja-select">
+				<option selected disabled></option>
+				<% for(const [funkcjaLevel, funkcjaName] of $.targetJednostka.getFunkcjaOptions() || []) { %>
+					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
+				<% } %>
+			</select>
+			<button id="mianowanie-button">Potwierdź</button>
+		</div>
+	<% } %>
+<% } %>
+
+<% if($.targetJednostka.funkcje?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Użytkownicy</h2>
+	<div id="jednostka-member-list">
+		<ul>
+			<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
+				<li>
+					<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
+				</li>
+			<% } %>
+		</ul>
+		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+			<button id="create-user-button">Dodaj użytkownika</button>
 		<% } %>
-	</ul>
-	<button id="create-user-button">Dodaj użytkownika</button>
-</div>
+	</div>
+<% } %>
 
-<% if($.jednostka.type > 0) { %>
+<% if($.targetJednostka.subJednostki?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>Jednostki</h2>
 	<div id="sub-jednostka-list">
 		<ul>
-			<% for(const subJednostka of $.jednostka.subJednostki || []) { %>
+			<% for(const subJednostka of $.targetJednostka.subJednostki || []) { %>
 				<li>
 					<% if(!subJednostka) { %>
 						(nieznana jednostka)
@@ -71,6 +78,8 @@
 				</li>
 			<% } %>
 		</ul>
-		<button id="create-sub-jednostka-button">Dodaj jednostkę</button>
+		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+			<button id="create-sub-jednostka-button">Dodaj jednostkę</button>
+		<% } %>
 	</div>
 <% } %>

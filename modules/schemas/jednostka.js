@@ -37,6 +37,7 @@ const schema = new mongoose.Schema({
 			await this.save()
 		},
 		
+		// Add user to jednostka with a funkcja, any existing funkcja in the jednostka gets overwritten
 		async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {
 			if(!Object.values(FunkcjaType).includes(funkcjaType)) throw Error("Nieprawidłowy typ funkcji")
 			// Populate funkcje
@@ -79,15 +80,18 @@ const schema = new mongoose.Schema({
 			await user.save()
 		},
 
+		// Add user as szeregowy
 		async addMember(user) {
 			await this.setFunkcja(user)
 		},
 
+		// Check if user is in jednostka
 		async hasMember(user) {
 			await this.populate({path: "funkcje", forceRepopulate: false})
 			return this.funkcje.some(f => f.user.id == user.id)
 		},
 		
+		// Link an existing jednostka as subJednostka
 		async addSubJednostka(subJednostka) {
 			// Check jednostka type compatibility
 			if(subJednostka.type >= this.type) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
@@ -107,6 +111,7 @@ const schema = new mongoose.Schema({
 			await subJednostka.save()
 		},
 
+		// Returns a list of possible funkcja levels and names for this jednostka
 		getFunkcjaOptions() {
 			const funkcjaOptions = []
 			for(const funkcjaLevel in FunkcjaNames[this.type]) {
@@ -128,6 +133,40 @@ const schema = new mongoose.Schema({
 			get() {
 				const type = Object.keys(JednostkaType)[this.type]
 				return Text.capitalise(type)
+			}
+		},
+		// Recursive list of all upperJednostki
+		upperJednostkiTree: {
+			async * get() {
+				await this.populate("upperJednostki")
+				for(const upperJednostka of this.upperJednostki) {
+					yield upperJednostka
+					yield * upperJednostka.upperJednostkiTree
+				}
+			}
+		},
+		// Recursive list of all subJednostki
+		subJednostkiTree: {
+			async * get() {
+				await this.populate("subJednostki")
+				for(const subJednostka of this.subJednostki) {
+					yield subJednostka
+					yield * subJednostka.subJednostkiTree
+				}
+			}
+		},
+		// Recursive list of all members (including members of subJednostki)
+		subMembers: {
+			async * get() {
+				await this.populate({path: "funkcje", populate: "user", forceRepopulate: false})
+				// Yield all members of this jednostka
+				for(const funkcja of this.funkcje) {
+					yield funkcja.user
+				}
+				// Yield all members of the all subJednostki
+				for await(const subJednostka of this.subJednostkiTree) {
+					yield * subJednostka.subMembers
+				}
 			}
 		}
 	}
@@ -167,27 +206,25 @@ schema.beforeDelete = async function() {
 
 schema.permissions = {
 	async ACCESS(user) {
-		// Only members can access jednostki
-		await this.hasMember(user)
-		return true
+		// Members can access their jednostka
+		if(await this.hasMember(user)) return true
+
+		// Przyboczni of all upper jednostki can access
+		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.upperJednostkiTree)) return true
+		return false
 	},
 
 	async MODIFY(user) {
-		// Only drużynowi can modify jednostki
-		await user.populate("funkcje")
-		for(const funkcja of user.funkcje) {
-			if(funkcja.jednostka.id != this.id) continue
-			if(funkcja.type >= FunkcjaType.DRUŻYNOWY) return true
-		}
+		// Drużynowy of this and all upper jednostki can modify
+		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this, this.upperJednostkiTree)) return true
 		return false
 	},
 
 	async DELETE(user) {
-		// Only drużynowi of upper jednostki can delete
-		await user.populate("funkcje")
-		for(const funkcja of user.funkcje) {
-			if(funkcja.type < FunkcjaType.DRUŻYNOWY) continue
-			if(this.upperJednostki.hasID(funkcja.jednostka)) return true
+		// Only drużynowi of direct upper jednostka can delete
+		for(const upperJednostka of this.upperJednostki) {
+			const funkcja = await user.getFunkcjaInJednostka(upperJednostka)
+			if(funkcja?.type == FunkcjaType.DRUŻYNOWY) return true
 		}
 		return false
 	}
