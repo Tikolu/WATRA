@@ -48,6 +48,12 @@ export default class HTTPError extends Error {
 			this.stack = newStack.join("\n")
 		}
 
+		// Change message of Eta debug errors
+		if(this.message.includes("Error: html/")) {
+			const realMessage = this.stack.match(/\n\n(.*)/)
+			if(realMessage) this.message = realMessage[1]
+		}
+
 		// Clean up message
 		if(this.message.includes("\n")) this.message = this.message.split("\n")[0]
 		this.message = this.message.replaceAll(SERVER_ROOT, "")
