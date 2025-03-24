@@ -1,6 +1,7 @@
-userCodeInput.oninput = async () => {
+userCodeInput.onkeypress = async event => {
+	if(event.key != "Enter") return
+
 	const accessCode = userCodeInput.value
-	if(accessCode.length != 8) return
 
 	try {
 		var response = await API("login", {accessCode})

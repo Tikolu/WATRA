@@ -40,7 +40,7 @@ const schema = new mongoose.Schema({
 {
 	statics: {
 		findByAccessCode(code) {
-			if(!/^\d{8}$/.test(code)) return null
+			if(!/^\d+$/.test(code)) return null
 			return this.findOne({ accessCode: code })
 		}
 	},
