@@ -56,13 +56,32 @@ for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])"
 
 // Custom input fields
 for(const input of document.querySelectorAll("input")) {
-	if(input.matches("[type=text]")) input.addEventListener("keypress", event => {
-		if(event.key == "Enter") input.blur()
-	})
-	if(input.matches("[type=date]")) input.addEventListener("change", event => {
-		if(!input.value || input.matches(":focus")) return
-		input.onblur()
-	})
+	if(input.matches("[type=text]")) {
+		input.addEventListener("keypress", event => {
+			if(event.key == "Enter") input.onsubmit()
+		})
+		input.addEventListener("blur", event => {
+			input.onsubmit()
+		})
+	}
+	if(input.matches("[type=date]")) {
+		input.addEventListener("change", event => {
+			if(!input.value || input.matches(":focus")) return
+			input.onsubmit()
+		})
+		input.addEventListener("keypress", event => {
+			if(event.key == "Enter") input.onsubmit()
+		})
+		input.addEventListener("blur", event => {
+			input.onsubmit()
+		})
+	}
+}
+// Disable form elements
+for(const form of document.querySelectorAll("form")) {
+	form.onsubmit = event => {
+		event.preventDefault()
+	}
 }
 
 // Link buttons

@@ -13,19 +13,19 @@ async function updateName() {
 	userTitle.innerText = response.display
 }
 
-firstNameInput.onblur = async () => {
+firstNameInput.onsubmit = async () => {
 	firstNameInput.disabled = true
 	await updateName()
 	firstNameInput.disabled = false
 }
 
-lastNameInput.onblur = async () => {
+lastNameInput.onsubmit = async () => {
 	lastNameInput.disabled = true
 	await updateName()
 	lastNameInput.disabled = false
 }
 
-dateOfBirthInput.onblur = async () => {
+dateOfBirthInput.onsubmit = async () => {
 	if(dateOfBirthInput.disabled) return
 	dateOfBirthInput.disabled = true
 	try {

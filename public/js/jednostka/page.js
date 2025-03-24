@@ -9,7 +9,7 @@ if(this.deleteJednostkaButton) deleteJednostkaButton.onclick = async () => {
 	history.back()
 }
 
-if(this.jednostkaNameInput) jednostkaNameInput.onblur = async () => {
+if(this.jednostkaNameInput) jednostkaNameInput.onsubmit = async () => {
 	jednostkaNameInput.disabled = true
 	try {
 		var response = await API(`jednostka/${META.jednostkaID}/update/name`, {
