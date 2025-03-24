@@ -202,6 +202,7 @@ schema.permissions = {
 		if(user.id == this.id) {
 			if(this.age >= 18) return true
 			if(this.parents?.length > 0) return false
+			return true
 		}
 		// Druyżynowi of member jednostka and of all upper jednostki can modify
 		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.jednostkiTree)) return true
