@@ -55,15 +55,23 @@ if(this.mianowanieButton) mianowanieButton.onclick = async () => {
 	if(!funkcjaType) {
 		alert("Nie wybrano funkcji")
 		return
-	}
-	funkcjaType = Number(funkcjaType)
-	try {
-		var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/mianujNaFunkcję`, {
-			funkcjaType
-		})
-	} catch(error) {
-		alert(error)
-		return
+	} else if(funkcjaType == "remove") {
+		try {
+			var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/remove`)
+		} catch(error) {
+			alert(error)
+			return
+		}
+	} else {
+		funkcjaType = Number(funkcjaType)
+		try {
+			var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/mianujNaFunkcję`, {
+				funkcjaType
+			})
+		} catch(error) {
+			alert(error)
+			return
+		}
 	}
 	document.location.reload()
 }

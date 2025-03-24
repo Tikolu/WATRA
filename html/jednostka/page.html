@@ -24,7 +24,7 @@
 		<form>
 			<label for="mianowanie-user-select">Użytkownik:</label>
 			<select id="mianowanie-user-select">
-				<option selected disabled></option>
+				<option selected hidden></option>
 				<% for(const member of $.usersForMianowanie) { %>
 					<option value="<%= member.id %>"><%= member.displayName %></option>
 				<% } %>
@@ -32,10 +32,12 @@
 
 			<label for="mianowanie-funkcja-select">Funkcja:</label>
 			<select id="mianowanie-funkcja-select">
-				<option selected disabled></option>
+				<option selected hidden></option>
 				<% for(const [funkcjaLevel, funkcjaName] of $.targetJednostka.getFunkcjaOptions() || []) { %>
 					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
 				<% } %>
+				<option disabled></option>
+				<option value="remove">(usuń z jednostki)</option>
 			</select>
 
 			<button id="mianowanie-button">Potwierdź mianowanie</button>
