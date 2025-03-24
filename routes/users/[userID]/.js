@@ -2,7 +2,7 @@ import HTTPError from "modules/server/error.js"
 import User from "modules/schemas/user.js"
 import html from "modules/html.js"
 
-export default async function({targetUser}) {
+export default async function({user, targetUser}) {
 	// Populate funkcje, and jednostki of funkcje
 	await targetUser.populate({
 		path: "funkcje",
@@ -14,5 +14,5 @@ export default async function({targetUser}) {
 	// Populate parents or children
 	await targetUser.populate(targetUser.isParent ? "children" : "parents")
 
-	return html("user/page", {targetUser})
+	return html("user/page", {user, targetUser})
 }
