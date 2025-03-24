@@ -23,7 +23,7 @@ export default async function(request, response) {
 		console.error(error)
 		// If an error is already present, just print plain error message and send response
 		if(routeContext.lastError || routeContext.response.statusCode >= 400) {
-			routeContext.response.headers.set("Content-Type", "text/plain")
+			routeContext.response.headers.set("Content-Type", "text/plain; charset=UTF-8")
 			routeContext.response.write(routeContext.lastError?.message || `Error ${routeContext.response.statusCode}!`)
 			routeContext.response.write("\n\n\n\nWhile handling the above error, another error occured:\n\n")
 			routeContext.response.write(error.stack)
