@@ -13,15 +13,13 @@
 
 <hr>
 <h2>Dane</h2>
-<div>
+<form>
 	<label for="first-name-input">Imię:</label>
 	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.targetUser.name.first || "" %>">
-</div>
-<div>
+
 	<label for="last-name-input">Nazwisko:</label>
 	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.targetUser.name.last || "" %>">
-</div>
-<div>
+
 	<label for="date-of-birth-input">Data urodzenia:</label>
 	<input
 		type="date" id="date-of-birth-input"
@@ -30,7 +28,7 @@
 			value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
 		<% } %>
 	>
-</div>
+</form>
 
 <% if($.targetUser.isParent) { %>
 	<hr>

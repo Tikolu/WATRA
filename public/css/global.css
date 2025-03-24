@@ -69,3 +69,20 @@ hr {
 pre {
 	overflow-x: auto;
 }
+
+form {
+	display: inline-grid;
+	grid-template-columns: auto 8em;
+	column-gap: 1em;
+	row-gap: 0.25em;
+	align-items: center;
+}
+
+form button:last-child {
+	grid-column: 1 / -1;
+}
+
+button.dangerous {
+	background-color: var(--red-button-color);
+	border-color: var(--red-button-color);
+}

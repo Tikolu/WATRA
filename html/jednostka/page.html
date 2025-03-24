@@ -14,14 +14,14 @@
 <% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>Ustawienia</h2>
-	<div>
+	<form>
 		<label for="jednostka-name-input">Nazwa:</label>
 		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>">
 	</form>
 
 	<% if($.targetJednostka.members?.length > 0) { %>
 		<h3>Mianowanie na funkcję</h3>
-		<div>
+		<form>
 			<label for="mianowanie-user-select">Użytkownik:</label>
 			<select id="mianowanie-user-select">
 				<option selected disabled></option>
@@ -29,8 +29,7 @@
 					<option value="<%= member.id %>"><%= member.displayName %></option>
 				<% } %>
 			</select>
-		</div>
-		<div>
+
 			<label for="mianowanie-funkcja-select">Funkcja:</label>
 			<select id="mianowanie-funkcja-select">
 				<option selected disabled></option>
