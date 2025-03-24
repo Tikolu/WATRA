@@ -6,7 +6,7 @@
 }) %>
 <h1>Strona główna</h1>
 <p>Czuwaj, <a href="/users/<%= $.user.id %>"><%= $.user.displayName %></a>! 👋</p>
-<button id="logout-button">Wyloguj</button>
+<button id="logout-button"><span class="icon">&#xe9ba;</span>Wyloguj</button>
 <hr>
 
 <% for(const funkcja of $.user.funkcje) { %>

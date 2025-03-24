@@ -9,8 +9,8 @@
 		<% for(const user of $.savedUsers) { %>
 			<li>
 				<p><%= user.displayName %></p>
-				<a href="/login/<%= user.id %>"><button>Zaloguj</button></a>
-				<a href="/logout/full?user=<%= user.id %>"><button>Usuń z listy</button></a>
+				<a href="/login/<%= user.id %>"><button><span class="icon">&#xea77;</span>Zaloguj</button></a>
+				<a href="/logout/full?user=<%= user.id %>"><button><span class="icon">&#xe14c;</span>Usuń z listy</button></a>
 			</li>
 		<% } %>
 	</ul>
