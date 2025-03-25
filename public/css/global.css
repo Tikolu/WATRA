@@ -1,6 +1,6 @@
 /* Imports */
 
-@import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons+Sharp);
 @import url(/css/themes/dark.css);
 
@@ -75,7 +75,7 @@ form {
 	grid-template-columns: auto 8em;
 	column-gap: 1em;
 	row-gap: 0.25em;
-	align-items: center;
+	align-items: baseline;
 }
 
 form button:last-child {
