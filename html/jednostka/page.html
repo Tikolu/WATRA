@@ -16,7 +16,7 @@
 	<h2>Ustawienia</h2>
 	<form>
 		<label for="jednostka-name-input">Nazwa:</label>
-		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>">
+		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>" <% $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) ? "" : "disabled" %>>
 	</form>
 
 	<% if($.usersForMianowanie?.length > 0) { %>

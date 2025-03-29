@@ -9,5 +9,9 @@ export default async function({user, targetUser}) {
 	// Populate parents or children
 	await targetUser.populate(targetUser.isParent ? "children" : "parents")
 
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.ACCESS)
+	await user.checkPermission(targetUser.PERMISSIONS.MODIFY)
+
 	return html("user/page", {user, targetUser})
 }

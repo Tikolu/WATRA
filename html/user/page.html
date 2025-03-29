@@ -15,10 +15,10 @@
 <h2>Dane</h2>
 <form>
 	<label for="first-name-input">Imię:</label>
-	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.targetUser.name.first || "" %>">
+	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.targetUser.name.first || "" %>" <%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %> >
 
 	<label for="last-name-input">Nazwisko:</label>
-	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.targetUser.name.last || "" %>">
+	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.targetUser.name.last || "" %>" <%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %> >
 
 	<label for="date-of-birth-input">Data urodzenia:</label>
 	<input
@@ -27,6 +27,7 @@
 		<% if($.targetUser.dateOfBirth) { %>
 			value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
 		<% } %>
+		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
 	>
 </form>
 
