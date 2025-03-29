@@ -74,6 +74,59 @@ mongoose.plugin(schema => {
 	})
 })
 
+// Mongoose better populate plugin
+mongoose.plugin(schema => {
+	schema.methods.populate = async function(...path) {
+		this.$locals.populated ||= []
+		
+		let currentKeys = path.shift()
+		if(!(currentKeys instanceof Array)) currentKeys = [currentKeys]
+
+		for(const key of currentKeys) {
+			if(typeof key != "string") throw Error("Invalid populate path")
+			if(
+				!this.populated(key) && this[key] &&
+				(!(this[key] instanceof Array) || this[key].length > 0)
+			) {
+				let schemaDefinition = schema.tree[key]
+				if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
+				const arrayPopulate = schemaDefinition instanceof Array
+				if(arrayPopulate) schemaDefinition = schemaDefinition[0]
+			
+				let ref = schemaDefinition.ref
+				if(typeof ref == "function") {
+					ref = await ref.call(this)
+				} else if(typeof ref != "string") {
+					throw Error(`Path ${key} cannot be populated, invalid ref`)
+				}
+				if(!ref) throw Error(`Path ${key} cannot be populated, no ref defined`)
+
+				const Model = mongoose.model(ref)
+			
+				const results = await Model.find(
+					{ _id: this[key] }
+				)
+				this[key] = arrayPopulate ? results : results[0]
+				this.$locals.populated.push(key)
+			}
+			if(path.length) {
+				if(this[key] instanceof Array) {
+					for(const item of this[key]) {
+						await item.populate(...path)
+					}
+				} else if(this[key]) {
+					await this[key].populate(...path)
+				}
+			}
+		}
+
+	}
+	schema.methods.populated = function(key) {
+		this.$locals.populated ||= []
+		return this.$locals.populated.includes(key)
+	}
+})
+
 // Delete function (alias of deleteOne)
 mongoose.plugin(schema => schema.methods.delete = function() {
 	return this.deleteOne()

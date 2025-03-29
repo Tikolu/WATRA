@@ -1,6 +1,8 @@
 import mongoose from "mongoose"
-import { default as Funkcja } from "modules/schemas/funkcja.js"
 import * as Text from "modules/text.js"
+
+import Funkcja from "modules/schemas/funkcja.js"
+import User from "modules/schemas/user.js"
 
 import { FunkcjaType, JednostkaType, FunkcjaNames } from "modules/types.js"
 
@@ -87,7 +89,7 @@ const schema = new mongoose.Schema({
 
 		// Check if user is in jednostka
 		async hasMember(user) {
-			await this.populate({path: "funkcje", forceRepopulate: false})
+			await this.populate("funkcje")
 			return this.funkcje.some(f => f.user.id == user.id)
 		},
 		
@@ -158,7 +160,7 @@ const schema = new mongoose.Schema({
 		// List of all direct members
 		members: {
 			async get() {
-				await this.populate({path: "funkcje", populate: "user", forceRepopulate: false})
+				await this.populate("funkcje", "user")
 				return this.funkcje.map(f => f.user)
 			}
 		},
@@ -181,9 +183,9 @@ const schema = new mongoose.Schema({
 schema.beforeDelete = async function() {
 	await this.populate([
 		"upperJednostki",
-		"subJednostki",
-		{path: "funkcje", populate: "user"}
+		"subJednostki"
 	])
+	await this.populate("funkcje", "user")
 	
 	// Chose primary upper jednostka
 	const primaryUpperJednostka = this.upperJednostki[0]

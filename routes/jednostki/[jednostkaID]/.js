@@ -3,17 +3,13 @@ import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetJednostka}) {
 	// Populate jednostka funkcje, as well as users and jednostki of funkcje
-	await targetJednostka.populate({
-		path: "funkcje",
-		populate: ["user", "jednostka"]
-	})
-
-	// Populate sub jednostki
-	await targetJednostka.populate("subJednostki")
-
-	// Populate upper jednostki
-	await targetJednostka.populate("upperJednostki")
-
+	await targetJednostka.populate("funkcje", ["user", "jednostka"])
+	// Populate sub and upper jednostki
+	await targetJednostka.populate([
+		"subJednostki",
+		"upperJednostki"
+	])
+	
 	// Get all members for mianowanie
 	const usersForMianowanie = []
 	if(await user.checkPermission(targetJednostka.PERMISSIONS.MODIFY)) {

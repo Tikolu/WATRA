@@ -77,7 +77,7 @@ const schema = new mongoose.Schema({
 		},
 
 		async getFunkcjaInJednostka(jednostka) {
-			await this.populate({path: "funkcje", forceRepopulate: false})
+			await this.populate("funkcje")
 			return this.funkcje.find(f => f.jednostka.id == jednostka.id)
 		},
 
@@ -150,8 +150,9 @@ const schema = new mongoose.Schema({
 		// Recursive list of all jednostki and upperJednostki of all funkcje
 		jednostkiTree: {
 			async * get() {
-				await this.populate({path: "funkcje", populate: "jednostka", forceRepopulate: false})
+				await this.populate("funkcje")
 				for(const funkcja of this.funkcje) {
+					await funkcja.populate("jednostka")
 					yield funkcja.jednostka
 					yield * funkcja.jednostka.upperJednostkiTree
 				}
