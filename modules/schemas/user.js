@@ -201,12 +201,20 @@ schema.permissions = {
 		if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
 		// Niepełnoletni with parents cannot modify their own details
 		if(user.id == this.id) {
-			if(this.age >= 18) return true
-			if(this.parents?.length > 0) return false
+			if(this.age < 18 && this.parents?.length > 0) return true
 			return true
 		}
+		// Parent can modify their children
+		if(user.children.hasID(this.id)) return true
 		// Druyżynowi of member jednostka and of all upper jednostki can modify
 		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.jednostkiTree)) return true
+		// Druyżynowi of child's member jednostka and of all upper jednostki can modify
+		if(this.isParent) {
+			await this.populate("children")
+			for(const child of this.children) {
+				if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, child.jednostkiTree)) return true
+			}
+		}
 		return false
 	},
 
