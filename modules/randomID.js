@@ -1,7 +1,7 @@
 const characters = {
 	"numeric": "0123456789",
 	"alpha": "abcdefghijklmnopqrstuvwxyz",
-	"hex": "abcdef"
+	"hex": "abcdef".repeat(2)
 }
 
 /**

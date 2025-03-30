@@ -1,6 +1,8 @@
+import randomID from "modules/randomID.js"
+
 export default {
 	type: String,
 	unique: true,
-	validate: /^[0-9a-f]{8}$/,
-	default: () => Math.random().toString(16).substring(2, 10)
+	validate: /^[0-9a-f]{2,32}$/,
+	default: () => randomID(8),
 }
