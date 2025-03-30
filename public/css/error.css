@@ -4,7 +4,9 @@ pre {
 	padding: 1em;
 }
 
-table th{
+table th {
+	min-width: 8em;
 	padding-right: 1em;
 	text-align: left;
+	vertical-align: top;
 }

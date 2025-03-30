@@ -59,6 +59,7 @@ export function exit({user}) {
 			ip: this.request.headers.get("x-forwarded-for"),
 			path: this.request.address.pathname,
 			client: this.request.token?.client,
+			userAgent: this.request.headers.get("user-agent"),
 			user
 		})
 	}

@@ -10,6 +10,10 @@
 		<pre><%= $.error.stack %></pre>
 		<table>
 			<tr>
+				<th>Strona:</th>
+				<td><%= $.path || "/" %></td>
+			</tr>
+			<tr>
 				<th>Data i godzina:</th>
 				<td><%= datetime.format(new Date, "yyyy-MM-dd HH:mm:ss.SSS") %></td>
 			</tr>
@@ -26,8 +30,8 @@
 				<td><%= $.ip || "(nieznany)" %></td>
 			</tr>
 			<tr>
-				<th>Strona:</th>
-				<td><%= $.path || "/" %></td>
+				<th>Agent:</th>
+				<td><%= $.userAgent || "(nieznany)" %></td>
 			</tr>
 		</table>
 	</details>
