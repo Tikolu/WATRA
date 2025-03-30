@@ -11,3 +11,8 @@ main {
 main > h1 {
 	margin-top: 0;
 }
+
+#verification-placeholder-form {
+	grid-template-columns: 1.5em auto;
+	align-items: center;
+}

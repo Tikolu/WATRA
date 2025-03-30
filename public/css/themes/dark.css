@@ -1,14 +1,17 @@
 /* Simple dark theme */
 :root {
 	--background-color: #122;
-	--background-color-secondary: #111;
+	--background-color-secondary: #333;
+	--background-color-disabled: #111;
+
 	--text-color: #fff;
-	--link-color: #fff;
-	--link-hover-color: #ddd;
-	--border-color: #444;
+
 	--shadow-color: #000;
 
-	--red-button-color: #511;
+	--border-color: #333;
+	--border-highlight-color: #555;
+
+	--disabled-text-color: #aaa;
 
 	--border-radius: 5px;
 }
@@ -20,4 +23,21 @@
 
 html {
 	color-scheme: dark;
+}
+
+button {
+	background-color: #383;
+	color: #fff;
+}
+
+button:hover {
+	background-color: #4a4;
+}
+
+button.dangerous {
+	background-color: #e22;
+}
+
+button.dangerous:hover {
+	background-color: #e44;
 }

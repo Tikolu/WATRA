@@ -1,4 +1,4 @@
-/* Imports */
+/* Imports and themes */
 
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons+Sharp);
@@ -30,47 +30,7 @@ span.icon {
 }
 
 
-/* Individual element styling */
-
-a {
-	color: var(--link-color);
-}
-
-a:hover {
-	color: var(--link-hover-color)
-}
-
-input, button, select {
-	font-family: Lato, sans-serif;
-	padding: 0.5em;
-	background-color: var(--background-color-secondary);
-	color: var(--text-color);
-	border: 1px solid var(--background-color-secondary);
-	border-radius: var(--border-radius);
-}
-
-input:hover, button:hover, select:hover,
-input:focus-visible, button:focus-visible, select:focus-visible {
-	outline: none;
-	border-color: var(--border-color) !important;
-}
-
-button {
-	cursor: pointer;
-}
-
-input[type=checkbox] {
-	height: 1.5em;
-	width: 1.5em;
-}
-
-hr {
-	border: solid 1px var(--border-color);
-}
-
-pre {
-	overflow-x: auto;
-}
+/* Form layout */
 
 form {
 	display: inline-grid;
@@ -84,7 +44,66 @@ form button:last-child {
 	grid-column: 1 / -1;
 }
 
-button.dangerous {
-	background-color: var(--red-button-color);
-	border-color: var(--red-button-color);
+
+/* Form elements */
+
+input, button, select, textarea {
+	font-family: Lato, sans-serif;
+	padding: 0.5em;
+	border-radius: var(--border-radius);
+	transition: border-color 250ms, background-color 250ms;
+	border: none;
+	outline: none;
+}
+
+
+/* Input elements */
+
+input, select, textarea {
+	background-color: var(--background-color-secondary);
+	color: var(--text-color);
+}
+
+input:hover, select:hover, textarea:hover {
+	border-color: var(--border-highlight-color);
+}
+
+input:disabled, select:disabled, textarea:hover {
+	background-color: var(--background-color-disabled);
+}
+
+input[type=date]:disabled:not([value]) {
+	color: transparent;
+}
+
+input[type=checkbox] {
+	height: 1.5em;
+	width: 1.5em;
+}
+
+
+/* Buttons */
+
+button {
+	cursor: pointer;;
+}
+
+
+/* Other elements */
+
+a {
+	color: var(--text-color);
+	transition: opacity 250ms;
+}
+
+a:not(:has(button)):hover {
+	opacity: 0.5;
+}
+
+hr {
+	border: solid 1px var(--border-color);
+}
+
+pre {
+	overflow-x: auto;
 }
