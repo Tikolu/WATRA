@@ -31,6 +31,8 @@ export default async function({user, targetJednostka}) {
 		}
 	}
 
+	await user.checkPermission(targetJednostka.PERMISSIONS.DELETE)
+
 	return html("jednostka/page", {
 		user,
 		targetJednostka,

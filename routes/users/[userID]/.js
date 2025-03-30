@@ -12,6 +12,7 @@ export default async function({user, targetUser}) {
 	// Check permissions
 	await user.requirePermission(targetUser.PERMISSIONS.ACCESS)
 	await user.checkPermission(targetUser.PERMISSIONS.MODIFY)
+	await user.checkPermission(targetUser.PERMISSIONS.DELETE)
 
 	return html("user/page", {user, targetUser})
 }

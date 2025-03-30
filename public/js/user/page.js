@@ -40,7 +40,7 @@ dateOfBirthInput.onsubmit = async () => {
 	}
 }
 
-deleteUserButton.onclick = async () => {
+if(this.deleteUserButton) deleteUserButton.onclick = async () => {
 	if(!confirm(`Usunąć użytkownika ${userTitle.innerText}?`)) return
 	try {
 		var response = await API(`user/${META.userID}/delete`)
@@ -51,7 +51,7 @@ deleteUserButton.onclick = async () => {
 	history.back()
 }
 
-generateAccessCodeButton.onclick = async () => {
+if(this.generateAccessCodeButton) generateAccessCodeButton.onclick = async () => {
 	try {
 		var response = await API(`user/${META.userID}/accessCode/generate`)
 	} catch(error) {

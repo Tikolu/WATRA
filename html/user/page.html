@@ -8,8 +8,12 @@
 }) %>
 <h1 id="user-title"><%= $.targetUser.displayName %></h1>
 
-<button id="delete-user-button" class="dangerous">Usuń użytkownika</button>
-<button id="generate-access-code-button">Wygeneruj kod dostępu</button>
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
+	<button id="delete-user-button" class="dangerous">Usuń użytkownika</button>
+<% } %>
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY)) { %>
+	<button id="generate-access-code-button">Wygeneruj kod dostępu</button>
+<% } %>
 
 <hr>
 <h2>Dane</h2>

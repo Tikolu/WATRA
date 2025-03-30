@@ -43,8 +43,10 @@
 			<button id="mianowanie-button">Potwierdź mianowanie</button>
 		</form>
 
-		<h3>Usuwanie</h3>
-		<button id="delete-jednostka-button" class="dangerous">Usuń jednostkę</button>
+		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
+			<h3>Usuwanie</h3>
+			<button id="delete-jednostka-button" class="dangerous">Usuń jednostkę</button>
+		<% } %>
 	<% } %>
 <% } %>
 
