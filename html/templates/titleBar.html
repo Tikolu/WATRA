@@ -1,4 +1,8 @@
 <header>
 	<a href="/" id="system-title">System Harcerski (<%= globalThis.SYSTEM_VERSION %>)</a>
-	<a href="/users/<%= $.user.id %>" id="user-profile-link"><span class="icon">&#xe7fd;</span><%= $.user.displayName %></a>
+	<% if($.user) { %>
+		<a href="/users/<%= $.user.id %>" id="user-profile-link"><span class="icon">&#xe7fd;</span><%= $.user?.displayName %></a>
+	<% } else { %>
+		<a href="/login" id="user-profile-link"><span class="icon">&#xe7fd;</span>Logowanie</a>
+	<% } %>
 </header>
