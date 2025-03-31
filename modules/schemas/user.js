@@ -58,6 +58,7 @@ const schema = new mongoose.Schema({
 		},
 
 		async updateDateOfBirth(date) {
+			if(!date) throw Error("Nie prawidłowa data urodzenia")
 			this.dateOfBirth = date
 			if(this.isParent && this.age < 18) {
 				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
