@@ -53,37 +53,35 @@
 <% if($.targetJednostka.funkcje?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>Użytkownicy</h2>
-	<div id="jednostka-member-list">
-		<ul>
-			<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
-				<li>
-					<a href="/users/<%= funkcja.user.id %>"><b><%= funkcja.user.displayName %></b></a> (<%= funkcja.displayName %>)
-				</li>
-			<% } %>
-		</ul>
-		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-			<button id="create-user-button">Dodaj użytkownika</button>
+	<div id="jednostka-member-list" class="unit-grid">
+		<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
+			<a href="/users/<%= funkcja.user.id %>">
+				<h3><%= funkcja.user.displayName %></h3>
+				<p>(<%= funkcja.displayName %>)</p>
+			</a>
 		<% } %>
 	</div>
+	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+		<button id="create-user-button">Dodaj użytkownika</button>
+	<% } %>
 <% } %>
 
 <% if($.targetJednostka.subJednostki?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>Jednostki</h2>
-	<div id="sub-jednostka-list">
-		<ul>
-			<% for(const subJednostka of $.targetJednostka.subJednostki || []) { %>
-				<li>
-					<% if(!subJednostka) { %>
-						(nieznana jednostka)
-					<% } else { %>
-						<a href="/jednostki/<%= subJednostka.id %>"><b><%= subJednostka.displayName %></b></a>
-					<% } %>
-				</li>
+	<div id="sub-jednostka-list" class="unit-grid">
+		<% for(const subJednostka of $.targetJednostka.subJednostki || []) { %>
+			<% if(!subJednostka) { %>
+				<div>(nieznana jednostka)</div>
+			<% } else { %>
+				<a href="/jednostki/<%= subJednostka.id %>">
+					<h3><%= subJednostka.displayName %></h3>
+					<p><%= subJednostka.typeName %></p>
+				</a>
 			<% } %>
-		</ul>
-		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-			<button id="create-sub-jednostka-button">Dodaj jednostkę</button>
 		<% } %>
 	</div>
+	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+		<button id="create-sub-jednostka-button">Dodaj jednostkę</button>
+	<% } %>
 <% } %>

@@ -53,15 +53,14 @@ input, button, select, textarea {
 	border-radius: var(--border-radius);
 	transition: border-color 250ms, background-color 250ms;
 	border: none;
-	outline: none;
 }
-
 
 /* Input elements */
 
 input, select, textarea {
 	background-color: var(--background-color-secondary);
 	color: var(--text-color);
+	outline: none;
 }
 
 input:hover, select:hover, textarea:hover {
@@ -106,4 +105,30 @@ hr {
 
 pre {
 	overflow-x: auto;
+}
+
+
+/* Custom layouts */
+.unit-grid {
+	margin: 0.5em 0;
+}
+
+.unit-grid > div, .unit-grid > a {
+	display: inline-block;
+	width: 9em;
+	padding: 1em;
+	margin: 0.5em;
+
+	border-radius: var(--border-radius);
+	background-color: var(--background-color-secondary);
+
+	text-decoration: none;
+
+	& > * {
+		margin: 0;
+
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 }

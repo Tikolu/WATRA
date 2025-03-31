@@ -40,36 +40,31 @@
 <% if($.targetUser.isParent) { %>
 	<hr>
 	<h2>Podopieczni</h2>
-	<div id="child-list">
-		<ul>
-			<% for(const child of $.targetUser.children || []) { %>
-				<li>
-					<a href="/users/<%= child.id %>"><%= child.displayName %></a>
-				</li>
-			<% } %>
-		</ul>
+	<div id="child-list" class="unit-grid">
+		<% for(const child of $.targetUser.children || []) { %>
+			<a href="/users/<%= child.id %>"><%= child.displayName %></a>
+		<% } %>
 	</div>
 <% } else if($.targetUser.parents.length > 0 || $.targetUser.age < 18) { %>
 	<hr>
 	<h2>Rodzice / opiekunowie</h2>
-	<div id="parent-list">
-		<ul>
-			<% for(const parent of $.targetUser.parents || []) { %>
-				<li>
-					<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
-				</li>
-			<% } %>
-		</ul>
-		<button id="add-parent-button">Dodaj rodzica / opiekuna</button>
+	<div id="parent-list" class="unit-grid">
+		<% for(const parent of $.targetUser.parents || []) { %>
+				<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
+		<% } %>
 	</div>
+	<button id="add-parent-button">Dodaj rodzica / opiekuna</button>
 <% } %>
 
 <% if($.targetUser.funkcje.length > 0) { %>
 	<hr>
 	<h2>Funkcje</h2>
-	<ul>
+	<div id="funkcja-list" class="unit-grid">
 		<% for(const funkcja of $.targetUser.funkcje) { %>
-			<li><%= Text.capitalise(funkcja.displayName) %> w <a href="/jednostki/<%= funkcja.jednostka?.id %>"><%= funkcja.jednostka?.displayName || "(nieznana jednostka)" %></a></li>
+			<a href="/jednostki/<%= funkcja.jednostka?.id %>">
+				<h3><%= Text.capitalise(funkcja.displayName) %></h3>
+				<p><%= funkcja.jednostka?.displayName || "(nieznana jednostka)" %></p>
+			</a>
 		<% } %>
-	</ul>
+	</div>
 <% } %>

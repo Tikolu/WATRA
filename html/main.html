@@ -5,18 +5,28 @@
 	user: $.user
 }) %>
 <h1>Strona główna</h1>
-<p>Czuwaj, <a href="/users/<%= $.user.id %>"><%= $.user.displayName %></a>! 👋</p>
-<button id="logout-button"><span class="icon">&#xe9ba;</span>Wyloguj</button>
-<hr>
-
-<% for(const funkcja of $.user.funkcje) { %>
-	<h2><a href="/jednostki/<%= funkcja.jednostka.id %>"><%= funkcja.jednostka.displayName %></a></h2>
-<% } %>
-
-<% if($.user.children.length > 0) { %>
-	<hr>
-	<h2>Podopieczni</h2>
-	<% for(const child of $.user.children) { %>
-		<h2><a href="/users/<%= child.id %>"><%= child.displayName %></a></h2>
+<p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
+<section>
+	<% if($.user.funkcje.length > 0) { %>
+		<hr>
+		<h2>Jednostki</h2>
+		<div class="unit-grid">
+			<% for(const funkcja of $.user.funkcje) { %>
+				<a href="/jednostki/<%= funkcja.jednostka.id %>">
+					<h3><%= funkcja.jednostka.displayName %></h3>
+					<p><%= funkcja.jednostka.typeName %></p>
+				</a>
+			<% } %>
+		</div>
 	<% } %>
-<% } %>
+
+	<% if($.user.children.length > 0) { %>
+		<hr>
+		<h2>Podopieczni</h2>
+		<div class="unit-grid">
+			<% for(const child of $.user.children) { %>
+				<a href="/users/<%= child.id %>"><%= child.displayName %></a>
+			<% } %>
+		</div>
+	<% } %>
+</section>
