@@ -1,7 +1,7 @@
 /* Imports and themes */
 
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
-@import url(https://fonts.googleapis.com/icon?family=Material+Icons+Sharp);
+@import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:FILL@1);
 
 @import url(/css/themes/light.css);
 @import url(/css/themes/dark.css) (prefers-color-scheme: dark);
@@ -21,12 +21,27 @@ main {
 
 
 /* Material icons */
+
+@font-face {
+	font-family: blank;
+	size-adjust: 0%;
+	src: local("Arial");
+}
+
 span.icon {
-	font-family: "Material Icons Sharp";
-	display: inline;
-	font-size: 1.2em;
-	margin-right: 0.2em;
+	font-family: "Material Symbols Sharp", blank;
+
+	display: inline-block;
+	font-size: 0.99em; /* 🤔 */
+	scale: 1.25;
+	width: 1em;
+	margin-left: 0.25em;
+	margin-right: 0.5em;
+	
+	overflow: hidden;
 	vertical-align: bottom;
+
+	user-select: none;
 }
 
 
@@ -42,6 +57,10 @@ form {
 
 form button:last-child {
 	grid-column: 1 / -1;
+}
+
+form input {
+	width: 100%;
 }
 
 
@@ -93,6 +112,10 @@ button {
 a {
 	color: var(--text-color);
 	transition: opacity 250ms;
+}
+
+a:has(button) {
+	text-decoration: none;
 }
 
 a:not(:has(button)):hover {

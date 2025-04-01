@@ -24,6 +24,14 @@
 				</a>
 			<% } %>
 		</div>
+		<% if($.user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) { %>
+			<hr>
+			<h2>Akcje</h2>
+			<button id="create-akcja-button">
+				<span class="icon">camping</span>
+				Nowa akcja
+			</button>
+		<% } %>
 	<% } %>
 
 	<% if($.user.children.length > 0) { %>

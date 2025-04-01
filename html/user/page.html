@@ -8,13 +8,22 @@
 }) %>
 <h1 id="user-title"><%= $.targetUser.displayName %></h1>
 <% if($.user.id == $.targetUser.id) { %>
-	<button id="logout-button" href="/logout"><span class="icon">&#xe9ba;</span>Wyloguj</button>
+	<button id="logout-button" href="/logout">
+		<span class="icon">logout</span>
+		Wyloguj
+	</button>
 <% } %>
 <% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
-	<button id="delete-user-button" class="dangerous">Usuń użytkownika</button>
+	<button id="delete-user-button" class="dangerous">
+		<span class="icon">delete</span>
+		Usuń użytkownika
+	</button>
 <% } %>
 <% if($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY)) { %>
-	<button id="generate-access-code-button">Wygeneruj kod dostępu</button>
+	<button id="generate-access-code-button">
+		<span class="icon">password</span>
+		Wygeneruj kod dostępu
+	</button>
 <% } %>
 
 <hr>
@@ -53,7 +62,10 @@
 				<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
 		<% } %>
 	</div>
-	<button id="add-parent-button">Dodaj rodzica / opiekuna</button>
+	<button id="add-parent-button">
+		<span class="icon">supervisor_account</span>
+		Dodaj rodzica / opiekuna
+	</button>
 <% } %>
 
 <% if($.targetUser.funkcje.length > 0) { %>

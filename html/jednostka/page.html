@@ -40,12 +40,18 @@
 				<option value="remove">(usuń z jednostki)</option>
 			</select>
 
-			<button id="mianowanie-button">Potwierdź mianowanie</button>
+			<button id="mianowanie-button">
+				<span class="icon">check</span>
+				Potwierdź mianowanie
+			</button>
 		</form>
 
 		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
 			<h3>Usuwanie</h3>
-			<button id="delete-jednostka-button" class="dangerous">Usuń jednostkę</button>
+			<button id="delete-jednostka-button" class="dangerous">
+				<span class="icon">delete</span>
+				Usuń jednostkę
+			</button>
 		<% } %>
 	<% } %>
 <% } %>
@@ -62,7 +68,10 @@
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-		<button id="create-user-button">Dodaj użytkownika</button>
+		<button id="create-user-button">
+			<span class="icon">person_add</span>
+			Dodaj użytkownika
+		</button>
 	<% } %>
 <% } %>
 
@@ -82,6 +91,9 @@
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-		<button id="create-sub-jednostka-button">Dodaj jednostkę</button>
+		<button id="create-sub-jednostka-button">
+			<span class="icon">add</span>
+			Dodaj jednostkę
+		</button>
 	<% } %>
 <% } %>
