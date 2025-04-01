@@ -2,33 +2,36 @@ import mongoose from "mongoose"
 
 import { FunkcjaType, FunkcjaNames } from "modules/types.js"
 
-const schema = new mongoose.Schema({
-	type: {
+export class FunkcjaClass {
+	/* * Properties * */
+
+	type = {
 		type: Number,
 		enum: Object.values(FunkcjaType),
 		default: FunkcjaType.SZEREGOWY
-	},
-	user: {
+	}
+	user = {
 		type: String,
 		ref: "User"
-	},
-	jednostka: {
+	}
+	jednostka = {
 		type: String,
 		ref: "Jednostka"
 	}
-},
-{
-	virtuals: {
-		displayName: {
-			get() {
-				if(!this.populated("jednostka")) throw Error("Jednostka must be populated to derive funkcja name")
-				if(!this.jednostka) return "(nieznana funkcja)"
-				
-				return FunkcjaNames[this.jednostka.type]?.[this.type][0] || "(nieznana funkcja)"
-			}
-		}
+
+
+	/* * Getters * */
+
+	/** Returns the funkcja type name. Will throw an error if the jednostka field is not populated */
+	get displayName() {
+		if(!this.populated("jednostka")) throw Error("Jednostka field must be populated to derive funkcja name")
+		if(!this.jednostka) return "(nieznana funkcja)"
+		
+		return FunkcjaNames[this.jednostka.type]?.[this.type][0] || "(nieznana funkcja)"
 	}
-})
+}
+
+const schema = mongoose.Schema.fromClass(FunkcjaClass)
 
 schema.beforeDelete = async function() {
 	// Remove self from user

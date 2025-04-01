@@ -8,159 +8,172 @@ import Funkcja from "modules/schemas/funkcja.js"
 import { FunkcjaType } from "modules/types.js"
 import HTTPError from "modules/server/error.js"
 
-const schema = new mongoose.Schema({
-	name: {
+export class UserClass {
+	/* * Static functions * */
+
+	/** Finds a user by their access code */
+	static findByAccessCode(code) {
+		if(!/^\d+$/.test(code)) return null
+		return this.findOne({ accessCode: code })
+	}
+	
+	
+	/* * Properties * */
+
+	name = {
 		first: String,
 		last: String
-	},
-	dateOfBirth: {
+	}
+	dateOfBirth = {
 		type: Date,
 		max: Date.now
-	},
-	accessCode: String,
-	parents: [
+	}
+	accessCode = String
+	parents = [
 		{
 			type: String,
 			ref: "User"
 		}
-	],
-	children: [
+	]
+	children = [
 		{
 			type: String,
 			ref: "User"
 		}
-	],
-	funkcje: [
+	]
+	funkcje = [
 		{
 			type: String,
 			ref: "Funkcja"
 		}
 	]
-},
-{
-	statics: {
-		findByAccessCode(code) {
-			if(!/^\d+$/.test(code)) return null
-			return this.findOne({ accessCode: code })
+
+
+	/* * Getters * */
+
+	/** Returns the user's name in the format "First Last" */
+	get displayName() {
+		let name = this.name.first
+		if(!name) return "(brak imienia)"
+		else if(this.name.last) name += " " + this.name.last
+		return name
+	}
+
+	/** Returns the floor of the user's age in years */
+	get age() {
+		if(!this.dateOfBirth) return null
+		const age = datetime.difference(new Date(), this.dateOfBirth)
+		return age.years
+	}
+
+	/** True if the user has children */
+	get isParent() {
+		return this.children.length > 0
+	}
+
+
+	/* * Methods * */
+
+	/** Generates, saves and returns an access code for a user */
+	async generateAccessCode() {
+		this.accessCode = randomID(2, "numeric")
+		await this.save()
+		return this.accessCode
+	}
+
+	/** Updates the user's first an last name */
+	async updateName(first="", last="") {
+		this.name.first = Text.formatName(first)
+		this.name.last = Text.formatName(last)
+		await this.save()
+	}
+
+	/** Updates the date of birth and checks for any issues */
+	async updateDateOfBirth(date) {
+		if(!date) throw Error("Nie prawidłowa data urodzenia")
+		this.dateOfBirth = date
+		if(this.isParent && this.age < 18) {
+			throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
 		}
-	},
-	methods: {
-		async generateAccessCode() {
-			this.accessCode = randomID(2, "numeric")
-			await this.save()
-			return this.accessCode
-		},
+		await this.save()
+	}
 
-		async updateName(first="", last="") {
-			this.name.first = Text.formatName(first)
-			this.name.last = Text.formatName(last)
-			await this.save()
-		},
+	/** Adds the provided user as a parent to the user */
+	async addParent(parent) {
+		if(this.parents.length >= 2) throw Error("Limit dwóch rodziców / opiekunów")
+		if(this.parents.hasID(parent.id)) return
+		this.parents.push(parent.id)
 
-		async updateDateOfBirth(date) {
-			if(!date) throw Error("Nie prawidłowa data urodzenia")
-			this.dateOfBirth = date
-			if(this.isParent && this.age < 18) {
-				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
-			}
-			await this.save()
-		},
+		parent.children.push(this.id)
 
-		async addParent(parent) {
-			if(this.parents.length >= 2) throw Error("Limit dwóch rodziców / opiekunów")
-			if(this.parents.hasID(parent.id)) return
-			this.parents.push(parent.id)
+		await parent.save()
+		await this.save()
+	}
 
-			parent.children.push(this.id)
+	/** Returns the user's funkcja in the given jednostka */
+	async getFunkcjaInJednostka(jednostka) {
+		await this.populate("funkcje")
+		return this.funkcje.find(f => f.jednostka.id == jednostka.id)
+	}
 
-			await parent.save()
-			await this.save()
-		},
-
-		async getFunkcjaInJednostka(jednostka) {
-			await this.populate("funkcje")
-			return this.funkcje.find(f => f.jednostka.id == jednostka.id)
-		},
-
-		async hasFunkcjaInJednostki(requiredFunkcja, ...jednostki) {
-			for(const jednostka of jednostki) {
-				if(jednostka instanceof Array || Symbol.asyncIterator in jednostka) {
-					for await(const asyncJednostka of jednostka) {
-						if(await this.hasFunkcjaInJednostki(requiredFunkcja, asyncJednostka)) return true
-					}
-				} else {
-					const funkcja = await this.getFunkcjaInJednostka(jednostka)
-					if(typeof requiredFunkcja == "function") {
-						const checkResult = await requiredFunkcja(funkcja?.type)
-						if(checkResult === true) return true
-					} else if(requiredFunkcja instanceof Array) {
-						if(requiredFunkcja.includes(funkcja?.type)) return true
-					} else if(funkcja?.type === requiredFunkcja) return true
+	/** Checks if the user has a funkcja in any of the given jednostki */
+	async hasFunkcjaInJednostki(requiredFunkcja, ...jednostki) {
+		for(const jednostka of jednostki) {
+			if(jednostka instanceof Array || Symbol.asyncIterator in jednostka) {
+				for await(const asyncJednostka of jednostka) {
+					if(await this.hasFunkcjaInJednostki(requiredFunkcja, asyncJednostka)) return true
 				}
+			} else {
+				const funkcja = await this.getFunkcjaInJednostka(jednostka)
+				if(typeof requiredFunkcja == "function") {
+					const checkResult = await requiredFunkcja(funkcja?.type)
+					if(checkResult === true) return true
+				} else if(requiredFunkcja instanceof Array) {
+					if(requiredFunkcja.includes(funkcja?.type)) return true
+				} else if(funkcja?.type === requiredFunkcja) return true
 			}
-			return false
-		},
-
-		async checkPermission(permission) {
-			this.$locals.permissionCache ||= []
-			for(const cacheEntry of this.$locals.permissionCache) {
-				if(cacheEntry[0] == permission) return cacheEntry[1]
-			}
-			const permissionState = await permission(this)
-			this.$locals.permissionCache.push([permission, permissionState])
-			return permissionState
-		},
-
-		async requirePermission(permission, message) {
-			if(await this.checkPermission(permission)) return
-			throw new HTTPError(403, message)
-		},
-
-		hasPermission(permission) {
-			this.$locals.permissionCache ||= []
-			for(const cacheEntry of this.$locals.permissionCache) {
-				if(cacheEntry[0] == permission) return cacheEntry[1]
-			}
-			throw Error(`Permission ${permission.name.replace(/^bound /, "")} not checked`)
 		}
-	},
-	virtuals: {
-		displayName: {
-			get() {
-				let name = this.name.first
-				if(!name) return "(brak imienia)"
-				else if(this.name.last) name += " " + this.name.last
-				return name
-			}
-		},
+		return false
+	}
 
-		age: {
-			get() {
-				if(!this.dateOfBirth) return null
-				const age = datetime.difference(new Date(), this.dateOfBirth)
-				return age.years
-			}
-		},
+	/** Checks permission and returns the result. The result is cached for future calls */
+	async checkPermission(permission) {
+		this.$locals.permissionCache ||= []
+		for(const cacheEntry of this.$locals.permissionCache) {
+			if(cacheEntry[0] == permission) return cacheEntry[1]
+		}
+		const permissionState = await permission(this)
+		this.$locals.permissionCache.push([permission, permissionState])
+		return permissionState
+	}
 
-		isParent: {
-			get() {
-				return this.children.length > 0
-			}
-		},
+	/** Checks permission and throws a 403 error if denied */
+	async requirePermission(permission, message) {
+		if(await this.checkPermission(permission)) return
+		throw new HTTPError(403, message)
+	}
 
-		// Recursive list of all jednostki and upperJednostki of all funkcje
-		jednostkiTree: {
-			async * get() {
-				await this.populate("funkcje")
-				for(const funkcja of this.funkcje) {
-					await funkcja.populate("jednostka")
-					yield funkcja.jednostka
-					yield * funkcja.jednostka.upperJednostkiTree
-				}
-			}
+	/** Returns the permission state from cache. Will throw an error if permission is not in cache */
+	hasPermission(permission) {
+		this.$locals.permissionCache ||= []
+		for(const cacheEntry of this.$locals.permissionCache) {
+			if(cacheEntry[0] == permission) return cacheEntry[1]
+		}
+		throw Error(`Permission ${permission.name.replace(/^bound /, "")} not checked`)
+	}
+
+	/** Returns an asynchronous list of all user's jednostki and upper jednostki */
+	async * getJednostkiTree() {
+		await this.populate("funkcje")
+		for(const funkcja of this.funkcje) {
+			await funkcja.populate("jednostka")
+			yield funkcja.jednostka
+			yield * funkcja.jednostka.getUpperJednostkiTree()
 		}
 	}
-})
+}
+
+const schema = mongoose.Schema.fromClass(UserClass)
 
 schema.beforeDelete = async function() {
 	// Ensure no parents
@@ -189,11 +202,11 @@ schema.permissions = {
 		// Child can access their parents
 		if(user.parents.hasID(this.id)) return true
 		// Przyboczni of member jednostka and of all upper jednostki can access
-		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.jednostkiTree)) return true
+		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.getJednostkiTree())) return true
 		// Przyboczni of child's member jednostka and of all upper jednostki can access
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, child.jednostkiTree)) return true
+			if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, child.getJednostkiTree())) return true
 		}
 		return false
 	},
@@ -208,12 +221,12 @@ schema.permissions = {
 		// Parent can modify their children
 		if(user.children.hasID(this.id)) return true
 		// Druyżynowi of member jednostka and of all upper jednostki can modify
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.jednostkiTree)) return true
+		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
 		// Druyżynowi of child's member jednostka and of all upper jednostki can modify
 		if(this.isParent) {
 			await this.populate("children")
 			for(const child of this.children) {
-				if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, child.jednostkiTree)) return true
+				if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, child.getJednostkiTree())) return true
 			}
 		}
 		return false
@@ -223,7 +236,7 @@ schema.permissions = {
 		// User can never delete themselves
 		if(user.id == this.id) return false
 		// Druyżynowi of member jednostka and of all upper jednostki can delete
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.jednostkiTree)) return true
+		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
 		return false
 	}
 }

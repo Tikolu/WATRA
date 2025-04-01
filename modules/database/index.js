@@ -127,6 +127,21 @@ mongoose.plugin(schema => {
 	}
 })
 
+// Helper function to create a schema from a class
+mongoose.Schema.fromClass = function(classInput) {
+	const instance = new classInput()
+	const properties = Object.getOwnPropertyNames(instance)
+	const schemaDefinition = {}
+	for(const property of properties) {
+		if(instance[property] === undefined) continue
+		schemaDefinition[property] = instance[property]
+	}
+
+	const schema = new mongoose.Schema(schemaDefinition)
+	schema.loadClass(classInput)
+	return schema
+}
+
 // Delete function (alias of deleteOne)
 mongoose.plugin(schema => schema.methods.delete = function() {
 	return this.deleteOne()
