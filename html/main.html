@@ -7,6 +7,12 @@
 <h1>Strona główna</h1>
 <p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
 <section>
+	<details>
+		<summary>Werjsa 1.0.0, opublikowana 31 marca</summary>
+		<article>
+			<%~ include("/changelog/1") %>
+		</article>
+	</details>
 	<% if($.user.funkcje.length > 0) { %>
 		<hr>
 		<h2>Jednostki</h2>

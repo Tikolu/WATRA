@@ -103,8 +103,39 @@ hr {
 	border: solid 1px var(--border-color);
 }
 
+details > summary {
+	cursor: pointer;
+	text-decoration: underline;
+	transition: opacity 250ms;
+}
+
+details > summary:hover {
+	opacity: 0.5;
+}
+
 pre {
 	overflow-x: auto;
+}
+
+article {
+	padding: 1em;
+	margin: 0.5em 0;
+	border-radius: var(--border-radius);
+	background-color: var(--background-color-secondary);
+}
+
+article > h1:first-child {
+	margin-top: 0;
+	font-size: 2em;
+}
+
+li {
+	margin: 0.5em 0;
+}
+
+li > * {
+	margin-top: 0;
+	margin-bottom: 0;
 }
 
 
