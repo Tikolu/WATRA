@@ -142,6 +142,24 @@ export class JednostkaClass {
 		return funkcjaOptions
 	}
 
+	/** Sorts funkcje based on type and user name */
+	sortFunkcje() {
+		this.funkcje.sort((a, b) => {
+			// Place users with highest funkcja at the start
+			if(a.type != b.type) return b.type - a.type
+
+			// Place users without a name at the end
+			const aNoName = Object.isEmpty(a.user.name.toObject())
+			const bNoName = Object.isEmpty(b.user.name.toObject())
+
+			if(aNoName && bNoName) return 0
+			if(aNoName) return 1
+			if(bNoName) return -1
+			
+			return a.user.displayName.localeCompare(b.user.displayName)
+		})
+	}
+
 	/** Recursive generator of all upperJednostki */
 	async * getUpperJednostkiTree() {
 		await this.populate("upperJednostki")

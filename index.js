@@ -6,6 +6,7 @@ globalThis.SYSTEM_VERSION = "1.0.0"
 import * as server from "modules/server"
 import * as database from "modules/database"
 import * as cli from "jsr:@std/cli"
+import "modules/util.js"
 
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
