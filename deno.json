@@ -12,7 +12,7 @@
 		}
 	},
 	"tasks": {
-		"start": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal index.js",
-		"watcher": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal --watch index.js"
+		"start-test": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal index.js --port 3001 --db test",
+		"start-dev": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal --inspect --watch index.js --port 3002 --db dev"
 	}
 }
