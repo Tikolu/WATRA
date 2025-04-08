@@ -2,7 +2,6 @@ import mongoose from "mongoose"
 import * as Text from "modules/text.js"
 
 import Funkcja from "modules/schemas/funkcja.js"
-import User from "modules/schemas/user.js"
 
 import { FunkcjaType, JednostkaType, FunkcjaNames } from "modules/types.js"
 
@@ -12,8 +11,7 @@ export class JednostkaClass {
 	name = String
 	type = {
 		type: Number,
-		enum: Object.values(JednostkaType),
-		default: JednostkaType.HUFIEC
+		enum: Object.values(JednostkaType)
 	}
 	funkcje = [
 		{
@@ -44,7 +42,7 @@ export class JednostkaClass {
 	
 	/** Returns the jednostka type name */
 	get typeName() {
-		const type = Object.keys(JednostkaType)[this.type]
+		const type = Object.keys(JednostkaType)[this.type] || "jednostka"
 		return Text.capitalise(type)
 	}
 
@@ -59,45 +57,61 @@ export class JednostkaClass {
 	
 	/** Add user to jednostka with a funkcja, any existing funkcja in the jednostka gets overwritten */
 	async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {
-		if(!Object.values(FunkcjaType).includes(funkcjaType)) throw Error("Nieprawidłowy typ funkcji")
 		// Populate funkcje
 		await this.populate("funkcje")
+
+		let funkcja
 		
-		// Find existing funkcja of user in this jednostka
-		let funkcja = this.funkcje.find(f => f.user.id == user.id)
-		if(funkcja?.type === funkcjaType) throw Error(`Użytkownik już ma tą funkcję`)
-		
-		// Alternatively, create new funkcja
-		funkcja ||= new Funkcja({
-			user: user.id,
-			jednostka: this.id
-		})
+		// Value is a Funkcja instance: add the funkcja	directly
+		if(funkcjaType instanceof Funkcja) funkcja = funkcjaType
+
+		// Value is a FunkcjaType: create new funkcja with said type
+		else if(Object.values(FunkcjaType).includes(funkcjaType)) {
+			funkcja = new Funkcja({
+				type: funkcjaType
+			})
+
+		} else throw Error("Nieprawidłowy typ funkcji")
+
+		// Attempt to find existing funkcja of user in this jednostka
+		const existingFunkcja = this.funkcje.find(f => f.user.id == user.id)
+		if(existingFunkcja) {
+			if(existingFunkcja.type === funkcja.type) throw Error(`Użytkownik już ma tą funkcję`)
+			funkcja = new Funkcja({
+				...funkcja.toObject(),
+				_id: existingFunkcja.id
+			})
+			funkcja.$isNew = false
+		}
+
+		funkcja.user = user.id
+		funkcja.jednostka = this.id
 
 		// Only one drużynowy per jednostka, only one (pod)zastępowy per zastęp
-		if(funkcjaType == 2 || (this.type == JednostkaType.ZASTĘP && funkcjaType == 1)) {
-			const funkcjaGłówna = this.funkcje.find(f => f.type == funkcjaType)
+		if(funkcja.type == 2 || (this.type == JednostkaType.ZASTĘP && funkcja.type == 1)) {
+			const funkcjaGłówna = this.funkcje.find(f => f.type == funkcja.type)
 			if(funkcjaGłówna) {
 				await funkcjaGłówna.populate("jednostka")
 				throw Error(`${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`)
 			}
 		}
-		funkcja.type = funkcjaType
 
 		// Add funkcja to jednostka, unless already added
 		if(!this.funkcje.hasID(funkcja.id)) {
-			this.funkcje.push(funkcja.id)
+			this.funkcje.push(funkcja)
 		}
+		
 		// Add funkcja to user, unless already added
-		if(!user["funkcje"].hasID(funkcja.id)) {
-			user["funkcje"].push(funkcja.id)
+		const userFunkcjeKey = funkcja.wyjazdowa ? "funkcjeWyjazdowe" : "funkcje"
+		if(!user[userFunkcjeKey].hasID(funkcja.id)) {
+			user[userFunkcjeKey].push(funkcja.id)
 		}
-
-		// Sort funkcje
-		this.funkcje.sort((a, b) => b.type - a.type)
 
 		await funkcja.save()
 		await this.save()
 		await user.save()
+
+		return funkcja
 	}
 
 	/** Add user as szeregowy */
@@ -115,7 +129,6 @@ export class JednostkaClass {
 	async addSubJednostka(subJednostka) {
 		// Check jednostka type compatibility
 		if(subJednostka.type >= this.type) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
-		if(subJednostka.type < 0) throw Error(`Nie można dodać jednostki pod ${this.typeName}`)
 		
 		// Add subJednostka to subJednostki, unless already added
 		if(!this.subJednostki.hasID(subJednostka.id)) {
@@ -132,10 +145,10 @@ export class JednostkaClass {
 	}
 
 	/** Returns a list of possible funkcja levels and names for this jednostka */
-	getFunkcjaOptions() {
+	getFunkcjaOptions(funkcjaNames=FunkcjaNames[this.type]) {
 		const funkcjaOptions = []
-		for(const funkcjaLevel in FunkcjaNames[this.type]) {
-			for(const funkcjaName of FunkcjaNames[this.type][funkcjaLevel]) {
+		for(const funkcjaLevel in funkcjaNames) {
+			for(const funkcjaName of funkcjaNames[funkcjaLevel]) {
 				funkcjaOptions.push([funkcjaLevel, funkcjaName])
 			}
 		}
@@ -161,38 +174,66 @@ export class JednostkaClass {
 	}
 
 	/** Recursive generator of all upperJednostki */
-	async * getUpperJednostkiTree() {
-		await this.populate("upperJednostki")
+	async * getUpperJednostkiTree(exclude=[]) {
+		exclude = [...exclude]
+		await this.populate({
+			path: "upperJednostki",
+			exclude
+		})
 		for(const upperJednostka of this.upperJednostki) {
 			yield upperJednostka
-			yield * upperJednostka.getUpperJednostkiTree()
+			for await(const jednostka of upperJednostka.getUpperJednostkiTree(exclude)) {
+				if(exclude.hasID(jednostka.id)) continue
+				exclude.push(jednostka.id)
+				yield jednostka
+			}
 		}
 	}
 
 	/** Recursive generator of all subJednostki */
-	async * getSubJednostkiTree() {
-		await this.populate("subJednostki")
+	async * getSubJednostkiTree(exclude=[]) {
+		exclude = [...exclude]
+		await this.populate({
+			path: "subJednostki",
+			exclude
+		})
 		for(const subJednostka of this.subJednostki) {
 			yield subJednostka
-			yield * subJednostka.getSubJednostkiTree()
+			for await(const jednostka of subJednostka.getSubJednostkiTree(exclude)) {
+				if(exclude.hasID(jednostka.id)) continue
+				exclude.push(jednostka.id)
+				yield jednostka
+			}
 		}
 	}
 
 	/** List of all direct members */
-	async getMembers() {
-		await this.populate("funkcje", "user")
-		return this.funkcje.map(f => f.user)
+	async getMembers(exclude=[]) {
+		exclude = [...exclude]
+		await this.populate("funkcje", {
+			path: "user",
+			exclude
+		})
+		const users = []
+		for(const funkcja of this.funkcje) {
+			if(exclude.hasID(funkcja.user.id)) continue
+			exclude.push(funkcja.user.id)
+			users.push(funkcja.user)
+		}
+		return users
 	}
 
 	/* Recursive list of all members (including members of subJednostki) */
-	async * getSubMembers() {
+	async * getSubMembers(exclude=[]) {
+		exclude = [...exclude]
 		// Yield all members of this jednostka
-		for(const member of await this.getMembers()) {
+		for(const member of await this.getMembers(exclude)) {
+			exclude.push(member.id)
 			yield member
 		}
 		// Yield all members of the all subJednostki
 		for await(const subJednostka of this.getSubJednostkiTree()) {
-			yield * subJednostka.getSubMembers()
+			yield * subJednostka.getSubMembers(exclude)
 		}
 	}
 }
@@ -207,7 +248,6 @@ schema.beforeDelete = async function() {
 	await this.populate("funkcje", "user")
 	
 	// Chose primary upper jednostka
-	const primaryUpperJednostka = this.upperJednostki[0]
 	if(!primaryUpperJednostka) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
 
 	// Add all members to primary upper jednostka

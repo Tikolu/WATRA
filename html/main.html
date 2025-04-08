@@ -24,14 +24,22 @@
 				</a>
 			<% } %>
 		</div>
-		<% if($.user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) { %>
-			<hr>
-			<h2>Akcje</h2>
-			<button id="create-akcja-button">
-				<span class="icon">camping</span>
-				Nowa akcja
-			</button>
-		<% } %>
+	<% } %>
+	<% if($.user.funkcjeWyjazdowe || $.user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) { %>
+		<hr>
+		<h2>Wyjazdy</h2>
+		<div class="unit-grid">
+			<% for(const funkcja of $.user.funkcjeWyjazdowe) { %>
+				<a href="/wyjazdy/<%= funkcja.jednostka.id %>">
+					<h3><%= funkcja.jednostka.displayName %></h3>
+					<p><%= funkcja.jednostka.typeName %></p>
+				</a>
+			<% } %>
+		</div>
+		<button id="create-wyjazd-button">
+			<span class="icon">tour</span>
+			Nowy wyjazd
+		</button>
 	<% } %>
 
 	<% if($.user.children.length > 0) { %>

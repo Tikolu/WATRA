@@ -80,12 +80,20 @@ mongoose.plugin(schema => {
 		this.$locals.populated ||= []
 		
 		let currentKeys = path.shift()
+		let exclude = null
+		if(currentKeys instanceof Object && !(currentKeys instanceof Array)) {
+			if(!currentKeys.path || currentKeys.path instanceof Array) {
+				throw Error("Invalid populate path")
+			}
+			currentKeys = currentKeys.path
+			exclude = currentKeys.exclude
+		}
 		if(!(currentKeys instanceof Array)) currentKeys = [currentKeys]
 
 		for(const key of currentKeys) {
 			if(typeof key != "string") throw Error("Invalid populate path")
 			if(
-				!this.populated(key) && this[key] &&
+				!this.populated(key) &&
 				(!(this[key] instanceof Array) || this[key].length > 0)
 			) {
 				let schemaDefinition = schema.tree[key]
@@ -102,12 +110,26 @@ mongoose.plugin(schema => {
 				if(!ref) throw Error(`Path ${key} cannot be populated, no ref defined`)
 
 				const Model = mongoose.model(ref)
+
+				let populateIDs = arrayPopulate ? [...this[key]] : [this[key]]
+				if(exclude) {
+					if(!arrayPopulate) throw Error("Cannot exclude in non-array populate")
+					populateIDs = populateIDs.filter(id => !exclude.hasID(id))
+				}
 			
 				const results = await Model.find(
-					{ _id: this[key] }
+					{ _id: populateIDs }
 				)
-				this[key] = arrayPopulate ? results : results[0]
-				this.$locals.populated.push(key)
+				const populateOutput = []
+				for(const id of populateIDs) {
+					let result = results.find(r => r.id == id)
+					result ||= new Model({
+						_id: id
+					})
+					populateOutput.push(result)
+				}
+				this[key] = arrayPopulate ? populateOutput : populateOutput[0]
+				if(!exclude || !exclude.length) this.$locals.populated.push(key)
 			}
 			if(path.length) {
 				if(this[key] instanceof Array) {
@@ -154,6 +176,13 @@ export async function connect(dbName="main") {
 		await mongoose.connect(MONGO_URI, { dbName })
 		
 		console.log("\x1b[32m[MongoDB]\x1b[0m Connected!")
+
+		// Initialise all schemas
+		await import("modules/schemas/wyjazd.js")
+		await import("modules/schemas/funkcja.js")
+		await import("modules/schemas/jednostka.js")
+		await import("modules/schemas/user.js")
+
 		return true
 		
 	} catch(error) {

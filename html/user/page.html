@@ -80,3 +80,16 @@
 		<% } %>
 	</div>
 <% } %>
+
+<% if($.targetUser.funkcjeWyjazdowe.length > 0) { %>
+	<hr>
+	<h2>Funkcje w wyjazdach</h2>
+	<div id="wyjazdowa-funkcja-list" class="unit-grid">
+		<% for(const funkcja of $.targetUser.funkcjeWyjazdowe) { %>
+			<a href="/wyjazdy/<%= funkcja.jednostka?.id %>">
+				<h3><%= Text.capitalise(funkcja.displayName) %></h3>
+				<p><%= funkcja.jednostka?.displayName || "(nieznany wyjazd)" %></p>
+			</a>
+		<% } %>
+	</div>
+<% } %>

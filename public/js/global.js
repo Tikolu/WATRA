@@ -64,7 +64,7 @@ for(const input of document.querySelectorAll("input")) {
 			input.onsubmit?.()
 		})
 	}
-	if(input.matches("[type=date]")) {
+	if(input.matches("[type^=date]")) {
 		input.addEventListener("change", event => {
 			if(!input.value || input.matches(":focus")) return
 			input.blur()

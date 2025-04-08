@@ -4,6 +4,7 @@ export const FunkcjaType = {
 	PODZASTĘPOWY: 1,
 	PRZYBOCZNY: 1,
 	REFERENT: 1,
+	KADRA: 1,
 
 	ZASTĘPOWY: 2,
 	KOMENDANT: 2,
@@ -36,6 +37,12 @@ export const FunkcjaNames = {
 	[JednostkaType.CHORĄGIEW]: [
 		["szeregowy"],
 		["referent"],
-		["komendant chorągwi"]
+		["komendant"]
 	]
 }
+
+export const WyjazdoweFunkcjaNames = [
+	["szeregowy"],
+	["kadra"],
+	["komendant"]
+]

@@ -1,0 +1,101 @@
+<% layout("/layouts/body", {
+	title: $.targetWyjazd.displayName,
+	scripts: ["wyjazd/page"],
+	// styles: ["wyjazd/page"],
+	meta: {
+		wyjazdID: $.targetWyjazd.id
+	}
+}) %>
+<h1 id="wyjazd-title"><%= $.targetWyjazd.displayName %></h1>
+<p id="wyjazd-type"><%= $.targetWyjazd.typeName %></p>
+
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Ustawienia</h2>
+	<form>
+		<label for="wyjazd-name-input">Nazwa:</label>
+		<input type="text" id="wyjazd-name-input" autocomplete="off" value="<%= $.targetWyjazd.name || "" %>" <% $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ? "" : "disabled" %>>
+	</form>
+	<h3>Daty</h3>
+	<form>
+		<%
+			const minYear = 1800
+			const maxYear = Number(datetime.format(new Date, "yyyy")) + 50
+		%>
+		<label for="wyjazd-name-input">Od:</label>
+		<input
+			type="datetime-local"
+			id="wyjazd-start-date-input"
+			min="<%= minYear %>-01-01T00:00"
+			max="<%= maxYear %>-01-01T00:00"
+			<% if($.targetWyjazd.dates.start) { %>
+				value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
+			<% } %>
+			<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+				disabled
+			<%- } %>
+		>
+
+		<label for="wyjazd-name-input">Do:</label>
+		<input
+			type="datetime-local"
+			id="wyjazd-end-date-input"
+			min="<%= minYear %>-01-01T00:00"
+			max="<%= maxYear %>-01-01T00:00"
+			<% if($.targetWyjazd.dates.end) { %>
+				value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
+			<% } %>
+			<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+				disabled
+			<%- } %>
+		>
+	</form>
+
+	<% if($.usersForMianowanie?.length > 0) { %>
+		<h3>Mianowanie na funkcję</h3>
+		<form>
+			<label for="mianowanie-user-select">Użytkownik:</label>
+			<select id="mianowanie-user-select">
+				<option selected hidden></option>
+				<% for(const member of $.usersForMianowanie) { %>
+					<option value="<%= member.id %>"><%= member.displayName %></option>
+				<% } %>
+			</select>
+
+			<label for="mianowanie-funkcja-select">Funkcja:</label>
+			<select id="mianowanie-funkcja-select">
+				<option selected hidden></option>
+				<% for(const [funkcjaLevel, funkcjaName] of $.targetWyjazd.getFunkcjaOptions() || []) { %>
+					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
+				<% } %>
+				<option disabled></option>
+				<option value="remove">(usuń z wyjazdu)</option>
+			</select>
+
+			<button id="mianowanie-button">
+				<span class="icon">check</span>
+				Potwierdź mianowanie
+			</button>
+		</form>
+	<% } %>
+	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DELETE)) { %>
+		<h3>Usuwanie</h3>
+		<button id="delete-wyjazd-button" class="dangerous">
+			<span class="icon">delete</span>
+			Usuń wyjazd
+		</button>
+	<% } %>
+<% } %>
+
+<% if($.targetWyjazd.funkcje?.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Użytkownicy</h2>
+	<div id="wyjazd-member-list" class="unit-grid">
+		<% for(const funkcja of $.targetWyjazd.funkcje || []) { %>
+			<a href="/users/<%= funkcja.user.id %>">
+				<h3><%= funkcja.user.displayName %></h3>
+				<p>(<%= funkcja.displayName %>)</p>
+			</a>
+		<% } %>
+	</div>
+<% } %>

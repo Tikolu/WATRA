@@ -2,11 +2,13 @@ import { Eta } from "jsr:@eta-dev/eta"
 import * as datetime from "jsr:@std/datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
+import { FunkcjaType } from "modules/types.js"
 
 const etaImports = {
 	Base64,
 	Text,
-	datetime
+	datetime,
+	FunkcjaType
 }
 
 const eta = new Eta({

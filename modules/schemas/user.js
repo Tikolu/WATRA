@@ -3,10 +3,10 @@ import randomID from "modules/randomID.js"
 import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
-import Jednostka from "modules/schemas/jednostka.js"
 import Funkcja from "modules/schemas/funkcja.js"
 import { FunkcjaType } from "modules/types.js"
 import HTTPError from "modules/server/error.js"
+import Wyjazd from "modules/schemas/wyjazd.js"
 
 export class UserClass {
 	/* * Static functions * */
@@ -42,6 +42,12 @@ export class UserClass {
 		}
 	]
 	funkcje = [
+		{
+			type: String,
+			ref: "Funkcja"
+		}
+	]
+	funkcjeWyjazdowe = [
 		{
 			type: String,
 			ref: "Funkcja"
@@ -112,8 +118,9 @@ export class UserClass {
 
 	/** Returns the user's funkcja in the given jednostka */
 	async getFunkcjaInJednostka(jednostka) {
-		await this.populate("funkcje")
-		return this.funkcje.find(f => f.jednostka.id == jednostka.id)
+		const funkcjeKey = jednostka instanceof Wyjazd ? "funkcjeWyjazdowe" : "funkcje"
+		await this.populate(funkcjeKey)
+		return this[funkcjeKey].find(f => f.jednostka.id == jednostka.id)
 	}
 
 	/** Checks if the user has a funkcja in any of the given jednostki */
