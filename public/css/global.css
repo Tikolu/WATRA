@@ -49,7 +49,7 @@ span.icon {
 
 form {
 	display: inline-grid;
-	grid-template-columns: auto 8em;
+	grid-template-columns: repeat(2, auto);
 	column-gap: 1em;
 	row-gap: 0.25em;
 	align-items: baseline;
@@ -59,8 +59,8 @@ form button:last-child {
 	grid-column: 1 / -1;
 }
 
-form input {
-	width: 100%;
+form input, form select {
+	width: 15em;
 }
 
 
@@ -163,15 +163,31 @@ li > * {
 
 
 /* Custom layouts */
+
 .unit-grid {
+	--unit-grid-columns: 3;
+	
 	margin: 0.5em 0;
+	display: grid;
+	grid-template-columns: repeat(var(--unit-grid-columns), 1fr);
+	gap: 1em
+}
+
+@media (max-width: 45em) {
+	.unit-grid {
+		--unit-grid-columns: 2;
+	}
+}
+
+@media (max-width: 25em) {
+	.unit-grid {
+		--unit-grid-columns: 1;
+	}
 }
 
 .unit-grid > div, .unit-grid > a {
 	display: inline-block;
-	width: 9em;
 	padding: 1em;
-	margin: 0.5em;
 
 	border-radius: var(--border-radius);
 	background-color: var(--background-color-secondary);
