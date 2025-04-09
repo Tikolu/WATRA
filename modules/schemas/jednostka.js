@@ -76,7 +76,9 @@ export class JednostkaClass {
 		// Attempt to find existing funkcja of user in this jednostka
 		const existingFunkcja = this.funkcje.find(f => f.user.id == user.id)
 		if(existingFunkcja) {
+			// Check if existing funkcja is the same
 			if(existingFunkcja.type === funkcja.type) throw Error(`Użytkownik już ma tą funkcję`)
+			
 			funkcja = new Funkcja({
 				...funkcja.toObject(),
 				_id: existingFunkcja.id
@@ -156,7 +158,8 @@ export class JednostkaClass {
 	}
 
 	/** Sorts funkcje based on type and user name */
-	sortFunkcje() {
+	async sortFunkcje() {
+		await this.populate("funkcje", "user")
 		this.funkcje.sort((a, b) => {
 			// Place users with highest funkcja at the start
 			if(a.type != b.type) return b.type - a.type

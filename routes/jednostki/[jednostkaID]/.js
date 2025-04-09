@@ -10,6 +10,9 @@ export default async function({user, targetJednostka}) {
 		"upperJednostki"
 	])
 	
+	// Sort funkcje
+	await targetJednostka.sortFunkcje()
+	
 	// Get all members for mianowanie
 	const usersForMianowanie = []
 	if(await user.checkPermission(targetJednostka.PERMISSIONS.MODIFY)) {
@@ -20,7 +23,8 @@ export default async function({user, targetJednostka}) {
 
 		// Add members of every upperJednostka the user is a drużynowy of
 		for await(const jednostka of targetJednostka.getUpperJednostkiTree()) {
-			if(await user.getFunkcjaInJednostka(jednostka) < FunkcjaType.DRUŻYNOWY) continue
+			const userFunkcja = await user.getFunkcjaInJednostka(jednostka)
+			if(userFunkcja.type < FunkcjaType.DRUŻYNOWY) continue
 			for(const member of await jednostka.getMembers([...usersForMianowanie])) {
 				usersForMianowanie.push(member)
 			}
@@ -28,9 +32,6 @@ export default async function({user, targetJednostka}) {
 	}
 
 	await user.checkPermission(targetJednostka.PERMISSIONS.DELETE)
-
-	// Sort funkcje
-	targetJednostka.sortFunkcje()
 	
 	return html("jednostka/page", {
 		user,

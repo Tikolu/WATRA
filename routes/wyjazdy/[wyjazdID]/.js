@@ -7,6 +7,9 @@ export default async function({user, targetWyjazd}) {
 
 	await user.requirePermission(targetWyjazd.PERMISSIONS.ACCESS, "Nie masz dostępu do tego wyjazdu")
 	
+	// Sort funkcje
+	await targetWyjazd.sortFunkcje()
+	
 	// Generate list of possible users for mianowanie
 	const usersForMianowanie = []
 	if(await user.checkPermission(targetWyjazd.PERMISSIONS.MODIFY)) {
@@ -29,9 +32,6 @@ export default async function({user, targetWyjazd}) {
 	}
 
 	await user.checkPermission(targetWyjazd.PERMISSIONS.DELETE)
-
-	// Sort funkcje
-	targetWyjazd.sortFunkcje()
 	
 	return html("wyjazd/page", {
 		user,
