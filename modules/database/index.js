@@ -77,8 +77,6 @@ mongoose.plugin(schema => {
 // Mongoose better populate plugin
 mongoose.plugin(schema => {
 	schema.methods.populate = async function(...path) {
-		this.$locals.populated ||= []
-		
 		let currentKeys = path.shift()
 		let exclude = null
 		if(currentKeys instanceof Object && !(currentKeys instanceof Array)) {
@@ -129,7 +127,6 @@ mongoose.plugin(schema => {
 					populateOutput.push(result)
 				}
 				this[key] = arrayPopulate ? populateOutput : populateOutput[0]
-				if(!exclude || !exclude.length) this.$locals.populated.push(key)
 			}
 			if(path.length) {
 				if(this[key] instanceof Array) {
@@ -144,8 +141,11 @@ mongoose.plugin(schema => {
 
 	}
 	schema.methods.populated = function(key) {
-		this.$locals.populated ||= []
-		return this.$locals.populated.includes(key)
+		const schemaDefinition = schema.tree[key]
+		if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
+		const arrayPopulate = schemaDefinition instanceof Array
+		if(arrayPopulate) return this[key].every(i => typeof i != "string")
+		else return typeof this[key] != "string"
 	}
 })
 
