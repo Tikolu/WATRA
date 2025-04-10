@@ -113,6 +113,15 @@ export class JednostkaClass {
 		await this.save()
 		await user.save()
 
+		// Delete any szeregowy funkcje in upper jednostki
+		for await(const upperJednostka of this.getUpperJednostkiTree()) {
+			const existingFunkcja = await user.getFunkcjaInJednostka(upperJednostka)
+			if(existingFunkcja?.type === FunkcjaType.SZEREGOWY) {
+				await existingFunkcja.delete()
+			}
+		}
+		
+
 		return funkcja
 	}
 
