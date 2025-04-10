@@ -106,7 +106,6 @@ export class UserClass {
 
 	/** Adds the provided user as a parent to the user */
 	async addParent(parent) {
-		if(this.parents.length >= 2) throw Error("Limit dwóch rodziców / opiekunów")
 		if(this.parents.hasID(parent.id)) return
 		this.parents.push(parent.id)
 
@@ -183,21 +182,25 @@ export class UserClass {
 const schema = mongoose.Schema.fromClass(UserClass)
 
 schema.beforeDelete = async function() {
-	// Ensure no parents
+	// Delete parents
 	await this.populate("parents")
 	for(const parent of this.parents) {
+		// Keep parents with funkcje
 		if(parent.funkcje.length > 0) continue
-		if(parent.children.length > 0) continue
-		throw Error("Nie można usunąć użytkownika z rodzicem / opiekunem")
+		// Keep parents other children
+		if(parent.children.length > 1) continue
+		await parent.delete()
 	}
-	
+
+	// Remove self as parent in all children
+	await this.populate("children")
+	for(const child of this.children) {
+		child.parents = child.parents.filter(p => p.id != this.id)
+		await child.save()
+	}
+
 	// Delete all funkcje
 	await Funkcja.deleteMany({user: this.id})
-}
-
-schema.beforeValidate = function() {
-	// Ensure at least one funkcja
-	if(!this.isParent && this.funkcje.length == 0) throw Error("Użytkownik musi mieć przynajmniej jedną funkcję")
 }
 
 schema.permissions = {
@@ -242,6 +245,11 @@ schema.permissions = {
 	async DELETE(user) {
 		// User can never delete themselves
 		if(user.id == this.id) return false
+		// A parent of a user which can be deleted can also be deleted
+		await this.populate("children")
+		for(const child of this.children) {
+			if(await user.checkPermission(child.PERMISSIONS.DELETE)) return true
+		}
 		// Druyżynowi of member jednostka and of all upper jednostki can delete
 		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
 		return false
