@@ -251,10 +251,13 @@ schema.beforeDelete = async function() {
 	await this.populate("funkcje", "user")
 	
 	// Chose primary upper jednostka
+	const primaryUpperJednostka = this.upperJednostki[0]
 	if(!primaryUpperJednostka) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
 
 	// Add all members to primary upper jednostka
 	for(const funkcja of this.funkcje) {
+		// Skip adding if user already has a funkcja in the primary upper jednostka
+		if(await funkcja.user.hasFunkcjaInJednostki(f => f >= FunkcjaType.SZEREGOWY, primaryUpperJednostka)) continue
 		await primaryUpperJednostka.addMember(funkcja.user)
 	}
 	
