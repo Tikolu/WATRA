@@ -5,7 +5,7 @@ async function updateName() {
 			last: lastNameInput.value
 		})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	firstNameInput.value = response.first
@@ -33,7 +33,7 @@ dateOfBirthInput.onsubmit = async () => {
 			date: dateOfBirthInput.value
 		})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	} finally {
 		dateOfBirthInput.disabled = false
@@ -45,7 +45,7 @@ if(this.deleteUserButton) deleteUserButton.onclick = async () => {
 	try {
 		var response = await API(`user/${META.userID}/delete`)
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	history.back()
@@ -55,17 +55,17 @@ if(this.generateAccessCodeButton) generateAccessCodeButton.onclick = async () =>
 	try {
 		var response = await API(`user/${META.userID}/accessCode/generate`)
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
-	alert(`Jednorazowy kod dostępu:\n${response.accessCode}`)
+	Popup.error(`Jednorazowy kod dostępu:\n${response.accessCode}`)
 }
 
 if(this.addParentButton) addParentButton.onclick = async () => {
 	try {
 		var response = await API(`user/${META.userID}/parent/create`)
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	document.location.href = `/users/${response.userID}`

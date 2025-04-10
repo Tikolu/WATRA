@@ -41,3 +41,11 @@ button.dangerous {
 button.dangerous:hover {
 	background-color: #e44;
 }
+
+dialog.message.success {
+	background-color: #353;
+}
+
+dialog.message.error {
+	background-color: #533;
+}

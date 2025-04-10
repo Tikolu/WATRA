@@ -43,6 +43,14 @@ const Base64 = {
 	decode: v => atob(v)
 }
 
+// Sleep function 
+function sleep(ms) {
+	return new Promise(resolve => {
+		if(ms == Infinity) return
+		setTimeout(resolve, ms)
+	})
+}
+
 // META tag system
 const META = {}
 for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
@@ -91,4 +99,61 @@ for(const button of document.querySelectorAll("button[href]")) {
 	button.removeAttribute("href")
 	button.insertAdjacentElement("beforebegin", a)
 	a.append(button)
+}
+
+// Popups and dialogs
+const Popup = {
+	async info({message, type, icon, time=3500}) {
+		const dialog = document.createElement("dialog")
+		dialog.classList.add("message")
+		if(type) dialog.classList.add(type)
+
+		dialog.innerText = message
+		if(icon) {
+			const iconElement = document.createElement("span")
+			iconElement.classList.add("icon")
+			iconElement.innerText = icon
+			dialog.prepend(iconElement)
+		}
+
+		// Find potential existing dialog
+		const existingDialog = document.querySelector("body > dialog.message[open]")
+		if(existingDialog) {
+			existingDialog.insertAdjacentElement("beforebegin", dialog)
+			// If contents differ, calculate how much time is left on previous dialog
+			if(existingDialog.innerText != dialog.innerText) {
+				time += existingDialog.timings.show + existingDialog.timings.delay - Date.now()
+			}
+		} else document.body.append(dialog)
+
+		dialog.timings = {
+			show: Date.now(),
+			delay: time
+		}
+		dialog.show()
+
+		await sleep(time)
+		dialog.timings.hide = Date.now()
+
+		dialog.close()
+		// Wait for animation to finish before removing
+		await sleep(250)
+		dialog.remove()
+	},
+
+	async success(message, icon="check_circle") {
+		await Popup.info({
+			message,
+			type: "success",
+			icon
+		})
+	},
+
+	async error(message, icon="error") {
+		await Popup.info({
+			message,
+			type: "error",
+			icon
+		})
+	}
 }

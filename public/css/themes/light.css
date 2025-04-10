@@ -6,7 +6,7 @@
 
 	--text-color: #000;
 
-	--shadow-color: #444;
+	--shadow-color: #4449;
 
 	--border-color: #888;
 	--border-highlight-color: #ccc;
@@ -40,4 +40,12 @@ button.dangerous {
 
 button.dangerous:hover {
 	background-color: #e66;
+}
+
+dialog.message.success {
+	background-color: #cec;
+}
+
+dialog.message.error {
+	background-color: #fcc;
 }

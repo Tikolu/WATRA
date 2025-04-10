@@ -4,7 +4,7 @@ userCodeInput.onsubmit = async event => {
 	try {
 		var response = await API("login", {accessCode})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 

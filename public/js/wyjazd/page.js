@@ -3,7 +3,7 @@ if(this.deleteWyjazdButton) deleteWyjazdButton.onclick = async () => {
 	try {
 		await API(`wyjazd/${META.wyjazdID}/delete`)
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	history.back()
@@ -16,7 +16,7 @@ if(this.wyjazdNameInput) wyjazdNameInput.onsubmit = async () => {
 			name: wyjazdNameInput.value
 		})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	} finally {
 		wyjazdNameInput.disabled = false
@@ -34,7 +34,7 @@ async function updateDates() {
 			endDate
 		})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	wyjazdType.innerText = response.type
@@ -58,18 +58,18 @@ wyjazdEndDateInput.onsubmit = async () => {
 if(this.mianowanieButton) mianowanieButton.onclick = async () => {
 	const userID = mianowanieUserSelect.value
 	if(!userID) {
-		alert("Nie wybrano użytkownika")
+		Popup.error("Nie wybrano użytkownika")
 		return
 	}
 	let funkcjaType = mianowanieFunkcjaSelect.value
 	if(!funkcjaType) {
-		alert("Nie wybrano funkcji")
+		Popup.error("Nie wybrano funkcji")
 		return
 	} else if(funkcjaType == "remove") {
 		try {
 			var response = await API(`wyjazd/${META.wyjazdID}/member/${userID}/remove`)
 		} catch(error) {
-			alert(error)
+			Popup.error(error)
 			return
 		}
 	} else {
@@ -79,7 +79,7 @@ if(this.mianowanieButton) mianowanieButton.onclick = async () => {
 				funkcjaType
 			})
 		} catch(error) {
-			alert(error)
+			Popup.error(error)
 			return
 		}
 	}

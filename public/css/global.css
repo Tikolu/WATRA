@@ -202,3 +202,69 @@ li > * {
 		white-space: nowrap;
 	}
 }
+
+
+/* Popups and dialogs */
+
+dialog {
+	bottom: 2em;
+	
+	padding: 0.5em;
+	min-width: 10em;
+	max-width: 80vw;
+
+	background-color: var(--background-color-secondary);
+	border-radius: var(--border-radius);
+	border: none;
+
+	box-shadow: 0 0 0.25em var(--shadow-color);
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	transition: bottom 250ms;
+}
+
+dialog[open] {
+	animation: fade-grow 250ms;
+}
+
+dialog:not([open]) {
+	animation: fade-shrink 250ms;
+}
+
+dialog:nth-of-type(1) { bottom: 2.5em }
+dialog:nth-of-type(2) { bottom: 3.0em }
+dialog:nth-of-type(3) { bottom: 3.5em }
+dialog:nth-of-type(4) { bottom: 4.0em }
+dialog:nth-of-type(n+5) { bottom: 4.5em }
+
+
+
+/* Animations */
+
+@keyframes fade-grow {
+	from {
+		opacity: 0;
+		scale: 0.8;
+		display: block;
+	}
+	to {
+		opacity: 1;
+		scale: 1;
+		display: block;
+	}
+}
+@keyframes fade-shrink {
+	from {
+		opacity: 1;
+		scale: 1;
+		display: block;
+	}
+	to {
+		opacity: 0;
+		scale: 0.8;
+		display: block;
+	}
+}

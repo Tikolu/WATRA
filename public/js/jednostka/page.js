@@ -3,7 +3,7 @@ if(this.deleteJednostkaButton) deleteJednostkaButton.onclick = async () => {
 	try {
 		await API(`jednostka/${META.jednostkaID}/delete`)
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	history.back()
@@ -16,7 +16,7 @@ if(this.jednostkaNameInput) jednostkaNameInput.onsubmit = async () => {
 			name: jednostkaNameInput.value
 		})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	} finally {
 		jednostkaNameInput.disabled = false
@@ -29,7 +29,7 @@ if(this.createSubJednostkaButton) createSubJednostkaButton.onclick = async () =>
 	try {
 		var response = await API(`jednostka/${META.jednostkaID}/subJednostka/create`, {upperJednostkaID: META.jednostkaID})
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	document.location.href = `/jednostki/${response.subJednostkaID}`
@@ -39,7 +39,7 @@ if(this.createUserButton) createUserButton.onclick = async () => {
 	try {
 		var response = await API(`jednostka/${META.jednostkaID}/member/create`)
 	} catch(error) {
-		alert(error)
+		Popup.error(error)
 		return
 	}
 	document.location.href = `/users/${response.userID}`
@@ -48,18 +48,18 @@ if(this.createUserButton) createUserButton.onclick = async () => {
 if(this.mianowanieButton) mianowanieButton.onclick = async () => {
 	const userID = mianowanieUserSelect.value
 	if(!userID) {
-		alert("Nie wybrano użytkownika")
+		Popup.error("Nie wybrano użytkownika")
 		return
 	}
 	let funkcjaType = mianowanieFunkcjaSelect.value
 	if(!funkcjaType) {
-		alert("Nie wybrano funkcji")
+		Popup.error("Nie wybrano funkcji")
 		return
 	} else if(funkcjaType == "remove") {
 		try {
 			var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/remove`)
 		} catch(error) {
-			alert(error)
+			Popup.error(error)
 			return
 		}
 	} else {
@@ -69,7 +69,7 @@ if(this.mianowanieButton) mianowanieButton.onclick = async () => {
 				funkcjaType
 			})
 		} catch(error) {
-			alert(error)
+			Popup.error(error)
 			return
 		}
 	}

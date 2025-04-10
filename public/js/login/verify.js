@@ -5,7 +5,7 @@ verificationPlaceholder.onchange = async () => {
 	} catch(error) {
 		verificationPlaceholder.disabled = false
 		verificationPlaceholder.checked = false
-		alert(error)
+		Popup.error(error)
 		return
 	}
 
