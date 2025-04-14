@@ -103,7 +103,7 @@ input[type=checkbox] {
 /* Buttons */
 
 button {
-	cursor: pointer;;
+	cursor: pointer;
 }
 
 
@@ -164,6 +164,12 @@ li > * {
 
 /* Custom layouts */
 
+.button-row {
+	display: flex;
+	margin-top: 0.5em;
+	gap: 0.5em;
+}
+
 .unit-grid {
 	--unit-grid-columns: 3;
 	
@@ -189,6 +195,7 @@ li > * {
 	display: inline-block;
 	padding: 1em;
 
+	overflow: hidden;
 	border-radius: var(--border-radius);
 	background-color: var(--background-color-secondary);
 
