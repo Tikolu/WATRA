@@ -64,6 +64,10 @@ export class WyjazdClass extends JednostkaClass {
 	getFunkcjaOptions() {
 		return super.getFunkcjaOptions(WyjazdoweFunkcjaNames)
 	}
+
+	getUpperJednostkiTree() {
+		return []
+	}
 }
 
 const schema = mongoose.Schema.fromClass(WyjazdClass)
