@@ -3,8 +3,8 @@
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:FILL@1);
 
-@import url(/css/themes/light.css);
-@import url(/css/themes/dark.css) (prefers-color-scheme: dark);
+@import url(/css/themes/light.css?v=0);
+@import url(/css/themes/dark.css?v=0) (prefers-color-scheme: dark);
 
 /* Content layout */
 
@@ -89,7 +89,7 @@ input:disabled, select:disabled, textarea:hover {
 	background-color: var(--background-color-disabled);
 }
 
-input[type=date]:disabled:not([value]) {
+input[type^=date]:disabled:not([value]) {
 	color: transparent;
 }
 
@@ -97,7 +97,6 @@ input[type=checkbox] {
 	height: 1.5em;
 	width: 1.5em;
 }
-
 
 /* Buttons */
 
@@ -193,6 +192,7 @@ li > * {
 
 .button-row {
 	display: flex;
+	flex-wrap: wrap;
 	margin-top: 0.5em;
 	gap: 0.5em;
 }
@@ -228,9 +228,9 @@ li > * {
 
 	text-decoration: none;
 
-	& > * {
+	& > h3, & > p {
 		margin: 0;
-
+		
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -242,6 +242,7 @@ li > * {
 
 dialog {
 	position: fixed;
+	inset: 0;
 	flex-direction: column;
 	
 	padding: 1em;
@@ -254,8 +255,6 @@ dialog {
 	border: none;
 
 	box-shadow: 0 0 0.25em var(--shadow-color);
-
-	transition: bottom 250ms;
 }
 
 dialog::backdrop {
@@ -272,15 +271,17 @@ dialog .button-row {
 	justify-content: flex-end;
 }
 
-dialog .button-row button:first-child {
+dialog .button-row button:first-child:not(:only-child) {
 	margin-right: auto;
 }
 
 dialog.message {
 	min-width: 10em;
 	min-height: 1em;
+	top: unset;
 	bottom: 2em;
 	flex-direction: row;
+	transition: bottom 250ms;
 }
 
 dialog.message > .icon {
@@ -324,7 +325,7 @@ dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 	from {
 		opacity: 0;
 		scale: 0.8;
-		display: flex;
+		display: none;
 	}
 	to {
 		opacity: 1;
@@ -341,6 +342,6 @@ dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 	to {
 		opacity: 0;
 		scale: 0.8;
-		display: flex;
+		display: none;
 	}
 }

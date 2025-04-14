@@ -64,24 +64,29 @@ for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])"
 
 // Custom input fields
 for(const input of document.querySelectorAll("input")) {
-	if(input.matches("[type=text]")) {
-		input.addEventListener("keypress", event => {
-			if(event.key == "Enter") input.blur()
-		})
-		input.addEventListener("blur", event => {
-			input.onsubmit?.()
-		})
-	}
+	input.initialValue = input.value
+	input.modified = false
+	input.addEventListener("input", () => {
+		input.modified = input.value != input.initialValue
+	})
+	input.addEventListener("submit", () => {
+		input.initialValue = input.value
+		input.modified = false
+	})
+	input.addEventListener("keypress", event => {
+		if(event.key != "Enter") return
+		input.dispatchEvent(new Event("submit"))
+	})
+	input.addEventListener("blur", event => {
+		if(!input.modified) return
+		input.dispatchEvent(new Event("submit"))
+	})
+	
+	// Custom date input
 	if(input.matches("[type^=date]")) {
 		input.addEventListener("change", event => {
 			if(!input.value || input.matches(":focus")) return
 			input.blur()
-		})
-		input.addEventListener("keypress", event => {
-			if(event.key == "Enter") input.blur()
-		})
-		input.addEventListener("blur", event => {
-			input.onsubmit?.()
 		})
 	}
 }
@@ -104,7 +109,7 @@ for(const button of document.querySelectorAll("button[href]")) {
 
 // Popups and dialogs
 const Popup = {
-	async info({message, type, icon, time=3500}) {
+	create({message, type, icon, time=3500}) {
 		const dialog = document.createElement("dialog")
 		dialog.classList.add("message")
 		if(type) dialog.classList.add(type)
@@ -114,7 +119,11 @@ const Popup = {
 		`
 		dialog.innerHTML += `
 			<p>${message}</p>
+			<button class="icon" onclick="this.parentElement.close()">close</button>
 		`
+
+		// Get focused element
+		const focusElement = document.activeElement
 
 		// Find potential existing dialog
 		const existingDialog = document.querySelector("body > dialog.message[open]")
@@ -126,40 +135,53 @@ const Popup = {
 			}
 		} else document.body.append(dialog)
 
-		const closeButton = document.createElement("button")
-		closeButton.classList.add("icon")
-		closeButton.innerText = "close"
-		closeButton.onclick = () => dialog.close()
-		dialog.append(closeButton)
-
 		dialog.timings = {
 			show: Date.now(),
 			delay: time
 		}
 		dialog.show()
 
-		// Wait for animation to finish before removing
-		dialog.onclose = async () => {
-			await sleep(250)
-			dialog.remove()
+		dialog.closePromise = new Promise(resolve => {
+			// Wait for animation to finish before removing
+			dialog.onclose = async () => {
+				await sleep(250)
+				dialog.remove()
+				resolve(true)
+			}
+		})
+
+		sleep(time).then(() => {
+			dialog.timings.hide = Date.now()
+			dialog.close()
+		})
+
+
+		// If focus is in an input, prevent dialog from stealing focus
+		if(focusElement.matches("input, textarea")) {
+			sleep(100).then(() => focusElement.focus())
 		}
 
-		await sleep(time)
-		dialog.timings.hide = Date.now()
-
-		dialog.close()
+		return dialog
 	},
 
-	async success(message, icon="check_circle") {
-		await Popup.info({
+	info(message, icon="") {
+		return Popup.create({
 			message,
-			type: "success",
 			icon
 		})
 	},
 
-	async error(message, icon="error") {
-		await Popup.info({
+	success(message, icon="check_circle") {
+		return Popup.create({
+			message,
+			type: "success",
+			icon,
+			time: 1500
+		})
+	},
+
+	error(message, icon="error") {
+		return Popup.create({
 			message,
 			type: "error",
 			icon

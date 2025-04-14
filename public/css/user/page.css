@@ -1,8 +1,13 @@
 #access-code-container {
 	display: block;
 	margin: auto;
+	margin-bottom: 1.5em;
 	
-	width: 10em;
+	font-size: 1.5em;
+
+	width: 8em;
 	font-family: monospace;
 	text-align: center;
+
+	user-select: all;
 }

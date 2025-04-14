@@ -26,20 +26,14 @@ html {
 }
 
 button {
-	background-color: #896;
 	color: #fff;
-}
-
-button:hover {
-	background-color: #9a7;
+	--background-color: #896;
+	--background-background-color: #9a7;
 }
 
 button.dangerous {
-	background-color: #e44;
-}
-
-button.dangerous:hover {
-	background-color: #e66;
+	--background-color: #e44;
+	--hover-background-color: #e66;
 }
 
 dialog.message.success {
@@ -47,5 +41,9 @@ dialog.message.success {
 }
 
 dialog.message.error {
+	background-color: #fcc;
+}
+
+input.invalid, select.invalid {
 	background-color: #fcc;
 }
