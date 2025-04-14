@@ -259,14 +259,20 @@ dialog.message {
 	min-height: 1em;
 	bottom: 2em;
 	flex-direction: row;
-	
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 
 dialog.message > .icon {
 	margin-right: 1em;
+}
+
+dialog.message > p {
+	flex: 1;
+	margin: 0;
+	padding-right: 1em;
+	
+	white-space: pre;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 dialog.message > button.icon {

@@ -108,13 +108,12 @@ const Popup = {
 		dialog.classList.add("message")
 		if(type) dialog.classList.add(type)
 
-		dialog.innerText = message
-		if(icon) {
-			const iconElement = document.createElement("span")
-			iconElement.classList.add("icon")
-			iconElement.innerText = icon
-			dialog.prepend(iconElement)
-		}
+		if(icon) dialog.innerHTML = `
+			<span class="icon">${icon}</span>
+		`
+		dialog.innerHTML += `
+			<p>${message}</p>
+		`
 
 		// Find potential existing dialog
 		const existingDialog = document.querySelector("body > dialog.message[open]")
