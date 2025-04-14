@@ -64,6 +64,11 @@ export default class {
 		const now = performance.now()
 		const duration = now - this.lastTiming
 		this.lastTiming = now
+
+		// Replace non ASCII characters
+		name = name.replaceAll(/[^\x00-\x7F]/g, "_")
+		description = description.replaceAll(/[^\x00-\x7F]/g, "_")
+		
 		this.headers.append("Server-Timing", `${name};desc="${description}";dur=${duration}`)
 	}
 
