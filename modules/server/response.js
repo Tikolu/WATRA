@@ -9,6 +9,9 @@ export default class {
 		this.body = undefined
 		this.headers = new Headers()
 		this.open = true
+
+		// Track server timings
+		this.lastTiming = performance.now()
 	}
 
 	/** Closes the response - disables further writing */
@@ -55,6 +58,13 @@ export default class {
 
 	async sendToken() {
 		await Token.send(this)
+	}
+
+	registerTiming(name, description) {
+		const now = performance.now()
+		const duration = now - this.lastTiming
+		this.lastTiming = now
+		this.headers.append("Server-Timing", `${name};desc="${description}";dur=${duration}`)
 	}
 
 	// keepAlive() {

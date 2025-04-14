@@ -52,7 +52,7 @@ export default async function(request, response) {
 	}
 
 	// Function for executing route functions
-	async function execRoute(fn) {
+	async function execRoute(fn, path="unknown") {
 		if(typeof fn != "function") return
 	
 		try {
@@ -60,6 +60,8 @@ export default async function(request, response) {
 			routeContext.lastOutput = await fn.call(routeContext, routeContext.routeData)
 			// If route function returns a promise, wait for it to resolve
 			if(routeContext.lastOutput instanceof Promise) routeContext.lastOutput = await routeContext.lastOutput
+			// Register timings
+			response.registerTiming("route", `/${path.replace(/^routes\/?/, "")} (${fn.name})`)
 			
 		} catch(error) {
 			// Handle runtime errors
@@ -80,7 +82,7 @@ export default async function(request, response) {
 				handleError(new HTTPError(500, "Invalid global route file"))
 				return
 			}
-			if(routeFile?.open) await execRoute(routeFile.open)
+			if(routeFile?.open) await execRoute(routeFile.open, path)
 			if(routeContext.lastError || !response.open) return
 			exitFunction = routeFile?.exit
 		}
@@ -120,7 +122,7 @@ export default async function(request, response) {
 					handleError(new HTTPError(500, "Invalid route file"))
 					break
 				}
-				await execRoute(routeFile)
+				await execRoute(routeFile, filePath)
 				
 				foundMatch = true
 				break
@@ -151,8 +153,7 @@ export default async function(request, response) {
 		}
 	
 		// If an exit function exists, run it
-		if(exitFunction && response.open && response.headers.get("Connection") != "keep-alive") await execRoute(exitFunction)
-	
+		if(exitFunction && response.open && response.headers.get("Connection") != "keep-alive") await execRoute(exitFunction, path)
 	}
 
 	// Start the route search
