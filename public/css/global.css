@@ -28,7 +28,7 @@ main {
 	src: local("Arial");
 }
 
-span.icon {
+span.icon, button.icon {
 	font-family: "Material Symbols Sharp", blank;
 
 	display: inline-block;
@@ -103,6 +103,12 @@ input[type=checkbox] {
 
 button {
 	cursor: pointer;
+}
+
+button.icon {
+	background-color: transparent;
+	padding: 0;
+	margin: 0;
 }
 
 
@@ -261,6 +267,11 @@ dialog.message {
 
 dialog.message > .icon {
 	margin-right: 1em;
+}
+
+dialog.message > button.icon {
+	margin-left: auto;
+	margin-right: 0;
 }
 
 dialog[open] {

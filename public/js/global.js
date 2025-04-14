@@ -126,6 +126,12 @@ const Popup = {
 			}
 		} else document.body.append(dialog)
 
+		const closeButton = document.createElement("button")
+		closeButton.classList.add("icon")
+		closeButton.innerText = "close"
+		closeButton.onclick = () => dialog.close()
+		dialog.append(closeButton)
+
 		dialog.timings = {
 			show: Date.now(),
 			delay: time
