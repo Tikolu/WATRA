@@ -132,13 +132,16 @@ const Popup = {
 		}
 		dialog.show()
 
+		// Wait for animation to finish before removing
+		dialog.onclose = async () => {
+			await sleep(250)
+			dialog.remove()
+		}
+
 		await sleep(time)
 		dialog.timings.hide = Date.now()
 
 		dialog.close()
-		// Wait for animation to finish before removing
-		await sleep(250)
-		dialog.remove()
 	},
 
 	async success(message, icon="check_circle") {
@@ -156,4 +159,18 @@ const Popup = {
 			icon
 		})
 	}
+}
+
+HTMLDialogElement.prototype.result = function(modal=true) {
+	this[modal ? "showModal" : "show"]()
+	return new Promise((resolve, reject) => {
+		this.onclose = () => reject("Popup closed")
+		for(const button of this.querySelectorAll("button")) {
+			button.onclick = () => {
+				const command = button.getAttribute("command")
+				resolve(command === "" ? true : command)
+				this.close()
+			}
+		}
+	})
 }

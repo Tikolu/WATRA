@@ -52,6 +52,20 @@
 				<span class="icon">delete</span>
 				Usuń jednostkę
 			</button>
+			<dialog id="delete-jednostka-dialog">
+				<h1>Trwale usunąć <%= $.targetJednostka.displayName %>?</h1>
+				<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Podjednostki i użytkownicy zostaną przeniesieni do <%= $.targetJednostka.upperJednostki[0]?.displayName || "jednostki nadrzędnej" %>.</p>
+				<div class="button-row">
+					<button>
+						<span class="icon">arrow_back</span>
+						Anuluj
+					</button>
+					<button class="dangerous" command>
+						<span class="icon">delete</span>
+						Usuń
+					</button>
+				</div>
+			</dialog>
 		<% } %>
 	<% } %>
 <% } %>

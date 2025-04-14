@@ -1,5 +1,5 @@
 if(this.deleteJednostkaButton) deleteJednostkaButton.onclick = async () => {
-	if(!confirm(`Usunąć jednostkę ${jednostkaTitle.innerText}?`)) return
+	if(!await deleteJednostkaDialog.result()) return
 	try {
 		await API(`jednostka/${META.jednostkaID}/delete`)
 	} catch(error) {

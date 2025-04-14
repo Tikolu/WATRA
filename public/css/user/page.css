@@ -1,0 +1,8 @@
+#access-code-container {
+	display: block;
+	margin: auto;
+	
+	width: 10em;
+	font-family: monospace;
+	text-align: center;
+}

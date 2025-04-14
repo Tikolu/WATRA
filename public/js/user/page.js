@@ -41,7 +41,7 @@ dateOfBirthInput.onsubmit = async () => {
 }
 
 if(this.deleteUserButton) deleteUserButton.onclick = async () => {
-	if(!confirm(`Usunąć użytkownika ${userTitle.innerText}?`)) return
+	if(!await deleteUserDialog.result()) return
 	try {
 		var response = await API(`user/${META.userID}/delete`)
 	} catch(error) {
@@ -58,7 +58,8 @@ if(this.generateAccessCodeButton) generateAccessCodeButton.onclick = async () =>
 		Popup.error(error)
 		return
 	}
-	Popup.error(`Jednorazowy kod dostępu:\n${response.accessCode}`)
+	accessCodeContainer.value = response.accessCode
+	accessCodeDialog.result()
 }
 
 if(this.addParentButton) addParentButton.onclick = async () => {

@@ -35,8 +35,7 @@ span.icon {
 	font-size: 0.99em; /* 🤔 */
 	scale: 1.25;
 	width: 1em;
-	margin-left: 0.25em;
-	margin-right: 0.5em;
+	margin-right: 0.25em;
 	
 	overflow: hidden;
 	vertical-align: bottom;
@@ -214,11 +213,13 @@ li > * {
 /* Popups and dialogs */
 
 dialog {
-	bottom: 2em;
+	position: fixed;
+	flex-direction: column;
 	
-	padding: 0.5em;
-	min-width: 10em;
+	padding: 1em;
+	width: 25em;
 	max-width: 80vw;
+	min-height: 5em;
 
 	background-color: var(--background-color-secondary);
 	border-radius: var(--border-radius);
@@ -226,26 +227,55 @@ dialog {
 
 	box-shadow: 0 0 0.25em var(--shadow-color);
 
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-
 	transition: bottom 250ms;
 }
 
+dialog::backdrop {
+	background-color: #0006
+}
+
+dialog > h1:first-child {
+	margin: 0;
+	font-size: 1.5em;
+}
+
+dialog .button-row {
+	margin-top: auto;
+	justify-content: flex-end;
+}
+
+dialog .button-row button:first-child {
+	margin-right: auto;
+}
+
+dialog.message {
+	min-width: 10em;
+	min-height: 1em;
+	bottom: 2em;
+	flex-direction: row;
+	
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+dialog.message > .icon {
+	margin-right: 1em;
+}
+
 dialog[open] {
-	animation: fade-grow 250ms;
+	animation: fade-grow 250ms forwards;
 }
 
 dialog:not([open]) {
-	animation: fade-shrink 250ms;
+	animation: fade-shrink 250ms forwards;
 }
 
-dialog:nth-of-type(1) { bottom: 2.5em }
-dialog:nth-of-type(2) { bottom: 3.0em }
-dialog:nth-of-type(3) { bottom: 3.5em }
-dialog:nth-of-type(4) { bottom: 4.0em }
-dialog:nth-of-type(n+5) { bottom: 4.5em }
+dialog.message:nth-of-type(1) { bottom: 2.5em }
+dialog.message:nth-of-type(2) { bottom: 3.0em }
+dialog.message:nth-of-type(3) { bottom: 3.5em }
+dialog.message:nth-of-type(4) { bottom: 4.0em }
+dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 
 
 
@@ -255,23 +285,23 @@ dialog:nth-of-type(n+5) { bottom: 4.5em }
 	from {
 		opacity: 0;
 		scale: 0.8;
-		display: block;
+		display: flex;
 	}
 	to {
 		opacity: 1;
 		scale: 1;
-		display: block;
+		display: flex;
 	}
 }
 @keyframes fade-shrink {
 	from {
 		opacity: 1;
 		scale: 1;
-		display: block;
+		display: flex;
 	}
 	to {
 		opacity: 0;
 		scale: 0.8;
-		display: block;
+		display: flex;
 	}
 }

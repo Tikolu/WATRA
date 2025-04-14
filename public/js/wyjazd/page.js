@@ -1,5 +1,5 @@
 if(this.deleteWyjazdButton) deleteWyjazdButton.onclick = async () => {
-	if(!confirm(`Usunąć wyjazd ${wyjazdTitle.innerText}?`)) return
+	if(!await deleteWyjazdDialog.result(`Usunąć wyjazd ${wyjazdTitle.innerText}?`)) return
 	try {
 		await API(`wyjazd/${META.wyjazdID}/delete`)
 	} catch(error) {

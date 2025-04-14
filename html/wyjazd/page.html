@@ -84,6 +84,20 @@
 			<span class="icon">delete</span>
 			Usuń wyjazd
 		</button>
+		<dialog id="delete-wyjazd-dialog">
+			<h1>Trwale usunąć <%= $.targetWyjazd.displayName %>?</h1>
+			<p>Wyjazd i wszystkie związane z nim dane zostaną trwale usunięte.</p>
+			<div class="button-row">
+				<button>
+					<span class="icon">arrow_back</span>
+					Anuluj
+				</button>
+				<button class="dangerous" command>
+					<span class="icon">delete</span>
+					Usuń
+				</button>
+			</div>
+		</dialog>
 	<% } %>
 <% } %>
 
