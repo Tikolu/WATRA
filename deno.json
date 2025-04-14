@@ -13,6 +13,6 @@
 	},
 	"tasks": {
 		"start-test": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal index.js --port 3001 --db test",
-		"start-dev": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal --inspect --watch index.js --port 3002 --db dev"
+		"start-dev": "deno --allow-env --allow-read --allow-sys --allow-net --no-prompt --unstable-temporal --inspect --watch index.js --port 3002 --db dev --disable-caching"
 	}
 }

@@ -23,7 +23,7 @@ async function handlePublicFile(url, response) {
 	if(!type) return
 
 	response.headers.set("Content-Type", `${type}; charset=utf-8`)
-	response.headers.set("Cache-Control", "max-age=31536000")
+	response.headers.set("Cache-Control", cachingEnabled ? "max-age=31536000, immutable" : "no-store")
 	response.write(await Deno.readFile(url))
 	response.close()
 	return true
@@ -62,13 +62,16 @@ const defaultOptions = {
 	hostname: "localhost",
 	port: 3000
 }
+let cachingEnabled = true
 
-export function start(hostname, port) {
+export function start(hostname, port, caching=true) {
 	hostname ||= defaultOptions.hostname
 	port ||= defaultOptions.port
 
 	defaultOptions.hostname = hostname
 	defaultOptions.port = port
+
+	cachingEnabled = caching
 	
 	server = Deno.serve({
 		hostname,

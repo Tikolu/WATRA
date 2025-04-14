@@ -10,7 +10,7 @@ import "modules/util.js"
 
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
-	boolean: ["clear-database"],
+	boolean: ["clear-database", "disable-caching"],
 	string: ["host", "port", "db"]
 })
 
@@ -27,7 +27,7 @@ if(args["clear-database"]) {
 await database.setup()
 
 // Start server
-server.start(args.host, args.port)
+server.start(args.host, args.port, !args["disable-caching"])
 
 // Handle errors in async functions used without await
 globalThis.addEventListener("unhandledrejection", event => {
