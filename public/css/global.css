@@ -103,19 +103,40 @@ input[type=checkbox] {
 
 button {
 	cursor: pointer;
+	background-color: var(--background-color);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+button:not(:disabled):hover,
+button:not(:disabled):focus-visible, 
+a:focus-visible > button:only-child {
+	background-color: var(--hover-background-color);
+	outline: none;
 }
 
 button.icon {
 	background-color: transparent;
 	padding: 0;
 	margin: 0;
+	transition: opacity 250ms;
 }
 
+button.icon:hover, button.icon:focus-visible {
+	background-color: transparent;
+	opacity: 0.5;
+}
 
 /* Other elements */
 
 a {
 	color: var(--text-color);
+	outline: none;
 	transition: opacity 250ms;
 }
 
@@ -123,7 +144,8 @@ a:has(button) {
 	text-decoration: none;
 }
 
-a:not(:has(button)):hover {
+a:not(:has(button)):hover,
+a:not(:has(button)):focus-visible {
 	opacity: 0.5;
 }
 

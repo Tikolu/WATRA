@@ -98,6 +98,7 @@ for(const button of document.querySelectorAll("button[href]")) {
 	a.href = button.getAttribute("href")
 	button.removeAttribute("href")
 	button.insertAdjacentElement("beforebegin", a)
+	button.tabIndex = -1
 	a.append(button)
 }
 
