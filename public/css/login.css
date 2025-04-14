@@ -16,3 +16,17 @@ main > h1 {
 	grid-template-columns: 1.5em auto;
 	align-items: center;
 }
+
+#user-code-input {
+	width: 10em;
+}
+
+.unit-grid {
+	--unit-grid-columns: 2;
+}
+
+@media (max-width: 37.5em) {
+	.unit-grid {
+		--unit-grid-columns: 1;
+	}
+}
