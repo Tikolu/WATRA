@@ -30,6 +30,7 @@ main {
 
 span.icon, button.icon {
 	font-family: "Material Symbols Sharp", blank;
+	color: inherit;
 
 	display: inline-block;
 	font-size: 0.99em; /* 🤔 */
