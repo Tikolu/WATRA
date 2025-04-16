@@ -16,14 +16,21 @@
 	<h2>Ustawienia</h2>
 	<form>
 		<label for="jednostka-name-input">Nazwa:</label>
-		<input type="text" id="jednostka-name-input" autocomplete="off" value="<%= $.targetJednostka.name || "" %>" <% $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) ? "" : "disabled" %>>
+		<input
+			type="text"
+			id="jednostka-name-input"
+			autocomplete="off"
+			value="<%= $.targetJednostka.name || "" %>"
+			api="jednostka/[jednostkaID]/update/name"
+			<% $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+		>
 	</form>
 
 	<% if($.usersForMianowanie?.length > 0) { %>
 		<h3>Mianowanie na funkcję</h3>
 		<form>
 			<label for="mianowanie-user-select">Użytkownik:</label>
-			<select id="mianowanie-user-select">
+			<select id="mianowanie-user-select" name="memberID">
 				<option selected hidden></option>
 				<% for(const member of $.usersForMianowanie) { %>
 					<option value="<%= member.id %>"><%= member.displayName %></option>
@@ -31,7 +38,7 @@
 			</select>
 
 			<label for="mianowanie-funkcja-select">Funkcja:</label>
-			<select id="mianowanie-funkcja-select">
+			<select id="mianowanie-funkcja-select" name="funkcjaType">
 				<option selected hidden></option>
 				<% for(const [funkcjaLevel, funkcjaName] of $.targetJednostka.getFunkcjaOptions() || []) { %>
 					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
@@ -40,7 +47,7 @@
 				<option value="remove">(usuń z jednostki)</option>
 			</select>
 
-			<button id="mianowanie-button">
+			<button id="mianowanie-button" api="jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję">
 				<span class="icon">check</span>
 				Potwierdź mianowanie
 			</button>
@@ -48,7 +55,7 @@
 
 		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
 			<h3>Usuwanie</h3>
-			<button id="delete-jednostka-button" class="dangerous">
+			<button id="delete-jednostka-button" class="dangerous" api="jednostka/[jednostkaID]/delete">
 				<span class="icon">delete</span>
 				Usuń jednostkę
 			</button>
@@ -82,7 +89,7 @@
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-		<button id="create-user-button">
+		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
 			<span class="icon">person_add</span>
 			Dodaj użytkownika
 		</button>
@@ -105,7 +112,7 @@
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-		<button id="create-sub-jednostka-button">
+		<button id="create-sub-jednostka-button" api="jednostka/[jednostkaID]/subJednostka/create">
 			<span class="icon">add</span>
 			Dodaj jednostkę
 		</button>

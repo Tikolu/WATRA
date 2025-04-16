@@ -1,96 +1,46 @@
-if(this.deleteJednostkaButton) deleteJednostkaButton.onclick = async () => {
-	if(!await deleteJednostkaDialog.result()) return
-	const progressMessage = Popup.info("Kasowanie jednostki...")
-	return
-	try {
-		await API(`jednostka/${META.jednostkaID}/delete`)
-	} catch(error) {
-		progressMessage.close()
-		Popup.error(error)
-		return
-	}
-	history.back()
-}
+API.registerHandler("jednostka/[jednostkaID]/delete", {
+	progressText: "Kasowanie jednostki...",
+	before: () => deleteJednostkaDialog.result(),
+	after: () => history.back()
+})
 
-if(this.jednostkaNameInput) jednostkaNameInput.onsubmit = async () => {
-	jednostkaNameInput.disabled = true
-	jednostkaNameInput.classList.remove("invalid")
-	try {
-		var response = await API(`jednostka/${META.jednostkaID}/update/name`, {
-			name: jednostkaNameInput.value
-		})
-	} catch(error) {
-		jednostkaNameInput.classList.add("invalid")
-		Popup.error(error)
-		return
-	} finally {
-		jednostkaNameInput.disabled = false
-	}
-	jednostkaTitle.innerText = response.displayName
-	jednostkaNameInput.innerText = response.name
-	Popup.success("Zapisano nazwę")
-}
+API.registerHandler("jednostka/[jednostkaID]/update/name", {
+	valueKey: "name",
+	successText: "Zapisano nazwę",
+	after: response => jednostkaTitle.innerText = response.name
+})
 
-if(this.createSubJednostkaButton) createSubJednostkaButton.onclick = async () => {
-	const progressMessage = Popup.info("Tworzenie jednostki...")
-	try {
-		var response = await API(`jednostka/${META.jednostkaID}/subJednostka/create`, {upperJednostkaID: META.jednostkaID})
-	} catch(error) {
-		progressMessage.close()
-		Popup.error(error)
-		return
-	}
-	document.location.href = `/jednostki/${response.subJednostkaID}`
-}
+API.registerHandler("jednostka/[jednostkaID]/member/create", {
+	progressText: "Tworzenie użytkownika...",
+	after: response => document.location.href = `/users/${response.userID}`
+})
 
-if(this.createUserButton) createUserButton.onclick = async () => {
-	const progressMessage = Popup.info("Tworzenie użytkownika...")
-	try {
-		var response = await API(`jednostka/${META.jednostkaID}/member/create`)
-	} catch(error) {
-		progressMessage.close()
-		Popup.error(error)
-		return
-	}
-	document.location.href = `/users/${response.userID}`
-}
+API.registerHandler("jednostka/[jednostkaID]/subJednostka/create", {
+	progressText: "Tworzenie jednostki...",
+	after: response => document.location.href = `/jednostki/${response.subJednostkaID}`
+})
 
-if(this.mianowanieButton) mianowanieButton.onclick = async () => {
-	mianowanieUserSelect.classList.remove("invalid")
-	mianowanieFunkcjaSelect.classList.remove("invalid")
-	
-	const userID = mianowanieUserSelect.value
-	if(!userID) {
-		mianowanieUserSelect.classList.add("invalid")
-		Popup.error("Nie wybrano użytkownika")
-		return
-	}
-	let funkcjaType = mianowanieFunkcjaSelect.value
-	if(!funkcjaType) {
-		mianowanieFunkcjaSelect.classList.add("invalid")
-		Popup.error("Nie wybrano funkcji")
-		return
-	} else if(funkcjaType == "remove") {
-		const progressMessage = Popup.info("Usuwanie użytkownika...")
-		try {
-			var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/remove`)
-		} catch(error) {
-			progressMessage.close()
-			Popup.error(error)
-			return
+API.registerHandler("jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję", {
+	progressText: "Mianowanie na funkcję...",
+	validate: data => {
+		mianowanieUserSelect.classList.remove("invalid")
+		mianowanieFunkcjaSelect.classList.remove("invalid")
+		
+		if(!data.memberID) {
+			mianowanieUserSelect.classList.add("invalid")
+			throw new Error("Nie wybrano użytkownika")
 		}
-	} else {
-		funkcjaType = Number(funkcjaType)
-		const progressMessage = Popup.info("Mianowanie na funkcję...")
-		try {
-			var response = await API(`jednostka/${META.jednostkaID}/member/${userID}/mianujNaFunkcję`, {
-				funkcjaType
-			})
-		} catch(error) {
-			progressMessage.close()
-			Popup.error(error)
-			return
+		if(!data.funkcjaType) {
+			mianowanieFunkcjaSelect.classList.add("invalid")
+			throw new Error("Nie wybrano funkcji")
 		}
-	}
-	document.location.reload()
-}
+		if(data.funkcjaType == "remove") return {
+			api: `jednostka/[jednostkaID]/member/[memberID]/remove`,
+			progressText: "Usuwanie użytkownika..."
+		}
+
+		data.funkcjaType = Number(data.funkcjaType)
+		return true
+	},
+	after: () => document.location.reload()
+})

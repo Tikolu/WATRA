@@ -1,9 +1,6 @@
 import * as datetime from "jsr:@std/datetime"
 
-export default async function({user, targetUser, date}) {
-	// Check permissions
-	await user.requirePermission(targetUser.PERMISSIONS.MODIFY)
-	
+export default async function({targetUser, date}) {
 	// Update date of birth
 	await targetUser.updateDateOfBirth(date)
 

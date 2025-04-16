@@ -15,7 +15,7 @@
 		</button>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
-		<button id="delete-user-button" class="dangerous">
+		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
 			<span class="icon">delete</span>
 			Usuń użytkownika
 		</button>
@@ -35,7 +35,7 @@
 		</dialog>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY)) { %>
-		<button id="generate-access-code-button">
+		<button id="generate-access-code-button" api="user/[userID]/accessCode/generate">
 			<span class="icon">password</span>
 			Wygeneruj kod dostępu
 		</button>
@@ -56,10 +56,26 @@
 <h2>Dane</h2>
 <form>
 	<label for="first-name-input">Imię:</label>
-	<input type="text" id="first-name-input" autocomplete="off" value="<%= $.targetUser.name.first || "" %>" <%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %> >
+	<input
+		type="text"
+		id="first-name-input"
+		autocomplete="off"
+		value="<%= $.targetUser.name.first || "" %>"
+		api="user/[userID]/update/names"
+		name="firstName"
+		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+	>
 
 	<label for="last-name-input">Nazwisko:</label>
-	<input type="text" id="last-name-input" autocomplete="off" value="<%= $.targetUser.name.last || "" %>" <%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %> >
+	<input
+		type="text"
+		id="last-name-input"
+		autocomplete="off"
+		value="<%= $.targetUser.name.last || "" %>"
+		api="user/[userID]/update/names"
+		name="lastName"
+		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+	>
 
 	<label for="date-of-birth-input">Data urodzenia:</label>
 	<input
@@ -69,6 +85,7 @@
 		<% if($.targetUser.dateOfBirth) { %>
 			value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
 		<% } %>
+		api="user/[userID]/update/dateOfBirth"
 		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
 	>
 </form>
@@ -89,7 +106,7 @@
 				<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
 		<% } %>
 	</div>
-	<button id="add-parent-button">
+	<button id="add-parent-button" api="user/[userID]/parent/create">
 		<span class="icon">supervisor_account</span>
 		Dodaj rodzica / opiekuna
 	</button>

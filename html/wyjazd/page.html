@@ -14,7 +14,15 @@
 	<h2>Ustawienia</h2>
 	<form>
 		<label for="wyjazd-name-input">Nazwa:</label>
-		<input type="text" id="wyjazd-name-input" autocomplete="off" value="<%= $.targetWyjazd.name || "" %>" <% $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ? "" : "disabled" %>>
+		<input
+			type="text"
+			id="wyjazd-name-input"
+			autocomplete="off"
+			value="<%= $.targetWyjazd.name || "" %>"
+			api="wyjazd/[wyjazdID]/update/name"
+			name="name"
+			<% $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+		>
 	</form>
 	<h3>Daty</h3>
 	<form>
@@ -31,6 +39,8 @@
 			<% if($.targetWyjazd.dates.start) { %>
 				value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
 			<% } %>
+			api="wyjazd/[wyjazdID]/update/dates"
+			name="startDate"
 			<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 				disabled
 			<%- } %>
@@ -45,6 +55,8 @@
 			<% if($.targetWyjazd.dates.end) { %>
 				value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
 			<% } %>
+			api="wyjazd/[wyjazdID]/update/dates"
+			name="endDate"
 			<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 				disabled
 			<%- } %>
@@ -55,7 +67,7 @@
 		<h3>Mianowanie na funkcję</h3>
 		<form>
 			<label for="mianowanie-user-select">Użytkownik:</label>
-			<select id="mianowanie-user-select">
+			<select id="mianowanie-user-select" name="memberID">
 				<option selected hidden></option>
 				<% for(const member of $.usersForMianowanie) { %>
 					<option value="<%= member.id %>"><%= member.displayName %></option>
@@ -63,7 +75,7 @@
 			</select>
 
 			<label for="mianowanie-funkcja-select">Funkcja:</label>
-			<select id="mianowanie-funkcja-select">
+			<select id="mianowanie-funkcja-select" name="funkcjaType">
 				<option selected hidden></option>
 				<% for(const [funkcjaLevel, funkcjaName] of $.targetWyjazd.getFunkcjaOptions() || []) { %>
 					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
@@ -72,7 +84,7 @@
 				<option value="remove">(usuń z wyjazdu)</option>
 			</select>
 
-			<button id="mianowanie-button">
+			<button id="mianowanie-button" api="wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję">
 				<span class="icon">check</span>
 				Potwierdź mianowanie
 			</button>

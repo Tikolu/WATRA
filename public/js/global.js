@@ -6,36 +6,164 @@ for(const element of document.querySelectorAll("[id]")) {
 	window[id] = element
 }
 
-// API function
-async function API(get="", post=undefined) {
-	let options = {
-		credentials: "same-origin",
-		headers: {}
+// API functions
+const API = {
+	handlers: {},
+
+	async request(get="", post=undefined) {
+		let options = {
+			credentials: "same-origin",
+			headers: {}
+		}
+		if(post) {
+			options.method = "POST"
+			options.body = JSON.stringify(post)
+			options.headers["Content-Type"] = "application/json"
+		}
+		let response, text, json
+		try {
+			response = await fetch(`/api/${get}`, options)
+		} catch(error) {
+			text = "Connection failed"
+		}
+		text ||= await response?.text()
+		try {
+			json = JSON.parse(text)
+		} catch(error) {
+			text ||= "Error parsing API response"
+			if(text.includes("\n")) text = text.split("\n")[0]
+			throw text
+		}
+		if(json.error) {
+			throw json.error.message.replace(/^Error: /, "")
+		}
+		return json
+	},
+
+	registerHandler(api, handler) {
+		if(api in this.handlers) {
+			throw new Error(`API handler already registered for ${api}`)
+		}
+		this.handlers[api] = handler
 	}
-	if(post) {
-		options.method = "POST"
-		options.body = JSON.stringify(post)
-		options.headers["Content-Type"] = "application/json"
-	}
-	let response, text, json
-	try {
-		response = await fetch(`/api/${get}`, options)
-	} catch(error) {
-		text = "Connection failed"
-	}
-	text ||= await response?.text()
-	try {
-		json = JSON.parse(text)
-	} catch(error) {
-		text ||= "Error parsing API response"
-		if(text.includes("\n")) text = text.split("\n")[0]
-		throw text
-	}
-	if(json.error) {
-		throw json.error.message.replace(/^Error: /, "")
-	}
-	return json
 }
+
+// API attribute system
+for(const element of document.querySelectorAll("[api]")) {
+	const api = element.getAttribute("api")
+	
+	let event
+	if(element.matches("button")) event = "onclick"
+	else if(element.matches("input[type=checkbox]")) event = "onchange"
+	else if(element.matches("input")) event = "onsubmit"
+	else if(element.matches("select")) event = "onchange"
+	else {
+		console.warn("API attribute not supported for this element:\n", element)
+		continue
+	}
+
+	element[event] = async () => {
+		let handler = API.handlers[api]
+
+		// Find wildcard handler
+		if(!handler) for(const handlerKey in API.handlers) {
+			const regex = new RegExp(handlerKey.replace(/\[\w+\]/g, ".*"))
+			if(!api.match(regex)) continue
+			handler = API.handlers[handlerKey]
+			break
+		}
+
+		if(!handler) throw new Error(`API handler not found for ${api}`)
+
+		// Clone handler for modifying
+		handler = {...handler, api}
+
+		// Create POST data from META
+		let data = {...META}
+
+		// Add form values to POST data
+		for(const formElement of element.parentElement.querySelectorAll("[name]")) {
+			data[formElement.name] = formElement.value
+		}
+
+		// Check element validity
+		if(!element.checkValidity()) {
+			element.classList.add("invalid")
+			return
+		}
+
+		// Add element value to POST data
+		handler.valueKey ||= element.name
+		if(element.value || handler.valueKey) {
+			handler.valueKey ||= "value"
+			data[handler.valueKey] = element.value
+		}
+
+		// Trigger data validation callback
+		if(handler.validate) {
+			const validationResponse = await handler.validate(data)
+			if(!validationResponse) return
+			handler = {...handler, ...validationResponse}
+		}
+
+		// Replace segments in API string
+		handler.api = handler.api.replaceAll(/\[\w+\]/g, segment => {
+			segment = segment.slice(1, -1)
+			const value = data[segment]
+			if(!value) throw new Error(`Missing value for ${segment}`)
+			delete data[segment]
+			return value
+		})
+
+		// Trigger "before" callback
+		if(handler.before && !await handler.before(data)) return
+
+		// Show loading message
+		let progressMessage
+		if(handler.progressText) {
+			progressMessage = Popup.create({
+				message: handler.progressText,
+				type: "progress",
+				icon: "progress_activity",
+			})
+		}
+
+		// Disable element during API call
+		element.disabled = true
+		element.classList.add("loading")
+		element.classList.remove("invalid")
+
+		if(Object.isEmpty(data)) data = undefined
+		try {
+			var response = await API.request(handler.api, data)
+		} catch(error) {
+			element.classList.add("invalid")
+			Popup.error(error)
+			return
+		} finally {
+			if(progressMessage) progressMessage.close()
+			// Re-enable element
+			element.disabled = false
+			element.classList.remove("loading")
+		}
+
+		// Trigger "after" callback
+		await handler.after?.(response)
+
+		// Update element modified state
+		if(response[handler.valueKey] !== undefined) {
+			element.value = response[handler.valueKey]
+		}
+		element.initialValue = element.value
+		element.modified = false
+
+		// Show success message
+		if(handler.successText) {
+			Popup.success(handler.successText)
+		}
+	}
+}
+
 
 // Base64 helper functions
 const Base64 = {
@@ -49,6 +177,16 @@ function sleep(ms) {
 		if(ms == Infinity) return
 		setTimeout(resolve, ms)
 	})
+}
+
+// Object isEmpty utility function
+Object.isEmpty = object => {
+	if(object instanceof Array) {
+		return object.length === 0
+	} else if(object instanceof Object) {
+		return Object.keys(object).length === 0
+	}
+	return false
 }
 
 // META tag system
@@ -69,13 +207,9 @@ for(const input of document.querySelectorAll("input")) {
 	input.addEventListener("input", () => {
 		input.modified = input.value != input.initialValue
 	})
-	input.addEventListener("submit", () => {
-		input.initialValue = input.value
-		input.modified = false
-	})
 	input.addEventListener("keypress", event => {
 		if(event.key != "Enter") return
-		input.dispatchEvent(new Event("submit"))
+		input.blur()
 	})
 	input.addEventListener("blur", event => {
 		if(!input.modified) return

@@ -1,101 +1,43 @@
-if(this.deleteWyjazdButton) deleteWyjazdButton.onclick = async () => {
-	if(!await deleteWyjazdDialog.result(`Usunąć wyjazd ${wyjazdTitle.innerText}?`)) return
-	const progressMessage = Popup.info("Usuwanie wyjazdu...")
-	try {
-		await API(`wyjazd/${META.wyjazdID}/delete`)
-	} catch(error) {
-		progressMessage.close()
-		Popup.error(error)
-		return
+API.registerHandler("wyjazd/[wyjazdID]/delete", {
+	progressText: "Kasowanie wyjazdu...",
+	before: () => deleteWyjazdDialog.result(),
+	after: () => history.back()
+})
+
+API.registerHandler("wyjazd/[wyjazdID]/update/name", {
+	successText: "Zapisano nazwę",
+	after: response => wyjazdTitle.innerText = response.displayName
+})
+
+API.registerHandler("wyjazd/[wyjazdID]/update/dates", {
+	successText: "Zapisano daty",
+	after: response => {
+		wyjazdTitle.innerText = response.displayName
+		wyjazdType.innerText = response.type
 	}
-	history.back()
-}
+})
 
-if(this.wyjazdNameInput) wyjazdNameInput.onsubmit = async () => {
-	wyjazdNameInput.disabled = true
-	wyjazdNameInput.classList.remove("invalid")
-	try {
-		var response = await API(`wyjazd/${META.wyjazdID}/update/name`, {
-			name: wyjazdNameInput.value
-		})
-	} catch(error) {
-		wyjazdNameInput.classList.add("invalid")
-		Popup.error(error)
-		return
-	} finally {
-		wyjazdNameInput.disabled = false
-	}
-	wyjazdTitle.innerText = response.displayName
-	wyjazdNameInput.innerText = response.name
-	Popup.success("Zapisano nazwę")
-}
-
-async function updateDates() {
-	const startDate = wyjazdStartDateInput.value
-	const endDate = wyjazdEndDateInput.value
-	try {
-		var response = await API(`wyjazd/${META.wyjazdID}/update/dates`, {
-			startDate,
-			endDate
-		})
-	} catch(error) {
-		Popup.error(error)
-		return
-	}
-	wyjazdType.innerText = response.type
-	wyjazdStartDateInput.value = response.startDate || ""
-	wyjazdEndDateInput.value = response.endDate || ""
-	wyjazdTitle.innerText = response.displayName
-	return true
-}
-
-wyjazdStartDateInput.onsubmit = async () => {
-	wyjazdStartDateInput.disabled = true
-	wyjazdStartDateInput.classList.remove("invalid")
-	if(await updateDates()) Popup.success("Zapisano datę rozpoczęcia")
-	else wyjazdStartDateInput.classList.add("invalid")
-	wyjazdStartDateInput.disabled = false
-}
-
-wyjazdEndDateInput.onsubmit = async () => {
-	wyjazdEndDateInput.disabled = true
-	wyjazdEndDateInput.classList.remove("invalid")
-	if(await updateDates()) Popup.success("Zapisano datę rozpoczęcia")
-	else wyjazdEndDateInput.classList.add("invalid")
-	wyjazdEndDateInput.disabled = false
-}
-
-if(this.mianowanieButton) mianowanieButton.onclick = async () => {
-	const userID = mianowanieUserSelect.value
-	mianowanieUserSelect.classList.remove("invalid")
-	if(!userID) {
-		mianowanieUserSelect.classList.add("invalid")
-		Popup.error("Nie wybrano użytkownika")
-		return
-	}
-	let funkcjaType = mianowanieFunkcjaSelect.value
-	mianowanieFunkcjaSelect.classList.remove("invalid")
-	if(!funkcjaType) {
-		mianowanieFunkcjaSelect.classList.add("invalid")
-		Popup.error("Nie wybrano funkcji")
-		return
-	} else if(funkcjaType == "remove") {
-		try {
-			var response = await API(`wyjazd/${META.wyjazdID}/member/${userID}/remove`)
-		} catch(error) {
-			Popup.error(error)
-			return
+API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
+	progressText: "Mianowanie na funkcję...",
+	validate: data => {
+		mianowanieUserSelect.classList.remove("invalid")
+		mianowanieFunkcjaSelect.classList.remove("invalid")
+		
+		if(!data.memberID) {
+			mianowanieUserSelect.classList.add("invalid")
+			throw new Error("Nie wybrano użytkownika")
 		}
-	} else {
-		funkcjaType = Number(funkcjaType)
-		try {
-			var response = await API(`wyjazd/${META.wyjazdID}/member/${userID}/mianujNaFunkcję`, {
-				funkcjaType
-			})
-		} catch(error) {
-			Popup.error(error)
-			return
+		if(!data.funkcjaType) {
+			mianowanieFunkcjaSelect.classList.add("invalid")
+			throw new Error("Nie wybrano funkcji")
 		}
-	}
-	document.location.reload()
-}
+		if(data.funkcjaType == "remove") return {
+			api: `wyjazd/[wyjazdID]/member/[memberID]/remove`,
+			progressText: "Usuwanie użytkownika..."
+		}
+
+		data.funkcjaType = Number(data.funkcjaType)
+		return true
+	},
+	after: () => document.location.reload()
+})
