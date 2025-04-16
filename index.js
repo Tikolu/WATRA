@@ -1,7 +1,7 @@
 // Set up globals for root directory and startup time
 globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")
 globalThis.SERVER_TIME = new Date()
-globalThis.SYSTEM_VERSION = "1.1.0"
+globalThis.SYSTEM_VERSION = "1.2.0"
 
 globalThis.MIN_DATE = "1800-01-01"
 globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
