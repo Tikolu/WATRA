@@ -189,6 +189,7 @@ const Popup = {
 	}
 }
 
+// Dialog "result" asynchronous function
 HTMLDialogElement.prototype.result = function(modal=true) {
 	this[modal ? "showModal" : "show"]()
 	return new Promise((resolve, reject) => {

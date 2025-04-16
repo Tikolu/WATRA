@@ -281,6 +281,7 @@ dialog.message {
 	top: unset;
 	bottom: 2em;
 	flex-direction: row;
+	align-items: center;
 	transition: bottom 250ms;
 }
 
@@ -292,10 +293,6 @@ dialog.message > p {
 	flex: 1;
 	margin: 0;
 	padding-right: 1em;
-	
-	white-space: pre;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
 dialog.message > button.icon {
@@ -317,7 +314,9 @@ dialog.message:nth-of-type(3) { bottom: 3.5em }
 dialog.message:nth-of-type(4) { bottom: 4.0em }
 dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 
-
+dialog.message.progress > span.icon {
+	animation: spin 1s infinite linear;
+}
 
 /* Animations */
 
@@ -333,6 +332,7 @@ dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 		display: flex;
 	}
 }
+
 @keyframes fade-shrink {
 	from {
 		opacity: 1;
@@ -343,5 +343,14 @@ dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 		opacity: 0;
 		scale: 0.8;
 		display: none;
+	}
+}
+
+@keyframes spin {
+	from {
+		rotate: 0turn;
+	}
+	to {
+		rotate: 1turn;
 	}
 }
