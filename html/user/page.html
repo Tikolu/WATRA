@@ -64,6 +64,7 @@
 	<label for="date-of-birth-input">Data urodzenia:</label>
 	<input
 		type="date" id="date-of-birth-input"
+		min="<%= MIN_DATE %>"
 		max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
 		<% if($.targetUser.dateOfBirth) { %>
 			value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"

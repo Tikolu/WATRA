@@ -26,8 +26,8 @@
 		<input
 			type="datetime-local"
 			id="wyjazd-start-date-input"
-			min="<%= minYear %>-01-01T00:00"
-			max="<%= maxYear %>-01-01T00:00"
+			min="<%= MIN_DATE %>T00:00"
+			max="<%= MAX_DATE %>T00:00"
 			<% if($.targetWyjazd.dates.start) { %>
 				value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
 			<% } %>
@@ -40,8 +40,8 @@
 		<input
 			type="datetime-local"
 			id="wyjazd-end-date-input"
-			min="<%= minYear %>-01-01T00:00"
-			max="<%= maxYear %>-01-01T00:00"
+			min="<%= MIN_DATE %>T00:00"
+			max="<%= MAX_DATE %>T00:00"
 			<% if($.targetWyjazd.dates.end) { %>
 				value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
 			<% } %>

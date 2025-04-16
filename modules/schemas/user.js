@@ -26,6 +26,7 @@ export class UserClass {
 	}
 	dateOfBirth = {
 		type: Date,
+		min: MIN_DATE,
 		max: Date.now
 	}
 	accessCode = String

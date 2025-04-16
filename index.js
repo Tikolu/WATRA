@@ -3,6 +3,9 @@ globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")
 globalThis.SERVER_TIME = new Date()
 globalThis.SYSTEM_VERSION = "1.1.0"
 
+globalThis.MIN_DATE = "1800-01-01"
+globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
+
 import * as server from "modules/server"
 import * as database from "modules/database"
 import * as cli from "jsr:@std/cli"

@@ -15,8 +15,16 @@ export class WyjazdClass extends JednostkaClass {
 	type = undefined
 
 	dates = {
-		start: Date,
-		end: Date
+		start: {
+			type: Date,
+			min: MIN_DATE,
+			max: MAX_DATE
+		},
+		end: {
+			type: Date,
+			min: MIN_DATE,
+			max: MAX_DATE
+		}
 	}
 
 
