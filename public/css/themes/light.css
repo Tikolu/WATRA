@@ -28,7 +28,7 @@ html {
 button {
 	color: #fff;
 	--background-color: #896;
-	--background-background-color: #9a7;
+	--hover-background-color: #9a7;
 }
 
 button.dangerous {
