@@ -92,7 +92,7 @@
 	<% } %>
 	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DELETE)) { %>
 		<h3>Usuwanie</h3>
-		<button id="delete-wyjazd-button" class="dangerous">
+		<button id="delete-wyjazd-button" class="dangerous" api="wyjazd/[wyjazdID]/delete">
 			<span class="icon">delete</span>
 			Usuń wyjazd
 		</button>

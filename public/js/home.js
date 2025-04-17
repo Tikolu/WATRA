@@ -1,9 +1,4 @@
-if(this.createWyjazdButton) createWyjazdButton.onclick = async () => {
-	try {
-		var response = await API("wyjazd/create")
-	} catch(error) {
-		Popup.error(error)
-		return
-	}
-	document.location.href = `/wyjazdy/${response.wyjazdID}`
-}
+API.registerHandler("wyjazd/create", {
+	progressText: "Tworzenie wyjazdu...",
+	after: response => document.location.href = `/wyjazdy/${response.wyjazdID}`
+})
