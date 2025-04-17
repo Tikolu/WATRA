@@ -69,7 +69,7 @@ export default class {
 		name = name.replaceAll(/[^\x00-\x7F]/g, "_")
 		description = description.replaceAll(/[^\x00-\x7F]/g, "_")
 		
-		this.headers.append("Server-Timing", `${name};desc="${description}";dur=${duration}`)
+		this.headers.append("Server-Timing", `${name};desc="${description}";dur=${duration.toFixed(3)}`)
 	}
 
 	// keepAlive() {
