@@ -21,6 +21,11 @@ export default async function(request, response) {
 		}
 		console.log("\nURL:", decodeURI(request.address.pathname))
 		console.error(error)
+		// If in streaming mode, output error to stream
+		if(response.streaming) {
+			const {message, code, stack} = error
+			return response.sendStreamEvent("error", {message, code, stack})
+		}
 		// If an error is already present, just print plain error message and send response
 		if(routeContext.lastError || routeContext.response.statusCode >= 400) {
 			routeContext.response.headers.set("Content-Type", "text/plain; charset=UTF-8")
@@ -62,17 +67,16 @@ export default async function(request, response) {
 			if(routeContext.lastOutput instanceof Promise) routeContext.lastOutput = await routeContext.lastOutput
 			// If function is an async iterator, enable streaming mode
 			if(routeContext.lastOutput && routeContext.lastOutput[Symbol.asyncIterator]) {
-				const streamWriter = response.startStream()
+				response.startStream()
 				const processIterator = async iterator => {
 					try {
-						for await(const value of iterator) {
+						for await(const {event, data} of iterator) {
 							if(!response.open) break
 							if(routeContext.lastError) break
-							streamWriter.write(value)
+							await response.sendStreamEvent(event, data)
 						}
 					} catch(error) {
-						handleError(error)
-						await streamWriter.write(error)
+						await handleError(error)
 					}
 					response.close()
 				}

@@ -38,6 +38,12 @@ export default class {
 				throw new Error("Cannot write binary data to text response")
 			}
 			this.body += data
+
+		// If in streaming mode, send to stream
+		} else if(this.streaming) {
+			return this.streamWriter.write(data)
+
+		// Otherwise, replace body with new content
 		} else {
 			this.body = data
 		}
@@ -62,10 +68,12 @@ export default class {
 		return response
 	}
 
+	/** Encode and send the web token object */
 	async sendToken() {
 		await Token.send(this)
 	}
 
+	/** Registers server timings, which are later sent in the Server-Timing header */
 	registerTiming(name, description) {
 		const now = performance.now()
 		const duration = now - this.lastTiming
@@ -78,6 +86,7 @@ export default class {
 		this.headers.append("Server-Timing", `${name};desc="${description}";dur=${duration.toFixed(3)}`)
 	}
 
+	/** Starts streaming mode */
 	startStream() {
 		this.headers.set("Content-Type", "text/event-stream")
 		this.headers.set("Connection", "keep-alive")
@@ -87,9 +96,15 @@ export default class {
 		const encoderStream = new TextEncoderStream()
 		this.body = encoderStream.readable
 		this.streamWriter = encoderStream.writable.getWriter()
-		this.streamWriter.closed.catch(() => {
-			this.close()
-		})
+		this.streamWriter.closed.catch(() => this.close())
 		return this.streamWriter
+	}
+
+	/** Writes data following the server-sent event syntax to the stream */
+	async sendStreamEvent(event, data) {
+		if(!this.streaming) throw new Error("Not in streaming mode")
+
+		data = JSON.stringify(data)
+		await this.write(`event: ${event}\ndata: ${data}\n\n`)
 	}
 }
