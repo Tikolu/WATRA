@@ -1,12 +1,123 @@
-// Make all element IDs globally accessible
-for(const element of document.querySelectorAll("[id]")) {
-	const replacer = r => r.toUpperCase().replace("-", "")
-	const id = element.id.replaceAll(/-\w/g, replacer)
-	if(window[id]) continue
-	window[id] = element
+// Base64 helper functions
+const Base64 = {
+	encode: v => btoa(v),
+	decode: v => atob(v)
 }
 
-// API functions
+// Sleep function 
+function sleep(ms) {
+	return new Promise(resolve => {
+		if(ms == Infinity) return
+		setTimeout(resolve, ms)
+	})
+}
+
+// Object isEmpty utility function
+Object.isEmpty = object => {
+	if(object instanceof Array) {
+		return object.length === 0
+	} else if(object instanceof Object) {
+		return Object.keys(object).length === 0
+	}
+	return false
+}
+
+// Popups and dialogs
+const Popup = {
+	create({message, type, icon, time=3500}) {
+		const dialog = document.createElement("dialog")
+		dialog.classList.add("message")
+		if(type) dialog.classList.add(type)
+
+		if(icon) dialog.innerHTML = `
+			<span class="icon">${icon}</span>
+		`
+		dialog.innerHTML += `
+			<p>${message}</p>
+			<button class="icon" onclick="this.parentElement.close()">close</button>
+		`
+
+		// Get focused element
+		const focusElement = document.activeElement
+
+		// Find potential existing dialog
+		const existingDialog = document.querySelector("body > dialog.message[open]")
+		if(existingDialog) {
+			existingDialog.insertAdjacentElement("beforebegin", dialog)
+			// If contents differ, calculate how much time is left on previous dialog
+			if(existingDialog.innerText != dialog.innerText) {
+				time += existingDialog.timings.show + existingDialog.timings.delay - Date.now()
+			}
+		} else document.body.append(dialog)
+
+		dialog.timings = {
+			show: Date.now(),
+			delay: time
+		}
+		dialog.show()
+
+		dialog.closePromise = new Promise(resolve => {
+			// Wait for animation to finish before removing
+			dialog.onclose = async () => {
+				await sleep(250)
+				dialog.remove()
+				resolve(true)
+			}
+		})
+
+		sleep(time).then(() => {
+			dialog.timings.hide = Date.now()
+			dialog.close()
+		})
+
+
+		// If focus is in an input, prevent dialog from stealing focus
+		if(focusElement.matches("input, textarea")) {
+			sleep(100).then(() => focusElement.focus())
+		}
+
+		return dialog
+	},
+
+	info(message, icon="") {
+		return Popup.create({
+			message,
+			icon
+		})
+	},
+
+	success(message, icon="check_circle") {
+		return Popup.create({
+			message,
+			type: "success",
+			icon,
+			time: 1500
+		})
+	},
+
+	error(message, icon="error") {
+		return Popup.create({
+			message,
+			type: "error",
+			icon
+		})
+	}
+}
+
+// Dialog "result" asynchronous function
+HTMLDialogElement.prototype.result = function(modal=true) {
+	this[modal ? "showModal" : "show"]()
+	return new Promise((resolve, reject) => {
+		this.onclose = () => reject("Popup closed")
+		for(const button of this.querySelectorAll("button")) {
+			button.onclick = () => {
+				const command = button.getAttribute("command")
+				resolve(command === "" ? true : command)
+				this.close()
+			}
+		}
+	})
+}// API functions
 const API = {
 	handlers: {},
 
@@ -164,42 +275,6 @@ for(const element of document.querySelectorAll("[api]")) {
 	}
 }
 
-
-// Base64 helper functions
-const Base64 = {
-	encode: v => btoa(v),
-	decode: v => atob(v)
-}
-
-// Sleep function 
-function sleep(ms) {
-	return new Promise(resolve => {
-		if(ms == Infinity) return
-		setTimeout(resolve, ms)
-	})
-}
-
-// Object isEmpty utility function
-Object.isEmpty = object => {
-	if(object instanceof Array) {
-		return object.length === 0
-	} else if(object instanceof Object) {
-		return Object.keys(object).length === 0
-	}
-	return false
-}
-
-// META tag system
-const META = {}
-for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
-	let metaContent = metaTag.content
-	if(metaTag.hasAttribute("base64")) {
-		metaContent = Base64.decode(metaContent)
-		metaContent = JSON.parse(metaContent)
-	}
-	META[metaTag.name] = metaContent
-}
-
 // Custom input fields
 for(const input of document.querySelectorAll("input")) {
 	input.initialValue = input.value
@@ -224,6 +299,7 @@ for(const input of document.querySelectorAll("input")) {
 		})
 	}
 }
+
 // Disable form elements
 for(const form of document.querySelectorAll("form")) {
 	form.onsubmit = event => {
@@ -241,99 +317,57 @@ for(const button of document.querySelectorAll("button[href]")) {
 	a.append(button)
 }
 
-// Popups and dialogs
-const Popup = {
-	create({message, type, icon, time=3500}) {
-		const dialog = document.createElement("dialog")
-		dialog.classList.add("message")
-		if(type) dialog.classList.add(type)
-
-		if(icon) dialog.innerHTML = `
-			<span class="icon">${icon}</span>
-		`
-		dialog.innerHTML += `
-			<p>${message}</p>
-			<button class="icon" onclick="this.parentElement.close()">close</button>
-		`
-
-		// Get focused element
-		const focusElement = document.activeElement
-
-		// Find potential existing dialog
-		const existingDialog = document.querySelector("body > dialog.message[open]")
-		if(existingDialog) {
-			existingDialog.insertAdjacentElement("beforebegin", dialog)
-			// If contents differ, calculate how much time is left on previous dialog
-			if(existingDialog.innerText != dialog.innerText) {
-				time += existingDialog.timings.show + existingDialog.timings.delay - Date.now()
-			}
-		} else document.body.append(dialog)
-
-		dialog.timings = {
-			show: Date.now(),
-			delay: time
-		}
-		dialog.show()
-
-		dialog.closePromise = new Promise(resolve => {
-			// Wait for animation to finish before removing
-			dialog.onclose = async () => {
-				await sleep(250)
-				dialog.remove()
-				resolve(true)
-			}
-		})
-
-		sleep(time).then(() => {
-			dialog.timings.hide = Date.now()
-			dialog.close()
-		})
-
-
-		// If focus is in an input, prevent dialog from stealing focus
-		if(focusElement.matches("input, textarea")) {
-			sleep(100).then(() => focusElement.focus())
-		}
-
-		return dialog
-	},
-
-	info(message, icon="") {
-		return Popup.create({
-			message,
-			icon
-		})
-	},
-
-	success(message, icon="check_circle") {
-		return Popup.create({
-			message,
-			type: "success",
-			icon,
-			time: 1500
-		})
-	},
-
-	error(message, icon="error") {
-		return Popup.create({
-			message,
-			type: "error",
-			icon
-		})
-	}
+// Make all element IDs globally accessible
+for(const element of document.querySelectorAll("[id]")) {
+	const replacer = r => r.toUpperCase().replace("-", "")
+	const id = element.id.replaceAll(/-\w/g, replacer)
+	if(window[id]) continue
+	window[id] = element
 }
 
-// Dialog "result" asynchronous function
-HTMLDialogElement.prototype.result = function(modal=true) {
-	this[modal ? "showModal" : "show"]()
-	return new Promise((resolve, reject) => {
-		this.onclose = () => reject("Popup closed")
-		for(const button of this.querySelectorAll("button")) {
-			button.onclick = () => {
-				const command = button.getAttribute("command")
-				resolve(command === "" ? true : command)
-				this.close()
-			}
-		}
-	})
+// META tag system
+const META = {}
+for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
+	let metaContent = metaTag.content
+	if(metaTag.hasAttribute("base64")) {
+		metaContent = Base64.decode(metaContent)
+		metaContent = JSON.parse(metaContent)
+	}
+	META[metaTag.name] = metaContent
+}
+
+// Event streaming
+const eventSource = new EventSource("/api/stream")
+eventSource.addEventListener("update", event => {
+	if(!event.data) return
+	const data = JSON.parse(event.data)
+	for(const condition of pageRefreshConditions) {
+		if(condition.type != data.type || condition.id != data.id) continue
+		document.startViewTransition(() => document.location.reload())
+		break
+	}
+})
+eventSource.addEventListener("error", event => {
+	if(!event.data) return
+	const error = JSON.parse(event.data)
+	throw new Error(error.message || error)
+})
+
+const pageRefreshConditions = []
+
+function registerRefreshCondition(path) {
+	const url = new URL(path)
+	const segments = url.pathname.substring("1").split("/")
+	if(segments.length != 2) return
+	if(!segments[0].match(/^\w+$/)) return
+	if(!segments[1].match(/^[0-9a-f]+$/)) return
+
+	const [type, id] = segments
+	if(pageRefreshConditions.some(c => c.type == type && c.id == id)) return
+	pageRefreshConditions.push({type, id})
+}
+
+registerRefreshCondition(document.location)
+for(const link of document.querySelectorAll("a[href]")) {
+	registerRefreshCondition(link.href)
 }
