@@ -78,6 +78,7 @@ export default async function(request, response) {
 					} catch(error) {
 						await handleError(error)
 					}
+					iterator.return()
 					response.close()
 				}
 				processIterator(routeContext.lastOutput)
