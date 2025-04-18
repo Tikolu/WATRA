@@ -48,7 +48,7 @@ async function handler(req) {
 	if(response.open) await findRoute(request, response)
 
 	// Final fallback, if reponse has not been closed, close it
-	if(response.open && response.headers.get("Connection") != "keep-alive") response.close();
+	if(response.open && !response.streaming) response.close();
 
 	// Send the token, if one is present
 	if(response.token) await response.sendToken()
@@ -79,7 +79,7 @@ export function start(hostname, port, caching=true) {
 		signal: controller.signal,
 		onListen({port}) {
 			console.log(`\x1b[34m[Server]\x1b[0m  Started on port ${port}`)
-		}
+		},
 	}, handler)
 }
 

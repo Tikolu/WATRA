@@ -9,6 +9,7 @@ export default class {
 		this.body = undefined
 		this.headers = new Headers()
 		this.open = true
+		this.streaming = false
 
 		// Track server timings
 		this.lastTiming = performance.now()
@@ -17,6 +18,11 @@ export default class {
 	/** Closes the response - disables further writing */
 	close() {
 		this.open = false
+
+		// If in stream mode, attempt to close stream
+		if(this.streaming) {
+			this.streamWriter.close().catch(() => {})
+		}
 	}
 
 	/** Writes text to the response's body */
@@ -72,10 +78,18 @@ export default class {
 		this.headers.append("Server-Timing", `${name};desc="${description}";dur=${duration.toFixed(3)}`)
 	}
 
-	// keepAlive() {
-	// 	this.setHeader("Content-Type", "text/event-stream")
-	// 	this.setHeader("Connection", "keep-alive")
-	// 	this.write(":start")
+	startStream() {
+		this.headers.set("Content-Type", "text/event-stream")
+		this.headers.set("Connection", "keep-alive")
+		this.streaming = true
 
-	// }
+		// Set up stream
+		const encoderStream = new TextEncoderStream()
+		this.body = encoderStream.readable
+		this.streamWriter = encoderStream.writable.getWriter()
+		this.streamWriter.closed.catch(() => {
+			this.close()
+		})
+		return this.streamWriter
+	}
 }

@@ -57,9 +57,28 @@ export default async function(request, response) {
 	
 		try {
 			// Call the route function
-			routeContext.lastOutput = await fn.call(routeContext, routeContext.routeData)
+			routeContext.lastOutput = fn.call(routeContext, routeContext.routeData)
 			// If route function returns a promise, wait for it to resolve
 			if(routeContext.lastOutput instanceof Promise) routeContext.lastOutput = await routeContext.lastOutput
+			// If function is an async iterator, enable streaming mode
+			if(routeContext.lastOutput && routeContext.lastOutput[Symbol.asyncIterator]) {
+				const streamWriter = response.startStream()
+				const processIterator = async iterator => {
+					try {
+						for await(const value of iterator) {
+							if(!response.open) break
+							if(routeContext.lastError) break
+							streamWriter.write(value)
+						}
+					} catch(error) {
+						handleError(error)
+						await streamWriter.write(error)
+					}
+					response.close()
+				}
+				processIterator(routeContext.lastOutput)
+
+			}
 			// Register timings
 			response.registerTiming("route", `/${path.replace(/^routes\/?/, "")} (${fn.name})`)
 			
