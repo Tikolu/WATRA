@@ -325,6 +325,36 @@ for(const element of document.querySelectorAll("[id]")) {
 	window[id] = element
 }
 
+// Reusable JSON store wrapper
+class Store {
+	constructor(source) {
+		this.source = source
+		return new Proxy(this, {
+			get(target, property) {
+				const rawData = target.source.getItem(property)
+				if(rawData === null) return
+				try {
+					return JSON.parse(rawData)
+				} catch(error) {
+					return rawData
+				}
+			},
+			set(target, property, value) {
+				if(value === undefined) {
+					target.source.removeItem(property)
+					return true
+				}
+				value = JSON.stringify(value)
+				target.source.setItem(property, value)
+				return true
+			}
+		})
+	}
+}
+
+const Local = new Store(localStorage)
+const Session = new Store(sessionStorage)
+
 // META tag system
 const META = {}
 for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
