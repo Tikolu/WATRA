@@ -8,6 +8,8 @@ header {
 
 	box-shadow: 0 0 10px var(--shadow-color);
 	background-color: var(--background-color);
+
+	white-space: nowrap;
 }
 
 header #system-title {
@@ -18,4 +20,14 @@ header #system-title {
 header #user-profile-link {
 	text-decoration: none;
 	margin-left: auto;
+}
+
+header nav {
+	overflow: hidden;
+	margin-right: 1em;
+}
+
+header > nav > span.icon  {
+	opacity: 0.5;
+	margin: 0;
 }

@@ -1,5 +1,23 @@
 <header>
-	<a href="/" id="system-title">System Harcerski (<%= globalThis.SYSTEM_VERSION %>)</a>
+	<nav>
+		<a href="/"><span class="icon">home</span></a>
+		<%
+			$.navPath ||= {
+				[$.title]: ""
+			}
+			for(const entry in $.navPath) {
+				const link = $.navPath[entry]
+				%>
+					<span class="icon">arrow_right</span>
+					<% if(link) { %>
+						<a href="<%= link %>"><%= entry %></a>
+					<% } else { %>
+						<a><%= entry %></a>
+					<% } %>
+				<%
+			}
+		%>
+	</nav>
 	<a href="<%= $.user ? `/users/${$.user.id}` : "/login" %>" id="user-profile-link">
 		<span class="icon">person</span>
 		<%_= $.user?.displayName || "Logowanie" _%>

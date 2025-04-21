@@ -4,7 +4,7 @@
 	<% $.styles.unshift("main") %>
 	<%~ include("/templates/head.html", $) %>
 	<body>
-		<%~ include("/templates/titleBar.html", {user: $.user}) %>
+		<%~ include("/templates/titleBar.html", $) %>
 		<main>
 			<%~ $.body %>
 		</main>

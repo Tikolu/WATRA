@@ -144,8 +144,8 @@ a:has(button) {
 	text-decoration: none;
 }
 
-a:not(:has(button)):hover,
-a:not(:has(button)):focus-visible {
+a[href]:not(:has(button)):hover,
+a[href]:not(:has(button)):focus-visible {
 	opacity: 0.5;
 }
 
