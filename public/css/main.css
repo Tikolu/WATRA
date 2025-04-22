@@ -12,22 +12,40 @@ header {
 	white-space: nowrap;
 }
 
-header #system-title {
-	text-decoration: none;
-	font-weight: bold;
-}
-
 header #user-profile-link {
+	border-left: 1px solid var(--border-color);
+	padding-left: 0.5em;
 	text-decoration: none;
-	margin-left: auto;
 }
 
+/* navigation path */
 header nav {
-	overflow: hidden;
-	margin-right: 1em;
+	display: flex;
+	overflow: scroll hidden;
+	
+	min-width: 0;
+	width: 100%;
 }
 
+/* home icon */
+header > nav > a:first-child {
+	flex-shrink: 0;
+}
+
+header > nav > a > span.icon {
+	margin: 0;
+}
+
+/* arrow icons */
 header > nav > span.icon  {
 	opacity: 0.5;
-	margin: 0;
+	margin: 0 0.2em;
+	flex-shrink: 0;
+}
+
+/* path link elements */
+header > nav > a:not(:first-child) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	/* min-width: 4em; */
 }
