@@ -1,43 +1,22 @@
 // Service worker for streaming updates
-let streamingWorker, streamingWorkerLastHeartbeat = 0
+const streamingWorkerState = {
+	instance: null,
+	registering: false,
+	lastHeartBeat: 0
+}
 async function checkStreamingWorkerHeartbeat() {
 	// Check if last heartbeat was over 2 seconds ago
-	if(Date.now() - streamingWorkerLastHeartbeat < 2000) return
-	debug("Streaming worker not responding")
+	if(Date.now() - streamingWorkerState.lastHeartBeat < 2000) return
+	if(streamingWorkerState.registering) return
+	streamingWorkerState.registering = true
 	// If worker exists, unregister it
-	await streamingWorker?.unregister()
+	await streamingWorkerState.instance?.unregister()
 	// Register new worker
-	streamingWorker = await navigator.serviceWorker.register("/js/worker/streaming.js")
-	debug("Registered Streaming worker")
-}
-setInterval(checkStreamingWorkerHeartbeat, 2000)
-
-// Detect update events from worker
-const streamingChannel = new BroadcastChannel("streaming")
-streamingChannel.onmessage = message => {
-	const {event, type, id} = message.data
-	
-	// Worker heartbeat event
-	if(event == "heartbeat") {
-		streamingWorkerLastHeartbeat = Date.now()
-		
-	// Worker error event
-	} else if(event == "error") {
-		throw `WorkerError: ${message.data.error}`
-
-	// Data updated
-	} else if(event == "update") {
-		// Save in session storage
-		Session.updates ||= {}
-		Session.updates[type] ||= {}
-		Session.updates[type][id] = Date.now()
-		
-		checkRefreshCondition(type, id)
-
-	// Unknown event
-	} else {
-		throw new Error(`Unknown event: ${event}`)
-	}
+	streamingWorkerState.instance = await navigator.serviceWorker.register("/js/worker/streaming.js")
+	debug("Registered new Streaming worker")
+	await streamingWorkerState.instance?.ready
+	await sleep(2500)
+	streamingWorkerState.registering = false
 }
 
 
@@ -73,6 +52,38 @@ async function checkRefreshCondition(type, id) {
 // Page life-cycle events
 window.initialLoadTime = Date.now()
 window.onpageshow = event => {
+	// Start service worker heartbeat check
+	streamingWorkerState.interval = setInterval(checkStreamingWorkerHeartbeat, 2000)
+
+	// Detect update events from worker
+	window.streamingChannel = new BroadcastChannel("streaming")
+	window.streamingChannel.onmessage = message => {
+		const {event, type, id} = message.data
+		
+		// Worker heartbeat event
+		if(event == "heartbeat") {
+			streamingWorkerState.lastHeartBeat = Date.now()
+			
+		// Worker error event
+		} else if(event == "error") {
+			throw `WorkerError: ${message.data.error}`
+
+		// Data updated
+		} else if(event == "update") {
+			// Save in session storage
+			Session.updates ||= {}
+			Session.updates[type] ||= {}
+			Session.updates[type][id] = Date.now()
+			
+			checkRefreshCondition(type, id)
+
+		// Unknown event
+		} else {
+			throw new Error(`Unknown event: ${event}`)
+		}
+	}
+	
+	
 	// Check if page restored from bfcache
 	if(!event.persisted) return
 	debug("Page restored from bfcache")
@@ -92,7 +103,9 @@ window.onpageshow = event => {
 }
 window.onbeforeunload = () => {
 	// Close the streaming channel
-	streamingChannel.close()
+	window.streamingChannel.close()
+	// Stop service worker heartbeat check
+	clearInterval(streamingWorkerState.interval)
 }
 
 
@@ -126,17 +139,6 @@ Session.history ||= []
 		`
 	}
 	homeLink.insertAdjacentHTML("afterend", pathHTML)
-
-	// Shrink nav to fit
-	nav.overflows = () => nav.scrollWidth > nav.offsetWidth
-	nav.calculateSizing = () => {
-		if(!nav.overflows()) return
-		// Start by removing last link
-		nav.querySelector(":scope > a:last-child").remove()
-		nav.querySelector(":scope > span.icon:last-child").remove()
-		if(!nav.overflows()) return
-	}
-	nav.calculateSizing()
 }
 
 
