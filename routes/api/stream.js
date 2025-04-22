@@ -26,7 +26,7 @@ export default async function * ({user}) {
 			id: dbUpdate.documentKey._id
 		}
 
-		console.log(data)
+		// console.log("Sending update event:", data)
 		yield {
 			event: "update",
 			data

@@ -387,39 +387,3 @@ for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])"
 	}
 	META[metaTag.name] = metaContent
 }
-
-// Event streaming
-const eventSource = new EventSource("/api/stream")
-eventSource.addEventListener("update", event => {
-	if(!event.data) return
-	const data = JSON.parse(event.data)
-	for(const condition of pageRefreshConditions) {
-		if(condition.type != data.type || condition.id != data.id) continue
-		document.startViewTransition(() => document.location.reload())
-		break
-	}
-})
-eventSource.addEventListener("error", event => {
-	if(!event.data) return
-	const error = JSON.parse(event.data)
-	throw new Error(error.message || error)
-})
-
-const pageRefreshConditions = []
-
-function registerRefreshCondition(path) {
-	const url = new URL(path)
-	const segments = url.pathname.substring("1").split("/")
-	if(segments.length != 2) return
-	if(!segments[0].match(/^\w+$/)) return
-	if(!segments[1].match(/^[0-9a-f]+$/)) return
-
-	const [type, id] = segments
-	if(pageRefreshConditions.some(c => c.type == type && c.id == id)) return
-	pageRefreshConditions.push({type, id})
-}
-
-registerRefreshCondition(document.location)
-for(const link of document.querySelectorAll("a[href]")) {
-	registerRefreshCondition(link.href)
-}

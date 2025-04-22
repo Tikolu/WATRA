@@ -2,6 +2,8 @@
 <html lang="pl">
 	<% $.styles ||= [] %>
 	<% $.styles.unshift("main") %>
+	<% $.scripts ||= [] %>
+	<% $.scripts.unshift("main") %>
 	<%~ include("/templates/head.html", $) %>
 	<body>
 		<%~ include("/templates/titleBar.html", $) %>
