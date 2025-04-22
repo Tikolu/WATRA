@@ -1,3 +1,17 @@
+// Global error handlers
+window.onerror = message => Popup.error(message)
+window.onunhandledrejection = event => Popup.error(event.reason)
+
+// Debug function
+function debug() {
+	console.log(...arguments)
+	if(!Local.debug) return
+	for(const arg of arguments) {
+		if(typeof arg != "string") arg = JSON.stringify(arg)
+		Popup.info(arg, "build")
+	}
+}
+
 // Base64 helper functions
 const Base64 = {
 	encode: v => btoa(v),
@@ -117,7 +131,9 @@ HTMLDialogElement.prototype.result = function(modal=true) {
 			}
 		}
 	})
-}// API functions
+}
+
+// API functions
 const API = {
 	handlers: {},
 
@@ -134,13 +150,13 @@ const API = {
 		let response, text, json
 		try {
 			response = await fetch(`/api/${get}`, options)
-		} catch(error) {
+		} catch {
 			text = "Connection failed"
 		}
 		text ||= await response?.text()
 		try {
 			json = JSON.parse(text)
-		} catch(error) {
+		} catch {
 			text ||= "Error parsing API response"
 			if(text.includes("\n")) text = text.split("\n")[0]
 			throw text
@@ -337,7 +353,7 @@ class Store {
 				if(rawData === null) return
 				try {
 					var parsedData = JSON.parse(rawData)
-				} catch(error) {
+				} catch {
 					return rawData
 				}
 				// Proxy objects for detecting updates

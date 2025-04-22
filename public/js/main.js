@@ -3,10 +3,12 @@ let streamingWorker, streamingWorkerLastHeartbeat = 0
 async function checkStreamingWorkerHeartbeat() {
 	// Check if last heartbeat was over 2 seconds ago
 	if(Date.now() - streamingWorkerLastHeartbeat < 2000) return
+	debug("Streaming worker not responding")
 	// If worker exists, unregister it
 	await streamingWorker?.unregister()
 	// Register new worker
 	streamingWorker = await navigator.serviceWorker.register("/js/worker/streaming.js")
+	debug("Registered Streaming worker")
 }
 setInterval(checkStreamingWorkerHeartbeat, 2000)
 
@@ -61,6 +63,7 @@ for(const link of document.querySelectorAll("a[href]")) {
 async function checkRefreshCondition(type, id) {
 	for(const condition of pageRefreshConditions) {
 		if(condition.type != type || condition.id != id) continue
+		debug("Refreshing page...")
 		document.location.reload()
 		break
 	}
@@ -71,11 +74,8 @@ async function checkRefreshCondition(type, id) {
 window.initialLoadTime = Date.now()
 window.onpageshow = event => {
 	// Check if page restored from bfcache
-	console.log(Date.now() - window.initialLoadTime)
-	// if(Date.now() - window.initialLoadTime < 1000) return
 	if(!event.persisted) return
-
-	Popup.info("Page restored from bfcache")
+	debug("Page restored from bfcache")
 
 	// Restore history backup
 	Session.history = [...historyBackup]
@@ -85,7 +85,6 @@ window.onpageshow = event => {
 	for(const type in updates) {
 		for(const id in updates[type]) {
 			// Check if update occured after first page load
-			console.log("Checking", type, id)
 			if(updates[type][id] < window.initialLoadTime) continue
 			checkRefreshCondition(type, id)
 		}
