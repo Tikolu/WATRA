@@ -328,16 +328,37 @@ for(const element of document.querySelectorAll("[id]")) {
 // Reusable JSON store wrapper
 class Store {
 	constructor(source) {
+		const store = this
 		this.source = source
-		return new Proxy(this, {
+
+		const proxyHandler = {
 			get(target, property) {
 				const rawData = target.source.getItem(property)
 				if(rawData === null) return
 				try {
-					return JSON.parse(rawData)
+					var parsedData = JSON.parse(rawData)
 				} catch(error) {
 					return rawData
 				}
+				// Proxy objects for detecting updates
+				if(parsedData instanceof Object) {
+					const objectProxyHandler = {
+						get(target, key) {
+							const value = target[key]
+							if(value instanceof Object && key != "prototype") {
+								return new Proxy(value, objectProxyHandler)
+							}
+							return value
+						},
+						set(target, arrayPropery, arrayValue) {
+							target[arrayPropery] = arrayValue
+							proxyHandler.set(store, property, parsedData)
+							return true
+						}
+					}
+					return new Proxy(parsedData, objectProxyHandler)
+				}
+				return parsedData
 			},
 			set(target, property, value) {
 				if(value === undefined) {
@@ -348,7 +369,8 @@ class Store {
 				target.source.setItem(property, value)
 				return true
 			}
-		})
+		}
+		return new Proxy(this, proxyHandler)
 	}
 }
 
