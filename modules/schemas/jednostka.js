@@ -246,7 +246,11 @@ export class JednostkaClass {
 		}
 		// Yield all members of the all subJednostki
 		for await(const subJednostka of this.getSubJednostkiTree()) {
-			yield * subJednostka.getSubMembers(exclude)
+			for(const member of await subJednostka.getMembers(exclude)) {
+				if(exclude.hasID(member.id)) continue
+				exclude.push(member.id)
+				yield member
+			}
 		}
 	}
 }
