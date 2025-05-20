@@ -96,7 +96,7 @@
 	<% } %>
 <% } %>
 
-<% if($.targetJednostka.subJednostki?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+<% if($.targetJednostka.subJednostki?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) && $.targetJednostka.type > 0) { %>
 	<hr>
 	<h2>Jednostki</h2>
 	<div id="sub-jednostka-list" class="unit-grid">
@@ -111,7 +111,7 @@
 			<% } %>
 		<% } %>
 	</div>
-	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) && $.targetJednostka.type > 0) { %>
 		<button id="create-sub-jednostka-button" api="jednostka/[jednostkaID]/subJednostka/create">
 			<span class="icon">add</span>
 			Dodaj jednostkę

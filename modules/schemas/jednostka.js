@@ -140,6 +140,7 @@ export class JednostkaClass {
 	async addSubJednostka(subJednostka) {
 		// Check jednostka type compatibility
 		if(subJednostka.type >= this.type) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
+		if(this.type == 0) throw Error("Nie można dodać jednostki pod zastęp") 
 		
 		// Add subJednostka to subJednostki, unless already added
 		if(!this.subJednostki.hasID(subJednostka.id)) {
