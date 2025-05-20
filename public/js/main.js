@@ -34,24 +34,43 @@ function registerRefreshCondition(path) {
 	pageRefreshConditions.push({type, id})
 }
 
+// Register a refresh condition for URL and all link elements
 registerRefreshCondition(document.location)
-for(const link of document.querySelectorAll("a[href]")) {
-	registerRefreshCondition(link.href)
+function scanForRefreshConditions() {
+	for(const link of document.querySelectorAll("a[href]")) {
+		registerRefreshCondition(link.href)
+	}
 }
+scanForRefreshConditions()
+window.afterDataRefresh.push(scanForRefreshConditions)
 
+// Check if update should trigger a data refresh
 async function checkRefreshCondition(type, id) {
 	for(const condition of pageRefreshConditions) {
 		if(condition.type != type || condition.id != id) continue
-		debug("Refreshing page...")
-		document.location.reload()
+		await refreshPageData()
+		window.updatedTime = Date.now()
 		break
 	}
 }
 
+// Check if any updates have occured since the page was first loaded
+function checkDataUpdates() {
+	const updates = Session.updates || {}
+	for(const type in updates) {
+		for(const id in updates[type]) {
+			// Check if update occured after first page load
+			if(updates[type][id] < window.updatedTime) continue
+			checkRefreshCondition(type, id)
+		}
+	}
+}
 
 // Page life-cycle events
 window.initialLoadTime = Date.now()
+window.updatedTime = Date.now()
 window.onpageshow = event => {
+	window.unloading = false
 	// Start service worker heartbeat check
 	streamingWorkerState.interval = setInterval(checkStreamingWorkerHeartbeat, 2000)
 
@@ -70,11 +89,7 @@ window.onpageshow = event => {
 
 		// Data updated
 		} else if(event == "update") {
-			// Save in session storage
-			Session.updates ||= {}
-			Session.updates[type] ||= {}
-			Session.updates[type][id] = Date.now()
-			
+			trackDataUpdate(type, id)
 			checkRefreshCondition(type, id)
 
 		// Unknown event
@@ -85,33 +100,46 @@ window.onpageshow = event => {
 	
 	
 	// Check if page restored from bfcache
-	if(!event.persisted) return
+	if(!event.persisted) {
+		window.pageShowCount = 0
+		return
+	}
+	window.pageShowCount += 1
 	debug("Page restored from bfcache")
 
 	// Restore history backup
 	Session.history = [...historyBackup]
 
+	// Blur focused and hovered element
+	document.activeElement.blur()
+
+	// Trigger refresh
+	if(window.refreshDataOnShow) refreshPageData()
+	window.refreshDataOnShow = false
+
 	// Check if any relevant updates occurred 
-	const updates = Session.updates || {}
-	for(const type in updates) {
-		for(const id in updates[type]) {
-			// Check if update occured after first page load
-			if(updates[type][id] < window.initialLoadTime) continue
-			checkRefreshCondition(type, id)
-		}
-	}
+	checkDataUpdates()
 }
+
 window.onbeforeunload = () => {
 	// Close the streaming channel
+	console.log("Unloading...")
 	window.streamingChannel.close()
+	window.unloading = true
 	// Stop service worker heartbeat check
 	clearInterval(streamingWorkerState.interval)
+}
+
+document.onvisibilitychange = event => {
+	if(document.visibilityState == "hidden") return
+	if(window.unloading) return
+	checkDataUpdates()
 }
 
 
 // Construct nav path
 Session.history ||= []
-{
+function constructNavPath() {
 	const nav = document.querySelector("nav")
 	const homeLink = nav.querySelector("a:first-child")
 
@@ -126,7 +154,7 @@ Session.history ||= []
 
 		// If encountered current page in history, remove it everything after it
 		if(entry.path == document.location.pathname) {
-			Session.history.splice(index)
+			if(!window.pageShowCount) Session.history.splice(index)
 			break
 		}
 
@@ -140,6 +168,8 @@ Session.history ||= []
 	}
 	homeLink.insertAdjacentHTML("afterend", pathHTML)
 }
+constructNavPath()
+window.afterDataRefresh.push(constructNavPath)
 
 
 // Track visited pages

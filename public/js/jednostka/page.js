@@ -6,22 +6,28 @@ API.registerHandler("jednostka/[jednostkaID]/delete", {
 
 API.registerHandler("jednostka/[jednostkaID]/update/name", {
 	valueKey: "name",
-	successText: "Zapisano nazwę",
-	after: response => jednostkaTitle.innerText = response.name
+	successText: "Zapisano nazwę"
 })
 
 API.registerHandler("jednostka/[jednostkaID]/member/create", {
 	progressText: "Tworzenie użytkownika...",
-	after: response => document.location.href = `/users/${response.userID}`
+	after: response => {
+		window.refreshDataOnShow = true
+		document.location.href = `/users/${response.userID}`
+	}
 })
 
 API.registerHandler("jednostka/[jednostkaID]/subJednostka/create", {
 	progressText: "Tworzenie jednostki...",
-	after: response => document.location.href = `/jednostki/${response.subJednostkaID}`
+	after: response => {
+		window.refreshDataOnShow = true
+		document.location.href = `/jednostki/${response.subJednostkaID}`
+	}
 })
 
 API.registerHandler("jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję", {
 	progressText: "Mianowanie na funkcję...",
+	successText: "Zapisano",
 	validate: data => {
 		mianowanieUserSelect.classList.remove("invalid")
 		mianowanieFunkcjaSelect.classList.remove("invalid")
@@ -36,11 +42,15 @@ API.registerHandler("jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję"
 		}
 		if(data.funkcjaType == "remove") return {
 			api: `jednostka/[jednostkaID]/member/[memberID]/remove`,
-			progressText: "Usuwanie użytkownika..."
+			progressText: "Usuwanie użytkownika...",
+			successText: "Usunięto"
 		}
 
 		data.funkcjaType = Number(data.funkcjaType)
 		return true
 	},
-	after: () => document.location.reload()
+	after: () => {
+		mianowanieUserSelect.value = ""
+		mianowanieFunkcjaSelect.value = ""
+	}
 })

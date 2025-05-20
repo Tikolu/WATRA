@@ -303,11 +303,11 @@ dialog.message > button.icon {
 }
 
 dialog[open] {
-	animation: fade-grow 250ms forwards;
+	animation: popup-show 250ms forwards;
 }
 
 dialog:not([open]) {
-	animation: fade-shrink 250ms forwards;
+	animation: popup-hide 250ms forwards;
 }
 
 dialog.message:nth-of-type(1) { bottom: 2.5em }
@@ -320,9 +320,16 @@ dialog.message.progress > span.icon {
 	animation: spin 1s infinite linear;
 }
 
+
+/* Page data refresh animations */
+.removing { animation: element-shrink 250ms forwards }
+.adding { animation: element-grow 250ms }
+.fade-out { animation: fade-out 250ms forwards linear }
+.fade-in { animation: fade-in 250ms linear }
+
 /* Animations */
 
-@keyframes fade-grow {
+@keyframes popup-show {
 	from {
 		opacity: 0;
 		scale: 0.8;
@@ -335,7 +342,7 @@ dialog.message.progress > span.icon {
 	}
 }
 
-@keyframes fade-shrink {
+@keyframes popup-hide {
 	from {
 		opacity: 1;
 		scale: 1;
@@ -346,6 +353,38 @@ dialog.message.progress > span.icon {
 		scale: 0.8;
 		display: none;
 	}
+}
+
+@keyframes element-grow {
+	from {
+		opacity: 0;
+		scale: 0.8;
+	}
+	to {
+		opacity: 1;
+		scale: 1;
+	}
+}
+
+@keyframes element-shrink {
+	from {
+		opacity: 1;
+		scale: 1;
+	}
+	to {
+		opacity: 0;
+		scale: 0.8;
+	}
+}
+
+@keyframes fade-in {
+	from { opacity: 0 }
+	to { opacity: 1 }
+}
+
+@keyframes fade-out {
+	from { opacity: 1 }
+	to { opacity: 0 }
 }
 
 @keyframes spin {

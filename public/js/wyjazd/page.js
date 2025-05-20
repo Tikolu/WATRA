@@ -10,15 +10,12 @@ API.registerHandler("wyjazd/[wyjazdID]/update/name", {
 })
 
 API.registerHandler("wyjazd/[wyjazdID]/update/dates", {
-	successText: "Zapisano daty",
-	after: response => {
-		wyjazdTitle.innerText = response.displayName
-		wyjazdType.innerText = response.type
-	}
+	successText: "Zapisano daty"
 })
 
 API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
 	progressText: "Mianowanie na funkcję...",
+	successText: "Zapisano",
 	validate: data => {
 		mianowanieUserSelect.classList.remove("invalid")
 		mianowanieFunkcjaSelect.classList.remove("invalid")
@@ -33,11 +30,15 @@ API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
 		}
 		if(data.funkcjaType == "remove") return {
 			api: `wyjazd/[wyjazdID]/member/[memberID]/remove`,
-			progressText: "Usuwanie użytkownika..."
+			progressText: "Usuwanie użytkownika...",
+			successText: "Usunięto"
 		}
 
 		data.funkcjaType = Number(data.funkcjaType)
 		return true
 	},
-	after: () => document.location.reload()
+	after: () => {
+		mianowanieUserSelect.value = ""
+		mianowanieFunkcjaSelect.value = ""
+	}
 })

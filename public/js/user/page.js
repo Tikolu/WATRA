@@ -1,11 +1,6 @@
 API.registerHandler("user/[userID]/update/names", {
 	valueKey: "name",
-	successText: "Zapisano imię i nazwisko",
-	after: response => {
-		firstNameInput.value = response.firstName
-		lastNameInput.value = response.lastName
-		userTitle.innerText = response.displayName
-	}
+	successText: "Zapisano imię i nazwisko"
 })
 
 API.registerHandler("user/[userID]/update/dateOfBirth", {
@@ -32,5 +27,8 @@ API.registerHandler("user/[userID]/accessCode/generate", {
 
 API.registerHandler("user/[userID]/parent/create", {
 	progressText: "Tworzenie rodzica...",
-	after: response => document.location.href = `/users/${response.userID}`
+	after: response => {
+		window.refreshDataOnShow = true
+		document.location.href = `/users/${response.userID}`
+	}
 })
