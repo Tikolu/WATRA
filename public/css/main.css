@@ -21,7 +21,7 @@ header #user-profile-link {
 /* navigation path */
 header nav {
 	display: flex;
-	overflow: scroll hidden;
+	overflow: auto hidden;
 	
 	min-width: 0;
 	width: 100%;
@@ -48,4 +48,41 @@ header > nav > a:not(:first-child) {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	/* min-width: 4em; */
+}
+
+/* transitions */
+@view-transition {
+	navigation: auto;
+}
+
+:root {
+	view-transition-name: none;
+}
+
+main { view-transition-name: navigation-forwards }
+::view-transition-old(navigation-forwards) { animation: page-shrink 250ms }
+::view-transition-new(navigation-forwards) { animation: page-grow 250ms }
+
+@keyframes page-grow {
+	from {
+		scale: 0.95;
+		opacity: 0;
+	}
+
+	to {
+		scale: 1;
+		opacity: 1;
+	}
+}
+
+@keyframes page-shrink {
+	from {
+		scale: 1;
+		opacity: 1;
+	}
+
+	to {
+		scale: 0.95;
+		opacity: 0;
+	}
 }
