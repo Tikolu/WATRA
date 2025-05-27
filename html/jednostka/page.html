@@ -48,28 +48,28 @@
 			</select>
 
 			<button id="mianowanie-button" api="jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję">
-				<span class="icon">check</span>
-				Potwierdź mianowanie
+				<i>check</i>
+				<span>Potwierdź mianowanie</span>
 			</button>
 		</form>
 
 		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
 			<h3>Usuwanie</h3>
 			<button id="delete-jednostka-button" class="dangerous" api="jednostka/[jednostkaID]/delete">
-				<span class="icon">delete</span>
-				Usuń jednostkę
+				<i>delete</i>
+				<span>Usuń jednostkę</span>
 			</button>
 			<dialog id="delete-jednostka-dialog">
 				<h1>Trwale usunąć <%= $.targetJednostka.displayName %>?</h1>
 				<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Podjednostki i użytkownicy zostaną przeniesieni do <%= $.targetJednostka.upperJednostki[0]?.displayName || "jednostki nadrzędnej" %>.</p>
 				<div class="button-row">
 					<button>
-						<span class="icon">arrow_back</span>
-						Anuluj
+						<i>arrow_back</i>
+						<span>Anuluj</span>
 					</button>
 					<button class="dangerous" command>
-						<span class="icon">delete</span>
-						Usuń
+						<i>delete</i>
+						<span>Usuń</span>
 					</button>
 				</div>
 			</dialog>
@@ -90,8 +90,8 @@
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
-			<span class="icon">person_add</span>
-			Dodaj użytkownika
+			<i>person_add</i>
+			<span>Dodaj użytkownika</span>
 		</button>
 	<% } %>
 <% } %>
@@ -113,8 +113,8 @@
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) && $.targetJednostka.type > 0) { %>
 		<button id="create-sub-jednostka-button" api="jednostka/[jednostkaID]/subJednostka/create">
-			<span class="icon">add</span>
-			Dodaj jednostkę
+			<i>add</i>
+			<span>Dodaj jednostkę</span>
 		</button>
 	<% } %>
 <% } %>

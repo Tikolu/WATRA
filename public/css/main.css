@@ -33,12 +33,12 @@ header > nav > a:first-child {
 	flex-shrink: 0;
 }
 
-header > nav > a > span.icon {
+header > nav > a > i {
 	margin: 0;
 }
 
 /* arrow icons */
-header > nav > span.icon  {
+header > nav > i  {
 	opacity: 0.5;
 	margin: 0 0.2em;
 	flex-shrink: 0;

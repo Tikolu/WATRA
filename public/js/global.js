@@ -43,9 +43,7 @@ const Popup = {
 		dialog.classList.add("message")
 		if(type) dialog.classList.add(type)
 
-		if(icon) dialog.innerHTML = `
-			<span class="icon">${icon}</span>
-		`
+		if(icon) dialog.innerHTML = `<i>${icon}</i>`
 		dialog.innerHTML += `
 			<p>${message}</p>
 			<button class="icon" onclick="this.parentElement.close()">close</button>
@@ -157,7 +155,6 @@ async function refreshPageData() {
 		"details": ["open"],
 	}
 	const noAnimate = "nav *, head *"
-	const directReplace = "button"
 
 	function nodeFilter(node) {
 		// Ignore elements

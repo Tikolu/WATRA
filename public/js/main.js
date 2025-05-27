@@ -169,7 +169,7 @@ function constructNavPath() {
 		if(existingLinks.some(link => link.endsWith(entry.path))) continue
 
 		pathHTML += `
-			<span class="icon">arrow_right</span>
+			<i>arrow_right</i>
 			<a href="${entry.path}">${entry.title}</a>
 		`
 	}

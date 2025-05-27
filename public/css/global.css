@@ -17,6 +17,7 @@ body {
 main {
 	max-width: 60em;
 	margin: 0 auto;
+	overflow-x: auto;
 }
 
 
@@ -28,8 +29,9 @@ main {
 	src: local("Arial");
 }
 
-span.icon, button.icon {
+i, button.icon {
 	font-family: "Material Symbols Sharp", blank;
+	font-style: normal;
 	color: inherit;
 
 	display: inline-block;
@@ -287,7 +289,7 @@ dialog.message {
 	transition: bottom 250ms;
 }
 
-dialog.message > .icon {
+dialog.message > i, dialog.message button.icon {
 	margin-right: 1em;
 }
 
@@ -316,7 +318,7 @@ dialog.message:nth-of-type(3) { bottom: 3.5em }
 dialog.message:nth-of-type(4) { bottom: 4.0em }
 dialog.message:nth-of-type(n+5) { bottom: 4.5em }
 
-dialog.message.progress > span.icon {
+dialog.message.progress > i {
 	animation: spin 1s infinite linear;
 }
 

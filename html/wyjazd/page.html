@@ -85,28 +85,28 @@
 			</select>
 
 			<button id="mianowanie-button" api="wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję">
-				<span class="icon">check</span>
-				Potwierdź mianowanie
+				<i>check</i>
+				<span>Potwierdź mianowanie</span>
 			</button>
 		</form>
 	<% } %>
 	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DELETE)) { %>
 		<h3>Usuwanie</h3>
 		<button id="delete-wyjazd-button" class="dangerous" api="wyjazd/[wyjazdID]/delete">
-			<span class="icon">delete</span>
-			Usuń wyjazd
+			<i>delete</i>
+			<span>Usuń wyjazd</span>
 		</button>
 		<dialog id="delete-wyjazd-dialog">
 			<h1>Trwale usunąć <%= $.targetWyjazd.displayName %>?</h1>
 			<p>Wyjazd i wszystkie związane z nim dane zostaną trwale usunięte.</p>
 			<div class="button-row">
 				<button>
-					<span class="icon">arrow_back</span>
-					Anuluj
+					<i>arrow_back</i>
+					<span>Anuluj</span>
 				</button>
 				<button class="dangerous" command>
-					<span class="icon">delete</span>
-					Usuń
+					<i>delete</i>
+					<span>Usuń</span>
 				</button>
 			</div>
 		</dialog>
@@ -124,4 +124,8 @@
 			</a>
 		<% } %>
 	</div>
+	<button href="/wyjazdy/<%= $.targetWyjazd.id %>/addMembers" class="add-user-button">
+		<i>person_add</i>
+		<span>Dodawanie uczestników</span>
+	</button>
 <% } %>
