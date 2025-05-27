@@ -153,9 +153,11 @@ async function refreshPageData() {
 
 	const ignoreElements = "dialog.message"
 	const ignoreAttributes = {
-		"dialog": ["open"]
+		"dialog": ["open"],
+		"details": ["open"],
 	}
 	const noAnimate = "nav *, head *"
+	const directReplace = "button"
 
 	function nodeFilter(node) {
 		// Ignore elements
@@ -180,12 +182,8 @@ async function refreshPageData() {
 
 		// Update attributes
 		for(const attr of newDoc.attributes || []) {
-			if(
-				oldDoc.getAttribute(attr.name) == attr.value ||
-				oldDoc[attr.name] == attr.value
-			) continue
+			if(oldDoc.getAttribute(attr.name) === attr.value) continue
 			oldDoc.setAttribute(attr.name, attr.value)
-			oldDoc[attr.name] = attr.value
 		}
 		// Remove old attributes
 		const ignoreAttrs = ignoreAttributes[Object.keys(ignoreAttributes).find(q => oldDoc.matches && oldDoc.matches(q))] || []
@@ -460,7 +458,7 @@ const API = {
 // API attribute system
 function processAPIAttributes() {
 	for(const element of document.querySelectorAll("[api]")) {
-		if(element.activeAPI) continue
+		if(element.removeAPI) element.removeAPI()
 
 		const api = element.getAttribute("api")
 		
@@ -473,8 +471,9 @@ function processAPIAttributes() {
 			console.warn("API attribute not supported for this element:\n", element)
 			continue
 		}
-		element.addEventListener(event, () => API.executeHandler(element, api))
-		element.activeAPI = true
+		const listener = () => API.executeHandler(element, api)
+		element.addEventListener(event, listener)
+		element.removeAPI = () => element.removeEventListener(event, listener)
 	}
 }
 processAPIAttributes()
