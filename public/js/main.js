@@ -146,7 +146,7 @@ function constructNavPath() {
 	const pathname = document.location.pathname.replace(/\/$/, "")
 
 	// Main page clears history
-	if(pathname == "/") {
+	if(!pathname) {
 		Session.history = []
 	}
 
