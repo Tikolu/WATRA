@@ -84,7 +84,7 @@
 		<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
 			<a href="/users/<%= funkcja.user.id %>">
 				<h3><%= funkcja.user.displayName %></h3>
-				<p>(<%= funkcja.displayName %>)</p>
+				<p><%= Text.capitalise(funkcja.displayName) %></p>
 			</a>
 		<% } %>
 	</div>
