@@ -47,6 +47,11 @@ i, button.icon {
 	user-select: none;
 }
 
+i.spin {
+	animation: spin 1s infinite linear;
+	scale: 0.9;
+}
+
 
 /* Form layout */
 
@@ -297,6 +302,8 @@ dialog.message > p {
 	flex: 1;
 	margin: 0;
 	padding-right: 1em;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 dialog.message > button.icon {
