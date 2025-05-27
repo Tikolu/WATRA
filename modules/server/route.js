@@ -134,7 +134,7 @@ export default async function(request, response) {
 			if(file.name == "..js") continue
 			
 			// If a fallback is encountered, remember it for later
-			else if(file.name.startsWith("[") && file.name.endsWith("]")) {
+			else if(file.name.match(/^\[.+\]$/)) {
 				fallback = file.name
 				continue
 			}
