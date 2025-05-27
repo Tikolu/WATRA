@@ -2,9 +2,11 @@
 	<nav>
 		<a href="/"><span class="icon">home</span></a>
 		<%
-			$.navPath ||= {
-				[$.title]: ""
-			}
+			$.navPath ??= {}
+			
+			if($.navPath === false) $.navPath = {}
+			else $.navPath[$.title] = ""
+			
 			for(const entry in $.navPath) {
 				const link = $.navPath[entry]
 				%>

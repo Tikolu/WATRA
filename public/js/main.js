@@ -143,23 +143,30 @@ function constructNavPath() {
 	const nav = document.querySelector("nav")
 	const homeLink = nav.querySelector("a:first-child")
 
+	const pathname = document.location.pathname.replace(/\/$/, "")
+
 	// Main page clears history
-	if(document.location.pathname == "/") {
+	if(pathname == "/") {
 		Session.history = []
 	}
+
+	const existingLinks = [...nav.querySelectorAll("a[href]")].map(a => a.href)
 
 	let pathHTML = ""
 	for(const index in Session.history) {
 		const entry = Session.history[index]
 
 		// If encountered current page in history, remove it everything after it
-		if(entry.path == document.location.pathname) {
+		if(entry.path == pathname) {
 			if(!window.pageShowCount) Session.history.splice(index)
 			break
 		}
 
 		// Skip main page entry
 		if(entry.path == "/") continue
+
+		// Skip if link already exists
+		if(existingLinks.some(link => link.endsWith(entry.path))) continue
 
 		pathHTML += `
 			<span class="icon">arrow_right</span>
