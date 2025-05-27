@@ -191,13 +191,9 @@ async function refreshPageData() {
 			}
 		}
 
-		// Update text content if different
-		if(
-			!oldDoc.childElementCount &&
-			!newDoc.childElementCount &&
-			oldDoc.textContent !== newDoc.textContent
-		) {
-			oldDoc.textContent = newDoc.textContent
+		// Update content if different
+		if((!oldDoc.childElementCount || !newDoc.childElementCount) && oldDoc.innerHTML !== newDoc.innerHTML) {
+			oldDoc.innerHTML = newDoc.innerHTML
 			return
 		}
 
@@ -205,47 +201,63 @@ async function refreshPageData() {
 		const oldChildren = [...oldDoc.children].filter(nodeFilter).map(nodeMap)
 		const newChildren = [...newDoc.children].filter(nodeFilter).map(nodeMap)
 
-		const elementsToAdd = []
-
+		// Calculate matching scores for each new element
 		for(const newChildIndex in newChildren) {
 			const newChild = newChildren[newChildIndex]
-			let matchingElement, matchStrength = 0
 
-			// Find old element which most closely matches new element
+			newChild.matchingElements = []
+			newChild.totalMatchScore = 0
+
 			for(const oldChildIndex in oldChildren) {
 				const oldChild = oldChildren[oldChildIndex]
-				if(elementsToAdd.includes(oldChild)) continue
 				if(!oldChild.matches(newChild.tagName)) continue
 
-				// Perfect matches
-				if(oldChild.isEqualNode(newChild)) {
-					matchingElement = oldChild
-					break
-				}
-				if(oldChild.id && oldChild.id == newChild.id) {
-					matchingElement = oldChild
-					break
-				}
+				let matchScore = 0
+
+				if(oldChild.isEqualNode(newChild)) matchScore += 10
+				if(oldChild.id && oldChild.id == newChild.id) matchScore += 10
 				
-				// Alternative matches
-				let elementMatchStrength = 0
-				if(oldChild.href == newChild.href) elementMatchStrength += 1
-				if(oldChild.className == newChild.className) elementMatchStrength += 1
-				if(oldChildIndex == newChildIndex) elementMatchStrength += 1
-				if(oldChild.textContent == newChild.textContent) elementMatchStrength += 1
+				if(oldChild.href && oldChild.href == newChild.href) matchScore += 2
+				if(oldChild.textContent && oldChild.textContent == newChild.textContent) matchScore += 2
 
-				if(elementMatchStrength > matchStrength) {
-					matchStrength = elementMatchStrength
-					matchingElement = oldChild
-				} else if(!matchingElement) {
-					matchingElement = oldChild
-				}
+				if(oldChild.className && oldChild.className == newChild.className) matchScore += 1
+				if(oldChildIndex == newChildIndex) matchScore += 1
+
+				newChild.matchingElements.push({
+					element: oldChild,
+					matchScore
+				})
+
+				newChild.totalMatchScore += matchScore
+				if(matchScore > 15) break
 			}
-
+			newChild.matchingElements.sort((a, b) => b.matchScore - a.matchScore)
+		}
+		
+		// Find most matching old element for each new element
+		const foundElements = []
+		for(const newChild of newChildren.toSorted((a, b) => b.totalMatchScore - a.totalMatchScore)) {
+			let matchingElement
+			for(const {element} of newChild.matchingElements) {
+				if(foundElements.includes(element)) continue
+				matchingElement = element
+				break
+			}
 			if(matchingElement) {
-				elementsToAdd.push(matchingElement)
+				foundElements.push(matchingElement)
 				mergeDocuments(matchingElement, newChild)
+				newChild.matchingElement = matchingElement
+			}
+		}
+
+		// Add elements
+		const elementsToAdd = []
+		for(const newChild of newChildren) {
+			if(newChild.matchingElement) {
+				elementsToAdd.push(newChild.matchingElement)
 			} else {
+				newChild.matchingElements = undefined
+				newChild.totalMatchScore = undefined
 				elementsToAdd.push(newChild)
 			}
 		}
