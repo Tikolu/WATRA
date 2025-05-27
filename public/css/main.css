@@ -56,34 +56,4 @@ header > nav > a:not(:first-child) {
 	navigation: auto;
 }
 
-:root {
-	view-transition-name: none;
-}
-
-main { view-transition-name: navigation-forwards }
-::view-transition-old(navigation-forwards) { animation: page-shrink 250ms }
-::view-transition-new(navigation-forwards) { animation: page-grow 250ms }
-
-@keyframes page-grow {
-	from {
-		scale: 0.95;
-		opacity: 0;
-	}
-
-	to {
-		scale: 1;
-		opacity: 1;
-	}
-}
-
-@keyframes page-shrink {
-	from {
-		scale: 1;
-		opacity: 1;
-	}
-
-	to {
-		scale: 0.95;
-		opacity: 0;
-	}
-}
+:root { view-transition-name: navigation }
