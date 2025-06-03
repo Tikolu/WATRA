@@ -8,7 +8,7 @@ const errorMessages = {
 function isValidCode(code) {
 	code = Number(code)
 	if(isNaN(code)) return false
-	if(code < 100) return false
+	if(code < 200) return false
 	if(code >= 600) return false
 	return true
 }
@@ -18,6 +18,7 @@ export default class HTTPError extends Error {
 		// Setup error code
 		if(!code) code = 500
 		if(!isValidCode(code)) {
+			if(message) code += `, ${message}`
 			message = code
 			code = 500
 		}

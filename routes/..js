@@ -52,7 +52,7 @@ export function exit({user}) {
 		this.lastOutput = html("error", {
 			error: {
 				code,
-				title: errorMessages[code]?.[0] || `Error ${code} 🤔`,
+				title: errorMessages[code]?.[0] || "🤔",
 				message,
 				stack: this.lastError.stack
 			},
