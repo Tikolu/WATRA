@@ -60,7 +60,7 @@ form {
 	grid-template-columns: repeat(2, auto);
 	column-gap: 1em;
 	row-gap: 0.25em;
-	align-items: baseline;
+	align-items: center;
 }
 
 form button:last-child {
@@ -80,6 +80,14 @@ input, button, select, textarea {
 	border-radius: var(--border-radius);
 	transition: border-color 250ms, background-color 250ms;
 	border: none;
+}
+
+label {
+	vertical-align: middle;
+}
+
+label > * {
+	display: inline;
 }
 
 /* Input elements */
@@ -103,6 +111,7 @@ input[type^=date]:disabled:not([value]) {
 }
 
 input[type=checkbox] {
+	vertical-align: middle;
 	height: 1.5em;
 	width: 1.5em;
 }

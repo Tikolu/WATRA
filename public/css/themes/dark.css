@@ -47,3 +47,7 @@ dialog.message.error {
 input.invalid, select.invalid {
 	background-color: #533;
 }
+
+input {
+	accent-color: #fff;
+}
