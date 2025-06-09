@@ -369,9 +369,19 @@ const API = {
 		let data = {...META}
 
 		// Add form values to POST data
+		const formData = {}
 		for(const formElement of element.parentElement.querySelectorAll("[name]")) {
-			data[formElement.name] = formElement.value
+			if(formElement.matches("[type=checkbox]") && !formElement.checked) continue
+			if(formData[formElement.name]) {
+				if(!Array.isArray(formData[formElement.name])) {
+					formData[formElement.name] = [formData[formElement.name]]
+				}
+				formData[formElement.name].push(formElement.value)
+			} else {
+				formData[formElement.name] = formElement.value
+			}
 		}
+		data = {...data, ...formData}
 
 		// Check element validity
 		if(!element.checkValidity()) {
@@ -514,6 +524,44 @@ function processCustomInputElements() {
 				if(!input.value || input.matches(":focus")) return
 				input.blur()
 			})
+		}
+
+		// Custom checkbox
+		else if(input.matches("input[type=checkbox]")) {
+			input.globalCheckbox = checkboxes => {
+				if(checkboxes instanceof HTMLElement) {
+					checkboxes = checkboxes.querySelectorAll("input[type=checkbox]")
+				}
+				
+				input.onchange = async () => {
+					for(const checkbox of checkboxes) {
+						// await sleep(150 / checkboxes.length)
+						checkbox.checked = input.checked
+					}
+				}
+
+				input.calculateState = () => {
+					input.checked = false
+					input.indeterminate = false
+					let allChecked = true
+					for(const checkbox of checkboxes) {
+						if(checkbox.checked) {
+							input.indeterminate = true
+						} else {
+							allChecked = false
+						}
+					}
+					if(allChecked) {
+						input.checked = true
+						input.indeterminate = false
+					}
+				}
+				input.calculateState()
+
+				for(const checkbox of checkboxes) {
+					checkbox.addEventListener("change", input.calculateState)
+				}
+			}
 		}
 	}
 }
