@@ -3,7 +3,9 @@ import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetJednostka}) {
 	// Populate jednostka funkcje, as well as users and jednostki of funkcje
-	await targetJednostka.populate("funkcje", ["user", "jednostka"])
+	await targetJednostka.populate({
+		"funkcje": ["user", "jednostka"]
+	})
 	// Populate sub and upper jednostki
 	await targetJednostka.populate([
 		"subJednostki",

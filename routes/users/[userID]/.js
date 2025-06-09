@@ -4,7 +4,10 @@ import html from "modules/html.js"
 
 export default async function({user, targetUser}) {
 	// Populate funkcje, and jednostki of funkcje
-	await targetUser.populate(["funkcje", "funkcjeWyjazdowe"], "jednostka")
+	await targetUser.populate({
+		"funkcje": "jednostka",
+		"funkcjeWyjazdowe": "jednostka"
+	})
 
 	// Populate parents or children
 	await targetUser.populate(targetUser.isParent ? "children" : "parents")

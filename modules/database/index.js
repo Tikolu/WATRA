@@ -76,69 +76,118 @@ mongoose.plugin(schema => {
 
 // Mongoose better populate plugin
 mongoose.plugin(schema => {
-	schema.methods.populate = async function(...path) {
-		let currentKeys = path.shift()
-		let exclude = null
-		if(currentKeys instanceof Object && !(currentKeys instanceof Array)) {
-			if(!currentKeys.path || currentKeys.path instanceof Array) {
-				throw Error("Invalid populate path")
+	schema.methods.populate = async function(graph, options) {
+		// console.log(`\n\n\n\x1b[32m[MongoDB]\x1b[0m Populating ${this.constructor.modelName} ${this.id}`)
+		
+		const populateEntries = {
+			[this.constructor.modelName]: {
+				model: this.constructor,
+				documentIDs: [],
+				callbacks: [],
+				results: [this]
 			}
-			currentKeys = currentKeys.path
-			exclude = currentKeys.exclude
 		}
-		if(!(currentKeys instanceof Array)) currentKeys = [currentKeys]
-
-		for(const key of currentKeys) {
-			if(typeof key != "string") throw Error("Invalid populate path")
-			if(
-				!this.populated(key) &&
-				(!(this[key] instanceof Array) || this[key].length > 0)
-			) {
-				let schemaDefinition = schema.tree[key]
-				if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
-				const arrayPopulate = schemaDefinition instanceof Array
-				if(arrayPopulate) schemaDefinition = schemaDefinition[0]
-			
-				let ref = schemaDefinition.ref
-				if(typeof ref == "function") {
-					ref = await ref.call(this)
-				} else if(typeof ref != "string") {
-					throw Error(`Path ${key} cannot be populated, invalid ref`)
-				}
-				if(!ref) throw Error(`Path ${key} cannot be populated, no ref defined`)
-
-				const Model = mongoose.model(ref)
-
-				let populateIDs = arrayPopulate ? [...this[key]] : [this[key]]
-				if(exclude) {
-					if(!arrayPopulate) throw Error("Cannot exclude in non-array populate")
-					populateIDs = populateIDs.filter(id => !exclude.hasID(id))
-				}
-			
-				const results = await Model.find(
-					{ _id: populateIDs }
-				)
-				const populateOutput = []
-				for(const id of populateIDs) {
-					let result = results.find(r => r.id == id)
-					result ||= new Model({
-						_id: id
-					})
-					populateOutput.push(result)
-				}
-				this[key] = arrayPopulate ? populateOutput : populateOutput[0]
+		function registerPopulateCallback(ref, IDs, callback) {
+			populateEntries[ref] ||= {
+				model: mongoose.model(ref),
+				documentIDs: [],
+				callbacks: [],
+				results: []
 			}
-			if(path.length) {
-				if(this[key] instanceof Array) {
-					for(const item of this[key]) {
-						await item.populate(...path)
+			populateEntries[ref].callbacks.push(callback)
+			let count = 0
+			for(const id of IDs) {
+				if(populateEntries[ref].documentIDs.includes(id)) continue
+				populateEntries[ref].documentIDs.push(id)
+				count += 1
+			}
+			return count
+		}
+
+		async function findPopulatable(graph, document) {
+			if(typeof graph == "string") graph = [graph]
+			if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
+			
+			let findCounter = 0
+			for(const key in graph) {
+				if(typeof key != "string") throw Error("Invalid populate path")
+				if(document.populated(key)) {
+					const subGraph = graph[key]
+					const subDocument = document[key]
+					if(subGraph && subDocument) {
+						if(Array.isArray(subDocument)) {
+							for(const item of subDocument) {
+								findCounter += await findPopulatable(subGraph, item)
+							}
+						} else if(typeof subDocument == "object") {
+							findCounter += await findPopulatable(subGraph, subDocument)
+						}
 					}
-				} else if(this[key]) {
-					await this[key].populate(...path)
+				} else if(!Array.isArray(document[key])|| document[key].length > 0) {
+					let schemaDefinition = document.schema.tree[key]
+					if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
+					const arrayPopulate = schemaDefinition instanceof Array
+					if(arrayPopulate) schemaDefinition = schemaDefinition[0]
+
+					let ref = schemaDefinition.ref
+					if(typeof ref == "function") {
+						ref = await ref.call(document)
+					} else if(typeof ref != "string") {
+						throw Error(`Path ${key} cannot be populated, invalid ref`)
+					}
+					if(!ref) throw Error(`Path ${key} cannot be populated, no ref defined`)
+
+					const subDocuments = arrayPopulate ? [...document[key]] : [document[key]]
+					const populateIDs = []
+
+					for(const subDocument of subDocuments) {
+						if(typeof subDocument != "string") continue
+						if(options?.exclude.hasID(subDocument)) continue
+						populateIDs.push(subDocument.id)
+					}
+
+					findCounter += registerPopulateCallback(ref, populateIDs, results => {
+						const newArray = []
+						for(const subDocument of subDocuments) {
+							if(typeof subDocument != "string") continue
+							const populatedDocument = results.find(r => r.id == subDocument)
+							newArray.push(populatedDocument || subDocument)
+						}
+						document[key] = arrayPopulate ? newArray : newArray[0]
+					})
 				}
 			}
+			return findCounter
 		}
 
+		
+
+		// let loopCount = 1
+		while(true) {
+			const findCount = await findPopulatable(graph, this)
+			if(findCount == 0) break
+			// console.log(`Pass ${loopCount++}, found ${findCount} populatable paths:`, populateEntries)
+
+			const populatePromises = []
+			for(const ref in populateEntries) {
+				const {model, documentIDs, callbacks} = populateEntries[ref]
+				if(documentIDs.length == 0) continue
+				
+				const query = async () => {
+					const results = await model.find({_id: documentIDs})
+					populateEntries[ref].results.push(...results)
+					for(const callback of callbacks) {
+						callback(populateEntries[ref].results)
+					}
+					populateEntries[ref].documentIDs = []
+					populateEntries[ref].callbacks = []
+				}
+
+				populatePromises.push(query())
+			}
+			await Promise.all(populatePromises)
+			// console.log(this)
+		}
 	}
 	schema.methods.populated = function(key) {
 		const schemaDefinition = schema.tree[key]
