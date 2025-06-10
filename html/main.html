@@ -5,27 +5,9 @@
 	navPath: false,
 	user: $.user
 }) %>
-<h1>Strona główna</h1>
+<h1>System Harcerski</h1>
 <p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
 <section>
-	<details>
-		<summary>Werjsa 1.0.0, opublikowana 1 marca</summary>
-		<article>
-			<%~ include("/changelog/1") %>
-		</article>
-	</details>
-	<details>
-		<summary>Werjsa 1.1.0, opublikowana 10 marca</summary>
-		<article>
-			<%~ include("/changelog/2") %>
-		</article>
-	</details>
-	<details>
-		<summary>Werjsa 1.2.0, opublikowana 16 marca</summary>
-		<article>
-			<%~ include("/changelog/3") %>
-		</article>
-	</details>
 	<% if($.user.funkcje.length > 0) { %>
 		<hr>
 		<h2>Jednostki</h2>
