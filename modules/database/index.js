@@ -47,7 +47,7 @@ mongoose.plugin(schema => {
 			}
 			for(const document of documents) {
 				document.$locals.disabledListeners ||= {}
-				console.log(`Calling ${callbackName} for ${document.constructor.modelName} ${document.id}`)
+				console.log(`\x1b[32m[MongoDB]\x1b[0m Calling ${callbackName} for ${document.constructor.modelName} ${document.id}`)
 				if(document.$locals.disabledListeners[callbackName]) continue
 				document.$locals.disabledListeners[callbackName] = true
 				await schema[callbackName].call(document)
@@ -141,17 +141,26 @@ mongoose.plugin(schema => {
 					const populateIDs = []
 
 					for(const subDocument of subDocuments) {
-						if(typeof subDocument != "string") continue
-						if(options?.exclude.hasID(subDocument)) continue
+						if(isPopulated(subDocument)) continue
+						if(options?.exclude.hasID(subDocument.id)) continue
 						populateIDs.push(subDocument.id)
 					}
 
 					findCounter += registerPopulateCallback(ref, populateIDs, results => {
 						const newArray = []
 						for(const subDocument of subDocuments) {
-							if(typeof subDocument != "string") continue
-							const populatedDocument = results.find(r => r.id == subDocument)
-							newArray.push(populatedDocument || subDocument)
+							let newDocument
+							if(typeof subDocument == "string") {
+								newDocument = results.find(r => r.id == subDocument)
+							}
+							if(!newDocument) {
+								const Model = populateEntries[ref].model
+								newDocument = new Model({
+									_id: subDocument
+								})
+								newDocument.$locals.unpopulatedPlaceholder = true
+							}
+							newArray.push(newDocument)
 						}
 						document[key] = arrayPopulate ? newArray : newArray[0]
 					})
@@ -162,19 +171,26 @@ mongoose.plugin(schema => {
 
 		
 
-		// let loopCount = 1
+		let loopCount = 1
 		while(true) {
 			const findCount = await findPopulatable(graph, this)
 			if(findCount == 0) break
-			// console.log(`Pass ${loopCount++}, found ${findCount} populatable paths:`, populateEntries)
+			if(loopCount >= 10) throw Error("Database population loop count exceeded")
+			// console.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populateEntries)
+			loopCount += 1
 
 			const populatePromises = []
 			for(const ref in populateEntries) {
-				const {model, documentIDs, callbacks} = populateEntries[ref]
-				if(documentIDs.length == 0) continue
+				const {model, documentIDs, callbacks, results} = populateEntries[ref]
+				const queryIDs = documentIDs.filter(id => !results.some(r => r.id == id))
+
 				
 				const query = async () => {
-					const results = await model.find({_id: documentIDs})
+					let results = []
+					if(queryIDs.length) {
+						// console.log("Requesting", ref, "from DB:", queryIDs)
+						results =  await model.find({_id: queryIDs})
+					}
 					populateEntries[ref].results.push(...results)
 					for(const callback of callbacks) {
 						callback(populateEntries[ref].results)
@@ -186,17 +202,21 @@ mongoose.plugin(schema => {
 				populatePromises.push(query())
 			}
 			await Promise.all(populatePromises)
-			// console.log(this)
 		}
 	}
 	schema.methods.populated = function(key) {
 		const schemaDefinition = schema.tree[key]
 		if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
 		const arrayPopulate = schemaDefinition instanceof Array
-		if(arrayPopulate) return this[key].every(i => typeof i != "string")
-		else return typeof this[key] != "string"
+		if(arrayPopulate) return this[key].every(i => isPopulated(i))
+		else return isPopulated(this[key])
 	}
 })
+function isPopulated(object) {
+	if(typeof object == "string") return false
+	if(object?.$locals.unpopulatedPlaceholder) return false
+	return true
+}
 
 // Helper function to create a schema from a class
 mongoose.Schema.fromClass = function(classInput) {
