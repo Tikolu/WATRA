@@ -116,6 +116,16 @@ const Popup = {
 	}
 }
 
+function normaliseAttributes(doc = document) {
+	for(const element of doc.querySelectorAll("[class='']")) {
+		element.removeAttribute("class")
+	}
+	for(const checkbox of doc.querySelectorAll("input[type=checkbox]")) {
+		if(checkbox.checked) checkbox.setAttribute("checked", "")
+		else checkbox.removeAttribute("checked")
+	}
+}
+
 // Dialog "result" asynchronous function
 HTMLDialogElement.prototype.result = function(modal=true) {
 	this[modal ? "showModal" : "show"]()
@@ -154,6 +164,9 @@ async function refreshPageData() {
 		"dialog": ["open"],
 		"details": ["open"],
 	}
+	const extraAttributes = {
+		"input[type=checkbox]": ["checked"]
+	}
 	const noAnimate = "nav *, head *"
 
 	function nodeFilter(node) {
@@ -182,6 +195,15 @@ async function refreshPageData() {
 			if(oldDoc.getAttribute(attr.name) === attr.value) continue
 			oldDoc.setAttribute(attr.name, attr.value)
 		}
+		for(const selector in extraAttributes) {
+			if(!newDoc.matches?.(selector)) continue
+			const attrs = extraAttributes[selector]
+			for(const attr of attrs) {
+				if(newDoc[attr] === oldDoc[attr]) continue
+				oldDoc[attr] = newDoc[attr]
+			}
+		}
+		
 		// Remove old attributes
 		const ignoreAttrs = ignoreAttributes[Object.keys(ignoreAttributes).find(q => oldDoc.matches && oldDoc.matches(q))] || []
 		for(const attr of oldDoc.attributes || []) {
@@ -192,7 +214,15 @@ async function refreshPageData() {
 		}
 
 		// Update content if different
-		if((!oldDoc.childElementCount || !newDoc.childElementCount) && oldDoc.innerHTML !== newDoc.innerHTML) {
+		let replaceContent = (!oldDoc.childElementCount || !newDoc.childElementCount)
+		for(const node of [...oldDoc.childNodes, ...newDoc.childNodes]) {
+			if(!(node instanceof Text)) continue
+			if(!node.textContent.trim()) continue
+			replaceContent = true
+			break
+		}
+		if(replaceContent && oldDoc.innerHTML !== newDoc.innerHTML) {
+			console.log("Replacing HTML", oldDoc, newDoc)
 			oldDoc.innerHTML = newDoc.innerHTML
 			return
 		}
@@ -291,6 +321,9 @@ async function refreshPageData() {
 			})()
 		}
 	}
+
+	normaliseAttributes(document)
+	normaliseAttributes(newDocument)
 
 	mergeDocuments(document, newDocument)
 
