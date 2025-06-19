@@ -1,0 +1,34 @@
+<% layout("/layouts/body", {
+	title: "Wybór uczestników",
+	scripts: ["jednostka/chooseWyjazdParticipants"],
+	styles: ["jednostka/chooseWyjazdParticipants"],
+	meta: {
+		jednostkaID: $.targetJednostka.id,
+		wyjazdID: $.targetWyjazd.id
+	},
+	navPath: {
+		[$.targetJednostka.displayName]: `/jednostki/${$.targetJednostka.id}`
+	}
+}) %>
+<h1 id="wyjazd-title"><%= $.targetWyjazd.displayName %> - Wybór uczestników</h1>
+<h2><%= $.targetJednostka.displayName %></h2>
+<input type="checkbox" id="choose-all">
+<label for="choose-all">Wybierz wszystkich</label>
+<form id="member-list" class="unit-list">
+	<% for(const member of $.availableMembers) { %>
+		<% const wyjazdParticipant = $.targetWyjazd.participants.find(p => p.user == member.id) %>
+		<div>
+			<input type="checkbox" id="member-<%= member.id %>"<%= wyjazdParticipant ? "checked" : "" %> name="participants" value="<%= member.id %>">
+			<label for="member-<%= member.id %>">
+				<h3><%= member.displayName %></h3>
+			</label>
+		</div>
+	<% } %>
+</form>
+<div class="warning">
+	<p><b>Uwaga!</b> Profile dodanych uczestników będą widoczne dla kadry wyjazdu.</p>
+</div>
+<button api="jednostka/[jednostkaID]/wyjazd/[wyjazdID]/setParticipants">
+	<i>check</i>
+	<span>Potwierdź</span>
+</button>

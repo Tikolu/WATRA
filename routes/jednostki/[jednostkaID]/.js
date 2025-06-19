@@ -31,6 +31,8 @@ export default async function({user, targetJednostka}) {
 				usersForMianowanie.push(member)
 			}
 		}
+
+		await targetJednostka.populate("wyjazdInvites")
 	}
 
 	await user.checkPermission(targetJednostka.PERMISSIONS.DELETE)

@@ -54,3 +54,11 @@ API.registerHandler("jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję"
 		mianowanieFunkcjaSelect.value = ""
 	}
 })
+
+API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/accept", {
+	progressText: "Akceptowanie zaproszenia..."
+})
+
+API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/decline", {
+	progressText: "Odrzucanie zaproszenia..."
+})

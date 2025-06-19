@@ -115,7 +115,7 @@
 
 <% if($.targetWyjazd.funkcje?.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 	<hr>
-	<h2>Użytkownicy</h2>
+	<h2>Kadra</h2>
 	<div id="wyjazd-member-list" class="unit-grid">
 		<% for(const funkcja of $.targetWyjazd.funkcje || []) { %>
 			<a href="/users/<%= funkcja.user.id %>">
@@ -124,8 +124,30 @@
 			</a>
 		<% } %>
 	</div>
-	<button href="/wyjazdy/<%= $.targetWyjazd.id %>/addMembers" class="add-user-button">
-		<i>person_add</i>
-		<span>Dodawanie uczestników</span>
-	</button>
+<% } %>
+<% if($.targetWyjazd.participants.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Uczestnicy</h2>
+	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+		<button href="/wyjazdy/<%= $.targetWyjazd.id %>/inviteJednostki" class="add-user-button">
+			<i>person_add</i>
+			<span>Zapraszanie jednostek</span>
+		</button>
+	<% } %>
+	<div id="wyjazd-participant-list" class="unit-grid">
+		<% for(const participant of $.targetWyjazd.participants || []) { %>
+			<a href="/users/<%= participant.user.id %>">
+				<h3><%= participant.user.displayName %></h3>
+				<p><%= participant.jednostka.displayName %></p>
+				<hr>
+				<% if(participant.state == "accepted") { %>
+					<p>Zaakceptowano <i>check</i></p>
+				<% } else if(participant.state == "declined") { %>
+					<p>Odrzucono <i>close</i></p>
+				<% } else if(participant.state == "pending") { %>
+					<p>Oczekiwana odpowiedź... <i class="spin">progress_activity</i></p>
+				<% } %>
+			</a>
+		<% } %>
+	</div>
 <% } %>

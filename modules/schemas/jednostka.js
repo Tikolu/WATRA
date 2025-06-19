@@ -31,6 +31,12 @@ export class JednostkaClass {
 			ref: "Jednostka"
 		}
 	]
+	wyjazdInvites = [
+		{
+			type: String,
+			ref: "Wyjazd"
+		}
+	]
 
 
 	/* * Getters * */

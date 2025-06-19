@@ -13,6 +13,7 @@ export class WyjazdClass extends JednostkaClass {
 	upperJednostki = undefined
 	subJednostki = undefined
 	type = undefined
+	wyjazdInvites = undefined
 
 	dates = {
 		start: {
@@ -26,6 +27,38 @@ export class WyjazdClass extends JednostkaClass {
 			max: MAX_DATE
 		}
 	}
+
+	invitedJednostki = [
+		{
+			jednostka: {
+				type: String,
+				ref: "Jednostka"
+			},
+			state: {
+				type: String,
+				enum: ["pending", "accepted", "declined"],
+				default: "pending"
+			}
+		}
+	]
+
+	participants = [
+		{
+			user: {
+				type: String,
+				ref: "User"
+			},
+			jednostka: {
+				type: String,
+				ref: "Jednostka"
+			},
+			state: {
+				type: "String",
+				enum: ["pending", "accepted", "declined"],
+				default: "pending"
+			}
+		}
+	]
 
 
 	/* * Getters * */
@@ -81,10 +114,17 @@ export class WyjazdClass extends JednostkaClass {
 const schema = mongoose.Schema.fromClass(WyjazdClass)
 
 schema.beforeDelete = async function() {
-	await this.populate("funkcje", "user")
+	await this.populate({"funkcje": "user"})
 
 	// Delete funkcje
 	await Funkcja.deleteMany({jednostka: this.id, wyjazdowa: true})
+
+	// Delete invites
+	await this.populate({"invitedJednostki": "jednostka"})
+	for(const invite of this.invitedJednostki) {
+		invite.jednostka.wyjazdInvites = invite.jednostka.wyjazdInvites.filter(i => i.id != this.id)
+		await invite.jednostka.save()
+	}
 }
 
 schema.permissions = {
