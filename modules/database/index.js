@@ -204,13 +204,13 @@ mongoose.plugin(schema => {
 			await Promise.all(populatePromises)
 		}
 	}
-	schema.methods.populated = function(key) {
+	schema.method("populated", function(key) {
 		const schemaDefinition = schema.tree[key]
 		if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
 		const arrayPopulate = schemaDefinition instanceof Array
 		if(arrayPopulate) return this[key].every(i => isPopulated(i))
 		else return isPopulated(this[key])
-	}
+	}, {suppressWarning: true})
 })
 function isPopulated(object) {
 	if(typeof object == "string") return false
