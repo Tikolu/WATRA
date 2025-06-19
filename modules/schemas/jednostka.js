@@ -169,7 +169,7 @@ export class JednostkaClass {
 
 	/** Sorts funkcje based on type and user name */
 	async sortFunkcje() {
-		await this.populate("funkcje", "user")
+		await this.populate({"funkcje": "user"})
 		this.funkcje.sort((a, b) => {
 			// Place users with highest funkcja at the start
 			if(a.type != b.type) return b.type - a.type
@@ -189,11 +189,10 @@ export class JednostkaClass {
 	/** Recursive generator of all upperJednostki */
 	async * getUpperJednostkiTree(exclude=[]) {
 		exclude = [...exclude]
-		await this.populate({
-			path: "upperJednostki",
-			exclude
-		})
+		await this.populate("upperJednostki", {exclude})
+
 		for(const upperJednostka of this.upperJednostki) {
+			if(exclude.hasID(upperJednostka.id)) continue
 			yield upperJednostka
 			for await(const jednostka of upperJednostka.getUpperJednostkiTree(exclude)) {
 				if(exclude.hasID(jednostka.id)) continue
@@ -206,11 +205,10 @@ export class JednostkaClass {
 	/** Recursive generator of all subJednostki */
 	async * getSubJednostkiTree(exclude=[]) {
 		exclude = [...exclude]
-		await this.populate({
-			path: "subJednostki",
-			exclude
-		})
+		await this.populate("subJednostki", {exclude})
+
 		for(const subJednostka of this.subJednostki) {
+			if(exclude.hasID(subJednostka.id)) continue
 			yield subJednostka
 			for await(const jednostka of subJednostka.getSubJednostkiTree(exclude)) {
 				if(exclude.hasID(jednostka.id)) continue
@@ -223,10 +221,7 @@ export class JednostkaClass {
 	/** List of all direct members */
 	async getMembers(exclude=[]) {
 		exclude = [...exclude]
-		await this.populate("funkcje", {
-			path: "user",
-			exclude
-		})
+		await this.populate({"funkcje": "user"}, {exclude})
 		const users = []
 		for(const funkcja of this.funkcje) {
 			if(exclude.hasID(funkcja.user.id)) continue
@@ -262,7 +257,7 @@ schema.beforeDelete = async function() {
 		"upperJednostki",
 		"subJednostki"
 	])
-	await this.populate("funkcje", "user")
+	await this.populate({"funkcje": "user"})
 	
 	// Chose primary upper jednostka
 	const primaryUpperJednostka = this.upperJednostki[0]
