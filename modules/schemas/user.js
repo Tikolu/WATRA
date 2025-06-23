@@ -54,6 +54,12 @@ export class UserClass {
 			ref: "Funkcja"
 		}
 	]
+	wyjazdy = [
+		{
+			type: String,
+			ref: "Wyjazd"
+		}
+	]
 
 
 	/* * Getters * */
@@ -198,6 +204,13 @@ schema.beforeDelete = async function() {
 	for(const child of this.children) {
 		child.parents = child.parents.filter(p => p.id != this.id)
 		await child.save()
+	}
+
+	// Remove self from all wyjazdy
+	await this.populate("wyjazdy")
+	for(const wyjazd of this.wyjazdy) {
+		wyjazd.participants = wyjazd.participants.filter(p => p.user.id != this.id)
+		await wyjazd.save()
 	}
 
 	// Delete all funkcje
