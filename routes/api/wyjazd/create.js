@@ -1,5 +1,7 @@
+import HTTPError from "modules/server/error.js"
+
 import Wyjazd from "modules/schemas/wyjazd.js"
-import { FunkcjaType } from "modules/types.js";
+import { FunkcjaType } from "modules/types.js"
 
 export default async function({user}) {
 	if(!user) throw new HTTPError(403)

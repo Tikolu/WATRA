@@ -20,7 +20,7 @@
 			<% } %>
 		</div>
 	<% } %>
-	<% if($.user.funkcjeWyjazdowe || $.user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) { %>
+	<% if($.user.funkcjeWyjazdowe.length || $.user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) { %>
 		<hr>
 		<h2>Wyjazdy</h2>
 		<div class="unit-grid">
