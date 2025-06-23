@@ -142,7 +142,8 @@ mongoose.plugin(schema => {
 
 					for(const subDocument of subDocuments) {
 						if(isPopulated(subDocument)) continue
-						if(options?.exclude.hasID(subDocument.id)) continue
+						if(options?.exclude?.hasID(subDocument.id)) continue
+						if(populateEntries[ref]?.results?.some(r => r.id == subDocument.id)) continue
 						populateIDs.push(subDocument.id)
 					}
 
@@ -159,6 +160,7 @@ mongoose.plugin(schema => {
 									_id: subDocument
 								})
 								newDocument.$locals.unpopulatedPlaceholder = true
+								results.push(newDocument)
 							}
 							newArray.push(newDocument)
 						}
