@@ -20,7 +20,7 @@
 			<% } %>
 		</div>
 	<% } %>
-	<% if($.user.funkcjeWyjazdowe.length || $.user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) { %>
+	<% if($.user.funkcjeWyjazdowe.length || $.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
 		<hr>
 		<h2>Wyjazdy</h2>
 		<div class="unit-grid">
@@ -31,10 +31,12 @@
 				</a>
 			<% } %>
 		</div>
-		<button id="create-wyjazd-button" api="wyjazd/create">
-			<i>tour</i>
-			<span>Nowy wyjazd</span>
-		</button>
+		<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
+			<button id="create-wyjazd-button" api="wyjazd/create">
+				<i>tour</i>
+				<span>Nowy wyjazd</span>
+			</button>
+		<% } %>
 	<% } %>
 
 	<% if($.user.children.length > 0) { %>

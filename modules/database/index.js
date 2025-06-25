@@ -72,6 +72,7 @@ mongoose.plugin(schema => {
 		this.$locals.boundPermissionFunctions = PERMISSIONS
 		return PERMISSIONS
 	})
+	schema.statics.PERMISSIONS = schema.permissions
 })
 
 // Mongoose better populate plugin

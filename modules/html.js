@@ -2,13 +2,16 @@ import { Eta } from "jsr:@eta-dev/eta"
 import * as datetime from "jsr:@std/datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
+
 import { FunkcjaType } from "modules/types.js"
+import Wyjazd from "modules/schemas/wyjazd.js"
 
 const etaImports = {
 	Base64,
 	Text,
 	datetime,
-	FunkcjaType
+	FunkcjaType,
+	Wyjazd
 }
 
 const eta = new Eta({

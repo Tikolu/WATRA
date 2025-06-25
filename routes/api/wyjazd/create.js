@@ -5,8 +5,7 @@ import { FunkcjaType } from "modules/types.js"
 
 export default async function({user}) {
 	if(!user) throw new HTTPError(403)
-	await user.populate("funkcje")
-	if(!user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)) throw new HTTPError(403)
+	await user.requirePermission(Wyjazd.PERMISSIONS.CREATE)
 	
 	const wyjazd = new Wyjazd()
 

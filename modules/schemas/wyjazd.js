@@ -128,6 +128,12 @@ schema.beforeDelete = async function() {
 }
 
 schema.permissions = {
+	async CREATE(user) {
+		// Kadra of a jednostka can create a wyjazd
+		await user.populate("funkcje")
+		return user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)
+	},
+	
 	async ACCESS(user) {
 		// Kadra of a wyjazd can access
 		const userFunkcja = await user.getFunkcjaInJednostka(this)
