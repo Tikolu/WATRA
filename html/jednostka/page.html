@@ -52,28 +52,28 @@
 				<span>Potwierdź mianowanie</span>
 			</button>
 		</form>
+	<% } %>
 
-		<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
-			<h3>Usuwanie</h3>
-			<button id="delete-jednostka-button" class="dangerous" api="jednostka/[jednostkaID]/delete">
-				<i>delete</i>
-				<span>Usuń jednostkę</span>
-			</button>
-			<dialog id="delete-jednostka-dialog">
-				<h1>Trwale usunąć <%= $.targetJednostka.displayName %>?</h1>
-				<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Podjednostki i użytkownicy zostaną przeniesieni do <%= $.targetJednostka.upperJednostki[0]?.displayName || "jednostki nadrzędnej" %>.</p>
-				<div class="button-row">
-					<button>
-						<i>arrow_back</i>
-						<span>Anuluj</span>
-					</button>
-					<button class="dangerous" command>
-						<i>delete</i>
-						<span>Usuń</span>
-					</button>
-				</div>
-			</dialog>
-		<% } %>
+	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
+		<h3>Usuwanie</h3>
+		<button id="delete-jednostka-button" class="dangerous" api="jednostka/[jednostkaID]/delete">
+			<i>delete</i>
+			<span>Usuń jednostkę</span>
+		</button>
+		<dialog id="delete-jednostka-dialog">
+			<h1>Trwale usunąć <%= $.targetJednostka.displayName %>?</h1>
+			<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Podjednostki i użytkownicy zostaną przeniesieni do <%= $.targetJednostka.upperJednostki[0]?.displayName || "jednostki nadrzędnej" %>.</p>
+			<div class="button-row">
+				<button>
+					<i>arrow_back</i>
+					<span>Anuluj</span>
+				</button>
+				<button class="dangerous" command>
+					<i>delete</i>
+					<span>Usuń</span>
+				</button>
+			</div>
+		</dialog>
 	<% } %>
 <% } %>
 
