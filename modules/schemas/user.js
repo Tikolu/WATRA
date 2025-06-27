@@ -124,9 +124,13 @@ export class UserClass {
 
 	/** Returns the user's funkcja in the given jednostka */
 	async getFunkcjaInJednostka(jednostka) {
-		const funkcjeKey = jednostka instanceof Wyjazd ? "funkcjeWyjazdowe" : "funkcje"
-		await this.populate(funkcjeKey)
-		return this[funkcjeKey].find(f => f.jednostka.id == jednostka.id)
+		// const funkcjeKey = jednostka instanceof Wyjazd ? "funkcjeWyjazdowe" : "funkcje"
+		await jednostka.populate("funkcje")
+		for(const funkcja of jednostka.funkcje) {
+			if(this.id == funkcja.user.id) {
+				return funkcja
+			}
+		}
 	}
 
 	/** Checks if the user has a funkcja in any of the given jednostki */
