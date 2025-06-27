@@ -58,29 +58,24 @@ async function handler(req) {
 
 let server;
 const controller = new AbortController()
-const defaultOptions = {
-	hostname: "localhost",
-	port: 3000
-}
 let cachingEnabled = true
 
-export function start(hostname, port, caching=true) {
-	hostname ||= defaultOptions.hostname
-	port ||= defaultOptions.port
-
-	defaultOptions.hostname = hostname
-	defaultOptions.port = port
-
+export function start({host, port, caching=true, beforeRequest}) {
 	cachingEnabled = caching
-	
+
 	server = Deno.serve({
-		hostname,
+		host,
 		port,
 		signal: controller.signal,
 		onListen({port}) {
 			console.log(`\x1b[34m[Server]\x1b[0m  Started on port ${port}`)
 		},
-	}, handler)
+	}, beforeRequest ?
+		async req => {
+			await beforeRequest()
+			return await handler(req)
+		}
+	: handler)
 }
 
 export async function stop() {

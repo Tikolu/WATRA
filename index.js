@@ -6,7 +6,6 @@ globalThis.MIN_DATE = "1800-01-01"
 globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
 
 import * as server from "modules/server"
-import * as database from "modules/database"
 import * as cli from "jsr:@std/cli"
 import "modules/util.js"
 
@@ -16,20 +15,32 @@ const args = cli.parseArgs(Deno.args, {
 	string: ["host", "port", "db"]
 })
 
-// Connect to database
-await database.connect(args.db)
-
-// Clear database functionality
-if(args["clear-database"]) {
-	await database.clear()
-	Deno.exit()
-}
-
 // Setup database ()
-await database.setup()
+const databaseSetupPromise = (async () => {
+	const database = await import("modules/database")
+	
+	// Connect to database
+	await database.connect(args.db)
+
+	// Clear database functionality
+	if(args["clear-database"]) {
+		await database.clear()
+		Deno.exit()
+	}
+
+	await database.setup()
+})()
+
 
 // Start server
-server.start(args.host, args.port, !args["disable-caching"])
+server.start({
+	host: args.host,
+	port: args.port,
+	caching: !args["disable-caching"],
+	async beforeRequest() {
+		await databaseSetupPromise
+	}
+})
 
 // Handle errors in async functions used without await
 globalThis.addEventListener("unhandledrejection", event => {
