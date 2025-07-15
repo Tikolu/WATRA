@@ -33,6 +33,21 @@
 				<th>Agent:</th>
 				<td><%= $.userAgent || "(nieznany)" %></td>
 			</tr>
+			<tr>
+				<th>Uprawnienia:</th>
+				<td>
+					<table>
+						<% for(const permission of $.user.listPermissions()) { %>
+							<tr>
+								<td><%= permission.source?.[0] || "" %></td>
+								<td><%= permission.source?.[1] || "" %></td>
+								<td><%= permission.name %></td>
+								<td><%= permission.state ? "✅" : "❌" %></td>
+							</tr>
+						<% } %>
+					</table>
+				</td>
+			</tr>
 		</table>
 	</details>
 <% } %>
