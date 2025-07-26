@@ -549,6 +549,25 @@ function processAPIAttributes() {
 processAPIAttributes()
 window.afterDataRefresh.push(processAPIAttributes)
 
+// Button "opens-dialog" attribute
+function processsDialogOpeners() {
+	for(const button of document.querySelectorAll("button[opens-dialog]")) {
+		if(button.removeDialogOpener) button.removeDialogOpener()
+
+		const dialogID = button.getAttribute("opens-dialog")
+		const dialog = document.getElementById(dialogID)
+		if(!dialog) {
+			console.warn(`Dialog with ID ${dialogID} not found for button`, button)
+			continue
+		}
+
+		button.onclick = () => dialog.result()
+		button.removeDialogOpener = () => button.onclick = undefined
+	}
+}
+processsDialogOpeners()
+window.afterDataRefresh.push(processsDialogOpeners)
+
 // Custom input fields
 function processCustomInputElements() {
 	for(const input of document.querySelectorAll("input")) {
