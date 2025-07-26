@@ -77,25 +77,6 @@
 	<% } %>
 <% } %>
 
-<% if($.targetJednostka.funkcje?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-	<hr>
-	<h2>Użytkownicy</h2>
-	<div id="jednostka-member-list" class="unit-grid">
-		<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
-			<a href="/users/<%= funkcja.user.id %>">
-				<h3><%= funkcja.user.displayName %></h3>
-				<p><%= Text.capitalise(funkcja.displayName) %></p>
-			</a>
-		<% } %>
-	</div>
-	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
-		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
-			<i>person_add</i>
-			<span>Dodaj użytkownika</span>
-		</button>
-	<% } %>
-<% } %>
-
 <% if($.targetJednostka.subJednostki?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) && $.targetJednostka.type > 0) { %>
 	<hr>
 	<h2>Jednostki</h2>
@@ -115,6 +96,27 @@
 		<button id="create-sub-jednostka-button" api="jednostka/[jednostkaID]/subJednostka/create">
 			<i>add</i>
 			<span>Dodaj jednostkę</span>
+		</button>
+	<% } %>
+<% } %>
+
+
+
+<% if($.targetJednostka.funkcje?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Użytkownicy</h2>
+	<div id="jednostka-member-list" class="unit-grid">
+		<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
+			<a href="/users/<%= funkcja.user.id %>">
+				<h3><%= funkcja.user.displayName %></h3>
+				<p><%= Text.capitalise(funkcja.displayName) %></p>
+			</a>
+		<% } %>
+	</div>
+	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
+			<i>person_add</i>
+			<span>Dodaj użytkownika</span>
 		</button>
 	<% } %>
 <% } %>
