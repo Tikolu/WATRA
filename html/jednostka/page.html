@@ -132,11 +132,18 @@
 					<p><%= datetime.format(wyjazd.dates.start, "dd-MM-yyyy") %> do <%= datetime.format(wyjazd.dates.end, "dd-MM-yyyy") %></p>
 				<% } %>
 				<% const invite = wyjazd.invitedJednostki.find(i => i.jednostka == $.targetJednostka.id) %>
+				<% if(invite.invitedUsers.length > 0) { %>
+					<p>Zaproszeni uczestnicy: <%= invite.invitedUsers.length %></p>
+				<% } %>
 				<% if(invite.state == "accepted") { %>
 					<div class="button-row">
 						<button href="/jednostki/<%= $.targetJednostka.id %>/wyjazdy/<%= wyjazd.id %>/chooseParticipants">
 							<i>group_add</i>
-							<span>Wybierz uczestników</span>
+							<% if(invite.invitedUsers.length > 0) { %>
+								<span>Edytuj uczestników</span>
+							<% } else { %>
+								<span>Dodaj uczestników</span>
+							<% } %>
 						</button>
 					</div>
 				<% } else if(invite.state == "pending") { %>
