@@ -177,6 +177,31 @@ export class UserClass {
 			if(cacheEntry[0] == permission) return cacheEntry[1]
 		}
 		throw Error(`Permission ${permission.name.replace(/^bound /, "")} not checked`)
+		// return false
+	}
+
+	/** Sets the state of a permission in cache */
+	overridePermission(permission, state) {
+		this.$locals.permissionCache ||= []
+		for(const cacheEntry of this.$locals.permissionCache) {
+			if(cacheEntry[0] == permission) {
+				cacheEntry[1] = state
+				return
+			}
+		}
+		this.$locals.permissionCache.push([permission, state])
+	}
+
+	/** Lists all checked permissions */
+	* listPermissions() {
+		for(const cacheEntry of this.$locals.permissionCache || []) {
+			const permission = {
+				source: cacheEntry[0].permissionSource,
+				name: cacheEntry[0].name.replace(/^bound /, ""),
+				state: cacheEntry[1]
+			}
+			yield permission
+		}
 	}
 
 	/** Returns an asynchronous list of all user's jednostki and upper jednostki */
