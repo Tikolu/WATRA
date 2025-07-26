@@ -412,8 +412,17 @@ const API = {
 
 		// Add form values to POST data
 		const formData = {}
-		for(const formElement of element.parentElement.querySelectorAll("[name]")) {
-			if(formElement.matches("[type=checkbox]") && !formElement.checked) continue
+		// Find form container element
+		let formContainer
+		for(const parentElement of element.parentElementChain) {
+			if(parentElement.matches("form, dialog")) {
+				formContainer = parentElement
+				break
+			}
+		}
+		formContainer ||= element.parentElement
+		for(const formElement of formContainer?.querySelectorAll("[name]") || []) {
+			if(formElement.matches("[type=checkbox], [type=radio]") && !formElement.checked) continue
 			if(formData[formElement.name]) {
 				if(!Array.isArray(formData[formElement.name])) {
 					formData[formElement.name] = [formData[formElement.name]]
