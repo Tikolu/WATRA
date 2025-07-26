@@ -110,7 +110,7 @@ input[type^=date]:disabled:not([value]) {
 	color: transparent;
 }
 
-input[type=checkbox] {
+input[type=checkbox], input[type=radio] {
 	vertical-align: middle;
 	height: 1.5em;
 	width: 1.5em;
@@ -266,11 +266,27 @@ li > * {
 	}
 }
 
+.section-unit {
+	padding: 1em;
+	margin: 1em 0;
+	border: solid 1px var(--border-color);
+	border-radius: var(--border-radius);
+
+	& > :first-child {
+		margin-top: 0;
+	}
+
+	& > :last-child {
+		margin-bottom: 0;
+	}
+}
+
 /* Popups and dialogs */
 
 dialog {
 	position: fixed;
 	inset: 0;
+	margin: auto !important;
 	flex-direction: column;
 	
 	padding: 1em;
