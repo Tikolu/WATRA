@@ -36,6 +36,15 @@ Object.isEmpty = object => {
 	return false
 }
 
+// Parent element generator
+Object.defineProperty(HTMLElement.prototype, "parentElementChain", {
+	* get() {
+		if(!this.parentElement) return
+		yield this.parentElement
+		yield * this.parentElement.parentElementChain
+	}
+})
+
 // Popups and dialogs
 const Popup = {
 	create({message, type, icon, time=3500}) {
