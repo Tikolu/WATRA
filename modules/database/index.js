@@ -22,6 +22,9 @@ mongoose.plugin(schema => {
 	})
 })
 
+// Disable auto indexing
+mongoose.set("autoIndex", false)
+
 // Event listeners
 const mongooseEvents = {
 	beforeDelete: ["pre", /delete/, "query"],
