@@ -17,6 +17,7 @@ Object.defineProperty(Array.prototype, "hasID", {
 
 // Globally use custom string IDs
 mongoose.plugin(schema => {
+	if(schema.tree._id.default) return
 	schema.add({
 		_id: shortID
 	})
