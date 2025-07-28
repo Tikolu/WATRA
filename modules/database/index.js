@@ -231,8 +231,17 @@ mongoose.Schema.fromClass = function(classInput) {
 	const properties = Object.getOwnPropertyNames(instance)
 	const schemaDefinition = {}
 	for(const property of properties) {
-		if(instance[property] === undefined) continue
-		schemaDefinition[property] = instance[property]
+		let propertyDefinintion = instance[property]
+		if(propertyDefinintion === undefined) continue
+
+		const arrayDefinition = Array.isArray(propertyDefinintion)
+		if(arrayDefinition) propertyDefinintion = propertyDefinintion[0]
+
+		if(propertyDefinintion.toString().startsWith("class")) {
+			propertyDefinintion = mongoose.Schema.fromClass(propertyDefinintion)
+		}
+
+		schemaDefinition[property] = arrayDefinition ? [propertyDefinintion] : propertyDefinintion
 	}
 
 	const schema = new mongoose.Schema(schemaDefinition)
