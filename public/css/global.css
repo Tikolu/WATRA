@@ -116,6 +116,10 @@ input[type=checkbox], input[type=radio] {
 	width: 1.5em;
 }
 
+input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
+	opacity: 0.5;
+}
+
 /* Buttons */
 
 button {
