@@ -270,6 +270,14 @@ mongoose.Schema.fromClass = function(classInput) {
 	return schema
 }
 
+// Refresh function
+mongoose.plugin(schema => schema.methods.refresh = async function() {
+	const newDocument = await this.constructor.findById(this.id)
+	if(!newDocument) throw Error(`Document ${this.constructor.modelName} ${this.id} not found`)
+	Object.assign(this, newDocument.toObject())
+	console.log("\x1b[32m[MongoDB]\x1b[0m Refreshed document", this)
+})
+
 // Delete function (alias of deleteOne)
 mongoose.plugin(schema => schema.methods.delete = function() {
 	return this.deleteOne()
