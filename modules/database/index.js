@@ -33,14 +33,14 @@ mongoose.set("autoIndex", false)
 
 // Event listeners
 const mongooseEvents = {
-	beforeDelete: ["pre", /delete/, "query"],
+	beforeDelete: ["pre", /delete/, "query", ["deleteOne"]],
 	beforeValidate: ["pre", /validate/],
 	afterSave: ["post", /save|update/i],
 	afterLoad: ["post", /find/]
 }
 mongoose.plugin(schema => {
 	for(const callbackName in mongooseEvents) {
-		const [hookType, eventPattern, listenerType] = mongooseEvents[callbackName]
+		const [hookType, eventPattern, listenerType, disabledOperations] = mongooseEvents[callbackName]
 		const config = {
 			query: listenerType == undefined || listenerType == "query",
 			document: listenerType == undefined || listenerType == "document"
@@ -49,6 +49,7 @@ mongoose.plugin(schema => {
 			if(!schema[callbackName]) return
 			const documents = []
 			if(this instanceof mongoose.Query) {
+				if((disabledOperations || []).includes(this.op)) return
 				const findQuery = this.model.find(this.getFilter())
 				documents.push(...await findQuery)
 			} else {
@@ -279,8 +280,9 @@ mongoose.plugin(schema => schema.methods.refresh = async function() {
 })
 
 // Delete function (alias of deleteOne)
-mongoose.plugin(schema => schema.methods.delete = function() {
-	return this.deleteOne()
+mongoose.plugin(schema => schema.methods.delete = async function() {
+	if(schema.beforeDelete) await schema.beforeDelete.call(this)
+	await this.deleteOne()
 })
 
 // Establish connection to database
