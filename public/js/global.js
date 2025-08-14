@@ -605,6 +605,7 @@ function processCustomInputElements() {
 				
 				input.onchange = async () => {
 					for(const checkbox of checkboxes) {
+						if(checkbox.disabled) continue
 						// await sleep(150 / checkboxes.length)
 						checkbox.checked = input.checked
 					}
@@ -615,6 +616,7 @@ function processCustomInputElements() {
 					input.indeterminate = false
 					let allChecked = true
 					for(const checkbox of checkboxes) {
+						if(checkbox.disabled) continue
 						if(checkbox.checked) {
 							input.indeterminate = true
 						} else {
