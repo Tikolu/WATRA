@@ -91,17 +91,30 @@ mongoose.plugin(schema => {
 
 // Mongoose better populate plugin
 mongoose.plugin(schema => {
-	schema.methods.populate = async function(graph, options) {
-		// console.log(`\n\n\n\x1b[32m[MongoDB]\x1b[0m Populating ${this.constructor.modelName} ${this.id}`)
-		
-		const populateEntries = {
-			[this.constructor.modelName]: {
-				model: this.constructor,
+	schema.methods.populate = async function(graph, options={}) {
+		if(options.log) console.log(`\n\n\n\x1b[32m[MongoDB]\x1b[0m Populating ${this.constructor.modelName} ${this.id}`)
+		options.known ||= []
+		options.known.push(this)
+
+		let parentDocument = this.parent()
+		while(parentDocument && !options.known.includes(parentDocument)) {
+			options.known.push(parentDocument)
+			parentDocument = parentDocument.parent()
+		}
+
+		const populateEntries = {}
+		for(const knownDocument of options.known) {
+			const modelName = knownDocument.constructor.modelName
+			if(!modelName) continue
+			populateEntries[modelName] ||= {		
+				model: mongoose.model(modelName),
 				documentIDs: [],
 				callbacks: [],
-				results: [this]
+				results: []
 			}
+			populateEntries[modelName].results.push(knownDocument)
 		}
+
 		function registerPopulateCallback(ref, IDs, callback) {
 			populateEntries[ref] ||= {
 				model: mongoose.model(ref),
@@ -158,18 +171,17 @@ mongoose.plugin(schema => {
 					for(const subDocument of subDocuments) {
 						if(isPopulated(subDocument)) continue
 						if(options?.exclude?.hasID(subDocument.id)) continue
-						if(populateEntries[ref]?.results?.some(r => r.id == subDocument.id)) continue
+						// if(populateEntries[ref]?.results?.some(r => r.id == subDocument.id)) continue
 						populateIDs.push(subDocument.id)
 					}
 
 					findCounter += registerPopulateCallback(ref, populateIDs, results => {
 						const newArray = []
 						for(const subDocument of subDocuments) {
-							let newDocument
-							if(typeof subDocument == "string") {
-								newDocument = results.find(r => r.id == subDocument)
-							}
+							if(typeof subDocument != "string") return
+							let newDocument = results.find(r => r.id == subDocument)
 							if(!newDocument) {
+								console.log(`\x1b[32m[MongoDB]\x1b[0m Document ${subDocument} not found in ${ref} while populating ${document.constructor.modelName} ${document.id} ${key}`)
 								const Model = populateEntries[ref].model
 								newDocument = new Model({
 									_id: subDocument
@@ -186,14 +198,13 @@ mongoose.plugin(schema => {
 			return findCounter
 		}
 
-		
 
 		let loopCount = 1
 		while(true) {
 			const findCount = await findPopulatable(graph, this)
 			if(findCount == 0) break
 			if(loopCount >= 10) throw Error("Database population loop count exceeded")
-			// console.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populateEntries)
+			if(options.log) console.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populateEntries)
 			loopCount += 1
 
 			const populatePromises = []
@@ -205,7 +216,7 @@ mongoose.plugin(schema => {
 				const query = async () => {
 					let results = []
 					if(queryIDs.length) {
-						// console.log("Requesting", ref, "from DB:", queryIDs)
+						if(options.log) console.log("Requesting", ref, "from DB:", queryIDs)
 						results =  await model.find({_id: queryIDs})
 					}
 					populateEntries[ref].results.push(...results)
@@ -269,7 +280,7 @@ mongoose.Schema.fromClass = function(classInput) {
 
 		schemaDefinition[property] = arrayDefinition ? [propertyDefinintion] : propertyDefinintion
 	}
-
+	
 	const schema = new mongoose.Schema(schemaDefinition)
 	schema.loadClass(classInput)
 	return schema
