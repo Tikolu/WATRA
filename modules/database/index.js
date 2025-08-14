@@ -71,13 +71,17 @@ mongoose.plugin(schema => {
 mongoose.plugin(schema => {
 	if(!schema.permissions) return
 	schema.virtual("PERMISSIONS").get(function() {
+		schema.permissions._modelName = this.constructor.modelName
 		if(this.$locals.boundPermissionFunctions) {
 			return this.$locals.boundPermissionFunctions
 		}
 		const PERMISSIONS = {}
 		for(const permissionName in schema.permissions) {
-			const permissionFunction = schema.permissions[permissionName].bind(this)
-			PERMISSIONS[permissionName] = permissionFunction
+			const permission = schema.permissions[permissionName]
+			if(typeof permission != "function") continue
+			const boundPermission = permission.bind(this)
+			boundPermission.permissionSource = [schema.permissions._modelName, this.id]
+			PERMISSIONS[permissionName] = boundPermission
 		}
 		this.$locals.boundPermissionFunctions = PERMISSIONS
 		return PERMISSIONS
