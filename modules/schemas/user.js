@@ -298,6 +298,13 @@ schema.permissions = {
 		return false
 	},
 
+	async ADD_PARENT(user) {
+		// Druyżynowi of member jednostka and of all upper jednostki can add parents
+		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
+
+		return false
+	},
+
 	async DELETE(user) {
 		// User can never delete themselves
 		if(user.id == this.id) return false

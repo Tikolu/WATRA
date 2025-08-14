@@ -14,8 +14,10 @@ export default async function({user, targetUser}) {
 
 	// Check permissions
 	await user.requirePermission(targetUser.PERMISSIONS.ACCESS)
-	await user.checkPermission(targetUser.PERMISSIONS.MODIFY)
-	await user.checkPermission(targetUser.PERMISSIONS.DELETE)
+	if(await user.checkPermission(targetUser.PERMISSIONS.MODIFY)) {
+		await user.checkPermission(targetUser.PERMISSIONS.DELETE)
+		await user.checkPermission(targetUser.PERMISSIONS.ADD_PARENT)
+	}
 	
 	// Load wyjazd invites
 	if(await user.checkPermission(targetUser.PERMISSIONS.APPROVE)) {

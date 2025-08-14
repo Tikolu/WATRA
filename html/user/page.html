@@ -106,10 +106,12 @@
 				<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
 		<% } %>
 	</div>
-	<button id="add-parent-button" api="user/[userID]/parent/create">
-		<i>supervisor_account</i>
-		<span>Dodaj rodzica / opiekuna</span>
-	</button>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
+		<button id="add-parent-button" api="user/[userID]/parent/create">
+			<i>supervisor_account</i>
+			<span>Dodaj rodzica / opiekuna</span>
+		</button>
+	<% } %>
 <% } %>
 
 <% if($.targetUser.funkcje.length > 0) { %>
