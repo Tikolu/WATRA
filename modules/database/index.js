@@ -23,6 +23,11 @@ mongoose.plugin(schema => {
 	})
 })
 
+// Globally enable optimistic concurrency
+mongoose.plugin(schema => {
+	schema.set("optimisticConcurrency", true)
+})
+
 // Disable auto indexing
 mongoose.set("autoIndex", false)
 
