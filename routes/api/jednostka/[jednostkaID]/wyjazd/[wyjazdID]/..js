@@ -10,7 +10,7 @@ export async function open({user, targetJednostka, wyjazdID}) {
 	if(!targetWyjazd) throw new HTTPError(404, "Wyjazd nie istnieje")
 	
 	// Check if jednostka is invited
-	const targetInvitation = targetWyjazd.invitedJednostki.find(i => i.jednostka == targetJednostka.id)
+	const targetInvitation = targetWyjazd.invitedJednostki.id(targetJednostka.id)
 	if(!targetInvitation) {
 		throw new HTTPError(400, "Jednostka nie jest zaproszona na wyjazd")
 	}

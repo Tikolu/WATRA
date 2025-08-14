@@ -10,10 +10,10 @@ export async function open({user, targetJednostka, wyjazdID}) {
 	if(!targetWyjazd) throw new HTTPError(404, "Wyjazd nie istnieje")
 	
 	// Check jednostka invitation state
-	const invitation = targetWyjazd.invitedJednostki.find(i => i.jednostka == targetJednostka.id);
-	if(!invitation) throw new HTTPError("Jednostka nie jest zaproszona na wyjazd")
-	if(invitation.state != "accepted") throw new HTTPError("Zaproszenie jednostki na wyjazd nie zostało zaakceptowane")
+	const targetInvitation = targetWyjazd.invitedJednostki.id(targetJednostka.id)
+	if(!targetInvitation) throw new HTTPError("Jednostka nie jest zaproszona na wyjazd")
+	if(targetInvitation.state != "accepted") throw new HTTPError("Zaproszenie jednostki na wyjazd nie zostało zaakceptowane")
 
 
-	this.addRouteData({targetWyjazd})
+	this.addRouteData({targetWyjazd, targetInvitation})
 }

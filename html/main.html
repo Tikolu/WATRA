@@ -20,7 +20,7 @@
 			<% } %>
 		</div>
 	<% } %>
-	<% if($.user.funkcjeWyjazdowe.length || $.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
+	<% if($.user.funkcjeWyjazdowe.length || $.user.wyjazdInvites.length || $.user.hasPermission(Wyjazd.PERMISSIONS.CREATE) || $.user.children.some(child => child.wyjazdInvites.length)) { %>
 		<hr>
 		<h2>Wyjazdy</h2>
 		<div class="unit-grid">
@@ -29,6 +29,14 @@
 					<h3><%= funkcja.jednostka.displayName %></h3>
 					<p><%= funkcja.jednostka.typeName %></p>
 				</a>
+			<% } %>
+			<% for(const targetUser of [$.user, ...$.user.children]) { %>
+				<% for(const wyjazd of targetUser.wyjazdInvites) { %>
+					<%~ include("user/templates/wyjazdInvite", {
+						targetWyjazd: wyjazd,
+						targetUser
+					}) %>
+				<% } %>
 			<% } %>
 		</div>
 		<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>

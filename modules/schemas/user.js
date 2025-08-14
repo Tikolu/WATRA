@@ -54,7 +54,7 @@ export class UserClass {
 			ref: "Funkcja"
 		}
 	]
-	wyjazdy = [
+	wyjazdInvites = [
 		{
 			type: String,
 			ref: "Wyjazd"
@@ -124,7 +124,6 @@ export class UserClass {
 
 	/** Returns the user's funkcja in the given jednostka */
 	async getFunkcjaInJednostka(jednostka) {
-		// const funkcjeKey = jednostka instanceof Wyjazd ? "funkcjeWyjazdowe" : "funkcje"
 		await jednostka.populate("funkcje")
 		for(const funkcja of jednostka.funkcje) {
 			if(this.id == funkcja.user.id) {
@@ -217,7 +216,7 @@ export class UserClass {
 
 const schema = mongoose.Schema.fromClass(UserClass)
 
-schema.beforeDelete = async function() {
+schema.beforeDelete = async function() {	
 	// Delete parents
 	await this.populate("parents")
 	for(const parent of this.parents) {
@@ -236,10 +235,11 @@ schema.beforeDelete = async function() {
 	}
 
 	// Remove self from all wyjazdy
-	await this.populate("wyjazdy")
-	for(const wyjazd of this.wyjazdy) {
-		wyjazd.participants = wyjazd.participants.filter(p => p.user.id != this.id)
-		await wyjazd.save()
+	await this.populate("wyjazdInvites")
+	for(const wyjazd of this.wyjazdInvites) {
+		const invite = wyjazd.findUserInvite(this)
+		await invite.delete()
+		// await wyjazd.save()
 	}
 
 	// Delete all funkcje
@@ -250,17 +250,30 @@ schema.permissions = {
 	async ACCESS(user) {
 		// User can access themselves
 		if(user.id == this.id) return true
+
 		// Parent can access their children
 		if(user.children.hasID(this.id)) return true
+
 		// Child can access their parents
 		if(user.parents.hasID(this.id)) return true
+
 		// Przyboczni of member jednostka and of all upper jednostki can access
 		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.getJednostkiTree())) return true
+
+		// Kadra of wyjazd can access
+		await this.populate("wyjazdInvites")
+		for(const wyjazd of this.wyjazdInvites) {
+			const invite = wyjazd.findUserInvite(this)
+			if(invite?.state != "accepted") continue
+			if(user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, wyjazd)) return true
+		}
+
 		// Przyboczni of child's member jednostka and of all upper jednostki can access
 		await this.populate("children")
 		for(const child of this.children) {
 			if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, child.getJednostkiTree())) return true
 		}
+
 		return false
 	},
 
@@ -268,7 +281,7 @@ schema.permissions = {
 		if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
 		// Niepełnoletni with parents cannot modify their own details
 		if(user.id == this.id) {
-			if(this.age < 18 && this.parents?.length > 0) return true
+			if(this.age && this.age < 18 && this.parents?.length > 0) return false
 			return true
 		}
 		// Parent can modify their children
@@ -296,6 +309,17 @@ schema.permissions = {
 		// Druyżynowi of member jednostka and of all upper jednostki can delete
 		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
 		return false
+	},
+
+	async APPROVE(user) {
+		if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
+		// Niepełnoletni cannot approve themselves
+		if(user.id == this.id) {
+			if(this.age && this.age < 18) return false
+			return true
+		}
+		// Parent can approve their children
+		if(user.children.hasID(this.id)) return true
 	}
 }
 

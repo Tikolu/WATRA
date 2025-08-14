@@ -123,41 +123,20 @@
 
 <% if($.targetJednostka.wyjazdInvites?.length > 0 && $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
-	<h2>Wyjazdy</h2>
+	<h2 id="wyjazdy">Wyjazdy</h2>
 	<div id="jednostka-wyjazd-list" class="unit-grid">
 		<% for(const wyjazd of $.targetJednostka.wyjazdInvites || []) { %>
-			<div href="/wyjazdy/<%= wyjazd.id %>">
+			<a href="/wyjazdy/<%= wyjazd.id %>">
 				<h3><%= wyjazd.displayName %></h3>
-				<% if(wyjazd.dates.start && wyjazd.dates.end) { %>
-					<p><%= datetime.format(wyjazd.dates.start, "dd-MM-yyyy") %> do <%= datetime.format(wyjazd.dates.end, "dd-MM-yyyy") %></p>
-				<% } %>
 				<% const invite = wyjazd.invitedJednostki.find(i => i.jednostka == $.targetJednostka.id) %>
-				<% if(invite.invitedUsers.length > 0) { %>
-					<p>Zaproszeni uczestnicy: <%= invite.invitedUsers.length %></p>
-				<% } %>
 				<% if(invite.state == "accepted") { %>
-					<div class="button-row">
-						<button href="/jednostki/<%= $.targetJednostka.id %>/wyjazdy/<%= wyjazd.id %>/chooseParticipants">
-							<i>group_add</i>
-							<% if(invite.invitedUsers.length > 0) { %>
-								<span>Edytuj uczestników</span>
-							<% } else { %>
-								<span>Dodaj uczestników</span>
-							<% } %>
-						</button>
-					</div>
+					<% if(invite.invitedUsers.length > 0) { %>
+						<p>Zaproszeni uczestnicy: <%= invite.invitedUsers.length %></p>
+					<% } else { %>
+						<p>Zaproszenie zaakceptowane</p>
+					<% } %>
 				<% } else if(invite.state == "pending") { %>
 					<p>Oczekujące zaproszenie...</p>
-					<div class="button-row">
-						<button api="jednostka/[jednostkaID]/wyjazd/<%= wyjazd.id %>/invitation/accept">
-							<i>check</i>
-							<span>Zaakceptuj</span>
-						</button>
-						<button class="dangerous" api="jednostka/[jednostkaID]/wyjazd/<%= wyjazd.id %>/invitation/decline">
-							<i>close</i>
-							<span>Odrzuć</span>
-						</button>
-					</div>
 				<% } %>
 			</div>
 		<% } %>

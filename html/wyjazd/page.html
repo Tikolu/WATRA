@@ -24,130 +24,300 @@
 			<% $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ? "" : "disabled" %>
 		>
 	</form>
-	<h3>Daty</h3>
-	<form>
-		<%
-			const minYear = 1800
-			const maxYear = Number(datetime.format(new Date, "yyyy")) + 50
-		%>
-		<label for="wyjazd-name-input">Od:</label>
-		<input
-			type="datetime-local"
-			id="wyjazd-start-date-input"
-			min="<%= MIN_DATE %>T00:00"
-			max="<%= MAX_DATE %>T00:00"
-			<% if($.targetWyjazd.dates.start) { %>
-				value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
-			<% } %>
-			api="wyjazd/[wyjazdID]/update/dates"
-			name="startDate"
-			<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-				disabled
-			<%- } %>
-		>
-
-		<label for="wyjazd-name-input">Do:</label>
-		<input
-			type="datetime-local"
-			id="wyjazd-end-date-input"
-			min="<%= MIN_DATE %>T00:00"
-			max="<%= MAX_DATE %>T00:00"
-			<% if($.targetWyjazd.dates.end) { %>
-				value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
-			<% } %>
-			api="wyjazd/[wyjazdID]/update/dates"
-			name="endDate"
-			<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-				disabled
-			<%- } %>
-		>
-	</form>
-
-	<% if($.usersForMianowanie?.length > 0) { %>
-		<h3>Mianowanie na funkcję</h3>
-		<form>
-			<label for="mianowanie-user-select">Użytkownik:</label>
-			<select id="mianowanie-user-select" name="memberID">
-				<option selected hidden></option>
-				<% for(const member of $.usersForMianowanie) { %>
-					<option value="<%= member.id %>"><%= member.displayName %></option>
-				<% } %>
-			</select>
-
-			<label for="mianowanie-funkcja-select">Funkcja:</label>
-			<select id="mianowanie-funkcja-select" name="funkcjaType">
-				<option selected hidden></option>
-				<% for(const [funkcjaLevel, funkcjaName] of $.targetWyjazd.getFunkcjaOptions() || []) { %>
-					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
-				<% } %>
-				<option disabled></option>
-				<option value="remove">(usuń z wyjazdu)</option>
-			</select>
-
-			<button id="mianowanie-button" api="wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję">
-				<i>check</i>
-				<span>Potwierdź mianowanie</span>
-			</button>
-		</form>
-	<% } %>
-	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DELETE)) { %>
-		<h3>Usuwanie</h3>
-		<button id="delete-wyjazd-button" class="dangerous" api="wyjazd/[wyjazdID]/delete">
-			<i>delete</i>
-			<span>Usuń wyjazd</span>
-		</button>
-		<dialog id="delete-wyjazd-dialog">
-			<h1>Trwale usunąć <%= $.targetWyjazd.displayName %>?</h1>
-			<p>Wyjazd i wszystkie związane z nim dane zostaną trwale usunięte.</p>
-			<div class="button-row">
-				<button>
-					<i>arrow_back</i>
-					<span>Anuluj</span>
-				</button>
-				<button class="dangerous" command>
-					<i>delete</i>
-					<span>Usuń</span>
-				</button>
-			</div>
-		</dialog>
-	<% } %>
 <% } %>
 
-<% if($.targetWyjazd.funkcje?.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-	<hr>
-	<h2>Kadra</h2>
-	<div id="wyjazd-member-list" class="unit-grid">
-		<% for(const funkcja of $.targetWyjazd.funkcje || []) { %>
-			<a href="/users/<%= funkcja.user.id %>">
-				<h3><%= funkcja.user.displayName %></h3>
-				<p><%= Text.capitalise(funkcja.displayName) %></p>
-			</a>
+<h3>Daty</h3>
+<form>
+	<%
+		const minYear = 1800
+		const maxYear = Number(datetime.format(new Date, "yyyy")) + 50
+	%>
+	<label for="wyjazd-name-input">Od:</label>
+	<input
+		type="datetime-local"
+		id="wyjazd-start-date-input"
+		min="<%= MIN_DATE %>T00:00"
+		max="<%= MAX_DATE %>T00:00"
+		<% if($.targetWyjazd.dates.start) { %>
+			value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
 		<% } %>
-	</div>
+		api="wyjazd/[wyjazdID]/update/dates"
+		name="startDate"
+		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+			disabled
+		<%- } %>
+	>
+
+	<label for="wyjazd-name-input">Do:</label>
+	<input
+		type="datetime-local"
+		id="wyjazd-end-date-input"
+		min="<%= MIN_DATE %>T00:00"
+		max="<%= MAX_DATE %>T00:00"
+		<% if($.targetWyjazd.dates.end) { %>
+			value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
+		<% } %>
+		api="wyjazd/[wyjazdID]/update/dates"
+		name="endDate"
+		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+			disabled
+		<%- } %>
+	>
+</form>
+
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) && $.usersForMianowanie?.length > 0) { %>
+	<h3>Mianowanie na funkcję</h3>
+	<form>
+		<label for="mianowanie-user-select">Użytkownik:</label>
+		<select id="mianowanie-user-select" name="memberID">
+			<option selected hidden></option>
+			<% for(const member of $.usersForMianowanie) { %>
+				<option value="<%= member.id %>"><%= member.displayName %></option>
+			<% } %>
+		</select>
+
+		<label for="mianowanie-funkcja-select">Funkcja:</label>
+		<select id="mianowanie-funkcja-select" name="funkcjaType">
+			<option selected hidden></option>
+			<% for(const [funkcjaLevel, funkcjaName] of $.targetWyjazd.getFunkcjaOptions() || []) { %>
+				<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
+			<% } %>
+			<option disabled></option>
+			<option value="remove">(usuń z wyjazdu)</option>
+		</select>
+
+		<button id="mianowanie-button" api="wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję">
+			<i>check</i>
+			<span>Potwierdź mianowanie</span>
+		</button>
+	</form>
 <% } %>
-<% if($.targetWyjazd.participants.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DELETE)) { %>
+	<h3>Usuwanie</h3>
+	<button id="delete-wyjazd-button" class="dangerous" api="wyjazd/[wyjazdID]/delete">
+		<i>delete</i>
+		<span>Usuń wyjazd</span>
+	</button>
+	<dialog id="delete-wyjazd-dialog">
+		<h1>Trwale usunąć <%= $.targetWyjazd.displayName %>?</h1>
+		<p>Wyjazd i wszystkie związane z nim dane zostaną trwale usunięte.</p>
+		<div class="button-row">
+			<button>
+				<i>arrow_back</i>
+				<span>Anuluj</span>
+			</button>
+			<button class="dangerous" command>
+				<i>delete</i>
+				<span>Usuń</span>
+			</button>
+		</div>
+	</dialog>
+<% } %>
+
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DATA)) { %>
+	<% if($.targetWyjazd.funkcje?.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+		<hr>
+		<h2>Kadra</h2>
+		<div id="wyjazd-member-list" class="unit-grid">
+			<% for(const funkcja of $.targetWyjazd.funkcje || []) { %>
+				<% if(funkcja.type === FunkcjaType.SZEREGOWY && $.targetWyjazd.findUserInvite(funkcja.user)) continue %>
+				<a href="/users/<%= funkcja.user.id %>">
+					<h3><%= funkcja.user.displayName %></h3>
+					<p><%= Text.capitalise(funkcja.displayName) %></p>
+				</a>
+			<% } %>
+		</div>
+	<% } %>
+<% } %>
+
+<% if(
+	$.targetWyjazd.invitedJednostki.length > 0 ||
+	$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ||
+	$.targetWyjazd.invitedJednostki.some(i => $.user.hasPermission(i.jednostka.PERMISSIONS.MODIFY))
+) { %>
 	<hr>
-	<h2>Uczestnicy</h2>
+	<h2>
+		<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+			Uczestnicy
+		<% } else { %>
+			Zaproszone jednostki
+		<% } %>
+	</h2>
 	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 		<button href="/wyjazdy/<%= $.targetWyjazd.id %>/inviteJednostki" class="add-user-button">
 			<i>person_add</i>
-			<span>Zapraszanie jednostek</span>
+			<span>Zaproś jednostki</span>
 		</button>
 	<% } %>
-	<div id="wyjazd-participant-list" class="unit-grid">
-		<% for(const participant of $.targetWyjazd.participants || []) { %>
-			<a href="/users/<%= participant.user.id %>">
-				<h3><%= participant.user.displayName %></h3>
-				<p><%= participant.jednostka.displayName %></p>
-				<hr>
-				<% if(participant.state == "accepted") { %>
-					<p>Zaakceptowano <i>check</i></p>
-				<% } else if(participant.state == "declined") { %>
-					<p>Odrzucono <i>close</i></p>
-				<% } else if(participant.state == "pending") { %>
-					<p>Oczekiwana odpowiedź... <i class="spin">progress_activity</i></p>
+	<% for(const jednostkaInvite of $.targetWyjazd.invitedJednostki || []) { %>
+		<%
+			if(jednostkaInvite.state == "declined" && !$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) continue
+			if(jednostkaInvite.state == "pending" && !$.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)) continue
+		%>
+		<div class="section-unit">
+			<h3><%= jednostkaInvite.jednostka.displayName %></h3>
+			<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+				<p>
+					<% if(jednostkaInvite.state == "accepted") { %>
+						Zaakceptowano zaproszenie <i>check</i>
+					<% } else if(jednostkaInvite.state == "declined") { %>
+						Odrzucono zaproszenie <i>cancel</i>
+					<% } else if(jednostkaInvite.state == "pending") { %>
+						Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
+					<% } %>
+				</p>
+				<% if(jednostkaInvite.state == "pending" || jednostkaInvite.state == "accepted") { %>
+					<button class="dangerous" api="wyjazd/[wyjazdID]/jednostka/<%= jednostkaInvite.jednostka.id %>/uninvite">
+						<i>undo</i>
+						<span>Cofnij zaproszenie</span>
+					</button>
 				<% } %>
-			</a>
-		<% } %>
-	</div>
+				<% if($.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY) && jednostkaInvite.state != "declined") { %>
+					<hr>
+				<% } %>
+			<% } %>
+			<% if($.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)) { %>
+				<% if(jednostkaInvite.state == "accepted") { %>
+					<p>Zaproszeni uczestnicy: <%= jednostkaInvite.invitedUsers.length %></p>
+					<div class="button-row">
+						<button href="/wyjazdy/<%= $.targetWyjazd.id %>/chooseParticipants?jednostka=<%= jednostkaInvite.jednostka.id %>">
+							<i>group_add</i>
+							<% if(jednostkaInvite.invitedUsers.length > 0) { %>
+								<span>Edytuj uczestników</span>
+							<% } else { %>
+								<span>Dodaj uczestników</span>
+							<% } %>
+						</button>
+					</div>
+				<% } else if(jednostkaInvite.state == "pending") { %>
+					<p>Oczekujące zaproszenie...</p>
+					<div class="button-row">
+						<button api="jednostka/<%= jednostkaInvite.jednostka.id %>/wyjazd/[wyjazdID]/invitation/accept">
+							<i>check</i>
+							<span>Zaakceptuj</span>
+						</button>
+						<button class="dangerous" api="jednostka/<%= jednostkaInvite.jednostka.id %>/wyjazd/[wyjazdID]/invitation/decline">
+							<i>close</i>
+							<span>Odrzuć</span>
+						</button>
+					</div>
+				<% } %>
+			<% } %>
+			<% if(
+				jednostkaInvite.invitedUsers.length &&
+				(
+					$.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY) || 
+					$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)
+				)
+			) { %>
+				<div id="jednostka-participants" class="unit-grid">
+					<% for(const userInvite of jednostkaInvite.invitedUsers) { %>
+						<a href="/users/<%= userInvite.user.id %>">
+							<h3><%= userInvite.user.displayName %></h3>
+							<p>
+								<% if(userInvite.state == "accepted") { %>
+									Zaakceptowano <i>check</i>
+								<% } else if(userInvite.state == "declined") { %>
+									Odrzucono <i>cancel</i>
+								<% } else if(userInvite.state == "pending") { %>
+									Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
+								<% } %>
+							</p>
+						</a>
+					<% } %>
+				</div>
+			<% } %>
+		</div>
+	<% } %>
+<% } %>
+
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>Zatwierdzenie</h2>
+	<% if($.targetWyjazd.approvalState) { %>
+		<p><i>check_circle</i> Wyjazd zatwierdzony!</p>
+	<% } else { %>
+		<p><i>cancel</i> Wyjazd oczekuje zatwierdzenia</p>
+	<% } %>
+<% } %>
+
+<% if($.approvalParticipants?.length) { %>
+	<hr>
+	<h2>Uczestnictwo</h2>
+	<% for(const userInvite of $.approvalParticipants) { %>
+		<div class="section-unit">
+			<h3><%= userInvite.user.displayName %></h3>
+			<p>
+				<% if(userInvite.state == "pending") { %>
+					<i>help</i>
+					Oczekiwana odpowiedź...
+				<% } else if(userInvite.state == "accepted") { %>
+					<i>check_circle</i>
+					Zgłoszony
+				<% } else if(userInvite.state == "declined") { %>
+					<i>cancel</i>
+					Odrzucono
+				<% } %>
+			</p>
+			<button opens-dialog="user-<%= userInvite.user.id %>-participation-dialog">
+				<% if(userInvite.state == "pending") { %>
+					Odpowiedz
+				<% } else { %>
+					Zmień odpowiedź
+				<% } %>
+			</button>
+			<dialog id="user-<%= userInvite.user.id %>-participation-dialog">
+				<h1>
+					Uczestnictwo w <%= $.targetWyjazd.displayName %>
+					<% if(userInvite.user.id != $.user.id) { %>
+						(<%= userInvite.user.name.first %>)
+					<% } %>
+				</h1>
+				<div>
+					<br>
+					<form>
+						<input type="radio" name="participation" id="participation-choice-yes" value="yes"
+							<%= userInvite.state == "accepted" ? "checked" : "" %>
+						>
+						<label for="participation-choice-yes">
+							<% if(userInvite.user.id == $.user.id) { %>
+								Wezmę
+							<% } else { %>
+								<%= userInvite.user.name.first %> weźmie
+							<% } %>
+							udział
+						</label>
+						<input type="radio" name="participation" id="participation-choice-no" value="no"
+							<%= userInvite.state == "declined" ? "checked" : "" %>
+						>
+						<label for="participation-choice-no">
+							<% if(userInvite.user.id == $.user.id) { %>
+								Nie wezmę
+							<% } else { %>
+								<%= userInvite.user.name.first %> nie weźmie
+							<% } %>
+							udziału
+						</label>
+					</form>
+					<hr>
+					<div>
+						<input type="checkbox" disabled>
+						<label for="signature">Podpis</label>
+					</div>
+					<br>
+				</div>
+				<div class="button-row">
+					<button>
+						<i>arrow_back</i>
+						<span>Anuluj</span>
+					</button>
+					<button class="primary" command api="wyjazd/[wyjazdID]/member/<%= userInvite.user.id %>/setParticipation">
+						<i>check</i>
+						<span>Potwierdź</span>
+					</button>
+				</div>
+			</dialog>
+		</div>
+	<% } %>
 <% } %>

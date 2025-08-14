@@ -42,3 +42,25 @@ API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
 		mianowanieFunkcjaSelect.value = ""
 	}
 })
+
+API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/setParticipation", {
+	progressText: "Zapisywanie...",
+	successText: "Zapisano",
+	validate: data => {
+		data.participation = data.participation == "yes"
+		return true
+	}
+})
+
+API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/accept", {
+	progressText: "Akceptowanie zaproszenia..."
+})
+
+API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/decline", {
+	progressText: "Odrzucanie zaproszenia..."
+})
+
+API.registerHandler("wyjazd/[wyjazdID]/jednostka/[jednostkaID]/uninvite", {
+	progressText: "Cofanie zaproszenia...",
+	successText: "Cofnięto zaproszenie",
+})

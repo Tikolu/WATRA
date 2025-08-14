@@ -6,15 +6,5 @@ export default async function({user, targetWyjazd, targetJednostka}) {
 		throw new HTTPError(400, "Jednostka została już zaproszona na wyjazd")
 	}
 	
-	// Remove existing invites
-	targetWyjazd.invitedJednostki = targetWyjazd.invitedJednostki.filter(invite => invite.jednostka != targetJednostka.id)
-	
-	// Invite jednostka
-	targetWyjazd.invitedJednostki.push({
-		jednostka: targetJednostka.id,
-		state: "pending"
-	}),
-	targetJednostka.wyjazdInvites.push(targetWyjazd.id)
-	await targetWyjazd.save()
-	await targetJednostka.save()
+	await targetWyjazd.inviteJednostka(targetJednostka)
 }

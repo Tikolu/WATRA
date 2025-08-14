@@ -16,6 +16,12 @@ export default async function({user, targetUser}) {
 	await user.requirePermission(targetUser.PERMISSIONS.ACCESS)
 	await user.checkPermission(targetUser.PERMISSIONS.MODIFY)
 	await user.checkPermission(targetUser.PERMISSIONS.DELETE)
+	
+	// Load wyjazd invites
+	if(await user.checkPermission(targetUser.PERMISSIONS.APPROVE)) {
+		await targetUser.populate("wyjazdInvites")
+	}
+	
 
 	return html("user/page", {user, targetUser})
 }

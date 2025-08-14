@@ -114,25 +114,42 @@
 
 <% if($.targetUser.funkcje.length > 0) { %>
 	<hr>
-	<h2>Funkcje</h2>
-	<div id="funkcja-list" class="unit-grid">
+	<h2>Jednostki</h2>
+	<div id="jednostka-list" class="unit-grid">
 		<% for(const funkcja of $.targetUser.funkcje) { %>
 			<a href="/jednostki/<%= funkcja.jednostka?.id %>">
-				<h3><%= Text.capitalise(funkcja.displayName) %></h3>
-				<p><%= funkcja.jednostka?.displayName || "(nieznana jednostka)" %></p>
+				<h3><%= funkcja.jednostka?.displayName || "(nieznana jednostka)" %></h3>
+				<p><%= Text.capitalise(funkcja.displayName) %></p>
 			</a>
 		<% } %>
 	</div>
 <% } %>
 
-<% if($.targetUser.funkcjeWyjazdowe.length > 0) { %>
+<% if($.targetUser.funkcjeWyjazdowe.length > 0
+	  || $.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)
+	  && $.targetUser.wyjazdInvites.length > 0) {
+%>
 	<hr>
-	<h2>Funkcje w wyjazdach</h2>
-	<div id="wyjazdowa-funkcja-list" class="unit-grid">
+	<h2>Wyjazdy</h2>
+	<div id="wyjazd-list" class="unit-grid">
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+			<% for(const wyjazd of $.targetUser.wyjazdInvites) { %>
+				<%~ include("templates/wyjazdInvite", {
+					targetUser: $.targetUser,
+					targetWyjazd: wyjazd
+				}) %>
+			<% } %>
+		<% } %>
 		<% for(const funkcja of $.targetUser.funkcjeWyjazdowe) { %>
+			<%
+				if(
+					$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) && 
+					$.targetUser.wyjazdInvites.some(w => w.id == funkcja.jednostka?.id)
+				) continue
+			%>
 			<a href="/wyjazdy/<%= funkcja.jednostka?.id %>">
-				<h3><%= Text.capitalise(funkcja.displayName) %></h3>
-				<p><%= funkcja.jednostka?.displayName || "(nieznany wyjazd)" %></p>
+				<h3><%= funkcja.jednostka?.displayName || "(nieznany wyjazd)" %></h3>
+				<p><%= Text.capitalise(funkcja.displayName) %></p>
 			</a>
 		<% } %>
 	</div>

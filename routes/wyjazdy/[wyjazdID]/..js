@@ -6,6 +6,7 @@ export async function open({user, wyjazdID}) {
 	const targetWyjazd = await Wyjazd.findById(wyjazdID)
 	if(!targetWyjazd) throw new HTTPError(404, "Wyjazd nie istnieje")
 
+	// Check permissions
 	await user.requirePermission(targetWyjazd.PERMISSIONS.ACCESS, "Nie masz dostępu do tego wyjazdu")
 
 	this.addRouteData({targetWyjazd})

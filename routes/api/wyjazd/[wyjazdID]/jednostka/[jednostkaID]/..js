@@ -3,7 +3,7 @@ import Jednostka from "modules/schemas/jednostka.js"
 
 export async function open({user, targetWyjazd, jednostkaID}) {
 	// Check permissions
-	await user.requirePermission(targetWyjazd.PERMISSIONS.ACCESS)
+	await user.requirePermission(targetWyjazd.PERMISSIONS.MODIFY)
 	
 	// Get jednostka from DB, and check if exists
 	const targetJednostka = await Jednostka.findById(jednostkaID)

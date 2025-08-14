@@ -18,7 +18,10 @@ export class FunkcjaClass {
 		type: String,
 		ref: function() { return this.wyjazdowa ? "Wyjazd" : "Jednostka" },
 	}
-	wyjazdowa = Boolean
+	wyjazdowa = {
+		type: Boolean,
+		index: true
+	}
 
 
 	/* * Getters * */
