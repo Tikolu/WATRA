@@ -239,6 +239,22 @@ mongoose.Schema.fromClass = function(classInput) {
 		let propertyDefinintion = instance[property]
 		if(propertyDefinintion === undefined) continue
 
+		if(property == "_id" && "_id" in schemaDefinition) throw Error("_id property already defined or derived")
+		if("deriveID" in propertyDefinintion) {
+			if(propertyDefinintion["deriveID"] !== true) {
+				throw Error("Invalid deriveID value")
+			}
+			if(!propertyDefinintion["ref"]) {
+				throw Error("Cannot derive ID without ref")
+			}
+			schemaDefinition["_id"] = {
+				type: String,
+				default: function() {
+					return this[property].id
+				}
+			}
+		}
+
 		const arrayDefinition = Array.isArray(propertyDefinintion)
 		if(arrayDefinition) propertyDefinintion = propertyDefinintion[0]
 
