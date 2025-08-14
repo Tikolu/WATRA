@@ -168,7 +168,7 @@ async function refreshPageData() {
 	const parser = new DOMParser()
 	const newDocument = parser.parseFromString(body, "text/html")
 
-	const ignoreElements = "dialog.message"
+	const ignoreElements = "dialog.message, link, script"
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
