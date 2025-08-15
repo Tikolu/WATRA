@@ -385,6 +385,19 @@ const API = {
 		return json
 	},
 
+	/**
+	 * Register an API handler
+	 * @param {string} api - API endpoint with segments in square brackets
+	 * @param {object} handler - Handler object with properties:
+	 *  - form: ID of form to use for data, defaults to element's parent form (or dialog)
+	 *  - progressText: Text to show while processing
+	 *  - validate: Function to validate data before sending, should return true or an object with additional properties
+	 *  - before: Function to call before sending data, should return true to continue or false to cancel
+	 *  - after: Function to call after receiving response, should return a promise if async
+	 *  - valueKey: Key in response data to update element value, defaults to "value"
+	 *  - refresh: Whether to refresh page data after execution, defaults to true
+	 *  - successText: Text to show on success
+	 */
 	registerHandler(api, handler) {
 		if(api in this.handlers) {
 			throw new Error(`API handler already registered for ${api}`)
@@ -414,11 +427,13 @@ const API = {
 		// Add form values to POST data
 		const formData = {}
 		// Find form container element
-		let formContainer
-		for(const parentElement of element.parentElementChain) {
-			if(parentElement.matches("form, dialog")) {
-				formContainer = parentElement
-				break
+		let formContainer = document.getElementById(handler.form)
+		if(!formContainer) {
+			for(const parentElement of element.parentElementChain) {
+				if(parentElement.matches("form, dialog")) {
+					formContainer = parentElement
+					break
+				}
 			}
 		}
 		formContainer ||= element.parentElement
