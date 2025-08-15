@@ -181,7 +181,7 @@
 				<% if(jednostkaInvite.state == "accepted") { %>
 					<p>Zaproszeni uczestnicy: <%= jednostkaInvite.invitedUsers.length %></p>
 					<div class="button-row">
-						<button href="/wyjazdy/<%= $.targetWyjazd.id %>/chooseParticipants?jednostka=<%= jednostkaInvite.jednostka.id %>">
+						<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/chooseParticipants?jednostka=<%= jednostkaInvite.jednostka.id %>">
 							<i>group_add</i>
 							<% if(jednostkaInvite.invitedUsers.length > 0) { %>
 								<span>Edytuj uczestników</span>

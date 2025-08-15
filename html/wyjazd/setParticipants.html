@@ -1,5 +1,4 @@
-<% layout("/layouts/body", {
-	title: "Wybór uczestników",
+<% layout("/layouts/dialog", {
 	scripts: ["wyjazd/setParticipants"],
 	styles: ["wyjazd/setParticipants"],
 	meta: {
@@ -7,36 +6,45 @@
 		wyjazdID: $.targetWyjazd.id
 	}
 }) %>
-<h1 id="wyjazd-title"><%= $.targetWyjazd.displayName %> - Wybór uczestników</h1>
-<h2><%= $.targetJednostka.displayName %></h2>
-<input type="checkbox" id="choose-all">
-<label for="choose-all">Wybierz wszystkich</label>
-<form id="member-list" class="unit-list">
-	<% for(const member of $.availableMembers) { %>
-		<% const wyjazdParticipant = $.targetInvitation.invitedUsers.find(p => p.user == member.id) %>
-		<div>
-			<input
-				type="checkbox"
-				id="member-<%= member.id %>"
-				name="participants"
-				value="<%= member.id %>"
-				<% if(wyjazdParticipant) { %>
-					checked
-				<% } else if($.wyjazdFunkcyjni.includes(member.id)) { %>
-					disabled
-				<% } %>
-			>
-			<label for="member-<%= member.id %>">
-				<h3><%= member.displayName %></h3>
-			</label>
-		</div>
-	<% } %>
-</form>
+<h1><%= $.targetJednostka.displayName %></h1>
+<main>
+	<div>
+		<input type="checkbox" id="choose-all">
+		<label for="choose-all">Wybierz wszystkich</label>
+	</div>
+	<form id="member-list">
+		<% for(const member of $.availableMembers) { %>
+			<% const wyjazdParticipant = $.targetInvitation.invitedUsers.find(p => p.user == member.id) %>
+			<div>
+				<input
+					type="checkbox"
+					id="member-<%= member.id %>"
+					name="participants"
+					value="<%= member.id %>"
+					<% if(wyjazdParticipant) { %>
+						checked
+					<% } else if($.wyjazdFunkcyjni.includes(member.id)) { %>
+						disabled
+					<% } %>
+				>
+				<label for="member-<%= member.id %>">
+					<%= member.displayName %>
+				</label>
+			</div>
+		<% } %>
+	</form>
+</main>
 <hr>
 <div class="warning">
 	<p>Uczestnicy zostaną dodani po potwierdzeniu uczestnictwa. Profile uczestników będą widoczne dla kadry wyjazdu.</p>
 </div>
-<button api="jednostka/[jednostkaID]/wyjazd/[wyjazdID]/setParticipants">
-	<i>check</i>
-	<span>Potwierdź uczestników</span>
-</button>
+<div class="button-row">
+	<button onclick="closeDialog()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="jednostka/[jednostkaID]/wyjazd/[wyjazdID]/setParticipants">
+		<i>check</i>
+		Potwierdź uczestników
+	</button>
+</div>
