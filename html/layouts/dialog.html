@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<% $.styles ||= [] %>
+	<% $.styles.unshift("dialog") %>
+	<% $.scripts ||= [] %>
+	<% $.scripts.unshift("dialog") %>
+	<%~ include("/templates/head.html", $) %>
+	<body>
+		<%~ $.body %>
+	</body>
+</html>

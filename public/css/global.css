@@ -172,6 +172,8 @@ a[href]:not(:has(button)):focus-visible {
 
 hr {
 	border: solid 1px var(--border-color);
+	width: 100%;
+	box-sizing: border-box;
 }
 
 details > summary {
@@ -297,6 +299,7 @@ dialog {
 	width: 25em;
 	max-width: 80vw;
 	min-height: 5em;
+	max-height: 90vh;
 
 	background-color: var(--background-color-secondary);
 	border-radius: var(--border-radius);
@@ -368,6 +371,25 @@ dialog.message.progress > i {
 	animation: spin 1s infinite linear;
 }
 
+dialog iframe {
+	border: none;
+	height: 0;
+	opacity: 0;
+	transition: height 250ms, opacity 250ms;
+}
+
+dialog.frame {
+	width: 30em;
+
+	& > i.spin {
+		margin: auto;
+		scale: 1.5;
+	}
+
+	& > iframe.loaded {
+		opacity: 1;
+	}
+}
 
 /* Page data refresh animations */
 .removing { animation: element-shrink 250ms forwards }

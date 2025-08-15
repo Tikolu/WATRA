@@ -46,7 +46,7 @@ Object.defineProperty(HTMLElement.prototype, "parentElementChain", {
 })
 
 // Popups and dialogs
-const Popup = {
+const Popup = window.top.Popup || {
 	create({message, type, icon, time=3500}) {
 		const dialog = document.createElement("dialog")
 		dialog.classList.add("message")
@@ -124,6 +124,7 @@ const Popup = {
 		})
 	}
 }
+window.Popup = Popup
 
 function normaliseAttributes(doc = document) {
 	for(const element of doc.querySelectorAll("[class='']")) {
@@ -168,7 +169,7 @@ async function refreshPageData() {
 	const parser = new DOMParser()
 	const newDocument = parser.parseFromString(body, "text/html")
 
-	const ignoreElements = "dialog.message, link, script"
+	const ignoreElements = "dialog.message, dialog.frame, link, script"
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
@@ -555,13 +556,47 @@ function processsDialogOpeners() {
 		if(button.removeDialogOpener) button.removeDialogOpener()
 
 		const dialogID = button.getAttribute("opens-dialog")
+
+		// URL mode
+		if(dialogID.startsWith("/")) {
+			const dialog = document.createElement("dialog")
+			const iframe = document.createElement("iframe")
+
+			const spinner = document.createElement("i")
+			spinner.innerText = "progress_activity"
+			spinner.classList.add("spin")
+			dialog.append(spinner)
+
+			dialog.append(iframe)
+			dialog.classList.add("frame")
+			document.body.append(dialog)
+
+			button.onclick = async () => {
+				if(!iframe.src) iframe.src = dialogID
+				dialog.result().catch(() => null)
+			}
+
+			iframe.onload = () => {
+				spinner.remove()
+				iframe.classList.add("loaded")
+			}
+
+			button.removeDialogOpener = () => {
+				button.onclick = undefined
+				dialog.remove()
+			}
+
+			continue
+		}
+		
+		// Dialog mode
 		const dialog = document.getElementById(dialogID)
 		if(!dialog) {
 			console.warn(`Dialog with ID ${dialogID} not found for button`, button)
 			continue
 		}
 
-		button.onclick = () => dialog.result()
+		button.onclick = () => dialog.result().catch(() => null)
 		button.removeDialogOpener = () => button.onclick = undefined
 	}
 }
