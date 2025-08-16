@@ -327,7 +327,8 @@ schema.permissions = {
 		}
 
 		// Check for kadra access
-		if(await user.checkPermission(this.PERMISSIONS.DATA)) return true
+		const userFunkcja = await user.getFunkcjaInJednostka(this)
+		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
 
 		// Drużynowi of invited jednostki (and upper jednostki) can access
 		await this.populate({"invitedJednostki": "jednostka"})
@@ -337,7 +338,7 @@ schema.permissions = {
 		return false
 	},
 
-	async DATA(user) {
+	async PARTICIPANT_ACCESS(user) {
 		// Only kadra can access user data
 		const userFunkcja = await user.getFunkcjaInJednostka(this)
 		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
@@ -346,19 +347,11 @@ schema.permissions = {
 	},
 
 	async MODIFY(user) {
-		if(!await user.checkPermission(this.PERMISSIONS.DATA)) return false
-
 		// Komendant of a wyjazd can modify
 		const userFunkcja = await user.getFunkcjaInJednostka(this)
 		if(userFunkcja?.type == FunkcjaType.KOMENDANT) return true
 
-		return true
-	},
-
-	async DELETE(user) {
-		if(!await user.checkPermission(this.PERMISSIONS.MODIFY)) return false
-		
-		return true
+		return false
 	}
 }
 

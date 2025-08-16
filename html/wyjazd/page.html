@@ -93,7 +93,7 @@
 	</form>
 <% } %>
 
-<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DELETE)) { %>
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 	<h3>Usuwanie</h3>
 	<button id="delete-wyjazd-button" class="dangerous" api="wyjazd/[wyjazdID]/delete">
 		<i>delete</i>
@@ -115,7 +115,7 @@
 	</dialog>
 <% } %>
 
-<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.DATA)) { %>
+<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.PARTICIPANT_ACCESS)) { %>
 	<% if($.targetWyjazd.funkcje?.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 		<hr>
 		<h2>Kadra</h2>
