@@ -132,6 +132,15 @@ mongoose.plugin(schema => {
 			return count
 		}
 
+		function createFakeDocument(model, id, placeholder=true) {
+			console.log(`\x1b[32m[MongoDB]\x1b[0m Creating fake ${model.modelName} ${id}`)
+			const newDocument = new model({
+				_id: id
+			})
+			newDocument.$locals.unpopulatedPlaceholder = placeholder
+			return newDocument
+		}
+
 		async function findPopulatable(graph, document) {
 			if(typeof graph == "string") graph = [graph]
 			if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
@@ -181,12 +190,7 @@ mongoose.plugin(schema => {
 							if(typeof subDocument != "string") return
 							let newDocument = results.find(r => r.id == subDocument)
 							if(!newDocument) {
-								console.log(`\x1b[32m[MongoDB]\x1b[0m Document ${subDocument} not found in ${ref} while populating ${document.constructor.modelName} ${document.id} ${key}`)
-								const Model = populateEntries[ref].model
-								newDocument = new Model({
-									_id: subDocument
-								})
-								newDocument.$locals.unpopulatedPlaceholder = true
+								newDocument = 
 								results.push(newDocument)
 							}
 							newArray.push(newDocument)
@@ -217,7 +221,12 @@ mongoose.plugin(schema => {
 					let results = []
 					if(queryIDs.length) {
 						if(options.log) console.log("Requesting", ref, "from DB:", queryIDs)
-						results =  await model.find({_id: queryIDs})
+						results = await model.find({_id: queryIDs})
+					}
+					for(const id of queryIDs) {
+						if(!results.some(r => r.id == id)) {
+							results.push(createFakeDocument(model, id, false))
+						}
 					}
 					populateEntries[ref].results.push(...results)
 					for(const callback of callbacks) {
