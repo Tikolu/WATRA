@@ -543,9 +543,12 @@ const API = {
 
 // API attribute system
 function processAPIAttributes() {
-	for(const element of document.querySelectorAll("[api]")) {
+	for (const element of window.APIElements || []) {
 		if(element.removeAPI) element.removeAPI()
-
+	}
+	window.APIElements = []
+	
+	for(const element of document.querySelectorAll("[api]")) {
 		const api = element.getAttribute("api")
 		
 		let event
@@ -560,6 +563,7 @@ function processAPIAttributes() {
 		const listener = () => API.executeHandler(element, api)
 		element.addEventListener(event, listener)
 		element.removeAPI = () => element.removeEventListener(event, listener)
+		window.APIElements.push(element)
 	}
 }
 processAPIAttributes()
@@ -567,9 +571,12 @@ window.afterDataRefresh.push(processAPIAttributes)
 
 // Button "opens-dialog" attribute
 function processDialogOpeners() {
+	for(const opener of window.dialogOpeners || []) {
+		if(opener.removeDialogOpener) opener.removeDialogOpener()
+	}
+	window.dialogOpeners = []
+	
 	for(const button of document.querySelectorAll("button[opens-dialog]")) {
-		if(button.removeDialogOpener) button.removeDialogOpener()
-
 		const dialogID = button.getAttribute("opens-dialog")
 
 		// URL mode
@@ -607,18 +614,21 @@ function processDialogOpeners() {
 				dialog.remove()
 			}
 
-			continue
-		}
+		} else {
 		
-		// Dialog mode
-		const dialog = document.getElementById(dialogID)
-		if(!dialog) {
-			console.warn(`Dialog with ID ${dialogID} not found for button`, button)
-			continue
+			// Dialog mode
+			const dialog = document.getElementById(dialogID)
+			if(!dialog) {
+				console.warn(`Dialog with ID ${dialogID} not found for button`, button)
+				continue
+			}
+
+			button.onclick = () => dialog.result().catch(() => null)
+			button.removeDialogOpener = () => button.onclick = undefined
+
 		}
 
-		button.onclick = () => dialog.result().catch(() => null)
-		button.removeDialogOpener = () => button.onclick = undefined
+		window.dialogOpeners.push(button)
 	}
 }
 processDialogOpeners()
