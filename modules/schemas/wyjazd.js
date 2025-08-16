@@ -276,7 +276,9 @@ export class WyjazdClass extends JednostkaClass {
 		}
 		
 		// Uninvite users
-		targetInvitation.setParticipants([])
+		if(targetInvitation.invitedUsers.length > 0) {
+			await targetInvitation.setParticipants([])
+		}
 
 		// Remove wyjazd targetInvitation from jednostka
 		await targetInvitation.populate("jednostka")
