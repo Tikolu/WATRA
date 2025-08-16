@@ -6,7 +6,7 @@ import Funkcja from "modules/schemas/funkcja.js"
 import HTTPError from "modules/server/error.js"
 
 import { JednostkaClass } from "modules/schemas/jednostka.js"
-import { FunkcjaType, WyjazdoweFunkcjaNames } from "modules/types.js"
+import { FunkcjaType, JednostkaType, WyjazdoweFunkcjaNames } from "modules/types.js"
 
 export class WyjazdClass extends JednostkaClass {
 	/* * Properties * */
@@ -144,8 +144,7 @@ export class WyjazdClass extends JednostkaClass {
 						await existingFunkcja.delete()
 					}
 				}
-
-				console.log(targetWyjazd)
+				
 				await targetWyjazd.save()
 			}
 
@@ -182,13 +181,55 @@ export class WyjazdClass extends JednostkaClass {
 			async uninvite() {
 				await this.parent().uninviteJednostka(this.jednostka)
 			}
+
+			/** Finds approvers of an invited jednostka */
+			async * findApprovers() {
+				await this.populate("jednostka")
+
+				const jednostki = [this.jednostka]
+				jednostki.push(...await Array.fromAsync(this.jednostka.getUpperJednostkiTree()))
+
+				for(const jednostka of jednostki) {
+					if(jednostka.type < JednostkaType.HUFIEC) continue
+
+					await jednostka.populate("funkcje")
+					for(const funkcja of jednostka.funkcje) {
+						if(funkcja.type < FunkcjaType.REFERENT) continue
+						await funkcja.populate(
+							["user", "jednostka"],
+							{known: [jednostka]}
+						)
+						yield funkcja
+					}
+				}
+			}
 		}
 	]
 
-	approvalState = {
-		type: Boolean,
-		default: false
-	}
+	approvers = [
+		class {
+			funkcja = {
+				type: String,
+				ref: "Funkcja",
+				deriveID: true
+			}
+
+			history = [
+				{
+					approved: Boolean,
+					comment: {
+						type: String,
+						trim: true,
+						default: ""
+					},
+					createdAt: {
+						type: Date,
+						default: Date.now
+					}
+				}
+			]
+		}
+	]
 
 
 	/* * Getters * */
@@ -290,6 +331,73 @@ export class WyjazdClass extends JednostkaClass {
 		await this.save()
 		await targetInvitation.jednostka.save()
 	}
+
+	/** Find approver candidates */
+	async findApproverCandidates() {
+		const candidates = []
+		for(const jednostkaInvite of this.invitedJednostki) {
+			if(jednostkaInvite.state != "accepted") continue
+			candidates.push(...await Array.fromAsync(jednostkaInvite.findApprovers()))
+		}
+		return candidates
+	}
+
+	/** Add approver */
+	async addApprover(funkcja) {
+		// Check if user already added
+		if(this.approvers.id(funkcja.id)) return
+
+		// Ensure approver is in candidates
+		const candidates = await this.findApproverCandidates()
+		if(!candidates.some(c => c.id == funkcja.id)) {
+			throw new HTTPError(400, "Użytkownik nie może być zatwierdzającym")
+		}
+
+		// Ensure other funkcja of the same user is not added
+		await funkcja.populate("user")
+		await this.populate({
+			"approvers": "funkcja"
+		})
+		for(const approver of this.approvers) {
+			if(approver.funkcja.user.id != funkcja.user.id) continue
+			if(approver.funkcja.id == funkcja.id) continue
+			throw new HTTPError(400, "Użytkownik jest już zatwierdzającym (jako inna funkcja)")
+		}
+
+		// Add approver
+		this.approvers.push({funkcja})
+
+		await this.save()
+	}
+
+	/** Remove approver */
+	async removeApprover(funkcja) {
+		const approver = this.approvers.id(funkcja.id)
+		if(!approver) return
+
+		await approver.delete()
+		await this.save()
+	}
+
+	/** Set approvers from a list */
+	async setApprovers(funkcjaIDs) {
+		const funkcje = await Funkcja.find({_id: funkcjaIDs})
+		
+		// Remove approvers not on list
+		for(const approver of this.approvers) {
+			if(!funkcje.hasID(approver.funkcja.id)) {
+				await this.removeApprover(approver.funkcja)
+			}
+		}
+
+		// Add new approvers
+		for(const funkcja of funkcje) {
+			await this.addApprover(funkcja)
+		}
+
+		await this.save()
+	}
+		
 }
 
 const schema = mongoose.Schema.fromClass(WyjazdClass)
@@ -343,6 +451,16 @@ schema.permissions = {
 		const userFunkcja = await user.getFunkcjaInJednostka(this)
 		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
 
+		return false
+	},
+
+	APPROVE(user) {
+		// Users with funkcje on the approver list can approve
+		for(const userFunkcja of user.funkcje) {
+			const approver = this.approvers.id(userFunkcja.id)
+			if(!approver) continue
+			return true
+		}
 		return false
 	},
 

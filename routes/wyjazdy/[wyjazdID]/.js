@@ -19,8 +19,8 @@ export default async function({user, targetWyjazd}) {
 		// Sort funkcje
 		await targetWyjazd.sortFunkcje()
 		
-		// Generate list of possible users for mianowanie
 		if(await user.checkPermission(targetWyjazd.PERMISSIONS.MODIFY)) {
+			// Generate list of possible users for mianowanie
 			const usersForMianowanie = []
 
 			// Get all funkcje already added
@@ -36,6 +36,15 @@ export default async function({user, targetWyjazd}) {
 			}
 
 			wyjazdData.usersForMianowanie = usersForMianowanie
+
+
+			// Load approver data
+			await targetWyjazd.populate({
+				"approvers": {
+					"funkcja": ["user", "jednostka"]
+				}
+			})
+
 		}
 
 	} else {

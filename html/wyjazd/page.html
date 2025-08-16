@@ -235,10 +235,21 @@
 <% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>Zatwierdzenie</h2>
-	<% if($.targetWyjazd.approvalState) { %>
-		<p><i>check_circle</i> Wyjazd zatwierdzony!</p>
+	<p><i>cancel</i> Wyjazd oczekuje zatwierdzenia</p>
+	<% if($.targetWyjazd.invitedJednostki.filter(i => i.state == "accepted").length == 0) { %>
+		<p>Proces zatwierdzenia wyjazdu można rozpocząć po zaakceptowaniu zaproszenia przez przynajmniej jedną jednostkę</p>
 	<% } else { %>
-		<p><i>cancel</i> Wyjazd oczekuje zatwierdzenia</p>
+		<% if($.targetWyjazd.approvers.length == 0) { %>
+			<p>Wybierz zatwierdzających aby rozpocząć</p>
+		<% } %>
+		<% for(const approver of $.targetWyjazd.approvers) { %>
+			<div class="section-unit">
+				<h3><%= approver.funkcja.user.displayName %></h3>
+				<p><%= Text.capitalise(approver.funkcja.displayName) %>, <%= approver.funkcja.jednostka.displayName %></p>
+				<p>Oczekiwana odpowiedź... <i class="spin">progress_activity</i></p>
+			</div>
+		<% } %>
+		<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/chooseApprovers"><i>person_check</i>Wybierz zatwierdzających</button>
 	<% } %>
 <% } %>
 

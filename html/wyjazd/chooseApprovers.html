@@ -1,0 +1,40 @@
+<% layout("/layouts/dialog", {
+	scripts: ["wyjazd/chooseApprovers"],
+	meta: {
+		wyjazdID: $.targetWyjazd.id
+	}
+}) %>
+<h1>Wybierz zatwierdzających</h1>
+<main>
+	<form id="approver-list">
+		<% for(const approverFunkcja of $.approverOptions) { %>
+			<% const approverSelected = $.targetWyjazd.approvers.id(approverFunkcja.id) %>
+			<input
+				type="checkbox"
+				id="approver-<%= approverFunkcja.id %>"
+				name="approvers"
+				value="<%= approverFunkcja.id %>"
+				<% if(approverSelected) { %>
+					checked
+				<% } else if($.targetWyjazd.approvers.some(a => a.funkcja.user.id == approverFunkcja.user.id)) { %>
+					disabled
+				<% } %>
+			>
+			<label for="approver-<%= approverFunkcja.id %>">
+				<h3><%= approverFunkcja.user.displayName %></h3>
+				<p><%= Text.capitalise(approverFunkcja.displayName) %>, <%= approverFunkcja.jednostka.displayName %></p>
+			</label>
+		<% } %>
+	</form>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="closeDialog()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="wyjazd/[wyjazdID]/chooseApprovers">
+		<i>check</i>
+		Potwierdź
+	</button>
+</div>
