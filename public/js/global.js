@@ -45,6 +45,13 @@ Object.defineProperty(HTMLElement.prototype, "parentElementChain", {
 	}
 })
 
+// Create array function 
+Array.create = value => {
+	if(Array.isArray(value)) return value
+	if(!value) return []
+	return [value]
+}
+
 // Popups and dialogs
 const Popup = window.top.Popup || {
 	create({message, type, icon, time=3500}) {

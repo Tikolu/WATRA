@@ -4,9 +4,7 @@ API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/setParticipants",
 	successText: "Ustawiono uczestników wyjazdu",
 	before: () => closeDialog(),
 	validate: data => {
-		if(!Array.isArray(data.participants)) {
-			data.participants = data.participants ? [data.participants] : []
-		}
+		data.participants = Array.create(data.participants)
 		return true
 	}
 })
