@@ -56,9 +56,10 @@ i.spin {
 /* Form layout */
 
 form {
-	display: inline-grid;
+	display: grid;
+	width: min-content;
 	grid-template-columns: repeat(2, auto);
-	column-gap: 1em;
+	column-gap: 0.5em;
 	row-gap: 0.25em;
 	align-items: center;
 }
@@ -84,10 +85,11 @@ input, button, select, textarea {
 
 label {
 	vertical-align: middle;
+	white-space: nowrap;
 }
 
 label > * {
-	display: inline;
+	margin: 0;
 }
 
 /* Input elements */
@@ -173,6 +175,7 @@ a[href]:not(:has(button)):focus-visible {
 hr {
 	border: solid 1px var(--border-color);
 	width: 100%;
+	grid-column: 1 / -1;
 	box-sizing: border-box;
 }
 

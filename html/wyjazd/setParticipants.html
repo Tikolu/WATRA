@@ -1,36 +1,34 @@
 <% layout("/layouts/dialog", {
 	scripts: ["wyjazd/setParticipants"],
-	styles: ["wyjazd/setParticipants"],
 	meta: {
 		jednostkaID: $.targetJednostka.id,
 		wyjazdID: $.targetWyjazd.id
 	}
 }) %>
 <h1><%= $.targetJednostka.displayName %></h1>
+<form>
+	<input type="checkbox" id="choose-all">
+	<label for="choose-all">Wybierz wszystkich</label>
+</form>
+<br>
 <main>
-	<div>
-		<input type="checkbox" id="choose-all">
-		<label for="choose-all">Wybierz wszystkich</label>
-	</div>
 	<form id="member-list">
 		<% for(const member of $.availableMembers) { %>
 			<% const wyjazdParticipant = $.targetInvitation.invitedUsers.find(p => p.user == member.id) %>
-			<div>
-				<input
-					type="checkbox"
-					id="member-<%= member.id %>"
-					name="participants"
-					value="<%= member.id %>"
-					<% if(wyjazdParticipant) { %>
-						checked
-					<% } else if($.wyjazdFunkcyjni.includes(member.id)) { %>
-						disabled
-					<% } %>
-				>
-				<label for="member-<%= member.id %>">
-					<%= member.displayName %>
-				</label>
-			</div>
+			<input
+				type="checkbox"
+				id="member-<%= member.id %>"
+				name="participants"
+				value="<%= member.id %>"
+				<% if(wyjazdParticipant) { %>
+					checked
+				<% } else if($.wyjazdFunkcyjni.includes(member.id)) { %>
+					disabled
+				<% } %>
+			>
+			<label for="member-<%= member.id %>">
+				<%= member.displayName %>
+			</label>
 		<% } %>
 	</form>
 </main>
