@@ -374,6 +374,7 @@ dialog.message.progress > i {
 dialog iframe {
 	border: none;
 	height: 0;
+	max-height: 90vh;
 	opacity: 0;
 	transition: height 250ms, opacity 250ms;
 }
@@ -389,6 +390,10 @@ dialog.frame {
 	& > iframe.loaded {
 		opacity: 1;
 	}
+}
+
+dialog.frame:has(> iframe.loaded) i.spin {
+	display: none;
 }
 
 /* Page data refresh animations */

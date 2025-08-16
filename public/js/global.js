@@ -566,7 +566,7 @@ processAPIAttributes()
 window.afterDataRefresh.push(processAPIAttributes)
 
 // Button "opens-dialog" attribute
-function processsDialogOpeners() {
+function processDialogOpeners() {
 	for(const button of document.querySelectorAll("button[opens-dialog]")) {
 		if(button.removeDialogOpener) button.removeDialogOpener()
 
@@ -591,9 +591,15 @@ function processsDialogOpeners() {
 				dialog.result().catch(() => null)
 			}
 
-			iframe.onload = () => {
-				spinner.remove()
-				iframe.classList.add("loaded")
+			iframe.onload = async () => {
+				await sleep(250)
+				if(iframe.classList.contains("loaded")) return
+				
+				const errorElement = iframe.contentDocument.querySelector("main h1")
+				let errorText = errorElement?.textContent || "Błąd ładowania strony"
+				Popup.error(errorText)
+				dialog.close()
+				processDialogOpeners()
 			}
 
 			button.removeDialogOpener = () => {
@@ -615,8 +621,8 @@ function processsDialogOpeners() {
 		button.removeDialogOpener = () => button.onclick = undefined
 	}
 }
-processsDialogOpeners()
-window.afterDataRefresh.push(processsDialogOpeners)
+processDialogOpeners()
+window.afterDataRefresh.push(processDialogOpeners)
 
 // Custom input fields
 function processCustomInputElements() {

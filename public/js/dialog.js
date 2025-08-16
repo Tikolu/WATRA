@@ -1,12 +1,18 @@
+const frame = window.frameElement
+
 function closeDialog() {
-	const dialog = window.frameElement.parentElement
-	dialog.close()
+	frame.parentElement.close()
 	return true
 }
 
-function resizeContainer() {
-	window.frameElement.style.height = `${document.body.scrollHeight}px`;
+async function resizeContainer() {
+	const maxHeight = window.top.getComputedStyle(frame).maxHeight
+	document.body.style.maxHeight = maxHeight
+
+	frame.style.height = `${document.documentElement.scrollHeight}px`;
 }
 
 window.onresize = () => resizeContainer()
 resizeContainer()
+
+frame.classList.add("loaded")
