@@ -57,11 +57,6 @@ export class WyjazdClass extends JednostkaClass {
 						default: "pending"
 					}
 
-					/** Alias for parent uninviteUsers method */
-					async uninvite() {
-						await this.parent().uninviteUsers(this.user)
-					}
-
 					/** Sets the invitation state for the user */
 					async setState(state) {
 						const targetWyjazd = this.ownerDocument()
@@ -88,68 +83,10 @@ export class WyjazdClass extends JednostkaClass {
 				}
 			]
 
-			/** Invites user from a jednostka to the wyjazd */
-			async inviteUser(user) {
-				const targetWyjazd = this.parent()
-				
-				// Check if user already added
-				if(this.invitedUsers.some(i => i.user.id == user.id)) return
-
-				// Check if user has a funckja
-				const existingFunkcja = await user.getFunkcjaInJednostka(targetWyjazd)
-				if(existingFunkcja) return
-				
-				// Add user to invited
-				this.invitedUsers.push({
-					user: user.id,
-					state: "pending"
-				})
-				
-				// Remove any existing invite
-				user.wyjazdInvites = user.wyjazdInvites.filter(i => i != targetWyjazd.id)
-				
-				// Add wyjazd invite to user
-				user.wyjazdInvites.push(targetWyjazd.id)
-
-				await user.save()
-				await targetWyjazd.save()
-			}
-
-			/** Uninvites users from the wyjazd */
-			async uninviteUsers(users) {
-				if(!Array.isArray(users)) users = [users]
-				
-				const targetWyjazd = this.parent()
-
-				for(const user of users) {
-					const targetInvitation = this.invitedUsers.id(user.id)
-				
-					if(!targetInvitation) return
-					await targetInvitation.populate("user")
-
-					// Remove invite from user
-					targetInvitation.user.wyjazdInvites = targetInvitation.user.wyjazdInvites.filter(i => i != targetWyjazd.id)
-					await targetInvitation.user.save()
-					
-					await targetInvitation.delete()
-					
-					// Remove user's funkcja
-					const existingFunkcja = await targetInvitation.user.getFunkcjaInJednostka(targetWyjazd)
-					if(existingFunkcja) {
-						existingFunkcja.$locals.test = "test"
-						await existingFunkcja.populate(
-							["jednostka", "user"],
-							{known: [targetWyjazd, targetInvitation.user]}
-						)
-						await existingFunkcja.delete()
-					}
-				}
-				
-				await targetWyjazd.save()
-			}
-
 			/** Sets participants for the wyjazd, by inviting users from the jednostka */
 			async setParticipants(participantIDs) {
+				const targetWyjazd = this.parent()
+				
 				// Ensure invitation has been accepted
 				if(this.state != "accepted") {
 					throw new HTTPError(400, "Zaproszenie na wyjazd nie zostało zaakceptowane")
@@ -169,12 +106,54 @@ export class WyjazdClass extends JednostkaClass {
 
 				// Add new participants
 				for(const participant of participants) {
-					await this.inviteUser(participant)
+					// Check if user already added
+					if(this.invitedUsers.some(i => i.user.id == participant.id)) continue
+
+					// Check if user has a funckja
+					const existingFunkcja = await participant.getFunkcjaInJednostka(targetWyjazd)
+					if(existingFunkcja) continue
+					
+					// Add user to invited
+					this.invitedUsers.push({
+						user: participant.id,
+						state: "pending"
+					})
+					
+					// Remove any existing invite
+					participant.wyjazdInvites = participant.wyjazdInvites.filter(i => i != targetWyjazd.id)
+					
+					// Add wyjazd invite to user
+					participant.wyjazdInvites.push(targetWyjazd.id)
+
+					// Save user
+					await participant.save()
 				}
 
 				// Remove participants not on list
-				const uninviteList = this.invitedUsers.filter(i => !participantIDs.includes(i.user.id))
-				await this.uninviteUsers(uninviteList.map(i => i.user))
+				for(const userInvite of this.invitedUsers) {
+					if(participantIDs.includes(userInvite.user.id)) continue
+				
+					await userInvite.populate("user")
+
+					// Remove invite from user
+					userInvite.user.wyjazdInvites = userInvite.user.wyjazdInvites.filter(i => i != targetWyjazd.id)
+					await userInvite.user.save()
+					
+					await userInvite.delete()
+					
+					// Remove user's funkcja
+					const existingFunkcja = await userInvite.user.getFunkcjaInJednostka(targetWyjazd)
+					if(existingFunkcja) {
+						existingFunkcja.$locals.test = "test"
+						await existingFunkcja.populate(
+							["jednostka", "user"],
+							{known: [targetWyjazd, userInvite.user]}
+						)
+						await existingFunkcja.delete()
+					}
+				}
+
+				await targetWyjazd.save()
 			}
 
 			/** Alias for parent uninviteJednostka method */
