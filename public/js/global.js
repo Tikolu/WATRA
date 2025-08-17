@@ -610,7 +610,7 @@ function processDialogOpeners() {
 				await sleep(250)
 				if(iframe.classList.contains("loaded")) return
 				
-				const errorElement = iframe.contentDocument.querySelector("main h1")
+				const errorElement = iframe.contentDocument.querySelector("main h2")
 				let errorText = errorElement?.textContent || "Błąd ładowania strony"
 				Popup.error(errorText)
 				dialog.close()
