@@ -301,12 +301,12 @@
 			<% if(approver.funkcja.user.id == $.user.id) { %>
 				<div class="button-row">
 					<% if(approver.approved) { %>
-						<button api="wyjazd/[wyjazdID]/approval/<%= approver.id %>/unapprove" class="dangerous">
+						<button api="wyjazd/[wyjazdID]/approval/unapprove" class="dangerous">
 							<i>undo</i>
 							<span>Cofnij zatwierdzenie</span>
 						</button>
 					<% } else { %>
-						<button api="wyjazd/[wyjazdID]/approval/<%= approver.id %>/approve">
+						<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/approve">
 							<i>check</i>
 							<span>Zatwierdź</span>
 						</button>

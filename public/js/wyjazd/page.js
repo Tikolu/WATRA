@@ -73,12 +73,7 @@ API.registerHandler("wyjazd/[wyjazdID]/jednostka/[jednostkaID]/uninvite", {
 	successText: "Cofnięto zaproszenie",
 })
 
-API.registerHandler("wyjazd/[wyjazdID]/approval/[approvalID]/approve", {
-	progressText: "Zatwierdzanie wyjazdu...",
-	successText: "Zatwierdzono"
-})
-
-API.registerHandler("wyjazd/[wyjazdID]/approval/[approvalID]/unapprove", {
+API.registerHandler("wyjazd/[wyjazdID]/approval/unapprove", {
 	progressText: "Cofanie zatwierdzenia...",
 	successText: "Cofnięto zatwierdzenie"
 })

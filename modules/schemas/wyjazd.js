@@ -215,7 +215,9 @@ export class WyjazdClass extends JednostkaClass {
 
 			/** Approves the wyjazd */
 			async approve() {
-				if(this.approved) return
+				if(this.approved) {
+					throw new HTTPError(400, "Wyjazd już został zatwierdzony")
+				}
 
 				this.approvedAt = new Date()
 				await this.parent().save()
@@ -223,7 +225,9 @@ export class WyjazdClass extends JednostkaClass {
 
 			/** Unapproves the wyjazd */
 			async unapprove() {
-				if(!this.approved) return
+				if(!this.approved) {
+					throw new HTTPError(400, "Wyjazd nie jest zatwierdzony")
+				}
 
 				this.approvedAt = null
 				await this.parent().save()
@@ -370,9 +374,21 @@ export class WyjazdClass extends JednostkaClass {
 	async setApprovers(funkcjaIDs) {
 		const funkcje = await Funkcja.find({_id: funkcjaIDs})
 		
+		await this.populate({
+			"approvers": 
+				{"funkcja": "user"}
+			},
+			{known: funkcje}
+		)
+
 		// Remove approvers not on list
 		for(const approver of [...this.approvers]) {
-			if(funkcje.hasID(approver.funkcja.id)) continue
+			if(funkcje.hasID(approver.id)) continue
+
+			// Remove from user
+			approver.funkcja.user.wyjazdApprovalRequests = approver.funkcja.user.wyjazdApprovalRequests.filter(id => id != this.id)
+			await approver.funkcja.user.save()
+
 			await approver.delete()
 		}
 
@@ -394,7 +410,7 @@ export class WyjazdClass extends JednostkaClass {
 			})
 			for(const approver of this.approvers) {
 				if(approver.funkcja.user.id != funkcja.user.id) continue
-				if(approver.funkcja.id == funkcja.id) continue
+				if(approver.id == funkcja.id) continue
 				throw new HTTPError(400, "Użytkownik jest już zatwierdzającym")
 			}
 
@@ -402,11 +418,24 @@ export class WyjazdClass extends JednostkaClass {
 			this.approvers.push({funkcja})
 
 			// Add approval request to user
-			funkcja.user.wyjazdApprovalRequests.push(this.id)
+			if(!funkcja.user.wyjazdApprovalRequests.hasID(this.id)) {
+				funkcja.user.wyjazdApprovalRequests.push(this.id)
+			}
+			
 			await funkcja.user.save()
 		}
 
 		await this.save()
+	}
+
+	/** Get an approver of a user */
+	async getApprover(user) {
+		await this.populate({
+			"approvers": "funkcja"
+		})
+		for(const approver of this.approvers) {
+			if(approver.funkcja.user.id == user.id) return approver
+		}
 	}
 		
 }

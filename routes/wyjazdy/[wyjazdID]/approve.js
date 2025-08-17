@@ -1,6 +1,7 @@
+import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
 
-export async function open({user, targetWyjazd}) {
+export default async function({user, targetWyjazd}) {
 	// Check permissions
 	await user.requirePermission(targetWyjazd.PERMISSIONS.APPROVE)
 
@@ -10,5 +11,13 @@ export async function open({user, targetWyjazd}) {
 		throw new HTTPError(404, "Nie jesteś zatwierdzającym")
 	}
 
-	this.addRouteData({targetApprover})
+	if(targetApprover.approved) {
+		throw new HTTPError(400, "Wyjazd już został zatwierdzony")
+	}
+
+	return html("wyjazd/approve", {
+		user,
+		targetWyjazd,
+		targetApprover
+	})
 }
