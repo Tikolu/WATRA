@@ -25,8 +25,7 @@ export default async function({user, targetJednostka}) {
 
 		// Add members of every upperJednostka the user is a drużynowy of
 		for await(const jednostka of targetJednostka.getUpperJednostkiTree()) {
-			const userFunkcja = await user.getFunkcjaInJednostka(jednostka)
-			if(userFunkcja?.type || 0 < FunkcjaType.DRUŻYNOWY) continue
+			if(!await user.checkPermission(jednostka.PERMISSIONS.MODIFY)) continue
 			for(const member of await jednostka.getMembers([...usersForMianowanie])) {
 				usersForMianowanie.push(member)
 			}
