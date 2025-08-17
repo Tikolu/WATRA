@@ -8,9 +8,11 @@ export default async function(request, response) {
 	const routeContext = {
 		request,
 		response,
-		params: request.address.searchParams,
 		routeData: {},
-		addRouteData: data => routeContext.routeData = {...data, ...routeContext.routeData}
+		addRouteData: (data, override=true) => {
+			if(override) routeContext.routeData = {...routeContext.routeData, ...data}
+			else routeContext.routeData = {...data, ...routeContext.routeData}
+		}
 	}
 
 	// Function for handling errors

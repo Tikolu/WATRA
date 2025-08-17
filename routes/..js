@@ -18,6 +18,9 @@ const errorMessages = {
 export async function open() {
 	// Set content type to text/html
 	this.response.headers.set("Content-Type", "text/html; charset=utf-8")
+
+	// Add route data from URL parameters
+	this.addRouteData(Object.fromEntries(this.request.address.searchParams), false)
 	
 	// Get user ID from token
 	const userID = this.request.token?.active

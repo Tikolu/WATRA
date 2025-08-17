@@ -13,10 +13,6 @@ export default class extends Request {
 		// Parse request URL
 		this.address = new URL(request.url)
 	}
-
-	getParam(param) {
-		return this.address.searchParams.get(param)
-	}
 	
 	async getBody() {
 		if(!this.body) return this.body

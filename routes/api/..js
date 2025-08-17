@@ -14,7 +14,7 @@ export async function open() {
 	}
 
 	if(typeof input != "object") throw new HTTPError(400, "Invalid input data")
-	this.addRouteData(input)
+	this.addRouteData(input, false)
 }
 
 function removeANSI(text) {
