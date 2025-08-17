@@ -417,7 +417,7 @@ const API = {
 
 		// Find wildcard handler
 		if(!handler) for(const handlerKey in API.handlers) {
-			const regex = new RegExp(handlerKey.replace(/\[\w+\]/g, ".*"))
+			const regex = new RegExp(handlerKey.replace(/\[\w+\]/g, "[^\\/]*"))
 			if(!api.match(regex)) continue
 			handler = API.handlers[handlerKey]
 			break
