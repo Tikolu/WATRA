@@ -60,6 +60,12 @@ export class UserClass {
 			ref: "Wyjazd"
 		}
 	]
+	wyjazdApprovalRequests = [
+		{
+			type: String,
+			ref: "Wyjazd"
+		}
+	]
 
 
 	/* * Getters * */

@@ -20,7 +20,12 @@
 			<% } %>
 		</div>
 	<% } %>
-	<% if($.user.funkcjeWyjazdowe.length || $.user.wyjazdInvites.length || $.user.hasPermission(Wyjazd.PERMISSIONS.CREATE) || $.user.children.some(child => child.wyjazdInvites.length)) { %>
+	<% if(
+		$.user.funkcjeWyjazdowe.length ||
+		$.user.wyjazdInvites.length ||
+		$.user.hasPermission(Wyjazd.PERMISSIONS.CREATE) ||
+		$.user.children.some(child => child.wyjazdInvites.length)
+	) { %>
 		<hr>
 		<h2>Wyjazdy</h2>
 		<div class="unit-grid">
@@ -30,6 +35,7 @@
 					<p><%= funkcja.jednostka.typeName %></p>
 				</a>
 			<% } %>
+
 			<% for(const targetUser of [$.user, ...$.user.children]) { %>
 				<% for(const wyjazd of targetUser.wyjazdInvites) { %>
 					<%~ include("user/templates/wyjazdInvite", {
@@ -46,7 +52,21 @@
 			</button>
 		<% } %>
 	<% } %>
-
+	<% if($.user.wyjazdApprovalRequests.length) { %>
+		<hr>
+		<h2>Wyjazdy do zatwierdzenia</h2>
+		<div class="unit-grid">
+			<% for(const wyjazd of $.user.wyjazdApprovalRequests) { %>
+				<a href="/wyjazdy/<%= wyjazd.id %>">
+					<h3><%= wyjazd.displayName %></h3>
+					<p>
+						<i>help</i>
+						Oczekiwana odpowiedź...
+					</p>
+				</a>
+			<% } %>
+		</div>
+	<% } %>
 	<% if($.user.children.length > 0) { %>
 		<hr>
 		<h2>Podopieczni</h2>

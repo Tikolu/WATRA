@@ -3,13 +3,18 @@ import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetWyjazd}) {
 	const wyjazdData = {}
-	
+
+	await targetWyjazd.populate({
+		"invitedJednostki": {
+			"jednostka": {},
+		}
+	})
+
 	if(await user.checkPermission(targetWyjazd.PERMISSIONS.PARTICIPANT_ACCESS)) {
 		// Populate wyjazd funkcje, as well as users and jednostki of funkcje
 		await targetWyjazd.populate({
 			"funkcje": ["user", "jednostka"],
 			"invitedJednostki": {
-				"jednostka": {},
 				"invitedUsers": {
 					"user": {}
 				}
@@ -50,9 +55,15 @@ export default async function({user, targetWyjazd}) {
 	} else {
 		user.overridePermission(targetWyjazd.PERMISSIONS.MODIFY, false)
 
+	}
+
+	if(
+		await user.checkPermission(targetWyjazd.PERMISSIONS.APPROVE) ||
+		await user.checkPermission(targetWyjazd.PERMISSIONS.MODIFY)
+	) {
 		await targetWyjazd.populate({
-			"invitedJednostki": {
-				"jednostka": {},
+			"approvers": {
+				"funkcja": ["user", "jednostka"]
 			}
 		})
 	}

@@ -193,20 +193,32 @@ export class WyjazdClass extends JednostkaClass {
 				deriveID: true
 			}
 
-			history = [
-				{
-					approved: Boolean,
-					comment: {
-						type: String,
-						trim: true,
-						default: ""
-					},
-					createdAt: {
-						type: Date,
-						default: Date.now
-					}
-				}
-			]
+			approvedAt = {
+				type: Date,
+				default: null
+			}
+
+			/** Get the approval state of the wyjazd */
+			get approved() {
+				return this.approvedAt != null
+			}
+
+			/** Approves the wyjazd */
+			async approve() {
+				if(this.approved) return
+
+				this.approvedAt = new Date()
+				await this.parent().save()
+			}
+
+			/** Unapproves the wyjazd */
+			async unapprove() {
+				if(!this.approved) return
+
+				this.approvedAt = null
+				await this.parent().save()
+			}
+
 		}
 	]
 
@@ -227,6 +239,17 @@ export class WyjazdClass extends JednostkaClass {
 		if(!this.dates.start || !this.dates.end) return null
 		const difference = datetime.difference(this.dates.start, this.dates.end)
 		return difference.days
+	}
+
+	/** Gets the overall approval state of the wyjazd */
+	get approvalState() {
+		if(this.approvers.length == 0) return false
+
+		for(const approver of this.approvers) {
+			if(!approver.approved) return false
+		}
+
+		return true
 	}
 
 	/* * Methods * */
@@ -321,57 +344,44 @@ export class WyjazdClass extends JednostkaClass {
 		return candidates
 	}
 
-	/** Add approver */
-	async addApprover(funkcja) {
-		// Check if user already added
-		if(this.approvers.id(funkcja.id)) return
-
-		// Ensure approver is in candidates
-		const candidates = await this.findApproverCandidates()
-		if(!candidates.some(c => c.id == funkcja.id)) {
-			throw new HTTPError(400, "Użytkownik nie może być zatwierdzającym")
-		}
-
-		// Ensure other funkcja of the same user is not added
-		await funkcja.populate("user")
-		await this.populate({
-			"approvers": "funkcja"
-		})
-		for(const approver of this.approvers) {
-			if(approver.funkcja.user.id != funkcja.user.id) continue
-			if(approver.funkcja.id == funkcja.id) continue
-			throw new HTTPError(400, "Użytkownik jest już zatwierdzającym (jako inna funkcja)")
-		}
-
-		// Add approver
-		this.approvers.push({funkcja})
-
-		await this.save()
-	}
-
-	/** Remove approver */
-	async removeApprover(funkcja) {
-		const approver = this.approvers.id(funkcja.id)
-		if(!approver) return
-
-		await approver.delete()
-		await this.save()
-	}
-
 	/** Set approvers from a list */
 	async setApprovers(funkcjaIDs) {
 		const funkcje = await Funkcja.find({_id: funkcjaIDs})
 		
 		// Remove approvers not on list
-		for(const approver of this.approvers) {
-			if(!funkcje.hasID(approver.funkcja.id)) {
-				await this.removeApprover(approver.funkcja)
-			}
+		for(const approver of [...this.approvers]) {
+			if(funkcje.hasID(approver.funkcja.id)) continue
+			await approver.delete()
 		}
 
 		// Add new approvers
 		for(const funkcja of funkcje) {
-			await this.addApprover(funkcja)
+			// Check if user already added
+			if(this.approvers.id(funkcja.id)) continue
+
+			// Ensure approver is in candidates
+			const candidates = await this.findApproverCandidates()
+			if(!candidates.some(c => c.id == funkcja.id)) {
+				throw new HTTPError(400, "Użytkownik nie może być zatwierdzającym")
+			}
+
+			// Ensure other funkcja of the same user is not added
+			await funkcja.populate("user")
+			await this.populate({
+				"approvers": "funkcja"
+			})
+			for(const approver of this.approvers) {
+				if(approver.funkcja.user.id != funkcja.user.id) continue
+				if(approver.funkcja.id == funkcja.id) continue
+				throw new HTTPError(400, "Użytkownik jest już zatwierdzającym")
+			}
+
+			// Add approver
+			this.approvers.push({funkcja})
+
+			// Add approval request to user
+			funkcja.user.wyjazdApprovalRequests.push(this.id)
+			await funkcja.user.save()
 		}
 
 		await this.save()
@@ -386,6 +396,9 @@ schema.beforeDelete = async function() {
 	for(const jednostkaInvite of this.invitedJednostki) {
 		await jednostkaInvite.uninvite()
 	}
+
+	// Remove all approvers
+	await this.setApprovers([])
 
 	await this.populate("funkcje")
 
@@ -404,6 +417,9 @@ schema.permissions = {
 	},
 	
 	async ACCESS(user) {
+		// Approvers can access
+		if(await user.checkPermission(this.PERMISSIONS.APPROVE)) return true
+
 		// Invited users can access
 		if(this.findUserInvite(user)) return true
 

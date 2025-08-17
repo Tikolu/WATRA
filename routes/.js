@@ -10,7 +10,8 @@ export default async function({user}) {
 		},
 		"funkcje": "jednostka",
 		"funkcjeWyjazdowe": "jednostka",
-		"wyjazdInvites": {}
+		"wyjazdInvites": {},
+		"wyjazdApprovalRequests": {}
 	})
 
 	// Check permissions

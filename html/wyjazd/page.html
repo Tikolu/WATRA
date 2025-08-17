@@ -1,7 +1,7 @@
 <% layout("/layouts/body", {
 	title: $.targetWyjazd.displayName,
 	scripts: ["wyjazd/page"],
-	// styles: ["wyjazd/page"],
+	styles: ["wyjazd/page"],
 	meta: {
 		wyjazdID: $.targetWyjazd.id
 	}
@@ -153,7 +153,11 @@
 	<% for(const jednostkaInvite of $.targetWyjazd.invitedJednostki || []) { %>
 		<%
 			if(jednostkaInvite.state == "declined" && !$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) continue
-			if(jednostkaInvite.state == "pending" && !$.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)) continue
+			if(
+				jednostkaInvite.state == "pending" &&
+				!$.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY) &&
+				!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)
+			) continue
 		%>
 		<div class="section-unit">
 			<h3><%= jednostkaInvite.jednostka.displayName %></h3>
@@ -232,23 +236,55 @@
 	<% } %>
 <% } %>
 
-<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+<% if(
+	$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ||
+	$.user.hasPermission($.targetWyjazd.PERMISSIONS.APPROVE)
+) { %>
 	<hr>
 	<h2>Zatwierdzenie</h2>
-	<p><i>cancel</i> Wyjazd oczekuje zatwierdzenia</p>
-	<% if($.targetWyjazd.invitedJednostki.filter(i => i.state == "accepted").length == 0) { %>
-		<p>Proces zatwierdzenia wyjazdu można rozpocząć po zaakceptowaniu zaproszenia przez przynajmniej jedną jednostkę</p>
+	<% if($.targetWyjazd.approvalState) { %>
+		<p><i>check_circle</i> Wyjazd zatwierdzony</p>
 	<% } else { %>
-		<% if($.targetWyjazd.approvers.length == 0) { %>
+		<p><i>cancel</i> Wyjazd nie jest zatwierdzony!</p>
+	<% } %>
+	<% if($.targetWyjazd.approvers.length == 0) { %>
+		<% if($.targetWyjazd.invitedJednostki.filter(i => i.state == "accepted").length == 0) { %>
+			<p>Proces zatwierdzenia wyjazdu można rozpocząć po zaakceptowaniu zaproszenia przez przynajmniej jedną jednostkę</p>
+		<% } else { %>
 			<p>Wybierz zatwierdzających aby rozpocząć</p>
 		<% } %>
-		<% for(const approver of $.targetWyjazd.approvers) { %>
-			<div class="section-unit">
-				<h3><%= approver.funkcja.user.displayName %></h3>
-				<p><%= Text.capitalise(approver.funkcja.displayName) %>, <%= approver.funkcja.jednostka.displayName %></p>
-				<p>Oczekiwana odpowiedź... <i class="spin">progress_activity</i></p>
-			</div>
-		<% } %>
+	<% } %>
+	<% for(const approver of $.targetWyjazd.approvers) { %>
+		<div class="section-unit approval-block">
+			<h3><%= approver.funkcja.user.displayName %></h3>
+			<p><%= Text.capitalise(approver.funkcja.displayName) %>, <%= approver.funkcja.jednostka.displayName %></p>
+			<% if(approver.approved) { %>
+				<p>
+					Zatwierdzono <i>check</i><br>
+					<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
+				</p>
+			<% } else if(approver.funkcja.user.id != $.user.id) { %>
+				<p>Oczekiwane zatwierdzenie... <i class="spin">progress_activity</i></p>
+			<% } %>
+			
+			<% if(approver.funkcja.user.id == $.user.id) { %>
+				<div class="button-row">
+					<% if(approver.approved) { %>
+						<button api="wyjazd/[wyjazdID]/approval/<%= approver.id %>/unapprove" class="dangerous">
+							<i>undo</i>
+							<span>Cofnij zatwierdzenie</span>
+						</button>
+					<% } else { %>
+						<button api="wyjazd/[wyjazdID]/approval/<%= approver.id %>/approve">
+							<i>check</i>
+							<span>Zatwierdź</span>
+						</button>
+					<% } %>
+				</div>
+			<% } %>
+		</div>
+	<% } %>
+	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 		<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/chooseApprovers"><i>person_check</i>Wybierz zatwierdzających</button>
 	<% } %>
 <% } %>
