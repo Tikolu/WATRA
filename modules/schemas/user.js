@@ -236,10 +236,12 @@ schema.beforeDelete = async function() {
 
 	// Remove self from all wyjazdy
 	await this.populate("wyjazdInvites")
+	
 	for(const wyjazd of this.wyjazdInvites) {
 		const invite = wyjazd.findUserInvite(this)
+		if(!invite) continue
 		await invite.delete()
-		// await wyjazd.save()
+		await wyjazd.save()
 	}
 
 	// Delete all funkcje

@@ -190,7 +190,7 @@ mongoose.plugin(schema => {
 							if(typeof subDocument != "string") return
 							let newDocument = results.find(r => r.id == subDocument)
 							if(!newDocument) {
-								newDocument = 
+								newDocument = createFakeDocument(mongoose.model(ref), subDocument)
 								results.push(newDocument)
 							}
 							newArray.push(newDocument)

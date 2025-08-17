@@ -23,7 +23,7 @@ export default async function({user, targetWyjazd}) {
 	const availableMembers = await Array.fromAsync(targetJednostka.getSubMembers())
 
 	// Get list of wyjazd funkcyjni
-	targetWyjazd.populate("funkcje")
+	await targetWyjazd.populate("funkcje")
 	const wyjazdFunkcyjni = targetWyjazd.funkcje.map(f => f.user.id)
 	
 	return html("wyjazd/setParticipants", {
