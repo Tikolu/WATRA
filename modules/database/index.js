@@ -93,7 +93,7 @@ mongoose.plugin(schema => {
 mongoose.plugin(schema => {
 	schema.methods.populate = async function(graph, options={}) {
 		if(options.log) console.log(`\n\n\n\x1b[32m[MongoDB]\x1b[0m Populating ${this.constructor.modelName} ${this.id}`)
-		options.known ||= []
+		options.known = [...(options.known || [])]
 		options.known.push(this)
 
 		let parentDocument = this.parent()
