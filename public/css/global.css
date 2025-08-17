@@ -83,6 +83,15 @@ input, button, select, textarea {
 	border: none;
 }
 
+textarea {
+	box-sizing: border-box;
+	min-width: 20em;
+	max-width: 100%;
+	min-height: 5em;
+	field-sizing: content;
+	resize: none;
+}
+
 label {
 	vertical-align: middle;
 	white-space: nowrap;
@@ -104,7 +113,7 @@ input:hover, select:hover, textarea:hover {
 	border-color: var(--border-highlight-color);
 }
 
-input:disabled, select:disabled, textarea:hover {
+input:disabled, select:disabled, textarea:disabled {
 	background-color: var(--background-color-disabled);
 }
 
