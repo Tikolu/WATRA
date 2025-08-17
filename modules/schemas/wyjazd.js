@@ -29,6 +29,16 @@ export class WyjazdClass extends JednostkaClass {
 		}
 	}
 
+	description = {
+		type: String,
+		default: ""
+	}
+
+	location = {
+		type: String,
+		default: ""
+	}
+
 	invitedJednostki = [
 		class {
 			jednostka = {
@@ -271,6 +281,18 @@ export class WyjazdClass extends JednostkaClass {
 
 		if(this.dates.start && this.dates.end && this.dates.start >= this.dates.end) throw new Error("Data rozpoczęcia musi być przed datą końca")
 
+		await this.save()
+	}
+
+	/** Sets the description for the wyjazd */
+	async updateDescription(description) {
+		this.description = description || ""
+		await this.save()
+	}
+
+	/** Sets the location for the wyjazd */
+	async updateLocation(location) {
+		this.location = location || ""
 		await this.save()
 	}
 

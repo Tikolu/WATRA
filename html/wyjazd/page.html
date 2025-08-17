@@ -26,7 +26,21 @@
 	</form>
 <% } %>
 
-<h3>Daty</h3>
+<h3>
+	Opis wyjazdu
+</h3>
+<textarea
+	id="wyjazd-description-input"
+	api="wyjazd/[wyjazdID]/update/description"
+	name="description"
+	<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+		disabled
+	<% } %>
+><%= $.targetWyjazd.description || "" %></textarea>
+
+<h3>
+	Daty
+</h3>
 <form>
 	<%
 		const minYear = 1800
@@ -62,6 +76,23 @@
 		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 			disabled
 		<%- } %>
+	>
+</form>
+<h3>
+	Lokalizacja
+</h3>
+<form>
+	<label for="wyjazd-location-input">Lokalizacja:</label>
+	<input
+		type="text"
+		id="wyjazd-location-input"
+		autocomplete="off"
+		value="<%= $.targetWyjazd.location || "" %>"
+		api="wyjazd/[wyjazdID]/update/location"
+		name="location"
+		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+			disabled
+		<% } %>
 	>
 </form>
 

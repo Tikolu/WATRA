@@ -9,8 +9,16 @@ API.registerHandler("wyjazd/[wyjazdID]/update/name", {
 	after: response => wyjazdTitle.innerText = response.displayName
 })
 
+API.registerHandler("wyjazd/[wyjazdID]/update/description", {
+	successText: "Zapisano opis",
+})
+
 API.registerHandler("wyjazd/[wyjazdID]/update/dates", {
 	successText: "Zapisano daty"
+})
+
+API.registerHandler("wyjazd/[wyjazdID]/update/location", {
+	successText: "Zapisano lokalizację",
 })
 
 API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
