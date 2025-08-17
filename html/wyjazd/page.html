@@ -345,57 +345,6 @@
 					Zmień odpowiedź
 				<% } %>
 			</button>
-			<dialog id="user-<%= userInvite.user.id %>-participation-dialog">
-				<h1>
-					Uczestnictwo w <%= $.targetWyjazd.displayName %>
-					<% if(userInvite.user.id != $.user.id) { %>
-						(<%= userInvite.user.name.first %>)
-					<% } %>
-				</h1>
-				<div>
-					<br>
-					<form>
-						<input type="radio" name="participation" id="participation-choice-yes" value="yes"
-							<%= userInvite.state == "accepted" ? "checked" : "" %>
-						>
-						<label for="participation-choice-yes">
-							<% if(userInvite.user.id == $.user.id) { %>
-								Wezmę
-							<% } else { %>
-								<%= userInvite.user.name.first %> weźmie
-							<% } %>
-							udział
-						</label>
-						<input type="radio" name="participation" id="participation-choice-no" value="no"
-							<%= userInvite.state == "declined" ? "checked" : "" %>
-						>
-						<label for="participation-choice-no">
-							<% if(userInvite.user.id == $.user.id) { %>
-								Nie wezmę
-							<% } else { %>
-								<%= userInvite.user.name.first %> nie weźmie
-							<% } %>
-							udziału
-						</label>
-					</form>
-					<hr>
-					<div>
-						<input type="checkbox" disabled>
-						<label for="signature">Podpis</label>
-					</div>
-					<br>
-				</div>
-				<div class="button-row">
-					<button>
-						<i>arrow_back</i>
-						<span>Anuluj</span>
-					</button>
-					<button class="primary" command api="wyjazd/[wyjazdID]/member/<%= userInvite.user.id %>/setParticipation">
-						<i>check</i>
-						<span>Potwierdź</span>
-					</button>
-				</div>
-			</dialog>
 		</div>
 	<% } %>
 <% } %>

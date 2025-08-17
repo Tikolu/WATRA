@@ -51,15 +51,6 @@ API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
 	}
 })
 
-API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/setParticipation", {
-	progressText: "Zapisywanie...",
-	successText: "Zapisano",
-	validate: data => {
-		data.participation = data.participation == "yes"
-		return true
-	}
-})
-
 API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/accept", {
 	progressText: "Akceptowanie zaproszenia..."
 })

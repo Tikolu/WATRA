@@ -6,12 +6,11 @@
 	}
 }) %>
 <h1><%= $.targetJednostka.displayName %></h1>
-<form>
-	<input type="checkbox" id="choose-all">
-	<label for="choose-all">Wybierz wszystkich</label>
-</form>
-<br>
 <main>
+	<form>
+		<input type="checkbox" id="choose-all">
+		<label for="choose-all">Wybierz wszystkich</label>
+	</form>
 	<form id="member-list">
 		<% for(const member of $.availableMembers) { %>
 			<% const wyjazdParticipant = $.targetInvitation.invitedUsers.find(p => p.user == member.id) %>
