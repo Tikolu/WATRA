@@ -622,6 +622,8 @@ function processDialogOpeners() {
 				let errorText = errorElement?.textContent || "Błąd ładowania strony"
 				Popup.error(errorText)
 				dialog.close()
+
+				await sleep(250)
 				dialog.remove()
 				processDialogOpeners()
 			}
