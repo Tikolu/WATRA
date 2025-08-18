@@ -1,53 +1,57 @@
-/* Simple dark theme */
-:root {
-	--background-color: #122;
-	--background-color-secondary: #333;
-	--background-color-disabled: #111;
-
-	--text-color: #fff;
-
-	--shadow-color: #000;
-
-	--border-color: #333;
-	--border-highlight-color: #555;
-
-	--disabled-text-color: #aaa;
-
-	--border-radius: 5px;
-}
-
-::selection {
-	background-color: #ddd;
-	color: #333;
-}
-
 html {
 	color-scheme: dark;
 }
 
+:root {
+	--background: #0d2225;
+	--text: #E4E0E0;
+
+	--secondary-background: #7CA6AC;
+	--secondary-hover-background: #9BBBBF;
+	--secondary-text: #0d2225;
+
+	--input-background: #295151;
+	--disabled-input-background: #0B1C1E;
+	--invalid-input-background: #533;
+	--input-text: #E4E0E0;
+
+	--shadow: #000;
+
+	--border: #295151;
+	--secondary-border: #0d2225;
+
+	--border-radius: 5px;
+}
+
+header {
+	--background: #0d2225;
+}
+
+::selection {
+	--background: #E4E0E0;
+	--text: #333;
+}
+
 button {
-	color: #fff;
-	--background-color: #383;
-	--hover-background-color: #4a4;
+	--text: #0d2225;
+	--background: #E9D293;
+	--hover-background: #F5EACC;
 }
 
 button.dangerous {
-	--background-color: #e22;
-	--hover-background-color: #e44;
+	--background: #C96A54;
+	--hover-background: #D38573;
+}
+
+dialog {
+	--background: #0d2225;
+	--text: #E4E0E0;
 }
 
 dialog.message.success {
-	background-color: #353;
+	--background: #224444;
 }
 
 dialog.message.error {
-	background-color: #533;
-}
-
-input.invalid, select.invalid {
-	background-color: #533;
-}
-
-input {
-	accent-color: #fff;
+	--background: #533;
 }
