@@ -26,7 +26,7 @@ export default async function({user, targetJednostka}) {
 			}
 
 			// Also check subjednostki
-			for(const subJednostka of await jednostka.getSubJednostkiTree(jednostkiChecked)) {
+			for await(const subJednostka of jednostka.getSubJednostkiTree(jednostkiChecked)) {
 				if(jednostkiChecked.includes(subJednostka.id)) continue
 				jednostkiChecked.push(subJednostka.id)
 				console.log("Checking jednostka", jednostka.id)
