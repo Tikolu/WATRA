@@ -11,7 +11,10 @@
 
 <% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 	<hr>
-	<h2>Ustawienia</h2>
+	<h2>
+		<i>manufacturing</i>
+		Ustawienia
+	</h2>
 	<form>
 		<label for="wyjazd-name-input">Nazwa:</label>
 		<input
@@ -27,6 +30,7 @@
 <% } %>
 
 <h3>
+	<i>assignment</i>
 	Opis wyjazdu
 </h3>
 <textarea
@@ -39,6 +43,7 @@
 ><%= $.targetWyjazd.description || "" %></textarea>
 
 <h3>
+	<i>calendar_today</i>
 	Daty
 </h3>
 <form>
@@ -78,7 +83,9 @@
 		<%- } %>
 	>
 </form>
+
 <h3>
+	<i>distance</i>
 	Lokalizacja
 </h3>
 <form>
@@ -97,7 +104,7 @@
 </form>
 
 <% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-	<h3>Usuwanie</h3>
+	<br>
 	<button id="delete-wyjazd-button" class="dangerous" api="wyjazd/[wyjazdID]/delete">
 		<i>delete</i>
 		<span>Usuń wyjazd</span>
@@ -121,7 +128,10 @@
 <% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.PARTICIPANT_ACCESS)) { %>
 	<% if($.targetWyjazd.funkcje?.length > 0 || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 		<hr>
-		<h2>Kadra</h2>
+		<h2>
+			<i>article_person</i>
+			Kadra
+		</h2>
 		<div id="wyjazd-member-list" class="unit-grid">
 			<% for(const funkcja of $.targetWyjazd.funkcje || []) { %>
 				<% if(funkcja.type === FunkcjaType.SZEREGOWY && $.targetWyjazd.findUserInvite(funkcja.user)) continue %>
@@ -133,6 +143,7 @@
 		</div>
 		<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 			<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/mianowanie">
+				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
 			</button>
 		<% } %>

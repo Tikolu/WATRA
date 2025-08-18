@@ -6,7 +6,10 @@
 		userID: $.targetUser.id
 	}
 }) %>
-<h1 id="user-title"><%= $.targetUser.displayName %></h1>
+<h1 id="user-title">
+	<i>person</i>
+	<%= $.targetUser.displayName %>
+</h1>
 <div class="button-row">
 	<% if($.user.id == $.targetUser.id) { %>
 		<button id="logout-button" href="/logout">
@@ -53,7 +56,10 @@
 </div>
 
 <hr>
-<h2>Dane</h2>
+<h2>
+	<i>assignment</i>
+	Dane
+</h2>
 <form>
 	<label for="first-name-input">Imię:</label>
 	<input
@@ -92,23 +98,33 @@
 
 <% if($.targetUser.isParent) { %>
 	<hr>
-	<h2>Podopieczni</h2>
+	<h2>
+		<i>supervisor_account</i>
+		Podopieczni
+	</h2>
 	<div id="child-list" class="unit-grid">
 		<% for(const child of $.targetUser.children || []) { %>
-			<a href="/users/<%= child.id %>"><%= child.displayName %></a>
+			<a href="/users/<%= child.id %>">
+				<h3><%= child.displayName %></h3>
+			</a>
 		<% } %>
 	</div>
 <% } else if($.targetUser.parents.length > 0 || $.targetUser.age < 18) { %>
 	<hr>
-	<h2>Rodzice / opiekunowie</h2>
+	<h2>
+		<i>supervisor_account</i>
+		Rodzice / opiekunowie
+	</h2>
 	<div id="parent-list" class="unit-grid">
 		<% for(const parent of $.targetUser.parents || []) { %>
-				<a href="/users/<%= parent.id %>"><%= parent.displayName %></a>
+				<a href="/users/<%= parent.id %>">
+					<h3><%= parent.displayName %></h3>
+				</a>
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
 		<button id="add-parent-button" api="user/[userID]/parent/create">
-			<i>supervisor_account</i>
+			<i>person_add</i>
 			<span>Dodaj rodzica / opiekuna</span>
 		</button>
 	<% } %>
@@ -116,7 +132,10 @@
 
 <% if($.targetUser.funkcje.length > 0) { %>
 	<hr>
-	<h2>Jednostki</h2>
+	<h2>
+		<i>groups</i>
+		Jednostki
+	</h2>
 	<div id="jednostka-list" class="unit-grid">
 		<% for(const funkcja of $.targetUser.funkcje) { %>
 			<a href="/jednostki/<%= funkcja.jednostka?.id %>">
@@ -132,7 +151,10 @@
 	  && $.targetUser.wyjazdInvites.length > 0) {
 %>
 	<hr>
-	<h2>Wyjazdy</h2>
+	<h2>
+	<i>hiking</i>
+		Wyjazdy
+	</h2>
 	<div id="wyjazd-list" class="unit-grid">
 		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
 			<% for(const wyjazd of $.targetUser.wyjazdInvites) { %>

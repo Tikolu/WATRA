@@ -10,7 +10,10 @@
 <section>
 	<% if($.user.funkcje.length > 0) { %>
 		<hr>
-		<h2>Jednostki</h2>
+		<h2>
+			<i>groups</i>
+			Jednostki
+		</h2>
 		<div class="unit-grid">
 			<% for(const funkcja of $.user.funkcje) { %>
 				<a href="/jednostki/<%= funkcja.jednostka.id %>">
@@ -27,7 +30,10 @@
 		$.user.children.some(child => child.wyjazdInvites.length)
 	) { %>
 		<hr>
-		<h2>Wyjazdy</h2>
+		<h2>
+			<i>hiking</i>
+			Wyjazdy
+		</h2>
 		<div class="unit-grid">
 			<% for(const funkcja of $.user.funkcjeWyjazdowe) { %>
 				<a href="/wyjazdy/<%= funkcja.jednostka.id %>">
@@ -54,13 +60,16 @@
 	<% } %>
 	<% if($.user.wyjazdApprovalRequests.length) { %>
 		<hr>
-		<h2>Wyjazdy do zatwierdzenia</h2>
+		<h2>
+			<i>gavel</i>
+			Wyjazdy do zatwierdzenia
+		</h2>
 		<div class="unit-grid">
 			<% for(const wyjazd of $.user.wyjazdApprovalRequests) { %>
 				<a href="/wyjazdy/<%= wyjazd.id %>">
 					<h3><%= wyjazd.displayName %></h3>
 					<p>
-						<i>help</i>
+						<i>notifications_active</i>
 						Oczekiwana odpowiedź...
 					</p>
 				</a>
@@ -69,7 +78,10 @@
 	<% } %>
 	<% if($.user.children.length > 0) { %>
 		<hr>
-		<h2>Podopieczni</h2>
+		<h2>
+			<i>supervisor_account</i>
+			Podopieczni
+		</h2>
 		<div class="unit-grid">
 			<% for(const child of $.user.children) { %>
 				<a href="/users/<%= child.id %>"><%= child.displayName %></a>

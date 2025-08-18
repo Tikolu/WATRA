@@ -13,7 +13,10 @@
 
 <% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
-	<h2>Ustawienia</h2>
+	<h2>
+		<i>manufacturing</i>
+		Ustawienia
+	</h2>
 	<form>
 		<label for="jednostka-name-input">Nazwa:</label>
 		<input
@@ -51,7 +54,10 @@
 
 <% if($.targetJednostka.subJednostki?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) && $.targetJednostka.type > 0) { %>
 	<hr>
-	<h2>Jednostki</h2>
+	<h2>
+		<i>groups</i>
+		Jednostki
+	</h2>
 	<div id="sub-jednostka-list" class="unit-grid">
 		<% for(const subJednostka of $.targetJednostka.subJednostki || []) { %>
 			<% if(!subJednostka) { %>
@@ -76,7 +82,10 @@
 
 <% if($.targetJednostka.funkcje?.length > 0 || $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
-	<h2>Użytkownicy</h2>
+	<h2>
+		<i>person</i>
+		Użytkownicy
+	</h2>
 	<div id="jednostka-member-list" class="unit-grid">
 		<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
 			<a href="/users/<%= funkcja.user.id %>">
@@ -87,6 +96,7 @@
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 		<button opens-dialog="/jednostki/<%= $.targetJednostka.id %>/mianowanie">
+			<i>add_moderator</i>
 			<span>Mianuj na funkcję</span>
 		</button>
 		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
@@ -98,7 +108,10 @@
 
 <% if($.targetJednostka.wyjazdInvites?.length > 0 && $.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
 	<hr>
-	<h2 id="wyjazdy">Wyjazdy</h2>
+	<h2>
+		<i>hiking</i>
+		Wyjazdy
+	</h2>
 	<div id="jednostka-wyjazd-list" class="unit-grid">
 		<% for(const wyjazd of $.targetJednostka.wyjazdInvites || []) { %>
 			<a href="/wyjazdy/<%= wyjazd.id %>">
