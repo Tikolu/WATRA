@@ -1,5 +1,5 @@
 :root {
-	--border-color: var(--border-highlight-color)
+	--border-color: var(--secondary-border)
 }
 
 body {
@@ -10,10 +10,15 @@ body {
 	overflow: hidden;
 }
 
-body > h1 {
+body h1 {
 	font-size: 1.5em;
 	margin-top: 0;
 }
+
+body h2 {
+	font-size: 1.25em;
+}
+
 
 .button-row:last-child button:first-child{
 	margin-right: auto;
@@ -22,4 +27,8 @@ body > h1 {
 main {
 	max-width: none;
 	margin: 0;
+}
+
+main :first-child {
+	margin-top: 0;
 }

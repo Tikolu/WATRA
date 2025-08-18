@@ -7,14 +7,14 @@ header {
 	padding: 0.5em;
 	display: flex;
 
-	box-shadow: 0 0 10px var(--shadow-color);
-	background-color: var(--background-color);
+	box-shadow: 0 0 10px var(--shadow);
+	background-color: var(--background);
 
 	white-space: nowrap;
 }
 
 header #user-profile-link {
-	border-left: 1px solid var(--border-color);
+	border-left: 1px solid var(--border);
 	padding-left: 0.5em;
 	text-decoration: none;
 }

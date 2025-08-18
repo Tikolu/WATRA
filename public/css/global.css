@@ -1,7 +1,7 @@
 /* Imports and themes */
 
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
-@import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:FILL@1);
+@import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20,700,1);
 
 @import url(/css/themes/light.css?v=0);
 @import url(/css/themes/dark.css?v=0) (prefers-color-scheme: dark);
@@ -10,14 +10,19 @@
 
 body {
 	font-family: Lato, sans-serif;
-	background-color: var(--background-color);
-	color: var(--text-color);
+	background-color: var(--background);
+	color: var(--text);
 }
 
 main {
 	max-width: 60em;
 	margin: 0 auto;
 	overflow-x: auto;
+}
+
+::selection {
+	background-color: var(--background);
+	color: var(--text);
 }
 
 
@@ -36,7 +41,6 @@ i, button.icon {
 
 	display: inline-block;
 	font-size: 0.99em; /* 🤔 */
-	scale: 1.25;
 	width: 1em;
 	margin-right: 0.25em;
 	
@@ -45,6 +49,10 @@ i, button.icon {
 	white-space: nowrap;
 
 	user-select: none;
+}
+
+button i, header i {
+	scale: 1.25;
 }
 
 i.spin {
@@ -62,9 +70,12 @@ form {
 	column-gap: 0.5em;
 	row-gap: 0.25em;
 	align-items: center;
+	margin: 1em 0;
 }
 
-form button:last-child {
+form button:last-child, form h1, form h2 {
+	margin-bottom: 0.5em;
+	white-space: nowrap;
 	grid-column: 1 / -1;
 }
 
@@ -104,17 +115,24 @@ label > * {
 /* Input elements */
 
 input, select, textarea {
-	background-color: var(--background-color-secondary);
-	color: var(--text-color);
-	outline: none;
+	background-color: var(--input-background);
+	color: var(--input-text);
+	accent-color: var(--input-accent);
+	outline: 1px solid transparent;
+	outline-offset: -1px;
+	transition: outline 250ms;
 }
 
-input:hover, select:hover, textarea:hover {
-	border-color: var(--border-highlight-color);
+input:focus, select:focus, textarea:focus {
+	outline: 1px solid var(--input-text);
 }
 
 input:disabled, select:disabled, textarea:disabled {
-	background-color: var(--background-color-disabled);
+	background-color: var(--disabled-input-background);
+}
+
+input.invalid, select.invalid {
+	background-color: var(--invalid-input-background);
 }
 
 input[type^=date]:disabled:not([value]) {
@@ -135,7 +153,8 @@ input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
 
 button {
 	cursor: pointer;
-	background-color: var(--background-color);
+	color: var(--text);
+	background-color: var(--background);
 	overflow: hidden;
 	white-space: nowrap;
 }
@@ -148,7 +167,7 @@ button:disabled {
 button:not(:disabled):hover,
 button:not(:disabled):focus-visible, 
 a:focus-visible > button:only-child {
-	background-color: var(--hover-background-color);
+	background-color: var(--hover-background);
 	outline: none;
 }
 
@@ -167,7 +186,7 @@ button.icon:hover, button.icon:focus-visible {
 /* Other elements */
 
 a {
-	color: var(--text-color);
+	color: var(--text);
 	outline: none;
 	transition: opacity 250ms;
 }
@@ -182,7 +201,7 @@ a[href]:not(:has(button)):focus-visible {
 }
 
 hr {
-	border: solid 1px var(--border-color);
+	border: solid 1px var(--border);
 	border-bottom: 0;
 	width: 100%;
 	grid-column: 1 / -1;
@@ -207,7 +226,8 @@ article {
 	padding: 1em;
 	margin: 0.5em 0;
 	border-radius: var(--border-radius);
-	background-color: var(--background-color-secondary);
+	background-color: var(--secondary-background);
+	color: var(--secondary-text);
 }
 
 article > h1:first-child {
@@ -247,7 +267,6 @@ li > * {
 
 		overflow: hidden;
 		border-radius: var(--border-radius);
-		background-color: var(--background-color-secondary);
 
 		text-decoration: none;
 
@@ -264,8 +283,24 @@ li > * {
 		}
 		
 		& > hr {
-			border-color: var(--border-highlight-color);
+			border-color: var(--secondary-border);
 		}
+	}
+
+	& > a {
+		background-color: var(--secondary-background);
+		color: var(--secondary-text);
+		transition: background-color 250ms;
+		opacity: 1 !important;
+		
+		&:hover {
+			background-color: var(--secondary-hover-background);
+			opacity: 1 !important;
+		}
+	}
+
+	& > div {
+		border: 1px solid var(--border)
 	}
 }
 
@@ -288,7 +323,7 @@ li > * {
 .section-unit {
 	padding: 1em;
 	margin: 1em 0;
-	border: solid 1px var(--border-color);
+	border: solid 1px var(--border);
 	border-radius: var(--border-radius);
 
 	& > :first-child {
@@ -314,11 +349,12 @@ dialog {
 	min-height: 5em;
 	max-height: 90vh;
 
-	background-color: var(--background-color-secondary);
+	color: var(--text);
+	background-color: var(--background);
 	border-radius: var(--border-radius);
 	border: none;
 
-	box-shadow: 0 0 0.25em var(--shadow-color);
+	box-shadow: 0 0 0.25em var(--shadow);
 }
 
 dialog::backdrop {

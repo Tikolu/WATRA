@@ -1,5 +1,6 @@
 pre {
-	background-color: var(--background-color-secondary);
+	background-color: var(--secondary-background);
+	color: var(--secondary-text);
 	border-radius: var(--border-radius);
 	padding: 1em;
 }
