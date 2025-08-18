@@ -26,34 +26,6 @@
 		>
 	</form>
 
-	<% if($.usersForMianowanie?.length > 0) { %>
-		<h3>Mianowanie na funkcję</h3>
-		<form>
-			<label for="mianowanie-user-select">Użytkownik:</label>
-			<select id="mianowanie-user-select" name="memberID">
-				<option selected hidden></option>
-				<% for(const member of $.usersForMianowanie) { %>
-					<option value="<%= member.id %>"><%= member.displayName %></option>
-				<% } %>
-			</select>
-
-			<label for="mianowanie-funkcja-select">Funkcja:</label>
-			<select id="mianowanie-funkcja-select" name="funkcjaType">
-				<option selected hidden></option>
-				<% for(const [funkcjaLevel, funkcjaName] of $.targetJednostka.getFunkcjaOptions() || []) { %>
-					<option value="<%= funkcjaLevel %>"><%= funkcjaName %></option>
-				<% } %>
-				<option disabled></option>
-				<option value="remove">(usuń z jednostki)</option>
-			</select>
-
-			<button id="mianowanie-button" api="jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję">
-				<i>check</i>
-				<span>Potwierdź mianowanie</span>
-			</button>
-		</form>
-	<% } %>
-
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.DELETE)) { %>
 		<h3>Usuwanie</h3>
 		<button id="delete-jednostka-button" class="dangerous" api="jednostka/[jednostkaID]/delete">
@@ -114,6 +86,9 @@
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
+		<button opens-dialog="/jednostki/<%= $.targetJednostka.id %>/mianowanie">
+			<span>Mianuj na funkcję</span>
+		</button>
 		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
 			<i>person_add</i>
 			<span>Dodaj użytkownika</span>

@@ -15,22 +15,8 @@ export default async function({user, targetJednostka}) {
 	// Sort funkcje
 	await targetJednostka.sortFunkcje()
 	
-	// Get all members for mianowanie
-	const usersForMianowanie = []
+	// Load wyjazd invites
 	if(await user.checkPermission(targetJednostka.PERMISSIONS.MODIFY)) {
-		// Add all subMembers except user
-		for await(const member of targetJednostka.getSubMembers([user.id])) {
-			usersForMianowanie.push(member)
-		}
-
-		// Add members of every upperJednostka the user is a drużynowy of
-		for await(const jednostka of targetJednostka.getUpperJednostkiTree()) {
-			if(!await user.checkPermission(jednostka.PERMISSIONS.MODIFY)) continue
-			for(const member of await jednostka.getMembers([...usersForMianowanie])) {
-				usersForMianowanie.push(member)
-			}
-		}
-
 		await targetJednostka.populate("wyjazdInvites")
 	}
 
@@ -38,7 +24,6 @@ export default async function({user, targetJednostka}) {
 	
 	return html("jednostka/page", {
 		user,
-		targetJednostka,
-		usersForMianowanie
+		targetJednostka
 	})
 }

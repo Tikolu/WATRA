@@ -24,33 +24,3 @@ API.registerHandler("jednostka/[jednostkaID]/subJednostka/create", {
 		document.location.href = `/jednostki/${response.subJednostkaID}`
 	}
 })
-
-API.registerHandler("jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję", {
-	progressText: "Mianowanie na funkcję...",
-	successText: "Zapisano",
-	validate: data => {
-		mianowanieUserSelect.classList.remove("invalid")
-		mianowanieFunkcjaSelect.classList.remove("invalid")
-		
-		if(!data.memberID) {
-			mianowanieUserSelect.classList.add("invalid")
-			throw new Error("Nie wybrano użytkownika")
-		}
-		if(!data.funkcjaType) {
-			mianowanieFunkcjaSelect.classList.add("invalid")
-			throw new Error("Nie wybrano funkcji")
-		}
-		if(data.funkcjaType == "remove") return {
-			api: `jednostka/[jednostkaID]/member/[memberID]/remove`,
-			progressText: "Usuwanie użytkownika...",
-			successText: "Usunięto"
-		}
-
-		data.funkcjaType = Number(data.funkcjaType)
-		return true
-	},
-	after: () => {
-		mianowanieUserSelect.value = ""
-		mianowanieFunkcjaSelect.value = ""
-	}
-})

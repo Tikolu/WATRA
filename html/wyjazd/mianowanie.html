@@ -1,0 +1,39 @@
+<% layout("/layouts/dialog", {
+	scripts: ["wyjazd/mianowanie"],
+	meta: {
+		wyjazdID: $.targetWyjazd.id
+	}
+}) %>
+<h1>
+	<i>add_moderator</i>
+	Mianowanie na funkcję
+</h1>
+<main>
+	<h2>Wybierz funkcję</h2>
+	<form id="funkcja-select">
+		<% for(const [funkcjaLevel, funkcjaName] of $.targetWyjazd.getFunkcjaOptions() || []) { %>
+			<input type="radio" name="funkcjaType" value="<%= funkcjaLevel %>" id="funkcja-<%= funkcjaLevel %>">
+			<label for="funkcja-<%= funkcjaLevel %>"><%= funkcjaName %></label>
+		<% } %>
+	</form>
+		
+	<h2>Wybierz użytkownika</h2>
+	<form id="user-select">
+		<% for(const member of $.usersForMianowanie) { %>
+			<% if(member.id == $.user.id) continue %>
+			<input type="radio" name="memberID" value="<%= member.id %>" id="user-<%= member.id %>">
+			<label for="user-<%= member.id %>"><%= member.displayName %></label>
+		<% } %>
+	</form>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="closeDialog()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button id="mianowanie-button" api="wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję">
+		<i>check</i>
+		<span>Potwierdź mianowanie</span>
+	</button>
+</div>

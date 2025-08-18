@@ -2,14 +2,18 @@ import html from "modules/html.js"
 import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetWyjazd}) {
-	const wyjazdData = {}
-
 	await targetWyjazd.populate({
 		"invitedJednostki": {
 			"jednostka": {},
 		}
 	})
 
+	// Check permissions for invited jednostki
+	for(const jednostkaInvite of targetWyjazd.invitedJednostki) {
+		await user.checkPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)
+	}
+
+	// Check for participant access permission
 	if(await user.checkPermission(targetWyjazd.PERMISSIONS.PARTICIPANT_ACCESS)) {
 		// Populate wyjazd funkcje, as well as users and jednostki of funkcje
 		await targetWyjazd.populate({
@@ -23,37 +27,17 @@ export default async function({user, targetWyjazd}) {
 
 		// Sort funkcje
 		await targetWyjazd.sortFunkcje()
-		
-		if(await user.checkPermission(targetWyjazd.PERMISSIONS.MODIFY)) {
-			// Generate list of possible users for mianowanie
-			const usersForMianowanie = []
 
-			// Get all funkcje already added
-			for(const funkcja of targetWyjazd.funkcje) {
-				// User cannot mianować themself
-				if(user.id == funkcja.user.id) continue
-				usersForMianowanie.push(funkcja.user)
+	}
+
+	// Check for wyjazd modify permission	
+	if(await user.checkPermission(targetWyjazd.PERMISSIONS.MODIFY)) {
+		// Load approver data
+		await targetWyjazd.populate({
+			"approvers": {
+				"funkcja": ["user", "jednostka"]
 			}
-
-			// Check permissions for invited jednostki
-			for(const jednostkaInvite of targetWyjazd.invitedJednostki) {
-				await user.checkPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)
-			}
-
-			wyjazdData.usersForMianowanie = usersForMianowanie
-
-
-			// Load approver data
-			await targetWyjazd.populate({
-				"approvers": {
-					"funkcja": ["user", "jednostka"]
-				}
-			})
-
-		}
-
-	} else {
-		user.overridePermission(targetWyjazd.PERMISSIONS.MODIFY, false)
+		})
 
 	}
 
@@ -61,6 +45,7 @@ export default async function({user, targetWyjazd}) {
 		await user.checkPermission(targetWyjazd.PERMISSIONS.APPROVE) ||
 		await user.checkPermission(targetWyjazd.PERMISSIONS.MODIFY)
 	) {
+		// Load approver data
 		await targetWyjazd.populate({
 			"approvers": {
 				"funkcja": ["user", "jednostka"]
@@ -92,14 +77,14 @@ export default async function({user, targetWyjazd}) {
 		approvalParticipants.push(userInvite)
 	}
 
-	wyjazdData.approvalParticipants = approvalParticipants
-
-
-
+	// Check permissions for invited jednostki
+	for(const jednostkaInvite of targetWyjazd.invitedJednostki) {
+		await user.checkPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)
+	}
 	
 	return html("wyjazd/page", {
 		user,
 		targetWyjazd,
-		...wyjazdData
+		approvalParticipants
 	})
 }

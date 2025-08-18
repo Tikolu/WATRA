@@ -437,7 +437,32 @@ export class WyjazdClass extends JednostkaClass {
 			if(approver.funkcja.user.id == user.id) return approver
 		}
 	}
+
+	/** Generates a list of users which can be mianowani na funkcję */
+	async * usersForMianowanie() {
+		await this.populate({
+			"invitedJednostki": {
+				"invitedUsers": {
+					"user": {}
+				}
+			},
+			"funkcje": "user"
+		})
 		
+		// Get all funkcje already added
+		for(const funkcja of this.funkcje) {
+			yield funkcja.user
+		}
+
+		// Get all accepted invites
+		for(const jednostka of this.invitedJednostki) {
+			if(jednostka.state != "accepted") continue
+			
+			for(const inviteUser of jednostka.invitedUsers) {
+				yield inviteUser.user
+			}
+		}
+	}
 }
 
 const schema = mongoose.Schema.fromClass(WyjazdClass)
