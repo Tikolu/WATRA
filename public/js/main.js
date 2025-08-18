@@ -187,7 +187,7 @@ if(!META.error) {
 	})
 
 	// Store backup of history
-	const historyBackup = [...Session.history]
+	window.historyBackup = [...Session.history]
 }
 
 // Clicking user profile link clears history
