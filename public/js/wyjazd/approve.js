@@ -1,4 +1,5 @@
 API.registerHandler("wyjazd/[wyjazdID]/approval/approve", {
 	progressText: "Zatwierdzanie wyjazdu...",
-	successText: "Zatwierdzono"
+	successText: "Zatwierdzono",
+	before: () => closeDialog()
 })
