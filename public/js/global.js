@@ -437,7 +437,7 @@ const API = {
 		let formContainer = document.getElementById(handler.form)
 		if(!formContainer) {
 			for(const parentElement of element.parentElementChain) {
-				if(parentElement.matches("form, dialog")) {
+				if(parentElement.matches("form, dialog, body")) {
 					formContainer = parentElement
 					break
 				}
@@ -589,17 +589,25 @@ function processDialogOpeners() {
 
 		// URL mode
 		if(dialogID.startsWith("/")) {
-			const dialog = document.createElement("dialog")
-			const iframe = document.createElement("iframe")
+			let dialog = document.querySelector(`dialog.frame[data-url="${dialogID}"]`), iframe
 
-			const spinner = document.createElement("i")
-			spinner.innerText = "progress_activity"
-			spinner.classList.add("spin")
-			dialog.append(spinner)
+			if(dialog) {
+				iframe = dialog.querySelector("iframe")
+			} else {
+				dialog = document.createElement("dialog")
+				dialog.classList.add("frame")
+				dialog.dataset.url = dialogID
 
-			dialog.append(iframe)
-			dialog.classList.add("frame")
-			document.body.append(dialog)
+				const spinner = document.createElement("i")
+				spinner.innerText = "progress_activity"
+				spinner.classList.add("spin")
+				dialog.append(spinner)
+
+				iframe = document.createElement("iframe")
+				dialog.append(iframe)
+				
+				document.body.append(dialog)
+			}
 
 			button.onclick = async () => {
 				if(!iframe.src) iframe.src = dialogID
@@ -614,12 +622,12 @@ function processDialogOpeners() {
 				let errorText = errorElement?.textContent || "Błąd ładowania strony"
 				Popup.error(errorText)
 				dialog.close()
+				dialog.remove()
 				processDialogOpeners()
 			}
 
 			button.removeDialogOpener = () => {
 				button.onclick = undefined
-				dialog.remove()
 			}
 
 		} else {
