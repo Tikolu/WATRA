@@ -178,17 +178,17 @@ function constructNavPath() {
 constructNavPath()
 window.afterDataRefresh.push(constructNavPath)
 
+if(!META.error) {
+	// Track visited pages
+	Session.history.push({
+		path: document.location.pathname,
+		title: document.title,
+		visited: window.initialLoadTime,
+	})
 
-// Track visited pages
-Session.history.push({
-	path: document.location.pathname,
-	title: document.title,
-	visited: window.initialLoadTime,
-})
-
-// Store backup of history
-const historyBackup = [...Session.history]
-
+	// Store backup of history
+	const historyBackup = [...Session.history]
+}
 
 // Clicking user profile link clears history
 userProfileLink.onclick = () => {
