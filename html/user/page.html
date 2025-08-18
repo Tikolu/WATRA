@@ -178,3 +178,19 @@
 		<% } %>
 	</div>
 <% } %>
+
+<% if($.targetUser.wyjazdApprovalRequests.length) { %>
+	<hr>
+	<h2>
+		<i>gavel</i>
+		Zatwierdzenia
+	</h2>
+	<div class="unit-grid">
+		<% for(const wyjazd of $.targetUser.wyjazdApprovalRequests) { %>
+			<%~ include("templates/wyjazdApprovalRequest", {
+				targetWyjazd: wyjazd,
+				targetUser: $.targetUser
+			}) %>
+		<% } %>
+	</div>
+<% } %>

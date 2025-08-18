@@ -1,0 +1,20 @@
+<%
+	// Find approver
+	let approver = $.targetWyjazd.getApprover($.targetUser)
+	if(!approver) return ""
+%>
+
+<a href="/wyjazdy/<%= $.targetWyjazd.id %>">
+	<h3><%= $.targetWyjazd.displayName %></h3>
+	<% if(approver.approved) { %>
+		<p>
+			<i>check_circle</i>
+			Wyjazd zatwierdzony
+		</p>
+	<% } else { %>
+		<p>
+			<i>notifications_active</i>
+			Oczekiwana odpowiedź...
+		</p>
+	<% } %>
+</a>

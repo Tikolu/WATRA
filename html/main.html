@@ -58,7 +58,10 @@
 			</button>
 		<% } %>
 	<% } %>
-	<% if($.user.wyjazdApprovalRequests.length) { %>
+	<% if(
+		$.user.wyjazdApprovalRequests.length &&
+		$.user.wyjazdApprovalRequests.some(w => !w.getApprover($.user).approved)
+	) { %>
 		<hr>
 		<h2>
 			<i>gavel</i>
@@ -66,13 +69,14 @@
 		</h2>
 		<div class="unit-grid">
 			<% for(const wyjazd of $.user.wyjazdApprovalRequests) { %>
-				<a href="/wyjazdy/<%= wyjazd.id %>">
-					<h3><%= wyjazd.displayName %></h3>
-					<p>
-						<i>notifications_active</i>
-						Oczekiwana odpowiedź...
-					</p>
-				</a>
+				<%
+					const approver = wyjazd.getApprover($.user)
+					if(approver.approved) continue
+				%>
+				<%~ include("user/templates/wyjazdApprovalRequest", {
+					targetWyjazd: wyjazd,
+					targetUser: $.user
+				}) %>
 			<% } %>
 		</div>
 	<% } %>

@@ -5,7 +5,7 @@ export async function open({user, targetWyjazd}) {
 	await user.requirePermission(targetWyjazd.PERMISSIONS.APPROVE)
 
 	// Get approver from wyjazd
-	const targetApprover = await targetWyjazd.getApprover(user)
+	const targetApprover = targetWyjazd.getApprover(user)
 	if(!targetApprover) {
 		throw new HTTPError(404, "Nie jesteś zatwierdzającym")
 	}

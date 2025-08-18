@@ -429,12 +429,9 @@ export class WyjazdClass extends JednostkaClass {
 	}
 
 	/** Get an approver of a user */
-	async getApprover(user) {
-		await this.populate({
-			"approvers": "funkcja"
-		})
+	getApprover(user) {
 		for(const approver of this.approvers) {
-			if(approver.funkcja.user.id == user.id) return approver
+			if(user.funkcje.hasID(approver.funkcja.id)) return approver
 		}
 	}
 
