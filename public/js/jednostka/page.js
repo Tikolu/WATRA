@@ -16,11 +16,3 @@ API.registerHandler("jednostka/[jednostkaID]/member/create", {
 		document.location.href = `/users/${response.userID}`
 	}
 })
-
-API.registerHandler("jednostka/[jednostkaID]/subJednostka/create", {
-	progressText: "Tworzenie jednostki...",
-	after: response => {
-		window.refreshDataOnShow = true
-		document.location.href = `/jednostki/${response.subJednostkaID}`
-	}
-})

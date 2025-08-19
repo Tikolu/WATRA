@@ -1,5 +1,6 @@
 <% for(const index in $) { _%>
 	<% const link = $[index] _%>
 	<a href="<%= link[0] %>"><%= link[1] %></a>
-	<%_ if($.length > 1 && index != $.length - 1) { %>, <% } %>
+	<%_ if($.length > 2 && index < $.length - 2) { %>, <% } %>
+	<%_ if($.length > 1 && index == $.length - 2) { %> i <% } %>
 <% } %>

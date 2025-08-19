@@ -71,7 +71,7 @@
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY) && $.targetJednostka.type > 0) { %>
-		<button id="create-sub-jednostka-button" api="jednostka/[jednostkaID]/subJednostka/create">
+		<button id="add-sub-jednostka-button" opens-dialog="/jednostki/<%= $.targetJednostka.id %>/addSubJednostka">
 			<i>add</i>
 			<span>Dodaj jednostkę</span>
 		</button>
