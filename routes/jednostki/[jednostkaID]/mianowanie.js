@@ -7,34 +7,13 @@ export default async function({user, targetJednostka}) {
 	
 	// Get all members for mianowanie
 	const usersForMianowanie = []
-	
-	if(await user.checkPermission(targetJednostka.PERMISSIONS.MODIFY)) {
-		// Add all subMembers except user
-		for await(const member of targetJednostka.getSubMembers([user.id])) {
+	await user.populate("funkcje")
+	for(const funkcja of user.funkcje) {
+		if(funkcja.type < FunkcjaType.DRUŻYNOWY) continue
+		await funkcja.populate("jednostka")
+		for await(const member of funkcja.jednostka.getSubMembers([user.id])) {
+			if(usersForMianowanie.hasID(member.id)) continue
 			usersForMianowanie.push(member)
-		}
-
-		// Add members of every upperJednostka the user has access to
-		const jednostkiChecked = []
-		for await(const jednostka of targetJednostka.getUpperJednostkiTree()) {
-			jednostkiChecked.push(jednostka.id)
-			console.log("Checking jednostka", jednostka.id)
-			if(!await user.checkPermission(jednostka.PERMISSIONS.MODIFY)) continue
-
-			for(const member of await jednostka.getMembers(usersForMianowanie)) {
-				usersForMianowanie.push(member)
-			}
-
-			// Also check subjednostki
-			for await(const subJednostka of jednostka.getSubJednostkiTree(jednostkiChecked)) {
-				if(jednostkiChecked.includes(subJednostka.id)) continue
-				jednostkiChecked.push(subJednostka.id)
-				console.log("Checking jednostka", jednostka.id)
-
-				for(const member of await subJednostka.getMembers(usersForMianowanie)) {
-					usersForMianowanie.push(member)
-				}
-			}
 		}
 	}
 	

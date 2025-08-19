@@ -193,34 +193,48 @@ export class JednostkaClass {
 	}
 
 	/** Recursive generator of all upperJednostki */
-	async * getUpperJednostkiTree(exclude=[]) {
+	async * getUpperJednostkiTree(exclude=[], condition) {
 		exclude = [...exclude]
 		await this.populate("upperJednostki", {exclude})
 
 		for(const upperJednostka of this.upperJednostki) {
 			if(exclude.hasID(upperJednostka.id)) continue
+			exclude.push(upperJednostka.id)
+			if(condition && !await condition(upperJednostka)) continue
 			yield upperJednostka
-			for await(const jednostka of upperJednostka.getUpperJednostkiTree(exclude)) {
-				if(exclude.hasID(jednostka.id)) continue
-				exclude.push(jednostka.id)
-				yield jednostka
-			}
+			yield * upperJednostka.getUpperJednostkiTree(exclude, condition)
 		}
 	}
 
 	/** Recursive generator of all subJednostki */
-	async * getSubJednostkiTree(exclude=[]) {
+	async * getSubJednostkiTree(exclude=[], condition) {
 		exclude = [...exclude]
 		await this.populate("subJednostki", {exclude})
 
 		for(const subJednostka of this.subJednostki) {
 			if(exclude.hasID(subJednostka.id)) continue
+			exclude.push(subJednostka.id)
+			if(condition && !await condition(subJednostka)) continue
 			yield subJednostka
-			for await(const jednostka of subJednostka.getSubJednostkiTree(exclude)) {
-				if(exclude.hasID(jednostka.id)) continue
-				exclude.push(jednostka.id)
-				yield jednostka
-			}
+			yield * subJednostka.getSubJednostkiTree(exclude, condition)
+		}
+	}
+
+	/* Recursive list of all jednostki (sub and upper) */
+	async * getJednostkiTree(exclude=[], condition) {
+		exclude = [...exclude]
+		exclude.push(subJednostka.id)
+		yield this
+		for(const subJednostka of this.getSubJednostkiTree(exclude, condition)) {
+			if(exclude.hasID(subJednostka.id)) continue
+			exclude.push(subJednostka.id)
+			yield subJednostka
+		}
+		for(const upperJednostka of this.getUpperJednostkiTree(exclude, condition)) {
+			if(exclude.hasID(upperJednostka.id)) continue
+			exclude.push(upperJednostka.id)
+			yield upperJednostka
+			yield * upperJednostka.getJednostkiTree(exclude, condition)
 		}
 	}
 
