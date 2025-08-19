@@ -310,11 +310,8 @@ schema.permissions = {
 	},
 
 	async DELETE(user) {
-		// Only drużynowi of direct upper jednostka can delete
-		for(const upperJednostka of this.upperJednostki) {
-			const funkcja = await user.getFunkcjaInJednostka(upperJednostka)
-			if(funkcja?.type == FunkcjaType.DRUŻYNOWY) return true
-		}
+		// Drużynowy of this and all upper jednostki can delete
+		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this, this.getUpperJednostkiTree())) return true
 		return false
 	}
 }
