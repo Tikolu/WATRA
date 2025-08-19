@@ -92,10 +92,10 @@ input, button, select, textarea {
 	border-radius: var(--border-radius);
 	transition: border-color 250ms, background-color 250ms;
 	border: none;
+	box-sizing: border-box;
 }
 
 textarea {
-	box-sizing: border-box;
 	min-width: 20em;
 	max-width: 100%;
 	min-height: 5em;
@@ -184,6 +184,10 @@ button.icon:hover, button.icon:focus-visible {
 }
 
 /* Other elements */
+
+h1 + h2 {
+	margin-top: -0.5em;
+}
 
 a {
 	color: var(--text);

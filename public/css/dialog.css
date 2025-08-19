@@ -19,8 +19,7 @@ body h2 {
 	font-size: 1.25em;
 }
 
-
-.button-row:last-child button:first-child{
+body > .button-row:last-child button:first-child{
 	margin-right: auto;
 }
 
@@ -31,4 +30,10 @@ main {
 
 main :first-child {
 	margin-top: 0;
+}
+
+button.confirm {
+	display: block;
+	margin-left: auto;
+	margin-right: 0;
 }
