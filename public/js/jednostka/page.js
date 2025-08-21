@@ -1,9 +1,3 @@
-API.registerHandler("jednostka/[jednostkaID]/delete", {
-	progressText: "Kasowanie jednostki...",
-	before: () => deleteJednostkaDialog.result(),
-	after: () => history.back()
-})
-
 API.registerHandler("jednostka/[jednostkaID]/update/name", {
 	valueKey: "name",
 	successText: "Zapisano nazwę"

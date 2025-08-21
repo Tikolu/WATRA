@@ -1,7 +1,10 @@
 const frame = window.frameElement
 
-function closeDialog() {
+function closeDialog(full) {
 	frame.parentElement.close()
+	if(full) {
+		sleep(250).then(() => frame.parentElement.remove())
+	}
 	return true
 }
 

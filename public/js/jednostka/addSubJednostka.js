@@ -13,5 +13,11 @@ API.registerHandler("jednostka/[jednostkaID]/subJednostka/link", {
 	form: "link-jednostka",
 	progressText: "Tworzenie jednostki...",
 	successText: "Dodano jednostkę",
-	before: () => closeDialog()
+	before: data => {
+		if(!data.subJednostkaID) {
+			throw "Nie wybrano jednostki"
+		}
+		closeDialog()
+		return true
+	}
 })

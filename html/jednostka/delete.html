@@ -1,0 +1,49 @@
+<% layout("/layouts/dialog", {
+	scripts: ["jednostka/delete"],
+	meta: {
+		jednostkaID: $.targetJednostka.id
+	}
+}) %>
+<h1>
+	<i>delete</i>
+	Usuwanie jednostki
+</h1>
+<main>
+	<% if($.targetJednostka.upperJednostki.length > 1) { %>
+		<h2>Usuń <%= $.targetJednostka.displayName %> z jednej z jednostek nadrzędnych</h2>
+		<p><%= $.targetJednostka.displayName %> pozostanie w reszcie jednostek</p>
+		<form id="remove-jednostka">
+			<label for="upper-jednostka-chooser">Jednostka:</label>
+			<select id="upper-jednostka-chooser" name="jednostkaID">
+				<option disabled selected></option>
+				<% for(const upperJednostka of $.targetJednostka.upperJednostki) { %>
+					<option
+						value="<%= upperJednostka.id %>"
+						<% if(!$.user.hasPermission(upperJednostka.PERMISSIONS.MODIFY)) { %>
+							disabled
+						<% } %>
+					>
+						<%= upperJednostka.displayName %>
+					</option>
+				<% } %>
+			</select>
+		</form>
+		<button class="confirm" api="jednostka/[jednostkaID]/subJednostka/[subJednostkaID]/remove">
+			<i>delete</i>
+			<span>Usuń z jednostki</span>
+		</button>
+		<hr>
+	<% } %>
+	<h2>Trwale usuń <%= $.targetJednostka.displayName %></h1>
+	<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Podjednostki i użytkownicy zostaną przeniesieni do <%= $.targetJednostka.upperJednostki.map(j => j.displayName).join(", ") %>.</p>
+	<button class="dangerous confirm" api="jednostka/[jednostkaID]/delete">
+		<i>delete</i>
+		<span>Trwale usuń jednostkę</span>
+	</button>
+</main>
+<div class="button-row">
+	<button onclick="closeDialog()">
+		<i>arrow_back</i>
+		<span>Anuluj</span>
+	</button>
+</div>

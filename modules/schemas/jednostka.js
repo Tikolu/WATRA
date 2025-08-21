@@ -162,6 +162,23 @@ export class JednostkaClass {
 		await subJednostka.save()
 	}
 
+	/** Removes a subJednostka */
+	async removeSubJednostka(subJednostka) {
+		// Ensure subJednostka has other upperJednostki
+		if(subJednostka.upperJednostki.length <= 1) {
+			throw Error("Nie można usunąć jednostki bo ma tylko jedną jednostkę nadrzędną")
+		}
+
+		// Remove subJednostka from subJednostki
+		this.subJednostki = this.subJednostki.filter(j => j.id != subJednostka.id)
+
+		// Remove this jednostka from subJednostka's upperJednostki
+		subJednostka.upperJednostki = subJednostka.upperJednostki.filter(j => j.id != this.id)
+
+		await this.save()
+		await subJednostka.save()
+	}
+
 	/** Returns a list of possible funkcja levels and names for this jednostka */
 	getFunkcjaOptions(funkcjaNames=FunkcjaNames[this.type]) {
 		const funkcjaOptions = []
@@ -273,11 +290,11 @@ export class JednostkaClass {
 const schema = mongoose.Schema.fromClass(JednostkaClass)
 
 schema.beforeDelete = async function() {
-	await this.populate([
-		"upperJednostki",
-		"subJednostki"
-	])
-	await this.populate({"funkcje": "user"})
+	await this.populate({
+		"upperJednostki": {},
+		"subJednostki": {},
+		"funkcje": "user"
+	})
 	
 	// Chose primary upper jednostka
 	const primaryUpperJednostka = this.upperJednostki[0]
@@ -302,6 +319,12 @@ schema.beforeDelete = async function() {
 	// Remove self from all subJednostki and transfer subJednostki to primary upper jednostka
 	for(const subJednostka of this.subJednostki) {
 		subJednostka.upperJednostki = subJednostka.upperJednostki.filter(j => j.id != this.id)
+		// Skip transfer if subJednostka has other upperJednostki or if primary upper jednostka already has subJednostka
+		if(subJednostka.upperJednostki.length || primaryUpperJednostka.subJednostki.hasID(subJednostka.id)) {
+			await subJednostka.save()
+			continue
+		}
+
 		await primaryUpperJednostka.addSubJednostka(subJednostka)
 	}
 }
@@ -324,8 +347,8 @@ schema.permissions = {
 	},
 
 	async DELETE(user) {
-		// Drużynowy of this and all upper jednostki can delete
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this, this.getUpperJednostkiTree())) return true
+		// Drużynowy of upper jednostki can delete
+		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getUpperJednostkiTree())) return true
 		return false
 	}
 }

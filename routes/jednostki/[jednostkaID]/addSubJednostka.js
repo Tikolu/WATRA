@@ -5,6 +5,9 @@ export default async function({user, targetJednostka}) {
 	// Check for permissions
 	await user.requirePermission(targetJednostka.PERMISSIONS.MODIFY)
 	
+	// Get subJednostki
+	const subJednostkiTree = await Array.fromAsync(targetJednostka.getSubJednostkiTree())
+	
 	// Find jednostki that can be linked as subJednostki
 	const jednostkiForLinking = []
 	await user.populate("funkcje")
@@ -15,7 +18,7 @@ export default async function({user, targetJednostka}) {
 			// Skip jednostki of higher type
 			if(jednostka.type >= targetJednostka.type) continue
 			// Skip jednostki which already are subJednostki
-			if(targetJednostka.subJednostki.hasID(jednostka.id)) continue
+			if(subJednostkiTree.hasID(jednostka.id)) continue
 			if(jednostkiForLinking.hasID(jednostka.id)) continue
 
 			await jednostka.populate("upperJednostki")
