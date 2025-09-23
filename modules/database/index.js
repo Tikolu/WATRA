@@ -265,7 +265,7 @@ mongoose.Schema.fromClass = function(classInput) {
 		if(propertyDefinintion === undefined) continue
 
 		if(property == "_id" && "_id" in schemaDefinition) throw Error("_id property already defined or derived")
-		if("deriveID" in propertyDefinintion) {
+		if(typeof propertyDefinintion == "object" && "deriveID" in propertyDefinintion) {
 			if(propertyDefinintion["deriveID"] !== true) {
 				throw Error("Invalid deriveID value")
 			}
@@ -284,7 +284,10 @@ mongoose.Schema.fromClass = function(classInput) {
 		if(arrayDefinition) propertyDefinintion = propertyDefinintion[0]
 
 		if(propertyDefinintion.toString().startsWith("class")) {
-			propertyDefinintion = mongoose.Schema.fromClass(propertyDefinintion)
+			propertyDefinintion = {
+				type: mongoose.Schema.fromClass(propertyDefinintion),
+				default: () => ({})
+			}
 		}
 
 		schemaDefinition[property] = arrayDefinition ? [propertyDefinintion] : propertyDefinintion
