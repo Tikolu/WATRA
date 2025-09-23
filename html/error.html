@@ -40,7 +40,7 @@
 				<th>Uprawnienia:</th>
 				<td>
 					<table>
-						<% for(const permission of $.user.listPermissions()) { %>
+						<% for(const permission of $.user?.listPermissions() || []) { %>
 							<tr>
 								<td><%= permission.source?.[0] || "" %></td>
 								<td><%= permission.source?.[1] || "" %></td>
