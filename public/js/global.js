@@ -412,15 +412,18 @@ const API = {
 		this.handlers[api] = handler
 	},
 
-	async executeHandler(element, api) {
+	async executeHandler(element, api, data={}) {
 		let handler = API.handlers[api]
 
 		// Find wildcard handler
-		if(!handler) for(const handlerKey in API.handlers) {
-			const regex = new RegExp(handlerKey.replace(/\[\w+\]/g, "[^\\/]*"))
-			if(!api.match(regex)) continue
-			handler = API.handlers[handlerKey]
-			break
+		if(!handler) {
+			const match = api.replace(/\?.*$/, "")
+			for(const handlerKey in API.handlers) {
+				const regex = new RegExp(handlerKey.replace(/\[\w+\]/g, "[^\\/]*"))
+				if(!match.match(regex)) continue
+				handler = API.handlers[handlerKey]
+				break
+			}
 		}
 
 		if(!handler) throw new Error(`API handler not found for ${api}`)
@@ -429,33 +432,59 @@ const API = {
 		handler = {...handler, api}
 
 		// Create POST data from META
-		let data = {...META}
+		data = {...META, ...data}
 
-		// Add form values to POST data
-		const formData = {}
-		// Find form container element
-		let formContainer = document.getElementById(handler.form)
-		if(!formContainer) {
-			for(const parentElement of element.parentElementChain) {
-				if(parentElement.matches("form, dialog, body")) {
-					formContainer = parentElement
-					break
+		if(handler.form !== false) {
+			// Add form values to POST data
+			const formData = {}
+			// Find form container element
+			let formContainer = document.getElementById(handler.form)
+			if(!formContainer) {
+				for(const parentElement of element.parentElementChain) {
+					if(parentElement.matches("form, dialog, body, .form-scope")) {
+						formContainer = parentElement
+						break
+					}
 				}
 			}
-		}
-		formContainer ||= element.parentElement
-		for(const formElement of formContainer?.querySelectorAll("[name]") || []) {
-			if(formElement.matches("[type=checkbox], [type=radio]") && !formElement.checked) continue
-			if(formData[formElement.name]) {
-				if(!Array.isArray(formData[formElement.name])) {
-					formData[formElement.name] = [formData[formElement.name]]
+			formContainer ||= element.parentElement
+			for(const formElement of formContainer?.querySelectorAll("[name]") || []) {
+				// Skip elements in embedded dialogs
+				let skipElement = false
+				for(const parentElement of formElement.parentElementChain) {
+					if(parentElement == formContainer) break
+					if(parentElement.matches("dialog")) {
+						skipElement = true
+						break
+					}
 				}
-				formData[formElement.name].push(formElement.value)
-			} else {
-				formData[formElement.name] = formElement.value
+				if(skipElement) continue
+				
+				formElement.classList.remove("invalid")
+				if(formElement.matches("[type=checkbox], [type=radio]") && !formElement.checked) {
+					if(formElement.required) {
+						formElement.classList.add("invalid")
+						formElement.scrollIntoView()
+						return
+					}
+					continue
+				}
+				if(formElement.required && !formElement.value) {
+					formElement.classList.add("invalid")
+					formElement.scrollIntoView()
+					return
+				}
+				if(formData[formElement.name]) {
+					if(!Array.isArray(formData[formElement.name])) {
+						formData[formElement.name] = [formData[formElement.name]]
+					}
+					formData[formElement.name].push(formElement.value)
+				} else {
+					formData[formElement.name] = formElement.value
+				}
 			}
+			data = {...data, ...formData}
 		}
-		data = {...data, ...formData}
 
 		// Check element validity
 		if(!element.checkValidity()) {
