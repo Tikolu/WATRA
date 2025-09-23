@@ -1,0 +1,45 @@
+h1 {
+	font-size: 1.75em;
+}
+
+#medical-categories form {
+	row-gap: 1em;
+	width: 100%;
+}
+
+#medical-categories label {
+	grid-column: 1 / -1;
+	white-space: normal;
+}
+
+#medical-categories input[type=checkbox] + label {
+	grid-column: 2 / -1;
+}
+
+#medical-categories > form > div {
+	grid-column: 2 / -1;
+	margin-top: -0.5em;
+	margin-bottom: 0.5em;
+}
+
+#medical-categories > form > div > textarea {
+	display: block;
+	margin-top: 0.25em;
+	margin-bottom: 0.5em;
+	width: 100%;
+}
+
+#medical-categories input[type=text] {
+	font-weight: bold;
+}
+
+#medical-categories button {
+	max-width: 20em;
+}
+
+#save-section {
+	position: sticky;
+	background-color: var(--background);
+	top: 2em;
+	padding: 1em;
+}

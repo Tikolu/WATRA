@@ -3,8 +3,8 @@
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20,700,1);
 
-@import url(/css/themes/light.css?v=0);
-@import url(/css/themes/dark.css?v=0) (prefers-color-scheme: dark);
+@import url(/css/themes/light.css?v=1);
+@import url(/css/themes/dark.css?v=1) (prefers-color-scheme: dark);
 
 /* Content layout */
 
@@ -66,9 +66,10 @@ i.spin {
 form {
 	display: grid;
 	width: min-content;
-	grid-template-columns: repeat(2, auto);
+	max-width: 100%;
+	grid-template-columns: auto 1fr;
 	column-gap: 0.5em;
-	row-gap: 0.25em;
+	row-gap: 0.5em;
 	align-items: center;
 	margin: 1em 0;
 }
@@ -248,6 +249,16 @@ li > * {
 	margin-bottom: 0;
 }
 
+p.warning {
+	background-color: var(--background);
+	border-radius: var(--border-radius);
+	padding: 0.5em;
+	/* width: fit-content; */
+}
+
+p.warning + p.warning {
+	margin-top: 0.5em;
+}
 
 /* Custom layouts */
 

@@ -95,6 +95,9 @@
 		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
 	>
 </form>
+<p>
+	<a href="/users/<%= $.targetUser.id %>/medical">Dane medyczne i dietetyczne</a>
+</p>
 
 <% if($.targetUser.isParent) { %>
 	<hr>

@@ -1,0 +1,178 @@
+<% layout("/layouts/body", {
+	title: "Dane medyczne",
+	scripts: ["user/medical"],
+	styles: ["user/medical"],
+	meta: {
+		userID: $.targetUser.id
+	},
+	navPath: {
+		[$.targetUser.displayName]: `/users/${$.targetUser.id}`
+	}
+}) %>
+<h1>
+	<i>person</i>
+	<%= $.targetUser.displayName %> - dane medyczne
+</h1>
+<% if($.editable) { %>
+	<p>Przeczytaj i dokładnie uzuepłnij dane medyczne i dietetyczne poniżej. Konieczne jest aby kadra rozumiała wymagania każdego uczestnika aby móc zapewnić odpowiednie wyżywienie i bezpieczeństwo.</p>
+	<p>Po wpisaniu wszystkich danych, <a href="#confirmation">potwierdź</a> na końcu strony.</p>
+	<!-- Jeżeli dolegliwości się zmienią, ważne jest aby zostały od razu zmienione w formularzu -->
+<% } %>
+<div id="medical-categories">
+	<% for(const category of $.displayCategories) { %>
+		<hr>
+		<h2><%= category.title %></h2>
+		<form id="<%= category.id %>">
+			<% for(const element of category.elements) { %>
+				<% if($.editable) { %>
+					<input type="checkbox" id="<%= category.id %>-<%= element.id %>"
+						<% if(element.selected) { %>
+							api="user/[userID]/medical/remove?category=<%= category.id %>&element=<%= element.id %>"
+							checked
+						<% } else { %>
+							api="user/[userID]/medical/add?category=<%= category.id %>&element=<%= element.id %>"
+						<% } %>
+					>
+				<% } %>
+				<label for="<%= category.id %>-<%= element.id %>">
+					<h3><%= element.title %></h3>
+					<% if(element.description) { %>
+						<p><%= element.description %></p>
+					<% } %>
+				</label>
+				<% if(element.selected) { %>
+					<div id="<%= category.id %>-<%= element.id %>-details" class="form-scope">
+						<label for="<%= category.id %>-<%= element.id %>-details-symptoms"><%= category.symptoms.heading %></label>
+						<textarea
+							id="<%= category.id %>-<%= element.id %>-details-symptoms"
+							placeholder="<%= category.symptoms.placeholder %>"
+							<% if($.editable) { %>
+								api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
+							<% } else { %>
+								disabled
+							<% } %>
+							name="symptoms"
+						><%= element.symptoms || "" %></textarea>
+
+						<label for="<%= category.id %>-<%= element.id %>-details-solutions"><%= category.solutions.heading %></label>
+						<textarea
+							id="<%= category.id %>-<%= element.id %>-details-solutions"
+							placeholder="<%= category.solutions.placeholder %>"
+							<% if($.editable) { %>
+								api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
+							<% } else { %>
+								disabled
+							<% } %>
+							name="solutions"
+						><%= element.solutions || "" %></textarea>
+					</div>
+				<% } %>
+			<% } %>
+		</form>
+		<% if($.editable) { %>
+			<button id="<%= category.id %>-other-button" opens-dialog="add-other-<%= category.id %>">
+				<i>add</i>
+				<%= category.other %>
+			</button>
+		<% } %>
+		<dialog id="add-other-<%= category.id %>">
+			<h1><%= category.other %></h1>
+			<form>
+				<label for="<%= category.id %>-other-name">Nazwa:</label>
+				<input
+					type="text"
+					id="<%= category.id %>-other-name"
+					name="element"
+					autocomplete="off"
+					maxlength="30"
+					required>
+			</form>
+			<p>Szczegóły będzie można dodać w następnym kroku.</p>
+			<hr>
+			<div class="button-row">
+				<button>
+					<i>arrow_back</i>
+					Anuluj
+				</button>
+				<button api="user/[userID]/medical/add?category=<%= category.id %>">
+					<i>add</i>
+					Dodaj
+				</button>
+			</div>
+		</dialog>
+	<% } %>
+</div>
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+	<div id="confirmation">
+		<hr>
+		<% if($.targetUser.medical.confirmed) { %>
+			<h2>Zatwierdzenie</h2>
+			<p>Dane medyczne są zatwierdzone. Cofnij zatwierdzenie aby móc je edytować</p>
+			<div class="button-row">
+				<button api="user/[userID]/medical/unconfirm" id="confirm-button">
+					<i>close</i>
+					Cofnij zatwierdzenie
+				</button>
+			</div>
+		<% } else { %>
+			<h2>Podsumowanie i zatwierdzenie</h2>
+			<p>
+				<% let confirmationAllowed = true %>
+				<% if($.targetUser.medical.entries.length == 0) { %>
+					<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+				<% } else { %>
+					<p><%= $.targetUser.displayName %> ma następujące wymagania:</p>
+					<ul>
+						<% for(const entry of $.targetUser.medical.entries) { %>
+							<li>
+								<p><b><%= entry.title %></b></p>
+								<table>
+									<tr>
+										<% if(entry.symptoms) { %>
+											<th>Objawy:</th>
+											<td>
+												<%= entry.symptoms %>
+											</td>
+										<% } else { %>
+											<% confirmationAllowed = false %>
+											<th colspan="2">Nie podano objawów!</th>
+										<% } %>
+									</tr>
+									<tr>
+										<% if(entry.solutions) { %>
+											<th>Zalecenia:</th>
+											<td>
+												<%= entry.solutions %>
+											</td>
+										<% } else { %>
+											<% confirmationAllowed = false %>
+											<th colspan="2">Nie podano zaleceń!</th>
+										<% } %>
+									</tr>
+								</table>
+							</li>
+						<% } %>
+					</ul>
+				<% } %>
+			</p>
+			<% if(!confirmationAllowed) { %>
+				<p class="warning">
+					<i>warning</i>
+					Uzupełnij wszystkie pola aby kontynuować
+				</p>
+			<% } else { %>
+				<p>Potwierdzam że wszystkie powyższe informacje są prawdziwe i kompletne.</p>
+				<form>
+					<input type="checkbox" id="signature" disabled>
+					<label for="signature">Podpis</label>
+				</form>
+				<div class="button-row">
+					<button api="user/[userID]/medical/confirm" id="confirm-button">
+						<i>check</i>
+						Zatwierdź dane
+					</button>
+				</div>
+			<% } %>
+		<% } %>
+	</div>
+<% } %>

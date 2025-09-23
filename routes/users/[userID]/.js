@@ -12,7 +12,6 @@ export default async function({user, targetUser}) {
 	})
 
 	// Check permissions
-	await user.requirePermission(targetUser.PERMISSIONS.ACCESS)
 	if(await user.checkPermission(targetUser.PERMISSIONS.MODIFY)) {
 		await user.checkPermission(targetUser.PERMISSIONS.DELETE)
 		await user.checkPermission(targetUser.PERMISSIONS.ADD_PARENT)

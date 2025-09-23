@@ -3,48 +3,48 @@ html {
 }
 
 :root {
-	--background: #0d2225;
+	--background: #0f0f16;
 	--text: #E4E0E0;
 
-	--secondary-background: #7CA6AC;
-	--secondary-hover-background: #9BBBBF;
-	--secondary-text: #0d2225;
+	--secondary-background: #2a2a2f;
+	--secondary-hover-background: #4e4c53;
+	--secondary-text: #e2e2e2;
 
-	--input-background: #295151;
-	--disabled-input-background: #0B1C1E;
-	--invalid-input-background: #533;
+	--input-background: #2a2a2f;
+	--disabled-input-background: #0b0b11;
+	--invalid-input-background: rgb(68, 7, 7);
 	--input-text: #E4E0E0;
 
 	--shadow: #000;
 
-	--border: #295151;
-	--secondary-border: #0d2225;
+	--border: #3d3d49;
+	--secondary-border: #100d25;
 
 	--border-radius: 5px;
 }
 
 header {
-	--background: #0d2225;
+	--background: #111115;
 }
 
 ::selection {
-	--background: #E4E0E0;
+	--background: #ababab;
 	--text: #333;
 }
 
 button {
 	--text: #0d2225;
-	--background: #E9D293;
-	--hover-background: #F5EACC;
+	--background: #58caa6;
+	--hover-background: #bff4f0;
 }
 
 button.dangerous {
-	--background: #C96A54;
-	--hover-background: #D38573;
+	--background: #eb4040;
+	--hover-background: #ff7070;
 }
 
 dialog {
-	--background: #0d2225;
+	--background: #050507;
 	--text: #E4E0E0;
 }
 
@@ -53,5 +53,9 @@ dialog.message.success {
 }
 
 dialog.message.error {
-	--background: #533;
+	--background:#440707;
+}
+
+p.warning {
+	--background:#440707;
 }

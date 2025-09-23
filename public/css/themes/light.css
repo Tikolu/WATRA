@@ -48,9 +48,13 @@ dialog {
 }
 
 dialog.message.success {
-	--background: rgb(173, 192, 136);
+	--background: #adc088;
 }
 
 dialog.message.error {
-	--background: rgb(200, 123, 123);
+	--background: #c87b7b;
+}
+
+p.warning {
+	--background: #c87b7b;
 }
