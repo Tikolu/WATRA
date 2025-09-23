@@ -83,21 +83,25 @@
 		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
 	>
 
-	<label for="date-of-birth-input">Data urodzenia:</label>
-	<input
-		type="date" id="date-of-birth-input"
-		min="<%= MIN_DATE %>"
-		max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
-		<% if($.targetUser.dateOfBirth) { %>
-			value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
-		<% } %>
-		api="user/[userID]/update/dateOfBirth"
-		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
-	>
+	<% if($.targetUser.funkcje.length > 0) { %>
+		<label for="date-of-birth-input">Data urodzenia:</label>
+		<input
+			type="date" id="date-of-birth-input"
+			min="<%= MIN_DATE %>"
+			max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
+			<% if($.targetUser.dateOfBirth) { %>
+				value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
+			<% } %>
+			api="user/[userID]/update/dateOfBirth"
+			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
+		>
+	<% } %>
 </form>
-<p>
-	<a href="/users/<%= $.targetUser.id %>/medical">Dane medyczne i dietetyczne</a>
-</p>
+<% if($.targetUser.funkcje.length > 0) { %>
+	<p>
+		<a href="/users/<%= $.targetUser.id %>/medical">Dane medyczne i dietetyczne</a>
+	</p>
+<% } %>
 
 <% if($.targetUser.isParent) { %>
 	<hr>
