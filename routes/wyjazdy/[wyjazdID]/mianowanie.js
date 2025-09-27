@@ -5,7 +5,15 @@ export default async function({user, targetWyjazd}) {
 	await user.requirePermission(targetWyjazd.PERMISSIONS.MODIFY)
 	
 	// Get list of possible users for mianowanie
-	const usersForMianowanie = await Array.fromAsync(targetWyjazd.usersForMianowanie())
+	const usersForMianowanie = []
+	for await(const userForMianowanie of targetWyjazd.usersForMianowanie()) {
+		// User cannot mianować themselves
+		if(userForMianowanie.id == user.id) continue
+		// Skip duplicates
+		if(usersForMianowanie.find(u => u.id == userForMianowanie.id)) continue
+		
+		usersForMianowanie.push(userForMianowanie)
+	}
 	
 	return html("wyjazd/mianowanie", {
 		user,

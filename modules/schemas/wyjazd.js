@@ -456,6 +456,8 @@ export class WyjazdClass extends JednostkaClass {
 			if(jednostka.state != "accepted") continue
 			
 			for(const inviteUser of jednostka.invitedUsers) {
+				if(inviteUser.state != "accepted") continue
+				
 				yield inviteUser.user
 			}
 		}
