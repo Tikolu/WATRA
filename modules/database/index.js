@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 
 import shortID from "modules/database/shortID.js"
+import { populate, isPopulated } from "modules/database/populate.js"
 
 const MONGO_URI = "mongodb://localhost:27017"
 
@@ -13,6 +14,11 @@ Object.defineProperty(Array.prototype, "hasID", {
 	value: function(id) {
 		return this.some(value => value?.id === id)
 	}
+})
+
+// Array populate
+Object.defineProperty(Array.prototype, "populate", {
+	value: populate
 })
 
 // Globally use custom string IDs
@@ -91,156 +97,7 @@ mongoose.plugin(schema => {
 
 // Mongoose better populate plugin
 mongoose.plugin(schema => {
-	schema.methods.populate = async function(graph, options={}) {
-		if(options.log) console.log(`\n\n\n\x1b[32m[MongoDB]\x1b[0m Populating ${this.constructor.modelName} ${this.id}`)
-		options.known = [...(options.known || [])]
-		options.known.push(this)
-
-		let parentDocument = this.parent()
-		while(parentDocument && !options.known.includes(parentDocument)) {
-			options.known.push(parentDocument)
-			parentDocument = parentDocument.parent()
-		}
-
-		const populateEntries = {}
-		for(const knownDocument of options.known) {
-			const modelName = knownDocument.constructor.modelName
-			if(!modelName) continue
-			populateEntries[modelName] ||= {		
-				model: mongoose.model(modelName),
-				documentIDs: [],
-				callbacks: [],
-				results: []
-			}
-			populateEntries[modelName].results.push(knownDocument)
-		}
-
-		function registerPopulateCallback(ref, IDs, callback) {
-			populateEntries[ref] ||= {
-				model: mongoose.model(ref),
-				documentIDs: [],
-				callbacks: [],
-				results: []
-			}
-			populateEntries[ref].callbacks.push(callback)
-			let count = 0
-			for(const id of IDs) {
-				if(populateEntries[ref].documentIDs.includes(id)) continue
-				populateEntries[ref].documentIDs.push(id)
-				count += 1
-			}
-			return count
-		}
-
-		function createFakeDocument(model, id, placeholder=true) {
-			console.log(`\x1b[32m[MongoDB]\x1b[0m Creating fake ${model.modelName} ${id}`)
-			const newDocument = new model({
-				_id: id
-			})
-			newDocument.$locals.unpopulatedPlaceholder = placeholder
-			return newDocument
-		}
-
-		async function findPopulatable(graph, document) {
-			if(typeof graph == "string") graph = [graph]
-			if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
-			
-			let findCounter = 0
-			for(const key in graph) {
-				if(typeof key != "string") throw Error("Invalid populate path")
-				if(document.populated(key)) {
-					const subGraph = graph[key]
-					const subDocument = document[key]
-					if(subGraph && subDocument) {
-						if(Array.isArray(subDocument)) {
-							for(const item of subDocument) {
-								findCounter += await findPopulatable(subGraph, item)
-							}
-						} else if(typeof subDocument == "object") {
-							findCounter += await findPopulatable(subGraph, subDocument)
-						}
-					}
-				} else if(!Array.isArray(document[key])|| document[key].length > 0) {
-					let schemaDefinition = document.schema.tree[key]
-					if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
-					const arrayPopulate = schemaDefinition instanceof Array
-					if(arrayPopulate) schemaDefinition = schemaDefinition[0]
-
-					let ref = schemaDefinition.ref
-					if(typeof ref == "function") {
-						ref = await ref.call(document)
-					} else if(typeof ref != "string") {
-						throw Error(`Path ${key} cannot be populated, invalid ref`)
-					}
-					if(!ref) throw Error(`Path ${key} cannot be populated, no ref defined`)
-
-					const subDocuments = arrayPopulate ? [...document[key]] : [document[key]]
-					const populateIDs = []
-
-					for(const subDocument of subDocuments) {
-						if(isPopulated(subDocument)) continue
-						if(options?.exclude?.hasID(subDocument.id)) continue
-						// if(populateEntries[ref]?.results?.some(r => r.id == subDocument.id)) continue
-						populateIDs.push(subDocument.id)
-					}
-
-					findCounter += registerPopulateCallback(ref, populateIDs, results => {
-						const newArray = []
-						for(const subDocument of subDocuments) {
-							if(typeof subDocument != "string") return
-							let newDocument = results.find(r => r.id == subDocument)
-							if(!newDocument) {
-								newDocument = createFakeDocument(mongoose.model(ref), subDocument)
-								results.push(newDocument)
-							}
-							newArray.push(newDocument)
-						}
-						document[key] = arrayPopulate ? newArray : newArray[0]
-					})
-				}
-			}
-			return findCounter
-		}
-
-
-		let loopCount = 1
-		while(true) {
-			const findCount = await findPopulatable(graph, this)
-			if(findCount == 0) break
-			if(loopCount >= 10) throw Error("Database population loop count exceeded")
-			if(options.log) console.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populateEntries)
-			loopCount += 1
-
-			const populatePromises = []
-			for(const ref in populateEntries) {
-				const {model, documentIDs, callbacks, results} = populateEntries[ref]
-				const queryIDs = documentIDs.filter(id => !results.some(r => r.id == id))
-
-				
-				const query = async () => {
-					let results = []
-					if(queryIDs.length) {
-						if(options.log) console.log("Requesting", ref, "from DB:", queryIDs)
-						results = await model.find({_id: queryIDs})
-					}
-					for(const id of queryIDs) {
-						if(!results.some(r => r.id == id)) {
-							results.push(createFakeDocument(model, id, false))
-						}
-					}
-					populateEntries[ref].results.push(...results)
-					for(const callback of callbacks) {
-						callback(populateEntries[ref].results)
-					}
-					populateEntries[ref].documentIDs = []
-					populateEntries[ref].callbacks = []
-				}
-
-				populatePromises.push(query())
-			}
-			await Promise.all(populatePromises)
-		}
-	}
+	schema.methods.populate = populate
 	schema.method("populated", function(key) {
 		const schemaDefinition = schema.tree[key]
 		if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
@@ -249,11 +106,6 @@ mongoose.plugin(schema => {
 		else return isPopulated(this[key])
 	}, {suppressWarning: true})
 })
-function isPopulated(object) {
-	if(typeof object == "string") return false
-	if(object?.$locals.unpopulatedPlaceholder) return false
-	return true
-}
 
 // Helper function to create a schema from a class
 mongoose.Schema.fromClass = function(classInput) {
