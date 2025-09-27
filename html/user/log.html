@@ -1,0 +1,43 @@
+<% layout("/layouts/body", {
+	title: "Log aktywności",
+	// scripts: ["user/activity"],
+	// styles: ["user/activity"],
+	meta: {
+		userID: $.targetUser.id
+	},
+	navPath: {
+		[$.targetUser.displayName]: `/users/${$.targetUser.id}`
+	}
+}) %>
+<h1>
+	<i>person</i>
+	<%= $.targetUser.displayName %> - log aktywności
+</h1>
+<div class="unit-list">
+	<% for(const logEntry of $.logs) { %>
+		<div>
+			<h3>
+				<%= logEntry.eventType %>
+			</h3>
+			<p>
+				<%= datetime.format(logEntry.time, "yyyy-MM-dd HH:mm:ss") %>
+			</p>
+			<table>
+				<% if(logEntry.targetUser) { %>
+					<tr>
+						<th>Użytkownik:</th>
+						<td>
+							<a href="/users/<%= logEntry.targetUser.id %>"><%= logEntry.targetUser.displayName %></a>
+						</td>
+					</tr>
+				<% } %>
+			</table>
+			<% if(logEntry.data) { %>
+				<details>
+					<summary>Szczegóły</summary>
+					<pre><%= JSON.stringify(logEntry.data, null, 2) %></pre>
+				</details>
+			<% } %>
+		</div>
+	<% } %>
+</div>

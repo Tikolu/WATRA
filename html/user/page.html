@@ -97,11 +97,12 @@
 		>
 	<% } %>
 </form>
-<% if($.targetUser.funkcje.length > 0) { %>
-	<p>
-		<a href="/users/<%= $.targetUser.id %>/medical">Dane medyczne i dietetyczne</a>
-	</p>
-<% } %>
+<div class="button-row">
+	<% if($.targetUser.funkcje.length > 0) { %>
+		<button href="/users/<%= $.targetUser.id %>/medical">Dane medyczne</button>
+	<% } %>
+	<button href="/users/<%= $.targetUser.id %>/log">Log aktywności</button>
+</div>
 
 <% if($.targetUser.isParent) { %>
 	<hr>

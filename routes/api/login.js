@@ -33,6 +33,9 @@ export default async function({user, accessCode, userID}) {
 
 	await user.save()
 
+	// Log event
+	await user.logEvent("LOGIN")
+
 	// Update saved users
 	if(!savedUsers.includes(user.id)) savedUsers.push(user.id)
 

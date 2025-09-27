@@ -4,9 +4,11 @@ import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
 import Funkcja from "modules/schemas/funkcja.js"
+import Wyjazd from "modules/schemas/wyjazd.js"
+import Log from "modules/schemas/log.js"
+
 import { FunkcjaType } from "modules/types.js"
 import HTTPError from "modules/server/error.js"
-import Wyjazd from "modules/schemas/wyjazd.js"
 import { medicalCategories } from "modules/medical.js"
 
 export class UserClass {
@@ -318,6 +320,17 @@ export class UserClass {
 			yield funkcja.jednostka
 			yield * funkcja.jednostka.getUpperJednostkiTree()
 		}
+	}
+
+	/** Adds an entry to the user's activity log */
+	async logEvent(eventType, {targetUser, data}) {
+		const logEntry = new Log({
+			user: this.id,
+			eventType,
+			targetUser,
+			data
+		})
+		await logEntry.save()
 	}
 }
 

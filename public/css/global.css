@@ -225,6 +225,10 @@ details > summary:hover {
 
 pre {
 	overflow-x: auto;
+	background-color: var(--secondary-background);
+	color: var(--secondary-text);
+	border-radius: var(--border-radius);
+	padding: 1em;
 }
 
 article {
