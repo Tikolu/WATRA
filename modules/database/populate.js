@@ -99,6 +99,7 @@ class PopulationContext {
 						if(typeof subDocument != "string") continue
 						let newDocument = results.find(r => r.id == subDocument)
 						if(!newDocument) {
+							if(options.placeholders === false) continue
 							newDocument = createFakeDocument(mongoose.model(ref), subDocument)
 							results.push(newDocument)
 						}
@@ -147,8 +148,9 @@ export async function populate(graph, options={}) {
 					const newArray = []
 					for(const index of unpopulated) {
 						const subDocument = this[index]
-						let newDocument = results.find(r => r.id == subDocument.id)
+						let newDocument = results.find(r => r?.id == subDocument.id)
 						if(!newDocument) {
+							if(options.placeholders === false) continue
 							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id)
 							results.push(newDocument)
 						}
@@ -171,7 +173,7 @@ export async function populate(graph, options={}) {
 		const populatePromises = []
 		for(const ref in populationContext.entries) {
 			const {model, documentIDs, callbacks, results} = populationContext.entries[ref]
-			const queryIDs = documentIDs.filter(id => !results.some(r => r.id == id))
+			const queryIDs = documentIDs.filter(id => !results.some(r => r?.id == id))
 
 			
 			const query = async () => {
@@ -181,7 +183,8 @@ export async function populate(graph, options={}) {
 					results = await model.find({_id: queryIDs})
 				}
 				for(const id of queryIDs) {
-					if(!results.some(r => r.id == id)) {
+					if(!results.some(r => r?.id == id)) {
+						if(options.placeholders === false) continue
 						results.push(createFakeDocument(model, id, false))
 					}
 				}
