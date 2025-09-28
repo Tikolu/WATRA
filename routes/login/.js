@@ -1,10 +1,16 @@
 import html from "modules/html.js"
 
-import User from "modules/schemas/user.js"
-
 export default async function() {
-	const savedUserIDs = this.request.token?.saved || []
-	const savedUsers = await User.find({_id: savedUserIDs})
+	// Load token
+	const token = this.request.token
+	
+	const savedUsers = token?.saved || []
+	await savedUsers.populate({}, {ref: "User", placeholders: false})
+
+	token.saved = savedUsers.filter(u => u).map(u => u.id) // Remove null users
+
+	// Send back token
+	this.response.token = token
 	
 	// Render login page
 	return html("login/main", {
