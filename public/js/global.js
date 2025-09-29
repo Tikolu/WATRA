@@ -146,6 +146,13 @@ function normaliseAttributes(doc = document) {
 // Dialog "result" asynchronous function
 HTMLDialogElement.prototype.result = function(modal=true) {
 	this[modal ? "showModal" : "show"]()
+
+	if(modal && !this.onclick) this.onclick = event => {
+		let rect = this.getBoundingClientRect();
+		if(event.clientY < rect.top || event.clientY > rect.bottom) return this.close();
+		if(event.clientX < rect.left || event.clientX > rect.right) return this.close();
+	}
+	
 	return new Promise((resolve, reject) => {
 		this.onclose = () => reject("Popup closed")
 		for(const button of this.querySelectorAll("button")) {
