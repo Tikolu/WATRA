@@ -613,22 +613,25 @@ function processAPIAttributes() {
 processAPIAttributes()
 window.afterDataRefresh.push(processAPIAttributes)
 
-// Button "opens-dialog" attribute
+// "opens-dialog" attribute
 function processDialogOpeners() {
 	for(const opener of window.dialogOpeners || []) {
 		if(opener.removeDialogOpener) opener.removeDialogOpener()
 	}
 	window.dialogOpeners = []
 	
-	for(const button of document.querySelectorAll("button[opens-dialog]")) {
-		const dialogID = button.getAttribute("opens-dialog")
+	for(const element of document.querySelectorAll("[opens-dialog]")) {
+		const dialogID = element.getAttribute("opens-dialog")
 
 		// URL mode
 		if(dialogID.startsWith("/")) {
 			let dialog = document.querySelector(`dialog.frame[data-url="${dialogID}"]`), iframe
 
+			// Get existing dialog
 			if(dialog) {
 				iframe = dialog.querySelector("iframe")
+			
+			// Create new dialog
 			} else {
 				dialog = document.createElement("dialog")
 				dialog.classList.add("frame")
@@ -645,7 +648,7 @@ function processDialogOpeners() {
 				document.body.append(dialog)
 			}
 
-			button.onclick = async () => {
+			element.onclick = async () => {
 				if(!iframe.src) iframe.src = dialogID
 				dialog.result().catch(() => null)
 			}
@@ -664,25 +667,25 @@ function processDialogOpeners() {
 				processDialogOpeners()
 			}
 
-			button.removeDialogOpener = () => {
-				button.onclick = undefined
+			element.removeDialogOpener = () => {
+				element.onclick = undefined
 			}
 
-		} else {
-		
-			// Dialog mode
+
+		// Dialog mode
+		} else {		
 			const dialog = document.getElementById(dialogID)
 			if(!dialog) {
-				console.warn(`Dialog with ID ${dialogID} not found for button`, button)
+				console.warn(`Dialog with ID ${dialogID} not found for element`, element)
 				continue
 			}
 
-			button.onclick = () => dialog.result().catch(() => null)
-			button.removeDialogOpener = () => button.onclick = undefined
+			element.onclick = () => dialog.result().catch(() => null)
+			element.removeDialogOpener = () => element.onclick = undefined
 
 		}
 
-		window.dialogOpeners.push(button)
+		window.dialogOpeners.push(element)
 	}
 }
 processDialogOpeners()
