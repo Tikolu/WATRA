@@ -1,21 +1,19 @@
-const frame = window.frameElement
-
 function closeDialog(full) {
-	frame.parentElement.close()
+	frameElement.parentElement.close()
 	if(full) {
-		sleep(250).then(() => frame.parentElement.remove())
+		sleep(250).then(() => frameElement.parentElement.remove())
 	}
 	return true
 }
 
 async function resizeContainer() {
-	const maxHeight = window.top.getComputedStyle(frame).maxHeight
+	const maxHeight = window.top.getComputedStyle(frameElement).maxHeight
 	document.body.style.maxHeight = maxHeight
 
-	frame.style.height = `${document.documentElement.scrollHeight}px`;
+	frameElement.style.height = `${document.documentElement.scrollHeight}px`;
 }
 
 window.onresize = () => resizeContainer()
 resizeContainer()
 
-frame.classList.add("loaded")
+frameElement.classList.add("loaded")

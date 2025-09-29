@@ -5,6 +5,7 @@
 	<% $.scripts ||= [] %>
 	<% $.scripts.unshift("dialog") %>
 	<%~ include("/templates/head.html", $) %>
+	<base target="_parent">
 	<body>
 		<%~ $.body %>
 	</body>
