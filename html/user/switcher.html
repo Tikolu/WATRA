@@ -1,0 +1,49 @@
+<% layout("/layouts/dialog", {
+	// scripts: ["user/switcher"],
+	meta: {
+		user: $.user.id
+	}
+}) %>
+<main>
+	<h1>
+		<i>person</i>
+		<%= $.user.displayName %>
+		<div class="button-row">
+			<button href="/users/<%= $.user.id %>">
+				<i>person</i>
+				<span>Profil</span>
+			</button>
+			<button href="/logout">
+				<i>logout</i>
+				<span>Wyloguj</span>
+			</button>
+		</div>
+	</h1>
+	<% if($.savedUsers.length) { %>
+		<hr>
+		<h2>
+			<i>switch_account</i>
+			Zmień konto
+		</h2>
+		<div class="unit-grid">
+			<% for(const user of $.savedUsers) { %>
+				<div>
+					<h3><%= user.displayName %></h3>
+					<div class="button-row">
+						<button href="/logout/switch?userID=<%= user.id %>">
+							<i>login</i>
+							<span>Zaloguj</span>
+						</button>
+					</div>
+				</div>
+			<% } %>
+		</div>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="closeDialog()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+</div>

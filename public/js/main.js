@@ -191,6 +191,6 @@ if(!META.error) {
 }
 
 // Clicking user profile link clears history
-userProfileLink.onclick = () => {
-	Session.history = []
-}
+// userProfileLink.onclick = () => {
+// 	Session.history = []
+// }

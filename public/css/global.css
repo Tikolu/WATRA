@@ -193,6 +193,7 @@ h1 + h2 {
 a {
 	color: var(--text);
 	outline: none;
+	cursor: pointer;
 	transition: opacity 250ms;
 }
 
@@ -200,8 +201,8 @@ a:has(button) {
 	text-decoration: none;
 }
 
-a[href]:not(:has(button)):hover,
-a[href]:not(:has(button)):focus-visible {
+a:not(:has(button)):hover,
+a:not(:has(button)):focus-visible {
 	opacity: 0.5;
 }
 

@@ -20,7 +20,14 @@
 			}
 		%>
 	</nav>
-	<a href="<%= $.user ? `/users/${$.user.id}` : "/login" %>" id="user-profile-link">
+	<a
+		<% if($.user) { %>
+			opens-dialog="/users/switcher"
+		<% } else { %>
+			href="/login"
+		<% } %>
+			id="user-profile-link"
+	>
 		<i>person</i>
 		<span><%_= $.user?.displayName || "Logowanie" _%></span>
 	</a>

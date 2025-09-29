@@ -6,7 +6,10 @@ export default async function({user, accessCode, userID}) {
 	// Check if user is already logged in
 	if(user) throw new HTTPError(400, "Już jesteś zalogowany")
 
-	const savedUsers = this.request.token?.saved || []
+	// Load token
+	const token = this.request.token
+
+	const savedUsers = token?.saved || []
 
 	// Verify saved user
 	if(userID) {
@@ -27,8 +30,11 @@ export default async function({user, accessCode, userID}) {
 		throw new HTTPError(400)
 	}
 
-	// Get client ID and add to user
-	const clientID = this.request.token?.client || randomID()
+	// Set active user
+	token.active = user.id
+
+	// Generate client ID
+	token.client ||= randomID()
 	// user.clients.register(client, this.request)
 
 	await user.save()
@@ -36,15 +42,11 @@ export default async function({user, accessCode, userID}) {
 	// Log event
 	await user.logEvent("LOGIN")
 
-	// Update saved users
+	// Update saved users	
 	if(!savedUsers.includes(user.id)) savedUsers.push(user.id)
 
-	// Set cookie token
-	this.response.token = {
-		saved: savedUsers,
-		active: user.id,
-		client: clientID
-	}
+	// Send back token
+	this.response.token = token
 		
 	return {
 		userID: user.id
