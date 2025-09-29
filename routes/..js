@@ -1,5 +1,5 @@
 import html from "modules/html.js"
-import User from "modules/schemas/user.js"
+import User from "modules/schemas/user"
 
 const errorMessages = {
 	400: ["Nieprawidłowy URL 😳", "Wpisany przez ciebie URL nie ma sensu"],

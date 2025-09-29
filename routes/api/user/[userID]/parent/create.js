@@ -1,4 +1,4 @@
-import User from "modules/schemas/user.js"
+import User from "modules/schemas/user"
 
 export default async function({user, targetUser}) {
 	// Check permissions

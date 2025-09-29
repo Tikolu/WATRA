@@ -1,7 +1,7 @@
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
 
-import User from "modules/schemas/user.js"
+import User from "modules/schemas/user"
 
 export default async function({user, targetWyjazd, participant: targetUserID}) {
 	// Get user from DB, and check if exists

@@ -1,5 +1,5 @@
 import HTTPError from "modules/server/error.js";
-import User from "modules/schemas/user.js";
+import User from "modules/schemas/user";
 import randomID from "modules/randomID.js";
 
 export default async function({user, accessCode, userID}) {

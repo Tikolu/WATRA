@@ -1,5 +1,5 @@
 import HTTPError from "modules/server/error.js"
-import User from "modules/schemas/user.js"
+import User from "modules/schemas/user"
 
 export async function open({user, userID}) {
 	// Get user from DB, and check if exists

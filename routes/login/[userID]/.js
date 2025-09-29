@@ -1,7 +1,7 @@
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
 
-import User from "modules/schemas/user.js"
+import User from "modules/schemas/user"
 
 export default async function({userID}) {
 	const savedUserIDs = this.request.token?.saved || []

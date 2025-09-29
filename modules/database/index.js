@@ -176,7 +176,7 @@ export async function connect(dbName="main") {
 		await import("modules/schemas/wyjazd.js")
 		await import("modules/schemas/funkcja.js")
 		await import("modules/schemas/jednostka.js")
-		await import("modules/schemas/user.js")
+		await import("modules/schemas/user")
 
 		return true
 		
@@ -187,7 +187,7 @@ export async function connect(dbName="main") {
 }
 
 export async function setup() {
-	const {default: User} = await import("modules/schemas/user.js")
+	const {default: User} = await import("modules/schemas/user")
 	const {default: Jednostka} = await import("modules/schemas/jednostka.js")
 	const { JednostkaType } = await import("modules/types.js")
 

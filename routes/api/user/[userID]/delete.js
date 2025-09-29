@@ -1,4 +1,4 @@
-import User from "modules/schemas/user.js"
+import User from "modules/schemas/user"
 import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetUser}) {

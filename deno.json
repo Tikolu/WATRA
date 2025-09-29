@@ -3,6 +3,7 @@
 		"modules/": "./modules/",
 		"modules/database": "./modules/database/index.js",
 		"modules/server": "./modules/server/index.js",
+		"modules/schemas/user": "./modules/schemas/user/index.js",
 
 		"mongoose": "npm:mongoose@8.12.2"
 	},
