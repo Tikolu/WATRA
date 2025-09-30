@@ -368,8 +368,13 @@ const API = {
 		userID: "users",
 		wyjazdID: "wyjazdy"
 	},
+	onRequestStart: null,
+	onRequestEnd: null,
+	onRequestError: null,
+	onRequestSuccess: null,
 
 	async request(get="", post=undefined) {
+		if(this.onRequestStart) await this.onRequestStart()
 		let options = {
 			credentials: "same-origin",
 			headers: {}
@@ -385,17 +390,22 @@ const API = {
 		} catch {
 			text = "Connection failed"
 		}
+		if(this.onRequestEnd) await this.onRequestEnd()
 		text ||= await response?.text()
 		try {
 			json = JSON.parse(text)
 		} catch {
 			text ||= "Error parsing API response"
 			if(text.includes("\n")) text = text.split("\n")[0]
+			if(this.onRequestError) await this.onRequestError(text)
 			throw text
 		}
 		if(json.error) {
-			throw json.error.message.replace(/^Error: /, "")
+			const text = json.error.message.replace(/^Error: /, "")
+			if(this.onRequestError) await this.onRequestError(text)
+			throw text
 		}
+		if(this.onRequestSuccess) await this.onRequestSuccess(json)
 		return json
 	},
 
