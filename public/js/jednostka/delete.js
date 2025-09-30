@@ -11,15 +11,12 @@ API.registerHandler("jednostka/[jednostkaID]/subJednostka/[subJednostkaID]/remov
 			return
 		}
 		return true
-	},
-	before: () => closeDialog()
+	}
 })
 
 API.registerHandler("jednostka/[jednostkaID]/delete", {
 	progressText: "Trwale usuwanie jednostki...",
-	before: () => closeDialog(),
 	after: () => {
-		closeDialog(true)
 		window.top.history.back()
 	}
 })

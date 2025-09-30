@@ -1,7 +1,6 @@
 API.registerHandler("jednostka/[jednostkaID]/subJednostka/create", {
 	form: "create-jednostka",
 	progressText: "Tworzenie jednostki...",
-	before: () => closeDialog(),
 	after: response => {
 		jednostkaNameInput.value = ""
 		window.top.refreshDataOnShow = true
@@ -17,7 +16,6 @@ API.registerHandler("jednostka/[jednostkaID]/subJednostka/link", {
 		if(!data.subJednostkaID) {
 			throw "Nie wybrano jednostki"
 		}
-		closeDialog()
 		return true
 	}
 })

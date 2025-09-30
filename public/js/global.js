@@ -154,7 +154,7 @@ HTMLDialogElement.prototype.result = function(modal=true) {
 	}
 	
 	return new Promise((resolve, reject) => {
-		this.onclose = () => reject("Popup closed")
+		this.onclose = () => resolve(false)
 		for(const button of this.querySelectorAll("button")) {
 			button.onclick = () => {
 				const command = button.getAttribute("command")
@@ -659,13 +659,14 @@ function processDialogOpeners() {
 			}
 
 			element.onclick = async () => {
-				if(!iframe.src) iframe.src = dialogID
-				dialog.result().catch(() => null)
+				if(!iframe.getAttribute("src")) iframe.src = dialogID
+				dialog.result()
 			}
 
 			iframe.onload = async () => {
 				await sleep(250)
 				if(iframe.classList.contains("loaded")) return
+				if(!iframe.getAttribute("src")) return
 				
 				const errorElement = iframe.contentDocument.querySelector("main h2")
 				let errorText = errorElement?.textContent || "Błąd ładowania strony"
@@ -690,7 +691,7 @@ function processDialogOpeners() {
 				continue
 			}
 
-			element.onclick = () => dialog.result().catch(() => null)
+			element.onclick = () => dialog.result()
 			element.removeDialogOpener = () => element.onclick = undefined
 
 		}

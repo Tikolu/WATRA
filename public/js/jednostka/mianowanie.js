@@ -16,7 +16,6 @@ API.registerHandler("jednostka/[jednostkaID]/member/[memberID]/mianujNaFunkcję"
 
 		data.funkcjaType = Number(data.funkcjaType)
 		return true
-	},
-	before: () => closeDialog()
+	}
 })
 

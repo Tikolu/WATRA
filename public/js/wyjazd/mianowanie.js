@@ -11,7 +11,6 @@ API.registerHandler("wyjazd/[wyjazdID]/member/[memberID]/mianujNaFunkcję", {
 		
 		data.funkcjaType = Number(data.funkcjaType)
 		return true
-	},
-	before: () => closeDialog()
+	}
 })
 
