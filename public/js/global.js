@@ -870,3 +870,10 @@ function processMetaTags() {
 }
 processMetaTags()
 window.afterDataRefresh.push(processMetaTags)
+
+// Prevent frames
+if(window.top != window && !META.allowFrame) {
+	document.documentElement.hidden = true
+	console.warn("Frame detected, attempting to exit...")
+	window.top.location = location
+}
