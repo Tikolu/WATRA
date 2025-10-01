@@ -98,10 +98,16 @@
 	<% } %>
 </form>
 <div class="button-row">
-	<% if($.targetUser.funkcje.length > 0) { %>
-		<button href="/users/<%= $.targetUser.id %>/medical">Dane medyczne</button>
+	<% if($.targetUser.funkcje.length > 0 || $.targetUser.medical.entries.length) { %>
+		<button href="/users/<%= $.targetUser.id %>/medical">
+			<i>medical_information</i>
+			Dane medyczne
+		</button>
 	<% } %>
-	<button href="/users/<%= $.targetUser.id %>/log">Log aktywności</button>
+	<button href="/users/<%= $.targetUser.id %>/log">
+		<i>history</i>
+		Log aktywności
+	</button>
 </div>
 
 <% if($.targetUser.isParent) { %>
@@ -112,9 +118,8 @@
 	</h2>
 	<div id="child-list" class="unit-grid">
 		<% for(const child of $.targetUser.children || []) { %>
-			<a href="/users/<%= child.id %>">
-				<h3><%= child.displayName %></h3>
-			</a>
+			<% child.defaultName = "(podopieczny)" %>
+			<%~ include("templates/userEntry", {targetUser: child}) %>
 		<% } %>
 	</div>
 <% } else if($.targetUser.parents.length > 0 || $.targetUser.age < 18) { %>
@@ -125,9 +130,8 @@
 	</h2>
 	<div id="parent-list" class="unit-grid">
 		<% for(const parent of $.targetUser.parents || []) { %>
-				<a href="/users/<%= parent.id %>">
-					<h3><%= parent.displayName %></h3>
-				</a>
+			<% parent.defaultName = "(rodzic / opiekun)" %>
+			<%~ include("templates/userEntry", {targetUser: parent}) %>
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>

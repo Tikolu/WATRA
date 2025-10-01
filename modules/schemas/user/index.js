@@ -78,7 +78,7 @@ export class UserClass {
 	/** Returns the user's name in the format "First Last" */
 	get displayName() {
 		let name = this.name.first
-		if(!name) return "(brak imienia)"
+		if(!name) return this.defaultName || "(brak imienia)"
 		else if(this.name.last) name += " " + this.name.last
 		return name
 	}

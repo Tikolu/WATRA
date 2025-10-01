@@ -10,11 +10,15 @@
 	}
 }) %>
 <h1>
-	<i>person</i>
+	<i>history</i>
 	<%= $.targetUser.displayName %> - log aktywności
 </h1>
 <div class="unit-list">
-	<% for(const logEntry of $.logs) { %>
+	<% if ($.logs.length == 0) { %>
+		<p>Brak wpisów w logu aktywności.</p>
+	<% } %>
+	<% for(let index = $.logs.length - 1; index >= 0; index--) { %>
+		<% const logEntry = $.logs[index] %>
 		<div>
 			<h3>
 				<%= logEntry.eventType %>

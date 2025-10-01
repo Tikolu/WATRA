@@ -1,0 +1,6 @@
+<a href="/users/<%= $.targetUser.id %>">
+	<h3><%= $.targetUser.displayName %></h3>
+	<% if($.targetUser.funkcje?.length == 1 && typeof $.targetUser.funkcje[0] != "string") { %>
+		<p><%= Text.capitalise($.targetUser.funkcje[0].displayName) %> w <%= $.targetUser.funkcje[0].jednostka?.displayName || "(nieznana jednostka)" %></p>
+	<% } %>
+</a>

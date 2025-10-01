@@ -7,8 +7,12 @@ export default async function({user, targetUser}) {
 		"funkcje": "jednostka",
 		"funkcjeWyjazdowe": "jednostka",
 		"wyjazdApprovalRequests": {},
-		"children": {},
-		"parents": {}
+		"children": {
+			"funkcje": "jednostka"
+		},
+		"parents": {
+			"funkcje": "jednostka"
+		}
 	})
 
 	// Check permissions

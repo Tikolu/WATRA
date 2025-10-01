@@ -7,89 +7,87 @@
 }) %>
 <h1>System Harcerski</h1>
 <p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
-<section>
-	<% if($.user.funkcje.length > 0) { %>
-		<hr>
-		<h2>
-			<i>groups</i>
-			Jednostki
-		</h2>
-		<div class="unit-grid">
-			<% for(const funkcja of $.user.funkcje) { %>
-				<a href="/jednostki/<%= funkcja.jednostka.id %>">
-					<h3><%= funkcja.jednostka.displayName %></h3>
-					<p><%= funkcja.jednostka.typeName %></p>
-				</a>
-			<% } %>
-		</div>
-	<% } %>
-	<% if(
-		$.user.funkcjeWyjazdowe.length ||
-		$.user.wyjazdInvites.length ||
-		$.user.hasPermission(Wyjazd.PERMISSIONS.CREATE) ||
-		$.user.children.some(child => child.wyjazdInvites.length)
-	) { %>
-		<hr>
-		<h2>
-			<i>hiking</i>
-			Wyjazdy
-		</h2>
-		<div class="unit-grid">
-			<% for(const funkcja of $.user.funkcjeWyjazdowe) { %>
-				<a href="/wyjazdy/<%= funkcja.jednostka.id %>">
-					<h3><%= funkcja.jednostka.displayName %></h3>
-					<p><%= funkcja.jednostka.typeName %></p>
-				</a>
-			<% } %>
-
-			<% for(const targetUser of [$.user, ...$.user.children]) { %>
-				<% for(const wyjazd of targetUser.wyjazdInvites) { %>
-					<%~ include("user/templates/wyjazdInvite", {
-						targetWyjazd: wyjazd,
-						targetUser
-					}) %>
-				<% } %>
-			<% } %>
-		</div>
-		<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
-			<button id="create-wyjazd-button" api="wyjazd/create">
-				<i>tour</i>
-				<span>Nowy wyjazd</span>
-			</button>
+<% if($.user.funkcje.length > 0) { %>
+	<hr>
+	<h2>
+		<i>groups</i>
+		Jednostki
+	</h2>
+	<div class="unit-grid">
+		<% for(const funkcja of $.user.funkcje) { %>
+			<a href="/jednostki/<%= funkcja.jednostka.id %>">
+				<h3><%= funkcja.jednostka.displayName %></h3>
+				<p><%= funkcja.jednostka.typeName %></p>
+			</a>
 		<% } %>
-	<% } %>
-	<% if(
-		$.user.wyjazdApprovalRequests.length &&
-		$.user.wyjazdApprovalRequests.some(w => !w.getApprover($.user).approved)
-	) { %>
-		<hr>
-		<h2>
-			<i>gavel</i>
-			Wyjazdy do zatwierdzenia
-		</h2>
-		<div class="unit-grid">
-			<% for(const wyjazd of $.user.wyjazdApprovalRequests) { %>
-				<%
-					const approver = wyjazd.getApprover($.user)
-					if(approver.approved) continue
-				%>
-				<%~ include("user/templates/wyjazdApprovalRequest", {
+	</div>
+<% } %>
+<% if(
+	$.user.funkcjeWyjazdowe.length ||
+	$.user.wyjazdInvites.length ||
+	$.user.hasPermission(Wyjazd.PERMISSIONS.CREATE) ||
+	$.user.children.some(child => child.wyjazdInvites.length)
+) { %>
+	<hr>
+	<h2>
+		<i>hiking</i>
+		Wyjazdy
+	</h2>
+	<div class="unit-grid">
+		<% for(const funkcja of $.user.funkcjeWyjazdowe) { %>
+			<a href="/wyjazdy/<%= funkcja.jednostka.id %>">
+				<h3><%= funkcja.jednostka.displayName %></h3>
+				<p><%= funkcja.jednostka.typeName %></p>
+			</a>
+		<% } %>
+
+		<% for(const targetUser of [$.user, ...$.user.children]) { %>
+			<% for(const wyjazd of targetUser.wyjazdInvites) { %>
+				<%~ include("user/templates/wyjazdInvite", {
 					targetWyjazd: wyjazd,
-					targetUser: $.user
+					targetUser
 				}) %>
 			<% } %>
-		</div>
+		<% } %>
+	</div>
+	<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
+		<button id="create-wyjazd-button" api="wyjazd/create">
+			<i>tour</i>
+			<span>Nowy wyjazd</span>
+		</button>
 	<% } %>
-	<% if($.user.children.length > 0) { %>
-		<hr>
-		<h2>
-			<i>supervisor_account</i>
-			Podopieczni
-		</h2>
-		<div class="unit-grid">
-			<% for(const child of $.user.children) { %>
-				<a href="/users/<%= child.id %>"><%= child.displayName %></a>
-			<% } %>
-		</div>
-	<% } %>
-</section>
+<% } %>
+<% if(
+	$.user.wyjazdApprovalRequests.length &&
+	$.user.wyjazdApprovalRequests.some(w => !w.getApprover($.user).approved)
+) { %>
+	<hr>
+	<h2>
+		<i>gavel</i>
+		Wyjazdy do zatwierdzenia
+	</h2>
+	<div class="unit-grid">
+		<% for(const wyjazd of $.user.wyjazdApprovalRequests) { %>
+			<%
+				const approver = wyjazd.getApprover($.user)
+				if(approver.approved) continue
+			%>
+			<%~ include("user/templates/wyjazdApprovalRequest", {
+				targetWyjazd: wyjazd,
+				targetUser: $.user
+			}) %>
+		<% } %>
+	</div>
+<% } %>
+<% if($.user.children.length > 0) { %>
+	<hr>
+	<h2>
+		<i>supervisor_account</i>
+		Podopieczni
+	</h2>
+	<div class="unit-grid">
+		<% for(const child of $.user.children) { %>
+			<%~ include("user/templates/userEntry", {targetUser: child}) %>
+		<% } %>
+	</div>
+<% } %>

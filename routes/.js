@@ -6,7 +6,8 @@ export default async function({user}) {
 
 	await user.populate({
 		"children": {
-			"wyjazdInvites": {}
+			"wyjazdInvites": {},
+			"funkcje": "jednostka"
 		},
 		"funkcje": "jednostka",
 		"funkcjeWyjazdowe": "jednostka",
