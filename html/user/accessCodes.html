@@ -1,0 +1,25 @@
+<% layout("/layouts/dialog", {
+	styles: ["user/page"],
+}) %>
+<h1>
+	<i>password</i>
+	Kody dostępu
+</h1>
+<main>
+	<h2>Nowy użytkownik</h2>
+	<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
+	<input type="text" class="access-code" disabled value="<%= $.targetUser.accessCode %>">
+	<% if($.targetUser.parents.length) { %>
+		<hr>
+		<h2>Rodzic / opiekun</h2>
+		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
+		<input type="text" class="access-code" disabled value="<%= $.targetUser.parents[0].accessCode %>">
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Zamknij
+	</button>
+</div>

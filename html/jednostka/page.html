@@ -85,9 +85,9 @@
 			<i>add_moderator</i>
 			<span>Mianuj na funkcję</span>
 		</button>
-		<button id="create-user-button" api="jednostka/[jednostkaID]/member/create">
+		<button id="create-user-button" opens-dialog="/jednostki/<%= $.targetJednostka.id %>/createUser">
 			<i>person_add</i>
-			<span>Dodaj użytkownika</span>
+			<span>Utwórz użytkownika</span>
 		</button>
 	<% } %>
 <% } %>

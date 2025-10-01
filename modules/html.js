@@ -3,7 +3,7 @@ import * as datetime from "jsr:@std/datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
 
-import { FunkcjaType } from "modules/types.js"
+import { FunkcjaType, JednostkaType } from "modules/types.js"
 import Wyjazd from "modules/schemas/wyjazd.js"
 
 const etaImports = {
@@ -11,6 +11,7 @@ const etaImports = {
 	Text,
 	datetime,
 	FunkcjaType,
+	JednostkaType,
 	Wyjazd
 }
 

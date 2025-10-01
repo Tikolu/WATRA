@@ -20,7 +20,7 @@ API.registerHandler("user/[userID]/accessCode/generate", {
 		// Format access code
 		const accessCode = response.accessCode.replace(/(\d{4})/g, "$1 ").trim()
 		
-		accessCodeContainer.value = accessCode
+		userAccessCodeContainer.value = accessCode
 		accessCodeDialog.result()
 	}
 })
