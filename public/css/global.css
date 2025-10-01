@@ -146,6 +146,15 @@ input[type=checkbox], input[type=radio] {
 	width: 1.5em;
 }
 
+input[type=checkbox]:focus, input[type=radio]:focus {
+	outline: none;
+}
+
+input[type=checkbox]:focus-visible, input[type=radio]:focus-visible {
+	outline: 1px solid var(--input-text);
+}
+
+
 input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
 	opacity: 0.5;
 }

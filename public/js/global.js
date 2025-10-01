@@ -478,28 +478,43 @@ const API = {
 					}
 				}
 				if(skipElement) continue
+				let elementValue = formElement.value
 				
+				// Clear validity
 				formElement.classList.remove("invalid")
-				if(formElement.matches("[type=checkbox], [type=radio]") && !formElement.checked) {
-					if(formElement.required) {
+
+				if(formElement.matches("[type=checkbox], [type=radio]")) {
+					// Default value for checkboxes
+					if(formElement.checked && !formElement.hasAttribute("value")) {
+						elementValue = true
+
+					// Ensure required checkboxes are checked
+					} else if(formElement.required) {
 						formElement.classList.add("invalid")
 						formElement.scrollIntoView()
 						return
+
+					// Not checked - skip element
+					} else {
+						continue
 					}
-					continue
 				}
-				if(formElement.required && !formElement.value) {
+
+				// Ensure required fields are filled
+				if(formElement.required && !elementValue) {
 					formElement.classList.add("invalid")
 					formElement.scrollIntoView()
 					return
 				}
+
+				// If an element with this name was already encountered, turn value into an array
 				if(formData[formElement.name]) {
 					if(!Array.isArray(formData[formElement.name])) {
 						formData[formElement.name] = [formData[formElement.name]]
 					}
-					formData[formElement.name].push(formElement.value)
+					formData[formElement.name].push(elementValue)
 				} else {
-					formData[formElement.name] = formElement.value
+					formData[formElement.name] = elementValue
 				}
 			}
 			data = {...data, ...formData}
@@ -591,7 +606,7 @@ const API = {
 
 		// Trigger data refresh
 		if(handler.refresh !== false) {
-			await refreshPageData()
+			await window.top.refreshPageData()
 		}
 	}
 }
