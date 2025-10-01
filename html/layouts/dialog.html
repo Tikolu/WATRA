@@ -4,11 +4,9 @@
 	<% $.styles.unshift("dialog") %>
 	<% $.scripts ||= [] %>
 	<% $.scripts.unshift("dialog") %>
-	<% $.meta ||= {} %>
-	<% $.meta.allowFrame = true %>
 	<%~ include("/templates/head.html", $) %>
 	<base target="_parent">
-	<body>
+	<body class="allow-frames">
 		<%~ $.body %>
 	</body>
 </html>

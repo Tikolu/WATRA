@@ -147,6 +147,8 @@ function normaliseAttributes(doc = document) {
 HTMLDialogElement.prototype.result = function(modal=true) {
 	this[modal ? "showModal" : "show"]()
 
+	this.dispatchEvent(new Event("open"))
+
 	if(modal && !this.onclick) this.onclick = event => {
 		let rect = this.getBoundingClientRect();
 		if(event.clientY < rect.top || event.clientY > rect.bottom) return this.close();
@@ -623,6 +625,53 @@ function processAPIAttributes() {
 processAPIAttributes()
 window.afterDataRefresh.push(processAPIAttributes)
 
+function createURLDialog(url, open=false) {
+	let iframe, dialog = document.querySelector(`dialog.frame[data-url="${url}"]`)
+
+	// Get existing dialog
+	if(dialog) {
+		iframe = dialog.querySelector("iframe")
+	
+	// Create new dialog
+	} else {
+		dialog = document.createElement("dialog")
+		dialog.classList.add("frame")
+		dialog.dataset.url = url
+
+		const spinner = document.createElement("i")
+		spinner.innerText = "progress_activity"
+		spinner.classList.add("spin")
+		dialog.append(spinner)
+
+		iframe = document.createElement("iframe")
+		dialog.append(iframe)
+		
+		dialog.addEventListener("open", () => {
+			if(!iframe.getAttribute("src")) iframe.src = url
+		})
+		
+		document.body.append(dialog)
+	}
+
+	iframe.onload = async () => {
+		await sleep(250)
+		if(iframe.classList.contains("loaded")) return
+		if(!iframe.getAttribute("src")) return
+		
+		const errorElement = iframe.contentDocument.querySelector("main h2")
+		let errorText = errorElement?.textContent || "Błąd ładowania strony"
+		Popup.error(errorText)
+		dialog.close()
+
+		await sleep(250)
+		dialog.remove()
+		processDialogOpeners()
+	}
+
+	if(open) dialog.result()
+	return dialog
+}
+
 // "opens-dialog" attribute
 function processDialogOpeners() {
 	for(const opener of window.dialogOpeners || []) {
@@ -635,47 +684,10 @@ function processDialogOpeners() {
 
 		// URL mode
 		if(dialogID.startsWith("/")) {
-			let dialog = document.querySelector(`dialog.frame[data-url="${dialogID}"]`), iframe
-
-			// Get existing dialog
-			if(dialog) {
-				iframe = dialog.querySelector("iframe")
+			const dialog = createURLDialog(dialogID)
 			
-			// Create new dialog
-			} else {
-				dialog = document.createElement("dialog")
-				dialog.classList.add("frame")
-				dialog.dataset.url = dialogID
-
-				const spinner = document.createElement("i")
-				spinner.innerText = "progress_activity"
-				spinner.classList.add("spin")
-				dialog.append(spinner)
-
-				iframe = document.createElement("iframe")
-				dialog.append(iframe)
-				
-				document.body.append(dialog)
-			}
-
 			element.onclick = async () => {
-				if(!iframe.getAttribute("src")) iframe.src = dialogID
 				dialog.result()
-			}
-
-			iframe.onload = async () => {
-				await sleep(250)
-				if(iframe.classList.contains("loaded")) return
-				if(!iframe.getAttribute("src")) return
-				
-				const errorElement = iframe.contentDocument.querySelector("main h2")
-				let errorText = errorElement?.textContent || "Błąd ładowania strony"
-				Popup.error(errorText)
-				dialog.close()
-
-				await sleep(250)
-				dialog.remove()
-				processDialogOpeners()
 			}
 
 			element.removeDialogOpener = () => {
@@ -883,8 +895,8 @@ processMetaTags()
 window.afterDataRefresh.push(processMetaTags)
 
 // Prevent frames
-if(window.top != window && !META.allowFrame) {
+if(window.top != window && !document.body.classList.contains("allow-frames")) {
 	document.documentElement.hidden = true
 	console.warn("Frame detected, attempting to exit...")
-	window.top.location = location
+	if(!META.error) window.top.location = location
 }
