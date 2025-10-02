@@ -60,43 +60,71 @@
 	<i>assignment</i>
 	Dane
 </h2>
-<form>
-	<label for="first-name-input">Imię:</label>
-	<input
-		type="text"
-		id="first-name-input"
-		autocomplete="off"
-		value="<%= $.targetUser.name.first || "" %>"
-		api="user/[userID]/update/names"
-		name="firstName"
-		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
-	>
-
-	<label for="last-name-input">Nazwisko:</label>
-	<input
-		type="text"
-		id="last-name-input"
-		autocomplete="off"
-		value="<%= $.targetUser.name.last || "" %>"
-		api="user/[userID]/update/names"
-		name="lastName"
-		<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
-	>
-
-	<% if($.targetUser.funkcje.length > 0) { %>
-		<label for="date-of-birth-input">Data urodzenia:</label>
+<section>
+	<form>
+		<label for="first-name-input">Imię:</label>
 		<input
-			type="date" id="date-of-birth-input"
-			min="<%= MIN_DATE %>"
-			max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
-			<% if($.targetUser.dateOfBirth) { %>
-				value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
-			<% } %>
-			api="user/[userID]/update/dateOfBirth"
-			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
+			type="text"
+			id="first-name-input"
+			autocomplete="off"
+			value="<%= $.targetUser.name.first || "" %>"
+			api="user/[userID]/update/names"
+			name="firstName"
+			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
 		>
+
+		<label for="last-name-input">Nazwisko:</label>
+		<input
+			type="text"
+			id="last-name-input"
+			autocomplete="off"
+			value="<%= $.targetUser.name.last || "" %>"
+			api="user/[userID]/update/names"
+			name="lastName"
+			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+		>
+
+		<% if($.targetUser.funkcje.length > 0) { %>
+			<label for="date-of-birth-input">Data urodzenia:</label>
+			<input
+				type="date" id="date-of-birth-input"
+				min="<%= MIN_DATE %>"
+				max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
+				<% if($.targetUser.dateOfBirth) { %>
+					value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
+				<% } %>
+				api="user/[userID]/update/dateOfBirth"
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
+			>
+		<% } %>
+	</form>
+	<% if($.targetUser.email || $.targetUser.phone ||
+		 ($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) && !$.targetUser.parents.hasID($.user.id))) { %>
+		<form>
+			<label for="email-input">E-mail:</label>
+			<input
+				type="email"
+				id="email-input"
+				autocomplete="off"
+				value="<%= $.targetUser.email || "" %>"
+				api="user/[userID]/update/email"
+				name="email"
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+			>
+
+			<label for="phone-input">Telefon:</label>
+			<input
+				type="tel"
+				id="phone-input"
+				autocomplete="off"
+				value="<%= $.targetUser.phone || "" %>"
+				api="user/[userID]/update/phone"
+				name="phone"
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+			>
+		</form>
 	<% } %>
-</form>
+</section>
 <div class="button-row">
 	<% if($.targetUser.funkcje.length > 0 || $.targetUser.medical.entries.length) { %>
 		<button href="/users/<%= $.targetUser.id %>/medical">
@@ -104,10 +132,12 @@
 			Dane medyczne
 		</button>
 	<% } %>
-	<button href="/users/<%= $.targetUser.id %>/log">
-		<i>history</i>
-		Log aktywności
-	</button>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY)) { %>
+		<button href="/users/<%= $.targetUser.id %>/log">
+			<i>history</i>
+			Log aktywności
+		</button>
+	<% } %>
 </div>
 
 <% if($.targetUser.isParent) { %>

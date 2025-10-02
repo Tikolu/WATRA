@@ -485,8 +485,8 @@ const API = {
 
 				if(formElement.matches("[type=checkbox], [type=radio]")) {
 					// Default value for checkboxes
-					if(formElement.checked && !formElement.hasAttribute("value")) {
-						elementValue = true
+					if(formElement.checked) {
+						if(!formElement.hasAttribute("value")) elementValue = true
 
 					// Ensure required checkboxes are checked
 					} else if(formElement.required) {

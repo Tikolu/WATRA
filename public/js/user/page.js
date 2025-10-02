@@ -8,6 +8,16 @@ API.registerHandler("user/[userID]/update/dateOfBirth", {
 	successText: "Zapisano datę urodzenia"
 })
 
+API.registerHandler("user/[userID]/update/email", {
+	valueKey: "email",
+	successText: "Zapisano adres e-mail"
+})
+
+API.registerHandler("user/[userID]/update/phone", {
+	valueKey: "phone",
+	successText: "Zapisano numer telefonu"
+})
+
 API.registerHandler("user/[userID]/delete", {
 	progressText: "Kasowanie użytkownika...",
 	before: () => deleteUserDialog.result(),

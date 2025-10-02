@@ -364,6 +364,21 @@ p.warning + p.warning {
 	}
 }
 
+section {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+section > * {
+	height: fit-content;
+	margin-top: 0;
+}
+
+section > *:not(:last-child) {
+	margin-right: 2em;
+}
+
+
 /* Popups and dialogs */
 
 dialog {

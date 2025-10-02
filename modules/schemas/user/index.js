@@ -33,7 +33,18 @@ export class UserClass {
 		min: MIN_DATE,
 		max: Date.now
 	}
-	accessCode = String
+	email = {
+		type: String,
+		lowercase: true,
+		trim: true,
+		match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+	}
+	phone = {
+		type: String,
+		trim: true,
+		match: /^\+\d{1,3}\d{9}$/
+	}
+	
 	parents = [
 		{
 			type: String,
@@ -46,6 +57,7 @@ export class UserClass {
 			ref: "User"
 		}
 	]
+
 	funkcje = [
 		{
 			type: String,
@@ -58,6 +70,7 @@ export class UserClass {
 			ref: "Funkcja"
 		}
 	]
+
 	wyjazdInvites = [
 		{
 			type: String,
@@ -72,6 +85,8 @@ export class UserClass {
 	]
 
 	medical = userMedical
+
+	accessCode = String
 
 	/* * Getters * */
 
@@ -119,6 +134,20 @@ export class UserClass {
 		if(this.isParent && this.age < 18) {
 			throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
 		}
+		await this.save()
+	}
+
+	/** Updates the user's email */
+	async updateEmail(email) {
+		this.email = email
+		await this.save()
+	}
+
+	/** Updates the user's phone number */
+	async updatePhone(phone) {
+		phone = phone.replaceAll(/[^\d+]/g, "")
+		if(phone.startsWith("08")) phone = `+353${phone.slice(1)}`
+		this.phone = phone
 		await this.save()
 	}
 
