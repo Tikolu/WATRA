@@ -7,6 +7,32 @@
 }) %>
 <h1>System Harcerski</h1>
 <p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
+<hr>
+<h2>
+	<i>person</i>
+	Twój profil
+</h2>
+<% if(!$.user.name.first || !$.user.name.last) { %>
+	<p class="warning">
+		<i>warning</i>
+		Uzupełnij swoje imię i nazwisko
+	</p>
+<% } %>
+<% if(!$.user.email || !$.user.phone) { %>
+	<p class="warning">
+		<i>warning</i>
+		Uzupełnij swój adres e-mail i numer telefonu
+	</p>
+<% } %>
+<% if(!$.user.medical.confirmed && $.user.funkcje.length > 0) { %>
+	<p class="warning">
+		<i>warning</i>
+		Uzupełnij i zatwierdź swoje dane medyczne
+	</p>
+<% } %>
+<div class="unit-grid">
+	<%~ include("user/templates/userEntry", {targetUser: $.user}) %>
+</div>
 <% if($.user.funkcje.length > 0) { %>
 	<hr>
 	<h2>
@@ -85,6 +111,27 @@
 		<i>supervisor_account</i>
 		Podopieczni
 	</h2>
+	<% for(const child of $.user.children) { %>
+		<% if(!child.name.first || !child.name.last) { %>
+			<p class="warning">
+				<i>warning</i>
+				Uzupełnij imię i nazwisko podopiecznego
+			</p>
+		<% } %>
+		<% if(!child.dateOfBirth) { %>
+			<p class="warning">
+				<i>warning</i>
+				Uzupełnij datę urodzenia podopiecznego
+			</p>
+		<% } %>
+		<% if(!child.medical.confirmed) { %>
+			<p class="warning">
+				<i>warning</i>
+				Uzupełnij i zatwierdź dane medyczne podopiecznego
+			</p>
+		<% } %>
+		<% break %>
+	<% } %>
 	<div class="unit-grid">
 		<% for(const child of $.user.children) { %>
 			<%~ include("user/templates/userEntry", {targetUser: child}) %>

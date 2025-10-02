@@ -64,11 +64,11 @@ export const medicalCategories = [
 		other: "Dodaj inne wymaganie",
 		symptoms: {
 			heading: "Opis wymagania",
-			placeholder: "Prosimy dokładnie powagę i poziom wymagania"
+			placeholder: "Prosimy o dokładne opisanie powagi i poziomu wymagania dietetycznego."
 		},
 		solutions: {
 			heading: "Zalecenia",
-			placeholder: "Jak radzic sobie"
+			placeholder: ""
 		},
 		elements: [
 			{

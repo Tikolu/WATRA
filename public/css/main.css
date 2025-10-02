@@ -48,7 +48,8 @@ header > nav > i  {
 header > nav > a:not(:first-child) {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	/* min-width: 4em; */
+	flex-shrink: 0;
+	/* max-width: 6em; */
 }
 
 /* transitions */

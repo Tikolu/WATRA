@@ -108,7 +108,7 @@ window.onpageshow = event => {
 	debug("Page restored from bfcache")
 
 	// Restore history backup
-	Session.history = [...historyBackup]
+	Session.history = [...window.historyBackup || []]
 
 	// Blur focused and hovered element
 	document.activeElement.blur()

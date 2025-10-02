@@ -17,6 +17,8 @@ export default async function({user}) {
 
 	// Check permissions
 	await user.checkPermission(Wyjazd.PERMISSIONS.CREATE)
-	
-	return html("main", { user })
+
+	return html("main", {
+		user
+	})
 }
