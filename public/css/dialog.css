@@ -28,7 +28,7 @@ main {
 	margin: 0;
 }
 
-main :first-child {
+main > :first-child {
 	margin-top: 0;
 }
 

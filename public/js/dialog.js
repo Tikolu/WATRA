@@ -7,11 +7,12 @@ API.onRequestStart = async () => {
 	frameElement.classList.remove("loaded")
 }
 // After a successful API request, reset the frame
-API.onRequestSuccess = async () => {
+API.onRequestSuccess = () => {
 	dialog.close()
-	await sleep(250)
-	frameElement.style.height = null
-	frameElement.src = ""
+	sleep(250).then(() => {
+		frameElement.style.height = null
+		frameElement.src = ""
+	})
 }
 // After a failed API request, re-open the dialog
 API.onRequestError = () => {
@@ -20,7 +21,17 @@ API.onRequestError = () => {
 	dialog.showModal()
 }
 
+// Move button
+function moveConfirmButton() {
+	const mainButtons = document.querySelectorAll("main button.confirm")
+	if(!mainButtons.length || mainButtons.length > 1) return
+	const dialogButtons = document.querySelectorAll("body > .button-row:last-child > button")
+	if(dialogButtons.length > 1) return
+	document.querySelector("body > .button-row:last-child").appendChild(mainButtons[0])
+}
+moveConfirmButton()
 
+// Sizing calculations
 async function resizeContainer() {
 	const maxHeight = window.top.getComputedStyle(frameElement).maxHeight
 	document.body.style.maxHeight = maxHeight
