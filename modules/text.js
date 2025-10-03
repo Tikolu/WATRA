@@ -49,3 +49,40 @@ export function id(text) {
 		// Remove any characters that are not letters, numbers or hyphens
 		.replace(/[^\p{Lowercase_Letter}0-9\-]/gu, "")
 }
+
+/**
+ * Formats a phone number
+ * @param {string} phone
+ * @returns {string} phone
+ */
+const phoneFormats = {
+	"+353": [2, 3, 4],
+	"default": [3, 3, 3]
+}
+export function formatPhone(phone, dropPrefix) {
+	if(!phone) return ""
+	
+	let format
+	for(const prefix in phoneFormats) {
+		if(phone.startsWith(prefix)) {
+			format = phoneFormats[prefix]
+			break
+		}
+	}
+	if(!format) format = phoneFormats["default"]
+
+	let output = phone.slice(0, -9)
+	let length = output.length
+	for(const partLength of format) {
+		output += ` ${phone.slice(length, length + partLength)}`
+		length += partLength
+	}
+
+	if(dropPrefix) {
+		let dropped = output.replace(/^\+\d+ /, "")
+		if(output.startsWith("+353")) dropped = "0" + dropped
+		return dropped
+	}
+	
+	return output
+}

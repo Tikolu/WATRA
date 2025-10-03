@@ -1,3 +1,5 @@
+import * as Text from "modules/text.js"
+
 export default async function({user, targetUser, phone}) {
 	// Update phone
 	await targetUser.updatePhone(phone)
@@ -9,6 +11,6 @@ export default async function({user, targetUser, phone}) {
 	})
 
 	return {
-		phone: targetUser.phone
+		phone: Text.formatPhone(targetUser.phone, targetUser.phone.startsWith("+353"))
 	}
 }

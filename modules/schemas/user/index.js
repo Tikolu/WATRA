@@ -140,14 +140,30 @@ export class UserClass {
 	/** Updates the user's email */
 	async updateEmail(email) {
 		this.email = email
+		try {
+			await this.validate()
+		} catch {
+			throw Error("Nieprawidłowy adres e-mail")
+		}
+		
 		await this.save()
 	}
 
 	/** Updates the user's phone number */
 	async updatePhone(phone) {
-		phone = phone.replaceAll(/[^\d+]/g, "")
+		phone = phone.replaceAll(" ", "")
+		phone = phone.replace(/^00/, "+")
+		if(!phone.startsWith("+") && phone.length > 10) phone = `+${phone}`
+		if(phone.startsWith("8") && phone.length == 9) phone = `+353${phone}`
 		if(phone.startsWith("08")) phone = `+353${phone.slice(1)}`
+
 		this.phone = phone
+		try {
+			await this.validate()
+		} catch {
+			throw Error("Nieprawidłowy numer telefonu")
+		}
+		
 		await this.save()
 	}
 
