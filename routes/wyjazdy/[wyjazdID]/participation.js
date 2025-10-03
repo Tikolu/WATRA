@@ -15,9 +15,13 @@ export default async function({user, targetWyjazd, participant: targetUserID}) {
 	const targetInvitation = targetWyjazd.findUserInvite(targetUser)
 	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tego wyjazdu")
 
+	await targetInvitation.populate("user", {known: [targetUser]})
+	const eligibilityIssues = await targetInvitation.getEligibilityIssues()
+
 	return html("wyjazd/participation", {
 		user,
 		targetWyjazd,
-		targetInvitation
+		targetInvitation,
+		eligibilityIssues
 	})
 }

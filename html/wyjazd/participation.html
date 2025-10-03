@@ -6,47 +6,55 @@
 }) %>
 <h1>
 	Uczestnictwo w <%= $.targetWyjazd.displayName %>
-	<% if($.targetInvitation.user.id != $.user.id) { %>
-		(<%= $.targetInvitation.user.name.first %>)
-	<% } %>
 </h1>
 <main>
-	<form id="wyjazd-participation">
-		<input type="radio" name="participation" id="participation-choice-yes" value="yes"
-			<%= $.targetInvitation.state == "accepted" ? "checked" : "" %>
-		>
-		<label for="participation-choice-yes">
-			<% if($.targetInvitation.user.id == $.user.id) { %>
-				Wezmę
-			<% } else { %>
-				<%= $.targetInvitation.user.name.first %> weźmie
-			<% } %>
-			udział
-		</label>
-		<input type="radio" name="participation" id="participation-choice-no" value="no"
-			<%= $.targetInvitation.state == "declined" ? "checked" : "" %>
-		>
-		<label for="participation-choice-no">
-			<% if($.targetInvitation.user.id == $.user.id) { %>
-				Nie wezmę
-			<% } else { %>
-				<%= $.targetInvitation.user.name.first %> nie weźmie
-			<% } %>
-			udziału
-		</label>
-	</form>
-	<form>
-		<input type="checkbox" disabled>
-		<label for="signature">Podpis</label>
-	</form>
+	<% if($.targetInvitation.user.id != $.user.id) { %>
+		<p><%= $.targetInvitation.user.displayName %></p>
+	<% } %>
+	<% if($.eligibilityIssues.length) { %>
+		<% for(const issue of $.eligibilityIssues) { %>
+			<p class="warning"><i>warning</i> <%= issue %></p>
+		<% } %>
+	<% } else { %>
+		<form id="wyjazd-participation">
+			<input type="radio" name="participation" id="participation-choice-yes" value="yes"
+				<%= $.targetInvitation.state == "accepted" ? "checked" : "" %>
+			>
+			<label for="participation-choice-yes">
+				<% if($.targetInvitation.user.id == $.user.id) { %>
+					Wezmę
+				<% } else { %>
+					<%= $.targetInvitation.user.name.first %> weźmie
+				<% } %>
+				udział
+			</label>
+			<input type="radio" name="participation" id="participation-choice-no" value="no"
+				<%= $.targetInvitation.state == "declined" ? "checked" : "" %>
+			>
+			<label for="participation-choice-no">
+				<% if($.targetInvitation.user.id == $.user.id) { %>
+					Nie wezmę
+				<% } else { %>
+					<%= $.targetInvitation.user.name.first %> nie weźmie
+				<% } %>
+				udziału
+			</label>
+		</form>
+		<form>
+			<input type="checkbox" disabled>
+			<label for="signature">Podpis</label>
+		</form>
+	<% } %>
 </main>
 <div class="button-row">
 	<button onclick="dialog.close()">
 		<i>arrow_back</i>
 		<span>Anuluj</span>
 	</button>
-	<button api="wyjazd/[wyjazdID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
-		<i>check</i>
-		<span>Potwierdź</span>
-	</button>
+	<% if(!$.eligibilityIssues.length) { %>
+		<button api="wyjazd/[wyjazdID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
+			<i>check</i>
+			<span>Potwierdź</span>
+		</button>
+	<% } %>
 </div>

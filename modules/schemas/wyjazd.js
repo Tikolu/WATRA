@@ -74,6 +74,12 @@ export class WyjazdClass extends JednostkaClass {
 						// Ignore existing state
 						if(this.state === state) return
 
+						// Check participant eligibility
+						const eligibilityIssues = await this.getEligibilityIssues()
+						if(eligibilityIssues.length) {
+							throw new HTTPError(400, "Użytkownik nie spełnia wymagań do uczestnictwa")
+						}
+
 						this.state = state
 						await targetWyjazd.save()
 
@@ -90,6 +96,18 @@ export class WyjazdClass extends JednostkaClass {
 							if(existingFunkcja) await existingFunkcja.delete()
 						}
 					}
+
+					/** Checks if the user is eligible to participate */
+					async getEligibilityIssues() {
+						await this.populate("user")
+						
+						return Array.conditional(
+							!this.user.name.first || !this.user.name.last, "Uczestnik musi mieć ustawione imię i nazwisko aby uczestniczyć",
+							!this.user.dateOfBirth, "Uczestnik musi mieć ustawioną datę urodzenia aby uczestniczyć",
+							!this.user.medical.confirmed, "Uczestnik musi mieć zatwierdzone dane medyczne aby uczestniczyć"
+						)
+					}
+
 				}
 			]
 
