@@ -12,26 +12,15 @@
 	<i>person</i>
 	Twój profil
 </h2>
-<% if(!$.user.name.first || !$.user.name.last) { %>
-	<p class="warning">
-		<i>warning</i>
-		Uzupełnij swoje imię i nazwisko
-	</p>
-<% } %>
-<% if(!$.user.email || !$.user.phone) { %>
-	<p class="warning">
-		<i>warning</i>
-		Uzupełnij swój adres e-mail i numer telefonu
-	</p>
-<% } %>
-<% if(!$.user.medical.confirmed && $.user.funkcje.length > 0) { %>
-	<p class="warning">
-		<i>warning</i>
-		Uzupełnij i zatwierdź swoje dane medyczne
-	</p>
-<% } %>
 <div class="unit-grid">
-	<%~ include("user/templates/userEntry", {targetUser: $.user}) %>
+	<%~ include("user/templates/userEntry", {
+		targetUser: $.user,
+		warnings: Array.conditional(
+			!$.user.name.first || !$.user.name.last, "Uzupełnij swoje imię i nazwisko",
+			!$.user.email || !$.user.phone, "Uzupełnij swój adres e-mail i numer telefonu",
+			!$.user.medical.confirmed && $.user.funkcje.length > 0, "Uzupełnij i zatwierdź swoje dane medyczne"
+		)
+	}) %>
 </div>
 <% if($.user.funkcje.length > 0) { %>
 	<hr>
@@ -41,66 +30,8 @@
 	</h2>
 	<div class="unit-grid">
 		<% for(const funkcja of $.user.funkcje) { %>
-			<a href="/jednostki/<%= funkcja.jednostka.id %>">
-				<h3><%= funkcja.jednostka.displayName %></h3>
-				<p><%= funkcja.jednostka.typeName %></p>
-			</a>
-		<% } %>
-	</div>
-<% } %>
-<% if(
-	$.user.funkcjeWyjazdowe.length ||
-	$.user.wyjazdInvites.length ||
-	$.user.hasPermission(Wyjazd.PERMISSIONS.CREATE) ||
-	$.user.children.some(child => child.wyjazdInvites.length)
-) { %>
-	<hr>
-	<h2>
-		<i>hiking</i>
-		Wyjazdy
-	</h2>
-	<div class="unit-grid">
-		<% for(const funkcja of $.user.funkcjeWyjazdowe) { %>
-			<a href="/wyjazdy/<%= funkcja.jednostka.id %>">
-				<h3><%= funkcja.jednostka.displayName %></h3>
-				<p><%= funkcja.jednostka.typeName %></p>
-			</a>
-		<% } %>
-
-		<% for(const targetUser of [$.user, ...$.user.children]) { %>
-			<% for(const wyjazd of targetUser.wyjazdInvites) { %>
-				<%~ include("user/templates/wyjazdInvite", {
-					targetWyjazd: wyjazd,
-					targetUser
-				}) %>
-			<% } %>
-		<% } %>
-	</div>
-	<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
-		<button id="create-wyjazd-button" api="wyjazd/create">
-			<i>tour</i>
-			<span>Nowy wyjazd</span>
-		</button>
-	<% } %>
-<% } %>
-<% if(
-	$.user.wyjazdApprovalRequests.length &&
-	$.user.wyjazdApprovalRequests.some(w => !w.getApprover($.user).approved)
-) { %>
-	<hr>
-	<h2>
-		<i>gavel</i>
-		Wyjazdy do zatwierdzenia
-	</h2>
-	<div class="unit-grid">
-		<% for(const wyjazd of $.user.wyjazdApprovalRequests) { %>
-			<%
-				const approver = wyjazd.getApprover($.user)
-				if(approver.approved) continue
-			%>
-			<%~ include("user/templates/wyjazdApprovalRequest", {
-				targetWyjazd: wyjazd,
-				targetUser: $.user
+			<%~ include("jednostka/templates/jednostkaEntry", {
+				targetJednostka: funkcja.jednostka
 			}) %>
 		<% } %>
 	</div>
@@ -111,30 +42,46 @@
 		<i>supervisor_account</i>
 		Podopieczni
 	</h2>
-	<% for(const child of $.user.children) { %>
-		<% if(!child.name.first || !child.name.last) { %>
-			<p class="warning">
-				<i>warning</i>
-				Uzupełnij imię i nazwisko podopiecznego
-			</p>
-		<% } %>
-		<% if(!child.dateOfBirth) { %>
-			<p class="warning">
-				<i>warning</i>
-				Uzupełnij datę urodzenia podopiecznego
-			</p>
-		<% } %>
-		<% if(!child.medical.confirmed) { %>
-			<p class="warning">
-				<i>warning</i>
-				Uzupełnij i zatwierdź dane medyczne podopiecznego
-			</p>
-		<% } %>
-		<% break %>
-	<% } %>
 	<div class="unit-grid">
 		<% for(const child of $.user.children) { %>
-			<%~ include("user/templates/userEntry", {targetUser: child}) %>
+			<%~ include("user/templates/userEntry", {
+				targetUser: child,
+				warnings: Array.conditional(
+					!child.name.first || !child.name.last, "Uzupełnij imię i nazwisko",
+					!child.dateOfBirth, "Uzupełnij datę urodzenia",
+					!child.medical.confirmed, "Uzupełnij i zatwierdź dane medyczne"
+				)
+			}) %>
 		<% } %>
 	</div>
+<% } %>
+<% if($.wyjazdy.length) { %>
+	<hr>
+	<h2>
+		<i>hiking</i>
+		Wyjazdy
+	</h2>
+	<div class="unit-grid">
+		<% for(const wyjazd of $.wyjazdy) { %>
+			<%
+				const inviteStates = [$.user, ...$.user.children].map(u => wyjazd.findUserInvite(u)?.state)
+				const approvalState = wyjazd.getApprover($.user)?.approved
+
+				if(approvalState === true && !inviteStates.length) continue
+			%>
+			<%~ include("wyjazd/templates/wyjazdEntry", {
+				targetWyjazd: wyjazd,
+				warnings: Array.conditional(
+					inviteStates.includes("pending"), "Oczekiwana odpowiedź",
+					approvalState === false, "Oczekiwane zatwierdzenie"
+				)
+			}) %>
+		<% } %>
+	</div>
+	<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
+		<button id="create-wyjazd-button" opens-dialog="/wyjazd/create">
+			<i>tour</i>
+			<span>Utwórz wyjazd</span>
+		</button>
+	<% } %>
 <% } %>

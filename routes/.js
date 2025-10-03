@@ -18,7 +18,15 @@ export default async function({user}) {
 	// Check permissions
 	await user.checkPermission(Wyjazd.PERMISSIONS.CREATE)
 
+	const wyjazdy = [
+		...user.wyjazdInvites,
+		...user.wyjazdApprovalRequests,
+		...user.funkcjeWyjazdowe.map(f => f.jednostka),
+		...user.children.flatMap(c => c.wyjazdInvites)
+	].unique("id")
+	
 	return html("main", {
-		user
+		user,
+		wyjazdy
 	})
 }

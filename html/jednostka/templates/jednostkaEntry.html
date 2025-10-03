@@ -1,15 +1,16 @@
-<a href="/users/<%= $.targetUser.id %>">
+<a href="/jednostki/<%= $.targetJednostka.id %>">
 	<div class="unit-header">
 		<div class="unit-image">
-			<i>person</i>
+			<i>groups</i>
 		</div>
 		<div class="unit-title">
-			<h3><%= $.targetUser.displayName %></h3>
+			<h3><%= $.targetJednostka.displayName %></h3>
 			<p>
 				<% if($.description) { %>
 					<%= $.description %>
-				<% } else if($.targetUser.funkcje?.length == 1 && typeof $.targetUser.funkcje[0] != "string") { %>
-					<%= Text.capitalise($.targetUser.funkcje[0].displayName) %>, <%= $.targetUser.funkcje[0].jednostka?.displayName || "(nieznana jednostka)" %>
+				<% } else { %>
+					<%= $.targetJednostka.typeName %>
+					<% if($.targetJednostka.upperJednostki[0]?.displayName) { %>, <%= $.targetJednostka.upperJednostki[0]?.displayName %><% } %>
 				<% } %>
 			</p>
 		</div>

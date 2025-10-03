@@ -271,7 +271,7 @@ p.warning {
 }
 
 p.warning + p.warning {
-	margin-top: 0.5em;
+	margin-top: -0.5em;
 }
 
 /* Custom layouts */
@@ -289,23 +289,51 @@ p.warning + p.warning {
 	margin: 0.5em 0;
 	display: grid;
 	grid-template-columns: repeat(var(--unit-grid-columns), 1fr);
-	gap: 1em;
+	gap: 0.5em;
 
 	& > div, & > a {
-		padding: 1em;
+		padding: 0.5em;
 
 		overflow: hidden;
 		border-radius: var(--border-radius);
 
 		text-decoration: none;
 
-		& > h3, & > p {
-			margin: 0;
-			
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+		& > .unit-header {
+			display: flex;
+
+			& > .unit-image {
+				margin-right: 0.5em;
+				display: flex;
+			}
+
+			& > .unit-image > i {
+				margin: auto;
+				font-size: 2em;
+			}
+
+			& > .unit-title {
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+
+				& > * {
+					margin: 0;
+					
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
 		}
+
+		& > .unit-content {
+			& > :last-child {
+				margin-bottom: 0;
+			}
+		}
+
 
 		& > label {
 			margin-left: 0.5em;

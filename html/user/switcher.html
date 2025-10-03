@@ -28,8 +28,15 @@
 		<div class="unit-grid">
 			<% for(const user of $.savedUsers) { %>
 				<div>
-					<h3><%= user.displayName %></h3>
-					<div class="button-row">
+					<div class="unit-header">
+						<div class="unit-image">
+							<i>person</i>
+						</div>
+						<div class="unit-title">
+							<h3><%= user.displayName %></h3>
+						</div>
+					</div>
+					<div class="unit-content button-row">
 						<button href="/logout/switch?userID=<%= user.id %>">
 							<i>login</i>
 							<span>Zaloguj</span>

@@ -26,7 +26,7 @@
 			name="name"
 			<% $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ? "" : "disabled" %>
 		>
-	</form> -->
+	</form>
 <% } %>
 
 <h3>
@@ -144,10 +144,13 @@
 		<div id="wyjazd-member-list" class="unit-grid">
 			<% for(const funkcja of $.targetWyjazd.funkcje || []) { %>
 				<% if(funkcja.type === FunkcjaType.SZEREGOWY && $.targetWyjazd.findUserInvite(funkcja.user)) continue %>
-				<a href="/users/<%= funkcja.user.id %>">
-					<h3><%= funkcja.user.displayName %></h3>
-					<p><%= Text.capitalise(funkcja.displayName) %></p>
-				</a>
+				<%~ include("/user/templates/userEntry", {
+					targetUser: funkcja.user,
+					description: Text.capitalise(funkcja.displayName),
+					warnings: Array.conditional(
+						!funkcja.user.medical.confirmed && funkcja.user.funkcje.length > 0, "Nie zatwierdzone dane medyczne"
+					)
+				}) %>
 			<% } %>
 		</div>
 		<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
@@ -243,20 +246,22 @@
 					$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)
 				)
 			) { %>
-				<div id="jednostka-participants" class="unit-grid">
+				<div class="unit-grid">
 					<% for(const userInvite of jednostkaInvite.invitedUsers) { %>
-						<a href="/users/<%= userInvite.user.id %>">
-							<h3><%= userInvite.user.displayName %></h3>
-							<p>
-								<% if(userInvite.state == "accepted") { %>
-									Zaakceptowano <i>check</i>
-								<% } else if(userInvite.state == "declined") { %>
-									Odrzucono <i>cancel</i>
-								<% } else if(userInvite.state == "pending") { %>
-									Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
-								<% } %>
-							</p>
-						</a>
+						<%
+							let content = ""
+							if(userInvite.state == "accepted") {
+								content = "Zaakceptowano"
+							} else if(userInvite.state == "declined") {
+								content = "Odrzucono"
+							} else if(userInvite.state == "pending") {
+								content = "Oczekiwana odpowiedź..."
+							}
+						%>
+						<%~ include("/user/templates/userEntry", {
+							targetUser: userInvite.user,
+							content
+						}) %>
 					<% } %>
 				</div>
 			<% } %>

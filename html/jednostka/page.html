@@ -49,10 +49,10 @@
 			<% if(!subJednostka) { %>
 				<div>(nieznana jednostka)</div>
 			<% } else { %>
-				<a href="/jednostki/<%= subJednostka.id %>">
-					<h3><%= subJednostka.displayName %></h3>
-					<p><%= subJednostka.typeName %></p>
-				</a>
+				<%~ include("templates/jednostkaEntry.html", {
+					targetJednostka: subJednostka,
+					description: Text.capitalise(subJednostka.typeName)
+				}) %>
 			<% } %>
 		<% } %>
 	</div>
@@ -74,10 +74,10 @@
 	</h2>
 	<div id="jednostka-member-list" class="unit-grid">
 		<% for(const funkcja of $.targetJednostka.funkcje || []) { %>
-			<a href="/users/<%= funkcja.user.id %>">
-				<h3><%= funkcja.user.displayName %></h3>
-				<p><%= Text.capitalise(funkcja.displayName) %></p>
-			</a>
+			<%~ include("/user/templates/userEntry.html", {
+				targetUser: funkcja.user,
+				description: Text.capitalise(funkcja.displayName)
+			}) %>
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetJednostka.PERMISSIONS.MODIFY)) { %>
@@ -100,19 +100,25 @@
 	</h2>
 	<div id="jednostka-wyjazd-list" class="unit-grid">
 		<% for(const wyjazd of $.targetJednostka.wyjazdInvites || []) { %>
-			<a href="/wyjazdy/<%= wyjazd.id %>">
-				<h3><%= wyjazd.displayName %></h3>
-				<% const invite = wyjazd.invitedJednostki.find(i => i.jednostka == $.targetJednostka.id) %>
-				<% if(invite.state == "accepted") { %>
-					<% if(invite.invitedUsers.length > 0) { %>
-						<p>Zaproszeni uczestnicy: <%= invite.invitedUsers.length %></p>
-					<% } else { %>
-						<p>Zaproszenie zaakceptowane</p>
-					<% } %>
-				<% } else if(invite.state == "pending") { %>
-					<p>Oczekujące zaproszenie...</p>
-				<% } %>
-			</a>
+			<%
+				const invite = wyjazd.invitedJednostki.find(i => i.jednostka == $.targetJednostka.id)
+
+				let content
+				if(invite.state == "accepted") {
+					if(invite.invitedUsers.length > 0) {
+						content = `Zaproszeni uczestnicy: ${invite.invitedUsers.length}`
+					} else {
+						content = `Zaproszenie zaakceptowane`
+					}
+				}
+			%>
+			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
+				targetWyjazd: wyjazd,
+				content,
+				warnings: Array.conditional(
+					invite.state == "pending", "Oczekujące zaproszenie"
+				)
+			}) %>
 		<% } %>
 	</div>
 <% } %>
