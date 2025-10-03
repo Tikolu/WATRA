@@ -44,6 +44,12 @@
 		</button>
 		<dialog id="access-code-dialog">
 			<h1>Kod dostępu</h1>
+			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent && $.targetUser.funkcje.every(f => !f.jednostka.type <= JednostkaType.DRUŻYNA)) { %>
+				<p class="warning">
+					<i>warning</i>
+					Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, nie konta rodzica/opiekuna!
+				</p>
+			<% } %>
 			<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
 			<input type="text" class="access-code" id="user-access-code-container" disabled>
 			<div class="button-row">
@@ -180,10 +186,10 @@
 	</h2>
 	<div id="jednostka-list" class="unit-grid">
 		<% for(const funkcja of $.targetUser.funkcje) { %>
-			<a href="/jednostki/<%= funkcja.jednostka?.id %>">
-				<h3><%= funkcja.jednostka?.displayName || "(nieznana jednostka)" %></h3>
-				<p><%= Text.capitalise(funkcja.displayName) %></p>
-			</a>
+			<%~ include("/jednostka/templates/jednostkaEntry", {
+				targetJednostka: funkcja.jednostka,
+				content: Text.capitalise(funkcja.displayName)
+			}) %>
 		<% } %>
 	</div>
 <% } %>
@@ -198,14 +204,6 @@
 		Wyjazdy
 	</h2>
 	<div id="wyjazd-list" class="unit-grid">
-		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
-			<% for(const wyjazd of $.targetUser.wyjazdInvites) { %>
-				<%~ include("templates/wyjazdInvite", {
-					targetUser: $.targetUser,
-					targetWyjazd: wyjazd
-				}) %>
-			<% } %>
-		<% } %>
 		<% for(const funkcja of $.targetUser.funkcjeWyjazdowe) { %>
 			<%
 				if(
@@ -213,10 +211,10 @@
 					$.targetUser.wyjazdInvites.some(w => w.id == funkcja.jednostka?.id)
 				) continue
 			%>
-			<a href="/wyjazdy/<%= funkcja.jednostka?.id %>">
-				<h3><%= funkcja.jednostka?.displayName || "(nieznany wyjazd)" %></h3>
-				<p><%= Text.capitalise(funkcja.displayName) %></p>
-			</a>
+			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
+				targetWyjazd: funkcja.jednostka,
+				content: Text.capitalise(funkcja.displayName)
+			}) %>
 		<% } %>
 	</div>
 <% } %>
@@ -229,9 +227,13 @@
 	</h2>
 	<div class="unit-grid">
 		<% for(const wyjazd of $.targetUser.wyjazdApprovalRequests) { %>
-			<%~ include("templates/wyjazdApprovalRequest", {
+			<%
+				const approvalState = wyjazd.getApprover($.targetUser)?.approved
+				if(approvalState === undefined) continue
+			%>
+			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
 				targetWyjazd: wyjazd,
-				targetUser: $.targetUser
+				content: approvalState ? "Zatwierdzony" : "Oczekiwane zatwierdzenie",
 			}) %>
 		<% } %>
 	</div>
