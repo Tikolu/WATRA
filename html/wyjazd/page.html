@@ -13,7 +13,7 @@
 	<hr>
 	<h2>
 		<i>manufacturing</i>
-		Ustawienia
+		Szczegóły wyjazdu
 	</h2>
 	<form>
 		<label for="wyjazd-name-input">Nazwa:</label>
@@ -26,7 +26,7 @@
 			name="name"
 			<% $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ? "" : "disabled" %>
 		>
-	</form>
+	</form> -->
 <% } %>
 
 <h3>
@@ -42,66 +42,75 @@
 	<% } %>
 ><%= $.targetWyjazd.description || "" %></textarea>
 
-<h3>
-	<i>calendar_today</i>
-	Daty
-</h3>
-<form>
-	<%
-		const minYear = 1800
-		const maxYear = Number(datetime.format(new Date, "yyyy")) + 50
-	%>
-	<label for="wyjazd-name-input">Od:</label>
-	<input
-		type="datetime-local"
-		id="wyjazd-start-date-input"
-		min="<%= MIN_DATE %>T00:00"
-		max="<%= MAX_DATE %>T00:00"
-		<% if($.targetWyjazd.dates.start) { %>
-			value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
-		<% } %>
-		api="wyjazd/[wyjazdID]/update/dates"
-		name="startDate"
-		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-			disabled
-		<%- } %>
-	>
+<section>
+	<% if($.targetWyjazd.dates.start || $.targetWyjazd.dates.end || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+		<div>
+			<h3>
+				<i>calendar_today</i>
+				Daty
+			</h3>
+			<form>
+				<%
+					const minYear = 1800
+					const maxYear = Number(datetime.format(new Date, "yyyy")) + 50
+				%>
+				<label for="wyjazd-name-input">Od:</label>
+				<input
+					type="datetime-local"
+					id="wyjazd-start-date-input"
+					min="<%= MIN_DATE %>T00:00"
+					max="<%= MAX_DATE %>T00:00"
+					<% if($.targetWyjazd.dates.start) { %>
+						value="<%= datetime.format($.targetWyjazd.dates.start, "yyyy-MM-ddTHH:mm") %>"
+					<% } %>
+					api="wyjazd/[wyjazdID]/update/dates"
+					name="startDate"
+					<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+						disabled
+					<%- } %>
+				>
 
-	<label for="wyjazd-name-input">Do:</label>
-	<input
-		type="datetime-local"
-		id="wyjazd-end-date-input"
-		min="<%= MIN_DATE %>T00:00"
-		max="<%= MAX_DATE %>T00:00"
-		<% if($.targetWyjazd.dates.end) { %>
-			value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
-		<% } %>
-		api="wyjazd/[wyjazdID]/update/dates"
-		name="endDate"
-		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-			disabled
-		<%- } %>
-	>
-</form>
-
-<h3>
-	<i>distance</i>
-	Lokalizacja
-</h3>
-<form>
-	<label for="wyjazd-location-input">Lokalizacja:</label>
-	<input
-		type="text"
-		id="wyjazd-location-input"
-		autocomplete="off"
-		value="<%= $.targetWyjazd.location || "" %>"
-		api="wyjazd/[wyjazdID]/update/location"
-		name="location"
-		<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-			disabled
-		<% } %>
-	>
-</form>
+				<label for="wyjazd-name-input">Do:</label>
+				<input
+					type="datetime-local"
+					id="wyjazd-end-date-input"
+					min="<%= MIN_DATE %>T00:00"
+					max="<%= MAX_DATE %>T00:00"
+					<% if($.targetWyjazd.dates.end) { %>
+						value="<%= datetime.format($.targetWyjazd.dates.end, "yyyy-MM-ddTHH:mm") %>"
+					<% } %>
+					api="wyjazd/[wyjazdID]/update/dates"
+					name="endDate"
+					<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+						disabled
+					<%- } %>
+				>
+			</form>
+		</div>
+	<% } %>
+	<% if($.targetWyjazd.location || $.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+		<div>
+			<h3>
+				<i>distance</i>
+				Lokalizacja
+			</h3>
+			<form>
+				<input
+					type="text"
+					id="wyjazd-location-input"
+					autocomplete="off"
+					value="<%= $.targetWyjazd.location || "" %>"
+					api="wyjazd/[wyjazdID]/update/location"
+					name="location"
+					placeholder="(brak lokalizacji)"
+					<% if(!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
+						disabled
+					<% } %>
+				>
+			</form>
+		</div>
+	<% } %>
+</section>
 
 <% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 	<br>

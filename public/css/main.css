@@ -23,6 +23,7 @@ header #user-profile-link {
 header nav {
 	display: flex;
 	overflow: auto hidden;
+	scrollbar-width: none;
 	
 	min-width: 0;
 	width: 100%;
