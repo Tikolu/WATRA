@@ -15,4 +15,8 @@ export default async function({user, targetWyjazd, targetUser, funkcjaType}) {
 	}
 
 	await targetWyjazd.setFunkcja(targetUser, funkcjaType)
+
+	return {
+		funkcjaType
+	}
 }

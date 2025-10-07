@@ -10,4 +10,6 @@ export default async function({targetJednostka, targetWyjazd, targetInvitation})
 
 	await targetWyjazd.save()
 	await targetJednostka.save()
+
+	return targetInvitation.state
 }

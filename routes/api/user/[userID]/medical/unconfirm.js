@@ -1,9 +1,3 @@
-export default async function({user, targetUser}) {
+export default async function({targetUser}) {
 	await targetUser.medical.unconfirm()
-
-	// Log event
-	await user.logEvent("MEDICAL_UNCONFIRM", {
-		targetUser,
-		data: targetUser.medical.entries
-	})
 }

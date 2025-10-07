@@ -3,4 +3,8 @@ import User from "modules/schemas/user";
 
 export default async function({targetInvitation, participants: participantIDs=[]}) {
 	await targetInvitation.setParticipants(participantIDs)
+
+	return {
+		participantIDs
+	}
 }

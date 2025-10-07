@@ -5,4 +5,6 @@ export default async function({targetWyjazd, targetInvitation}) {
 	targetInvitation.state = "accepted"
 
 	await targetWyjazd.save()
+
+	return targetInvitation.state
 }

@@ -14,7 +14,7 @@ export default async function({user, targetUser}) {
 		]
 	})
 
-	await logs.populate("targetUser")
+	await logs.populate(["targetUser", "targetWyjazd", "targetJednostka"])
 
 	return html("user/log", {
 		user,

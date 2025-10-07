@@ -123,7 +123,7 @@
 				type="tel"
 				id="phone-input"
 				autocomplete="off"
-				value="<%= Text.formatPhone($.targetUser.phone, $.targetUser.phone.startsWith("+353")) || "" %>"
+				value="<%= Text.formatPhone($.targetUser.phone, $.targetUser.phone?.startsWith("+353")) || "" %>"
 				api="user/[userID]/update/phone"
 				name="phone"
 				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>

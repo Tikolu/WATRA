@@ -13,4 +13,8 @@ export default async function({user, targetJednostka, subJednostkaID}) {
 	await user.requirePermission(subJednostka.PERMISSIONS.MODIFY)
 
 	await targetJednostka.addSubJednostka(subJednostka)
+
+	return {
+		subJednostka: subJednostkaID
+	}
 }

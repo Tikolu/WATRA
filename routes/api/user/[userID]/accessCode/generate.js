@@ -5,5 +5,10 @@ export default async function({user, targetUser}) {
 	// Generate access code
 	const accessCode = await targetUser.generateAccessCode()
 
-	return { accessCode }
+	// Prevent logging of access code
+	this.logging.noOutput = true
+
+	return {
+		accessCode
+	}
 }

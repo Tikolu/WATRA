@@ -3,6 +3,8 @@ import HTTPError from "modules/server/error.js"
 export async function open() {
 	this.response.headers.set("Content-Type", "application/json")
 
+	this.logging = {}
+
 	let input = ""
 	if(this.request.method == "POST") input = await this.request.getBody()
 
@@ -22,7 +24,8 @@ function removeANSI(text) {
 	return text.replaceAll(/\u001b\[[0-9]+m/g, "")
 }
 
-export function exit() {
+export async function exit({user}) {
+	
 	if(this.lastError) {
 		if(this.lastError.defaultMessage) {
 			if(this.lastError.httpCode == 400) this.lastError.message = "Invalid request"
@@ -40,14 +43,24 @@ export function exit() {
 		this.lastError.clear()
 	}
 
-	this.lastOutput ||= {}
+	let output = this.lastOutput
+	if(user && user.logEvent && !this.logging.disabled) {
+		await user.logEvent(this.request.address.pathname.replace(/^\/api\//, ""), {
+			targetUser: this.routeData.targetUser,
+			targetJednostka: this.routeData.targetJednostka,
+			targetWyjazd: this.routeData.targetWyjazd,
+			data: this.logging.noOutput ? undefined : output
+		})
+	}
 
-	if(typeof this.lastOutput == "object") {
+	output ||= {}
+
+	if(typeof output == "object") {
 		try {
-			this.lastOutput = JSON.stringify(this.lastOutput)
+			output = JSON.stringify(output)
 		} catch {
 			this.response.statusCode = 500
-			this.lastOutput = JSON.stringify({
+			output = JSON.stringify({
 				error: {
 					code: 500,
 					message: "Failed to generate API output",
@@ -56,5 +69,5 @@ export function exit() {
 		}
 	}
 
-	return this.lastOutput
+	return output
 }

@@ -18,13 +18,17 @@ export class LogClass {
 
 	eventType = {
 		type: String,
-		required: true,
-		validate: /^[\p{Uppercase_Letter}0-9_]+$/u
+		required: true
 	}
 
 	targetUser = {
 		type: String,
 		ref: "User"
+	}
+
+	targetJednostka = {
+		type: String,
+		ref: "Jednostka"
 	}
 
 	data = {}

@@ -301,30 +301,30 @@ p.warning + p.warning {
 
 		& > .unit-header {
 			display: flex;
+		}
 
-			& > .unit-image {
-				margin-right: 0.5em;
-				display: flex;
-			}
+		& .unit-image {
+			margin-right: 0.5em;
+			display: flex;
+		}
 
-			& > .unit-image > i {
-				margin: auto;
-				font-size: 2em;
-			}
+		& .unit-image > i {
+			margin: auto;
+			font-size: 2em;
+		}
 
-			& > .unit-title {
+		& .unit-title {
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+
+			& > * {
+				margin: 0;
+				
 				overflow: hidden;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-
-				& > * {
-					margin: 0;
-					
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-				}
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 		}
 
@@ -333,7 +333,6 @@ p.warning + p.warning {
 				margin-bottom: 0;
 			}
 		}
-
 
 		& > label {
 			margin-left: 0.5em;

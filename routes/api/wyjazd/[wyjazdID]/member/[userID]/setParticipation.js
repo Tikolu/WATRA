@@ -13,4 +13,7 @@ export default async function({user, targetWyjazd, targetUser, participation}) {
 	// Set participation state
 	await targetInvitation.setState(participation ? "accepted" : "declined")
 
+	return {
+		participation
+	}
 }

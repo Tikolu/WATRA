@@ -271,11 +271,13 @@ export class UserClass {
 
 	/** Adds an entry to the user's activity log */
 	async logEvent(eventType, options={}) {
-		const {targetUser, data} = options
+		const {targetUser, targetWyjazd, targetJednostka, data} = options
 		const logEntry = new Log({
 			user: this.id,
 			eventType,
 			targetUser,
+			targetWyjazd,
+			targetJednostka,
 			data
 		})
 		await logEntry.save()
