@@ -8,7 +8,10 @@ import { FunkcjaType, JednostkaType, FunkcjaNames } from "modules/types.js"
 export class JednostkaClass {
 	/* * Properties * */
 	
-	name = String
+	name = {
+		type: String,
+		trim: true
+	}
 	type = {
 		type: Number,
 		enum: Object.values(JednostkaType)
@@ -57,7 +60,7 @@ export class JednostkaClass {
 
 	/** Updates the jednostka name */
 	async updateName(name) {
-		this.name = name.trim()
+		this.name = name
 		await this.save()
 	}
 	
