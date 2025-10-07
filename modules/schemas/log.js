@@ -26,9 +26,9 @@ export class LogClass {
 		ref: "User"
 	}
 
-	targetJednostka = {
+	targetUnit = {
 		type: String,
-		ref: "Jednostka"
+		ref: "Unit"
 	}
 
 	data = {}

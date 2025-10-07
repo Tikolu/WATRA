@@ -5,14 +5,14 @@ import * as datetime from "jsr:@std/datetime"
 import Funkcja from "modules/schemas/funkcja.js"
 import HTTPError from "modules/server/error.js"
 
-import { JednostkaClass } from "modules/schemas/jednostka.js"
-import { FunkcjaType, JednostkaType, WyjazdoweFunkcjaNames } from "modules/types.js"
+import { UnitClass } from "modules/schemas/unit.js"
+import { FunkcjaType, UnitType, WyjazdoweFunkcjaNames } from "modules/types.js"
 
-export class WyjazdClass extends JednostkaClass {
+export class WyjazdClass extends UnitClass {
 	/* * Properties * */
 
-	upperJednostki = undefined
-	subJednostki = undefined
+	upperUnits = undefined
+	subUnits = undefined
 	type = undefined
 	wyjazdInvites = undefined
 
@@ -39,11 +39,11 @@ export class WyjazdClass extends JednostkaClass {
 		default: ""
 	}
 
-	invitedJednostki = [
+	invitedUnits = [
 		class {
-			jednostka = {
+			unit = {
 				type: String,
-				ref: "Jednostka",
+				ref: "Unit",
 				deriveID: true
 			}
 
@@ -92,7 +92,7 @@ export class WyjazdClass extends JednostkaClass {
 
 						// Remove funkcja if declined
 						if(state == "declined") {
-							const existingFunkcja = await this.user.getFunkcjaInJednostka(targetWyjazd)
+							const existingFunkcja = await this.user.getFunkcjaInUnit(targetWyjazd)
 							if(existingFunkcja) await existingFunkcja.delete()
 						}
 					}
@@ -111,7 +111,7 @@ export class WyjazdClass extends JednostkaClass {
 				}
 			]
 
-			/** Sets participants for the wyjazd, by inviting users from the jednostka */
+			/** Sets participants for the wyjazd, by inviting users from the unit */
 			async setParticipants(participantIDs) {
 				const targetWyjazd = this.parent()
 				
@@ -120,14 +120,14 @@ export class WyjazdClass extends JednostkaClass {
 					throw new HTTPError(400, "Zaproszenie na wyjazd nie zostało zaakceptowane")
 				}
 				
-				// Ensure all participants belong to jednostka
-				await this.populate("jednostka")
-				const members = await Array.fromAsync(this.jednostka.getSubMembers())
+				// Ensure all participants belong to unit
+				await this.populate("unit")
+				const members = await Array.fromAsync(this.unit.getSubMembers())
 				const participants = []
 				for(const participantID of participantIDs) {
 					const participant = members.find(m => m.id == participantID)
 					if(!participant) {
-						throw new HTTPError(400, "Nie można dodać uczestnika, który nie jest członkiem jednostki.")
+						throw new HTTPError(400, "Nie można dodać uczestnika, który nie jest członkiem units.")
 					}
 					participants.push(participant)
 				}
@@ -138,7 +138,7 @@ export class WyjazdClass extends JednostkaClass {
 					if(this.invitedUsers.some(i => i.user.id == participant.id)) continue
 
 					// Check if user has a funckja
-					const existingFunkcja = await participant.getFunkcjaInJednostka(targetWyjazd)
+					const existingFunkcja = await participant.getFunkcjaInUnit(targetWyjazd)
 					if(existingFunkcja) continue
 					
 					// Add user to invited
@@ -170,11 +170,11 @@ export class WyjazdClass extends JednostkaClass {
 					await userInvite.delete()
 					
 					// Remove user's funkcja
-					const existingFunkcja = await userInvite.user.getFunkcjaInJednostka(targetWyjazd)
+					const existingFunkcja = await userInvite.user.getFunkcjaInUnit(targetWyjazd)
 					if(existingFunkcja) {
 						existingFunkcja.$locals.test = "test"
 						await existingFunkcja.populate(
-							["jednostka", "user"],
+							["unit", "user"],
 							{known: [targetWyjazd, userInvite.user]}
 						)
 						await existingFunkcja.delete()
@@ -184,27 +184,27 @@ export class WyjazdClass extends JednostkaClass {
 				await targetWyjazd.save()
 			}
 
-			/** Alias for parent uninviteJednostka method */
+			/** Alias for parent uninviteUnit method */
 			async uninvite() {
-				await this.parent().uninviteJednostka(this.jednostka)
+				await this.parent().uninviteUnit(this.unit)
 			}
 
-			/** Finds approvers of an invited jednostka */
+			/** Finds approvers of an invited unit */
 			async * findApprovers() {
-				await this.populate("jednostka")
+				await this.populate("unit")
 
-				const jednostki = [this.jednostka]
-				jednostki.push(...await Array.fromAsync(this.jednostka.getUpperJednostkiTree()))
+				const units = [this.unit]
+				units.push(...await Array.fromAsync(this.unit.getUpperUnitsTree()))
 
-				for(const jednostka of jednostki) {
-					if(jednostka.type < JednostkaType.HUFIEC) continue
+				for(const unit of units) {
+					if(unit.type < UnitType.HUFIEC) continue
 
-					await jednostka.populate("funkcje")
-					for(const funkcja of jednostka.funkcje) {
+					await unit.populate("funkcje")
+					for(const funkcja of unit.funkcje) {
 						if(funkcja.type < FunkcjaType.REFERENT) continue
 						await funkcja.populate(
-							["user", "jednostka"],
-							{known: [jednostka]}
+							["user", "unit"],
+							{known: [unit]}
 						)
 						yield funkcja
 					}
@@ -320,8 +320,8 @@ export class WyjazdClass extends JednostkaClass {
 
 	/** Finds the user invite for a user */
 	findUserInvite(user) {
-		for(const invitedJednostka of this.invitedJednostki) {
-			const invite = invitedJednostka.invitedUsers.id(user.id)
+		for(const invitedUnit of this.invitedUnits) {
+			const invite = invitedUnit.invitedUsers.id(user.id)
 			if(invite) return invite
 		}
 	}
@@ -331,35 +331,35 @@ export class WyjazdClass extends JednostkaClass {
 		return super.getFunkcjaOptions(WyjazdoweFunkcjaNames)
 	}
 
-	getUpperJednostkiTree() {
+	getUpperUnitsTree() {
 		return []
 	}
 
-	/** Invite jednostka to wyjazd */
-	async inviteJednostka(jednostka) {
+	/** Invite unit to wyjazd */
+	async inviteUnit(unit) {
 		// Remove existing invites
-		this.invitedJednostki = this.invitedJednostki.filter(i => i.jednostka != jednostka.id)
+		this.invitedUnits = this.invitedUnits.filter(i => i.unit != unit.id)
 		
-		// Invite jednostka
-		this.invitedJednostki.push({
-			jednostka: jednostka.id,
+		// Invite unit
+		this.invitedUnits.push({
+			unit: unit.id,
 			state: "pending"
 		})
 
-		jednostka.wyjazdInvites.push(this.id)
+		unit.wyjazdInvites.push(this.id)
 
 		await this.save()
-		await jednostka.save()
+		await unit.save()
 	}
 
-	/** Uninvite jednostka from wyjazd */
-	async uninviteJednostka(jednostka) {
+	/** Uninvite unit from wyjazd */
+	async uninviteUnit(unit) {
 		// Get invitation
-		const targetInvitation = this.invitedJednostki.id(jednostka.id)
+		const targetInvitation = this.invitedUnits.id(unit.id)
 		
-		// Check if jednostka invited
+		// Check if unit invited
 		if(!targetInvitation) {
-			throw new HTTPError(400, "Jednostka nie jest zaproszona na wyjazd")
+			throw new HTTPError(400, "Unit nie jest zaproszona na wyjazd")
 		}
 		
 		// Uninvite users
@@ -367,23 +367,23 @@ export class WyjazdClass extends JednostkaClass {
 			await targetInvitation.setParticipants([])
 		}
 
-		// Remove wyjazd targetInvitation from jednostka
-		await targetInvitation.populate("jednostka")
-		targetInvitation.jednostka.wyjazdInvites = targetInvitation.jednostka.wyjazdInvites.filter(i => i.id != this.id)
+		// Remove wyjazd targetInvitation from unit
+		await targetInvitation.populate("unit")
+		targetInvitation.unit.wyjazdInvites = targetInvitation.unit.wyjazdInvites.filter(i => i.id != this.id)
 		
 		// Delete invitation
 		targetInvitation.delete()
 
 		await this.save()
-		await targetInvitation.jednostka.save()
+		await targetInvitation.unit.save()
 	}
 
 	/** Find approver candidates */
 	async findApproverCandidates() {
 		const candidates = []
-		for(const jednostkaInvite of this.invitedJednostki) {
-			if(jednostkaInvite.state != "accepted") continue
-			candidates.push(...await Array.fromAsync(jednostkaInvite.findApprovers()))
+		for(const unitInvite of this.invitedUnits) {
+			if(unitInvite.state != "accepted") continue
+			candidates.push(...await Array.fromAsync(unitInvite.findApprovers()))
 		}
 		return candidates
 	}
@@ -456,7 +456,7 @@ export class WyjazdClass extends JednostkaClass {
 	/** Generates a list of users which can be mianowani na funkcję */
 	async * usersForMianowanie() {
 		await this.populate({
-			"invitedJednostki": {
+			"invitedUnits": {
 				"invitedUsers": {
 					"user": {}
 				}
@@ -470,10 +470,10 @@ export class WyjazdClass extends JednostkaClass {
 		}
 
 		// Get all accepted invites
-		for(const jednostka of this.invitedJednostki) {
-			if(jednostka.state != "accepted") continue
+		for(const unit of this.invitedUnits) {
+			if(unit.state != "accepted") continue
 			
-			for(const inviteUser of jednostka.invitedUsers) {
+			for(const inviteUser of unit.invitedUsers) {
 				if(inviteUser.state != "accepted") continue
 				
 				yield inviteUser.user
@@ -485,9 +485,9 @@ export class WyjazdClass extends JednostkaClass {
 const schema = mongoose.Schema.fromClass(WyjazdClass)
 
 schema.beforeDelete = async function() {
-	// Uninvite all jednostki
-	for(const jednostkaInvite of this.invitedJednostki) {
-		await jednostkaInvite.uninvite()
+	// Uninvite all units
+	for(const unitInvite of this.invitedUnits) {
+		await unitInvite.uninvite()
 	}
 
 	// Remove all approvers
@@ -497,14 +497,14 @@ schema.beforeDelete = async function() {
 
 	// Remove all funkcje
 	for(const funkcja of this.funkcje) {
-		await funkcja.populate("jednostka", {known: [this]})
+		await funkcja.populate("unit", {known: [this]})
 		await funkcja.delete()
 	}
 }
 
 schema.permissions = {
 	async CREATE(user) {
-		// Kadra of a jednostka can create a wyjazd
+		// Kadra of a unit can create a wyjazd
 		await user.populate("funkcje")
 		return user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)
 	},
@@ -523,20 +523,20 @@ schema.permissions = {
 		}
 
 		// Check for kadra access
-		const userFunkcja = await user.getFunkcjaInJednostka(this)
+		const userFunkcja = await user.getFunkcjaInUnit(this)
 		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
 
-		// Drużynowi of invited jednostki (and upper jednostki) can access
-		await this.populate({"invitedJednostki": "jednostka"})
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.invitedJednostki.map(i => i.jednostka))) return true
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.invitedJednostki.map(i => i.jednostka.getUpperJednostkiTree()))) return true
+		// Drużynowi of invited units (and upper units) can access
+		await this.populate({"invitedUnits": "unit"})
+		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit))) return true
+		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit.getUpperUnitsTree()))) return true
 
 		return false
 	},
 
 	async PARTICIPANT_ACCESS(user) {
 		// Only kadra can access user data
-		const userFunkcja = await user.getFunkcjaInJednostka(this)
+		const userFunkcja = await user.getFunkcjaInUnit(this)
 		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
 
 		return false
@@ -554,7 +554,7 @@ schema.permissions = {
 
 	async MODIFY(user) {
 		// Komendant of a wyjazd can modify
-		const userFunkcja = await user.getFunkcjaInJednostka(this)
+		const userFunkcja = await user.getFunkcjaInUnit(this)
 		if(userFunkcja?.type == FunkcjaType.KOMENDANT) return true
 
 		return false

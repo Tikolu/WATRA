@@ -1,0 +1,7 @@
+.unit:has(> details[open]) {
+	grid-column: 1 / -1;
+}
+
+.unit > details {
+	margin-top: 0.5em;
+}

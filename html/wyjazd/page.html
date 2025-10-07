@@ -159,9 +159,9 @@
 <% } %>
 
 <% if(
-	$.targetWyjazd.invitedJednostki.length > 0 ||
+	$.targetWyjazd.invitedUnits.length > 0 ||
 	$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY) ||
-	$.targetWyjazd.invitedJednostki.some(i => $.user.hasPermission(i.jednostka.PERMISSIONS.MODIFY))
+	$.targetWyjazd.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MODIFY))
 ) { %>
 	<hr>
 	<h2>
@@ -172,63 +172,63 @@
 		<% } %>
 	</h2>
 	<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
-		<button href="/wyjazdy/<%= $.targetWyjazd.id %>/inviteJednostki" class="add-user-button">
+		<button href="/wyjazdy/<%= $.targetWyjazd.id %>/inviteUnits" class="add-user-button">
 			<i>person_add</i>
 			<span>Zaproś jednostki</span>
 		</button>
 	<% } %>
-	<% for(const jednostkaInvite of $.targetWyjazd.invitedJednostki || []) { %>
+	<% for(const unitInvite of $.targetWyjazd.invitedUnits || []) { %>
 		<%
-			if(jednostkaInvite.state == "declined" && !$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) continue
+			if(unitInvite.state == "declined" && !$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) continue
 			if(
-				jednostkaInvite.state == "pending" &&
-				!$.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY) &&
+				unitInvite.state == "pending" &&
+				!$.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY) &&
 				!$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)
 			) continue
 		%>
 		<div class="section-unit">
-			<h3><%= jednostkaInvite.jednostka.displayName %></h3>
+			<h3><%= unitInvite.unit.displayName %></h3>
 			<% if($.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)) { %>
 				<p>
-					<% if(jednostkaInvite.state == "accepted") { %>
+					<% if(unitInvite.state == "accepted") { %>
 						Zaakceptowano zaproszenie <i>check</i>
-					<% } else if(jednostkaInvite.state == "declined") { %>
+					<% } else if(unitInvite.state == "declined") { %>
 						Odrzucono zaproszenie <i>cancel</i>
-					<% } else if(jednostkaInvite.state == "pending") { %>
+					<% } else if(unitInvite.state == "pending") { %>
 						Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
 					<% } %>
 				</p>
-				<% if(jednostkaInvite.state == "pending" || jednostkaInvite.state == "accepted") { %>
-					<button class="dangerous" api="wyjazd/[wyjazdID]/jednostka/<%= jednostkaInvite.jednostka.id %>/uninvite">
+				<% if(unitInvite.state == "pending" || unitInvite.state == "accepted") { %>
+					<button class="dangerous" api="wyjazd/[wyjazdID]/unit/<%= unitInvite.unit.id %>/uninvite">
 						<i>undo</i>
 						<span>Cofnij zaproszenie</span>
 					</button>
 				<% } %>
-				<% if($.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY) && jednostkaInvite.state != "declined") { %>
+				<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY) && unitInvite.state != "declined") { %>
 					<hr>
 				<% } %>
 			<% } %>
-			<% if($.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)) { %>
-				<% if(jednostkaInvite.state == "accepted") { %>
-					<p>Zaproszeni uczestnicy: <%= jednostkaInvite.invitedUsers.length %></p>
+			<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY)) { %>
+				<% if(unitInvite.state == "accepted") { %>
+					<p>Zaproszeni uczestnicy: <%= unitInvite.invitedUsers.length %></p>
 					<div class="button-row">
-						<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/chooseParticipants?jednostka=<%= jednostkaInvite.jednostka.id %>">
+						<button opens-dialog="/wyjazdy/<%= $.targetWyjazd.id %>/chooseParticipants?unit=<%= unitInvite.unit.id %>">
 							<i>group_add</i>
-							<% if(jednostkaInvite.invitedUsers.length > 0) { %>
+							<% if(unitInvite.invitedUsers.length > 0) { %>
 								<span>Edytuj uczestników</span>
 							<% } else { %>
 								<span>Dodaj uczestników</span>
 							<% } %>
 						</button>
 					</div>
-				<% } else if(jednostkaInvite.state == "pending") { %>
+				<% } else if(unitInvite.state == "pending") { %>
 					<p>Oczekujące zaproszenie...</p>
 					<div class="button-row">
-						<button api="jednostka/<%= jednostkaInvite.jednostka.id %>/wyjazd/[wyjazdID]/invitation/accept">
+						<button api="unit/<%= unitInvite.unit.id %>/wyjazd/[wyjazdID]/invitation/accept">
 							<i>check</i>
 							<span>Zaakceptuj</span>
 						</button>
-						<button class="dangerous" api="jednostka/<%= jednostkaInvite.jednostka.id %>/wyjazd/[wyjazdID]/invitation/decline">
+						<button class="dangerous" api="unit/<%= unitInvite.unit.id %>/wyjazd/[wyjazdID]/invitation/decline">
 							<i>close</i>
 							<span>Odrzuć</span>
 						</button>
@@ -236,14 +236,14 @@
 				<% } %>
 			<% } %>
 			<% if(
-				jednostkaInvite.invitedUsers.length &&
+				unitInvite.invitedUsers.length &&
 				(
-					$.user.hasPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY) || 
+					$.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY) || 
 					$.user.hasPermission($.targetWyjazd.PERMISSIONS.MODIFY)
 				)
 			) { %>
 				<div class="unit-grid">
-					<% for(const userInvite of jednostkaInvite.invitedUsers) { %>
+					<% for(const userInvite of unitInvite.invitedUsers) { %>
 						<%
 							let content = ""
 							if(userInvite.state == "accepted") {
@@ -306,7 +306,7 @@
 		<p><i>cancel</i> Wyjazd nie jest zatwierdzony!</p>
 	<% } %>
 	<% if($.targetWyjazd.approvers.length == 0) { %>
-		<% if($.targetWyjazd.invitedJednostki.filter(i => i.state == "accepted").length == 0) { %>
+		<% if($.targetWyjazd.invitedUnits.filter(i => i.state == "accepted").length == 0) { %>
 			<p>Proces zatwierdzenia wyjazdu można rozpocząć po zaakceptowaniu zaproszenia przez przynajmniej jedną jednostkę</p>
 		<% } else { %>
 			<p>Wybierz zatwierdzających aby rozpocząć</p>
@@ -315,7 +315,7 @@
 	<% for(const approver of $.targetWyjazd.approvers) { %>
 		<div class="section-unit approval-block">
 			<h3><%= approver.funkcja.user.displayName %></h3>
-			<p><%= Text.capitalise(approver.funkcja.displayName) %>, <%= approver.funkcja.jednostka.displayName %></p>
+			<p><%= Text.capitalise(approver.funkcja.displayName) %>, <%= approver.funkcja.unit.displayName %></p>
 			<% if(approver.approved) { %>
 				<p>
 					Zatwierdzono <i>check</i><br>

@@ -3,22 +3,22 @@ import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetWyjazd}) {
 	await targetWyjazd.populate({
-		"invitedJednostki": {
-			"jednostka": {},
+		"invitedUnits": {
+			"unit": {},
 		}
 	})
 
-	// Check permissions for invited jednostki
-	for(const jednostkaInvite of targetWyjazd.invitedJednostki) {
-		await user.checkPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)
+	// Check permissions for invited units
+	for(const unitInvite of targetWyjazd.invitedUnits) {
+		await user.checkPermission(unitInvite.unit.PERMISSIONS.MODIFY)
 	}
 
 	// Check for participant access permission
 	if(await user.checkPermission(targetWyjazd.PERMISSIONS.PARTICIPANT_ACCESS)) {
-		// Populate wyjazd funkcje, as well as users and jednostki of funkcje
+		// Populate wyjazd funkcje, as well as users and units of funkcje
 		await targetWyjazd.populate({
-			"funkcje": ["user", "jednostka"],
-			"invitedJednostki": {
+			"funkcje": ["user", "unit"],
+			"invitedUnits": {
 				"invitedUsers": {
 					"user": {}
 				}
@@ -35,7 +35,7 @@ export default async function({user, targetWyjazd}) {
 		// Load approver data
 		await targetWyjazd.populate({
 			"approvers": {
-				"funkcja": ["user", "jednostka"]
+				"funkcja": ["user", "unit"]
 			}
 		})
 
@@ -48,15 +48,15 @@ export default async function({user, targetWyjazd}) {
 		// Load approver data
 		await targetWyjazd.populate({
 			"approvers": {
-				"funkcja": ["user", "jednostka"]
+				"funkcja": ["user", "unit"]
 			}
 		})
 	}
 
 
-	// Check for access to invited jednostki
-	for(const jednostkaInvite of targetWyjazd.invitedJednostki || []) {
-		await user.checkPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)
+	// Check for access to invited units
+	for(const unitInvite of targetWyjazd.invitedUnits || []) {
+		await user.checkPermission(unitInvite.unit.PERMISSIONS.MODIFY)
 	}
 	
 	// Get participants for approval
@@ -77,9 +77,9 @@ export default async function({user, targetWyjazd}) {
 		approvalParticipants.push(userInvite)
 	}
 
-	// Check permissions for invited jednostki
-	for(const jednostkaInvite of targetWyjazd.invitedJednostki) {
-		await user.checkPermission(jednostkaInvite.jednostka.PERMISSIONS.MODIFY)
+	// Check permissions for invited units
+	for(const unitInvite of targetWyjazd.invitedUnits) {
+		await user.checkPermission(unitInvite.unit.PERMISSIONS.MODIFY)
 	}
 	
 	return html("wyjazd/page", {

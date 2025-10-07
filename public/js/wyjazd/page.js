@@ -21,15 +21,15 @@ API.registerHandler("wyjazd/[wyjazdID]/update/location", {
 	successText: "Zapisano lokalizację",
 })
 
-API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/accept", {
+API.registerHandler("unit/[unitID]/wyjazd/[wyjazdID]/invitation/accept", {
 	progressText: "Akceptowanie zaproszenia..."
 })
 
-API.registerHandler("jednostka/[jednostkaID]/wyjazd/[wyjazdID]/invitation/decline", {
+API.registerHandler("unit/[unitID]/wyjazd/[wyjazdID]/invitation/decline", {
 	progressText: "Odrzucanie zaproszenia..."
 })
 
-API.registerHandler("wyjazd/[wyjazdID]/jednostka/[jednostkaID]/uninvite", {
+API.registerHandler("wyjazd/[wyjazdID]/unit/[unitID]/uninvite", {
 	progressText: "Cofanie zaproszenia...",
 	successText: "Cofnięto zaproszenie",
 })

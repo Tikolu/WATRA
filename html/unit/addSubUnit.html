@@ -1,0 +1,62 @@
+<% layout("/layouts/dialog", {
+	scripts: ["unit/addSubUnit"],
+	meta: {
+		unitID: $.targetUnit.id
+	}
+}) %>
+<h1>Dodawanie jednostki</h1>
+<main>
+	<h3>Utwórz nową jednostkę</h3>
+	<form id="create-unit">
+		<label for="unit-name-input">Nazwa:</label>
+		<input
+			type="text"
+			id="unit-name-input"
+			name="name"
+			autocomplete="off"
+			value=""
+		>
+		<label for="unit-type-select">Rodzaj:</label>
+		<select id="unit-type-select" name="type">
+			<% for(const type of $.subUnitsTypes) { %>
+				<option value="<%= type.value %>"><%= Text.capitalise(type.name) %></option>
+			<% } %>
+		</select>
+	</form>
+	<button api="unit/[unitID]/subUnit/create" class="confirm">
+		<i>add</i>
+		Utwórz jednostkę
+	</button>
+	<% if($.unitsForLinking.length) { %>
+		<hr>
+		<h3>Dodaj istniejącą jednostkę</h3>
+		<form id="link-unit">
+			<% for(const unit of $.unitsForLinking) { %>
+				<input
+					type="radio"
+					name="subUnitID"
+					value="<%= unit.id %>"
+					id="unit-<%= unit.id %>"
+				>
+				<label for="unit-<%= unit.id %>">
+					<h4><%= unit.displayName %></h4>
+					<p>
+						<%= unit.typeName %>
+						(<%= unit.upperUnits.map(j => j.displayName).join(", ") %>)
+					</p>
+				</label>
+			<% } %>
+		</form>
+		<button api="unit/[unitID]/subUnit/link" class="confirm">
+			<i>add</i>
+			Dodaj jednostkę
+		</button>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+</div>

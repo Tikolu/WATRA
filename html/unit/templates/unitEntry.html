@@ -1,0 +1,26 @@
+<a href="/units/<%= $.targetUnit.id %>">
+	<div class="unit-header">
+		<div class="unit-image">
+			<i>groups</i>
+		</div>
+		<div class="unit-title">
+			<h3><%= $.targetUnit.displayName %></h3>
+			<p>
+				<% if($.description) { %>
+					<%= $.description %>
+				<% } else { %>
+					<%= $.targetUnit.typeName %>
+					<% if($.targetUnit.upperUnits[0]?.displayName) { %>, <%= $.targetUnit.upperUnits[0]?.displayName %><% } %>
+				<% } %>
+			</p>
+		</div>
+	</div>
+	<div class="unit-content">
+		<% if($.content) { %>
+			<p><%= $.content %></p>
+		<% } %>
+		<% for(const warning of $.warnings || []) { %>
+			<p class="warning"><i>warning</i> <%= warning %></p>
+		<% } %>
+	</div>
+</a>

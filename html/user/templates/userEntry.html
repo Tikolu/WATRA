@@ -9,7 +9,7 @@
 				<% if($.description) { %>
 					<%= $.description %>
 				<% } else if($.targetUser.funkcje?.length == 1 && typeof $.targetUser.funkcje[0] != "string") { %>
-					<%= Text.capitalise($.targetUser.funkcje[0].displayName) %>, <%= $.targetUser.funkcje[0].jednostka?.displayName || "(nieznana jednostka)" %>
+					<%= Text.capitalise($.targetUser.funkcje[0].displayName) %>, <%= $.targetUser.funkcje[0].unit?.displayName || "(nieznana jednostka)" %>
 				<% } %>
 			</p>
 		</div>

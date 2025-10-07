@@ -11,7 +11,7 @@ export const FunkcjaType = {
 	DRUŻYNOWY: 2
 }
 
-export const JednostkaType = {
+export const UnitType = {
 	ZASTĘP: 0,
 	DRUŻYNA: 1,
 	HUFIEC: 2,
@@ -19,22 +19,22 @@ export const JednostkaType = {
 }
 
 export const FunkcjaNames = {
-	[JednostkaType.ZASTĘP]: [
+	[UnitType.ZASTĘP]: [
 		["szeregowy"],
 		["podzastępowy"],
 		["zastępowy"]
 	],
-	[JednostkaType.DRUŻYNA]: [
+	[UnitType.DRUŻYNA]: [
 		["szeregowy"],
 		["przyboczny"],
 		["drużynowy"]
 	],
-	[JednostkaType.HUFIEC]: [
+	[UnitType.HUFIEC]: [
 		["szeregowy"],
 		["referent"],
 		["hufcowy"]
 	],
-	[JednostkaType.CHORĄGIEW]: [
+	[UnitType.CHORĄGIEW]: [
 		["szeregowy"],
 		["referent"],
 		["komendant"]

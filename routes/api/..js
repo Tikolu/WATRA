@@ -47,7 +47,7 @@ export async function exit({user}) {
 	if(user && user.logEvent && !this.logging.disabled) {
 		await user.logEvent(this.request.address.pathname.replace(/^\/api\//, ""), {
 			targetUser: this.routeData.targetUser,
-			targetJednostka: this.routeData.targetJednostka,
+			targetUnit: this.routeData.targetUnit,
 			targetWyjazd: this.routeData.targetWyjazd,
 			data: this.logging.noOutput ? undefined : output
 		})

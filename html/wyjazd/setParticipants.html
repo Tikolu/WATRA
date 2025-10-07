@@ -1,11 +1,11 @@
 <% layout("/layouts/dialog", {
 	scripts: ["wyjazd/setParticipants"],
 	meta: {
-		jednostkaID: $.targetJednostka.id,
+		unitID: $.targetUnit.id,
 		wyjazdID: $.targetWyjazd.id
 	}
 }) %>
-<h1><%= $.targetJednostka.displayName %></h1>
+<h1><%= $.targetUnit.displayName %></h1>
 <main>
 	<form>
 		<input type="checkbox" id="choose-all">
@@ -40,7 +40,7 @@
 		<i>arrow_back</i>
 		Anuluj
 	</button>
-	<button api="jednostka/[jednostkaID]/wyjazd/[wyjazdID]/setParticipants">
+	<button api="unit/[unitID]/wyjazd/[wyjazdID]/setParticipants">
 		<i>check</i>
 		Potwierdź uczestników
 	</button>

@@ -44,7 +44,7 @@
 		</button>
 		<dialog id="access-code-dialog">
 			<h1>Kod dostępu</h1>
-			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent && $.targetUser.funkcje.every(f => !f.jednostka.type <= JednostkaType.DRUŻYNA)) { %>
+			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent && $.targetUser.funkcje.every(f => !f.unit.type <= UnitType.DRUŻYNA)) { %>
 				<p class="warning">
 					<i>warning</i>
 					Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, nie konta rodzica/opiekuna!
@@ -184,10 +184,10 @@
 		<i>groups</i>
 		Jednostki
 	</h2>
-	<div id="jednostka-list" class="unit-grid">
+	<div id="unit-list" class="unit-grid">
 		<% for(const funkcja of $.targetUser.funkcje) { %>
-			<%~ include("/jednostka/templates/jednostkaEntry", {
-				targetJednostka: funkcja.jednostka,
+			<%~ include("/unit/templates/unitEntry", {
+				targetUnit: funkcja.unit,
 				content: Text.capitalise(funkcja.displayName)
 			}) %>
 		<% } %>
@@ -208,11 +208,11 @@
 			<%
 				if(
 					$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) && 
-					$.targetUser.wyjazdInvites.some(w => w.id == funkcja.jednostka?.id)
+					$.targetUser.wyjazdInvites.some(w => w.id == funkcja.unit?.id)
 				) continue
 			%>
 			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
-				targetWyjazd: funkcja.jednostka,
+				targetWyjazd: funkcja.unit,
 				content: Text.capitalise(funkcja.displayName)
 			}) %>
 		<% } %>

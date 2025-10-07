@@ -175,7 +175,7 @@ export async function connect(dbName="main") {
 		// Initialise all schemas
 		await import("modules/schemas/wyjazd.js")
 		await import("modules/schemas/funkcja.js")
-		await import("modules/schemas/jednostka.js")
+		await import("modules/schemas/unit.js")
 		await import("modules/schemas/user")
 
 		return true
@@ -188,21 +188,21 @@ export async function connect(dbName="main") {
 
 export async function setup() {
 	const {default: User} = await import("modules/schemas/user")
-	const {default: Jednostka} = await import("modules/schemas/jednostka.js")
-	const { JednostkaType } = await import("modules/types.js")
+	const {default: Unit} = await import("modules/schemas/unit.js")
+	const { UnitType } = await import("modules/types.js")
 
 	const user = await User.findOne()
-	const jednostka = await Jednostka.findOne()
+	const unit = await Unit.findOne()
 
-	if(!user && !jednostka) {
+	if(!user && !unit) {
 		const { FunkcjaType } = await import("modules/types.js")
 		
 		const newUser = new User()
-		const newJednostka = new Jednostka({
-			type: JednostkaType.CHORĄGIEW
+		const newUnit = new Unit({
+			type: UnitType.CHORĄGIEW
 		})
 
-		await newJednostka.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
+		await newUnit.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
 		console.log("Test user access code:", await newUser.generateAccessCode())
 	}
 }

@@ -1,24 +1,24 @@
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
 
-import Jednostka from "modules/schemas/jednostka.js"
+import Unit from "modules/schemas/unit.js"
 
-export default async function({user, targetWyjazd, jednostka: jednostkaID}) {
-	// Get jednostka from DB, and check if exists
-	const targetJednostka = await Jednostka.findById(jednostkaID)
-	if(!targetJednostka) throw new HTTPError(404, "Jednostka nie istnieje")
+export default async function({user, targetWyjazd, unit: unitID}) {
+	// Get unit from DB, and check if exists
+	const targetUnit = await Unit.findById(unitID)
+	if(!targetUnit) throw new HTTPError(404, "Unit nie istnieje")
 
 	// Check permissions
-	await user.requirePermission(targetJednostka.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
 	
-	// Check jednostka invitation state
-	const targetInvitation = targetWyjazd.invitedJednostki.id(targetJednostka.id)
-	if(!targetInvitation) throw new HTTPError("Jednostka nie jest zaproszona na wyjazd")
-	if(targetInvitation.state != "accepted") throw new HTTPError("Zaproszenie jednostki na wyjazd nie zostało zaakceptowane")
+	// Check unit invitation state
+	const targetInvitation = targetWyjazd.invitedUnits.id(targetUnit.id)
+	if(!targetInvitation) throw new HTTPError("Unit nie jest zaproszona na wyjazd")
+	if(targetInvitation.state != "accepted") throw new HTTPError("Zaproszenie units na wyjazd nie zostało zaakceptowane")
 
-	this.addRouteData({targetJednostka, targetInvitation})
+	this.addRouteData({targetUnit, targetInvitation})
 	
-	const availableMembers = await Array.fromAsync(targetJednostka.getSubMembers())
+	const availableMembers = await Array.fromAsync(targetUnit.getSubMembers())
 
 	// Get list of wyjazd funkcyjni
 	await targetWyjazd.populate("funkcje")
@@ -26,7 +26,7 @@ export default async function({user, targetWyjazd, jednostka: jednostkaID}) {
 	
 	return html("wyjazd/setParticipants", {
 		user,
-		targetJednostka,
+		targetUnit,
 		targetWyjazd,
 		targetInvitation,
 		availableMembers,

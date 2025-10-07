@@ -4,14 +4,14 @@ import html from "modules/html.js"
 
 export default async function({user, targetUser}) {
 	await targetUser.populate({
-		"funkcje": "jednostka",
-		"funkcjeWyjazdowe": "jednostka",
+		"funkcje": "unit",
+		"funkcjeWyjazdowe": "unit",
 		"wyjazdApprovalRequests": {},
 		"children": {
-			"funkcje": "jednostka"
+			"funkcje": "unit"
 		},
 		"parents": {
-			"funkcje": "jednostka"
+			"funkcje": "unit"
 		}
 	})
 

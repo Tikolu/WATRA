@@ -7,10 +7,10 @@ export default async function({user}) {
 	await user.populate({
 		"children": {
 			"wyjazdInvites": {},
-			"funkcje": "jednostka"
+			"funkcje": "unit"
 		},
-		"funkcje": "jednostka",
-		"funkcjeWyjazdowe": "jednostka",
+		"funkcje": "unit",
+		"funkcjeWyjazdowe": "unit",
 		"wyjazdInvites": {},
 		"wyjazdApprovalRequests": {}
 	})
@@ -21,7 +21,7 @@ export default async function({user}) {
 	const wyjazdy = [
 		...user.wyjazdInvites,
 		...user.wyjazdApprovalRequests,
-		...user.funkcjeWyjazdowe.map(f => f.jednostka),
+		...user.funkcjeWyjazdowe.map(f => f.unit),
 		...user.children.flatMap(c => c.wyjazdInvites)
 	].unique("id")
 	

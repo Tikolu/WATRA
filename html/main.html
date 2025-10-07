@@ -30,8 +30,8 @@
 	</h2>
 	<div class="unit-grid">
 		<% for(const funkcja of $.user.funkcje) { %>
-			<%~ include("jednostka/templates/jednostkaEntry", {
-				targetJednostka: funkcja.jednostka
+			<%~ include("unit/templates/unitEntry", {
+				targetUnit: funkcja.unit
 			}) %>
 		<% } %>
 	</div>

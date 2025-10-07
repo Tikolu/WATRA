@@ -366,7 +366,7 @@ const API = {
 	handlers: {},
 	dataUpdateKeys: {
 		funkcjaID: "funkcje",
-		jednostkaID: "jednostki",
+		unitID: "units",
 		userID: "users",
 		wyjazdID: "wyjazdy"
 	},

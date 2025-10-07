@@ -1,0 +1,45 @@
+<% layout("/layouts/dialog", {
+	scripts: ["unit/createUser"]
+}) %>
+<h1>
+	<i>person_add</i>
+	Tworzenie użytkownika
+</h1>
+<main>
+	<form>
+		<label for="first-name-input">Imię:</label>
+		<input type="text" id="first-name-input" name="firstName" autocomplete="off">
+		<label for="last-name-input">Nazwisko:</label>
+		<input type="text" id="last-name-input" name="lastName" autocomplete="off">
+		<label for="unit-select"<%= $.units.length == 1 ? "hidden" : "" %>>Unit:</label>
+		<select id="unit-select" name="unitID" <%= $.units.length == 1 ? "hidden" : "" %>>
+			<% for(const unit of $.units) { %>
+				<option value="<%= unit.id %>"><%= unit.displayName %></option>
+			<% } %>
+		</select>
+	</form>
+	<% if ($.units.length == 1) { %>
+		<p>Użytkownik zostanie dodany do <%= $.units[0].displayName %>.</p>
+	<% } %>
+	
+	<h2>Dodatkowe konta</h2>
+	<form>
+		<input type="checkbox" id="parent-create" name="createParent"
+			<% if($.units[0].type <= UnitType.DRUŻYNA) { %>
+				checked
+			<% } %>
+		>
+		<label for="parent-create">Utwórz również konto dla rodzica / opiekuna</label>
+	</form>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button id="mianowanie-button" api="unit/[unitID]/member/create">
+		<i>person_add</i>
+		<span>Dodaj użytkownika</span>
+	</button>
+</div>

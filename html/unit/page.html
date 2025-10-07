@@ -1,0 +1,124 @@
+<% layout("/layouts/body", {
+	title: $.targetUnit.displayName,
+	scripts: ["unit/page"],
+	// styles: ["unit/page"],
+	meta: {
+		unitID: $.targetUnit.id
+	}
+}) %>
+<h1 id="unit-title"><%= $.targetUnit.displayName %></h1>
+<% if($.targetUnit.upperUnits?.length > 0) { %>
+	<p>(<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
+<% } %>
+
+<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>
+		<i>manufacturing</i>
+		Ustawienia
+	</h2>
+	<form>
+		<label for="unit-name-input">Nazwa:</label>
+		<input
+			type="text"
+			id="unit-name-input"
+			autocomplete="off"
+			value="<%= $.targetUnit.name || "" %>"
+			api="unit/[unitID]/update/name"
+			<% $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+		>
+	</form>
+
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.DELETE)) { %>
+		<h3>Usuwanie</h3>
+		<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">
+			<i>delete</i>
+			<span>Usuń jednostkę</span>
+		</button>
+	<% } %>
+<% } %>
+
+<% if($.targetUnit.subUnits?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) && $.targetUnit.type > 0) { %>
+	<hr>
+	<h2>
+		<i>groups</i>
+		Jednostki
+	</h2>
+	<div id="sub-unit-list" class="unit-grid">
+		<% for(const subUnit of $.targetUnit.subUnits || []) { %>
+			<% if(!subUnit) { %>
+				<div>(nieznana jednostka)</div>
+			<% } else { %>
+				<%~ include("templates/unitEntry.html", {
+					targetUnit: subUnit,
+					description: Text.capitalise(subUnit.typeName)
+				}) %>
+			<% } %>
+		<% } %>
+	</div>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) && $.targetUnit.type > 0) { %>
+		<button id="add-sub-unit-button" opens-dialog="/units/<%= $.targetUnit.id %>/addSubUnit">
+			<i>add</i>
+			<span>Dodaj jednostkę</span>
+		</button>
+	<% } %>
+<% } %>
+
+
+
+<% if($.targetUnit.funkcje?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>
+		<i>person</i>
+		Użytkownicy
+	</h2>
+	<div id="unit-member-list" class="unit-grid">
+		<% for(const funkcja of $.targetUnit.funkcje || []) { %>
+			<%~ include("/user/templates/userEntry.html", {
+				targetUser: funkcja.user,
+				description: Text.capitalise(funkcja.displayName)
+			}) %>
+		<% } %>
+	</div>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+		<button opens-dialog="/units/<%= $.targetUnit.id %>/mianowanie">
+			<i>add_moderator</i>
+			<span>Mianuj na funkcję</span>
+		</button>
+		<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
+			<i>person_add</i>
+			<span>Utwórz użytkownika</span>
+		</button>
+	<% } %>
+<% } %>
+
+<% if($.targetUnit.wyjazdInvites?.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+	<hr>
+	<h2>
+		<i>hiking</i>
+		Wyjazdy
+	</h2>
+	<div id="unit-wyjazd-list" class="unit-grid">
+		<% for(const wyjazd of $.targetUnit.wyjazdInvites || []) { %>
+			<%
+				const invite = wyjazd.invitedUnits.find(i => i.unit == $.targetUnit.id)
+
+				let content
+				if(invite.state == "accepted") {
+					if(invite.invitedUsers.length > 0) {
+						content = `Zaproszeni uczestnicy: ${invite.invitedUsers.length}`
+					} else {
+						content = `Zaproszenie zaakceptowane`
+					}
+				}
+			%>
+			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
+				targetWyjazd: wyjazd,
+				content,
+				warnings: Array.conditional(
+					invite.state == "pending", "Oczekujące zaproszenie"
+				)
+			}) %>
+		<% } %>
+	</div>
+<% } %>

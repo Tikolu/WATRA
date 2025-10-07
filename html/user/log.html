@@ -38,11 +38,11 @@
 							</td>
 						</tr>
 					<% } %>
-					<% if(logEntry.targetJednostka) { %>
+					<% if(logEntry.targetUnit) { %>
 						<tr>
 							<th>Jednostka:</th>
 							<td>
-								<a href="/jednostki/<%= logEntry.targetJednostka.id %>"><%= logEntry.targetJednostka.displayName %></a>
+								<a href="/units/<%= logEntry.targetUnit.id %>"><%= logEntry.targetUnit.displayName %></a>
 							</td>
 						</tr>
 					<% } %>

@@ -178,25 +178,25 @@ export class UserClass {
 		await this.save()
 	}
 
-	/** Returns the user's funkcja in the given jednostka */
-	async getFunkcjaInJednostka(jednostka) {
-		await jednostka.populate("funkcje")
-		for(const funkcja of jednostka.funkcje) {
+	/** Returns the user's funkcja in the given unit */
+	async getFunkcjaInUnit(unit) {
+		await unit.populate("funkcje")
+		for(const funkcja of unit.funkcje) {
 			if(this.id == funkcja.user.id) {
 				return funkcja
 			}
 		}
 	}
 
-	/** Checks if the user has a funkcja in any of the given jednostki */
-	async hasFunkcjaInJednostki(requiredFunkcja, ...jednostki) {
-		for(const jednostka of jednostki) {
-			if(jednostka instanceof Array || Symbol.asyncIterator in jednostka) {
-				for await(const asyncJednostka of jednostka) {
-					if(await this.hasFunkcjaInJednostki(requiredFunkcja, asyncJednostka)) return true
+	/** Checks if the user has a funkcja in any of the given units */
+	async hasFunkcjaInUnits(requiredFunkcja, ...units) {
+		for(const unit of units) {
+			if(unit instanceof Array || Symbol.asyncIterator in unit) {
+				for await(const asyncUnit of unit) {
+					if(await this.hasFunkcjaInUnits(requiredFunkcja, asyncUnit)) return true
 				}
 			} else {
-				const funkcja = await this.getFunkcjaInJednostka(jednostka)
+				const funkcja = await this.getFunkcjaInUnit(unit)
 				if(typeof requiredFunkcja == "function") {
 					const checkResult = await requiredFunkcja(funkcja?.type)
 					if(checkResult === true) return true
@@ -259,25 +259,25 @@ export class UserClass {
 		}
 	}
 
-	/** Returns an asynchronous list of all user's jednostki and upper jednostki */
-	async * getJednostkiTree() {
+	/** Returns an asynchronous list of all user's units and upper units */
+	async * getUnitsTree() {
 		await this.populate("funkcje")
 		for(const funkcja of this.funkcje) {
-			await funkcja.populate("jednostka")
-			yield funkcja.jednostka
-			yield * funkcja.jednostka.getUpperJednostkiTree()
+			await funkcja.populate("unit")
+			yield funkcja.unit
+			yield * funkcja.unit.getUpperUnitsTree()
 		}
 	}
 
 	/** Adds an entry to the user's activity log */
 	async logEvent(eventType, options={}) {
-		const {targetUser, targetWyjazd, targetJednostka, data} = options
+		const {targetUser, targetWyjazd, targetUnit, data} = options
 		const logEntry = new Log({
 			user: this.id,
 			eventType,
 			targetUser,
 			targetWyjazd,
-			targetJednostka,
+			targetUnit,
 			data
 		})
 		await logEntry.save()
@@ -329,21 +329,21 @@ schema.permissions = {
 		// Child can access their parents
 		if(user.parents.hasID(this.id)) return true
 
-		// Przyboczni of member jednostka and of all upper jednostki can access
-		if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, this.getJednostkiTree())) return true
+		// Przyboczni of member unit and of all upper units can access
+		if(await user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, this.getUnitsTree())) return true
 
 		// Kadra of wyjazd can access
 		await this.populate("wyjazdInvites")
 		for(const wyjazd of this.wyjazdInvites) {
 			const invite = wyjazd.findUserInvite(this)
 			if(invite?.state != "accepted") continue
-			if(user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, wyjazd)) return true
+			if(user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, wyjazd)) return true
 		}
 
-		// Przyboczni of child's member jednostka and of all upper jednostki can access
+		// Przyboczni of child's member unit and of all upper units can access
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasFunkcjaInJednostki(f => f >= FunkcjaType.PRZYBOCZNY, child.getJednostkiTree())) return true
+			if(await user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, child.getUnitsTree())) return true
 		}
 
 		return false
@@ -358,21 +358,21 @@ schema.permissions = {
 		}
 		// Parent can modify their children
 		if(user.children.hasID(this.id)) return true
-		// Druyżynowi of member jednostka and of all upper jednostki can modify
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
-		// Druyżynowi of child's member jednostka and of all upper jednostki can modify
+		// Druyżynowi of member unit and of all upper units can modify
+		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUnitsTree())) return true
+		// Druyżynowi of child's member unit and of all upper units can modify
 		if(this.isParent) {
 			await this.populate("children")
 			for(const child of this.children) {
-				if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, child.getJednostkiTree())) return true
+				if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, child.getUnitsTree())) return true
 			}
 		}
 		return false
 	},
 
 	async ADD_PARENT(user) {
-		// Druyżynowi of member jednostka and of all upper jednostki can add parents
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
+		// Druyżynowi of member unit and of all upper units can add parents
+		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUnitsTree())) return true
 
 		return false
 	},
@@ -385,8 +385,8 @@ schema.permissions = {
 		for(const child of this.children) {
 			if(await user.checkPermission(child.PERMISSIONS.DELETE)) return true
 		}
-		// Druyżynowi of member jednostka and of all upper jednostki can delete
-		if(await user.hasFunkcjaInJednostki(FunkcjaType.DRUŻYNOWY, this.getJednostkiTree())) return true
+		// Druyżynowi of member unit and of all upper units can delete
+		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUnitsTree())) return true
 		return false
 	},
 

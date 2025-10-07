@@ -14,9 +14,9 @@ export class FunkcjaClass {
 		type: String,
 		ref: "User"
 	}
-	jednostka = {
+	unit = {
 		type: String,
-		ref: function() { return this.wyjazdowa ? "Wyjazd" : "Jednostka" },
+		ref: function() { return this.wyjazdowa ? "Wyjazd" : "Unit" },
 	}
 	wyjazdowa = {
 		type: Boolean,
@@ -26,14 +26,14 @@ export class FunkcjaClass {
 
 	/* * Getters * */
 
-	/** Returns the funkcja type name. Will throw an error if the jednostka field is not populated */
+	/** Returns the funkcja type name. Will throw an error if the unit field is not populated */
 	get displayName() {
 		let funkcjaNames
 		if(this.wyjazdowa) {
 			funkcjaNames = WyjazdoweFunkcjaNames
 		} else {
-			if(!this.populated("jednostka") || !this.jednostka) return "funkcja"
-			funkcjaNames = FunkcjaNames[this.jednostka.type]
+			if(!this.populated("unit") || !this.unit) return "funkcja"
+			funkcjaNames = FunkcjaNames[this.unit.type]
 		}
 				
 		return funkcjaNames?.[this.type][0] || "(nieznana funkcja)"
@@ -49,10 +49,10 @@ schema.beforeDelete = async function() {
 	this.user[funkcjeKey] = this.user[funkcjeKey].filter(f => f.id != this.id)
 	await this.user.save()
 
-	// Remove self from jednostka
-	await this.populate("jednostka")
-	this.jednostka.funkcje = await this.jednostka.funkcje.filter(f => f.id != this.id)
-	await this.jednostka.save()
+	// Remove self from unit
+	await this.populate("unit")
+	this.unit.funkcje = await this.unit.funkcje.filter(f => f.id != this.id)
+	await this.unit.save()
 }
 
 export default mongoose.model("Funkcja", schema, "funkcje")
