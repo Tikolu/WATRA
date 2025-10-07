@@ -51,7 +51,7 @@ class PopulationContext {
 		return count
 	}
 
-	async findPopulatable(graph, document, exclude) {
+	async findPopulatable(graph, document, options) {
 		if(typeof graph == "string") graph = [graph]
 		if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
 		
@@ -64,10 +64,10 @@ class PopulationContext {
 				if(subGraph && subDocument) {
 					if(Array.isArray(subDocument)) {
 						for(const item of subDocument) {
-							findCounter += await this.findPopulatable(subGraph, item, exclude)
+							findCounter += await this.findPopulatable(subGraph, item, options)
 						}
 					} else if(typeof subDocument == "object") {
-						findCounter += await this.findPopulatable(subGraph, subDocument, exclude)
+						findCounter += await this.findPopulatable(subGraph, subDocument, options)
 					}
 				}
 			} else if(!Array.isArray(document[key]) || document[key].length > 0) {
@@ -89,7 +89,7 @@ class PopulationContext {
 
 				for(const subDocument of subDocuments) {
 					if(isPopulated(subDocument)) continue
-					if(exclude?.hasID(subDocument.id)) continue
+					if(options?.exclude?.hasID(subDocument.id)) continue
 					populateIDs.push(subDocument.id)
 				}
 				
@@ -99,7 +99,7 @@ class PopulationContext {
 						if(typeof subDocument != "string") continue
 						let newDocument = results.find(r => r.id == subDocument)
 						if(!newDocument) {
-							if(options.placeholders === false) continue
+							if(options?.placeholders === false) continue
 							newDocument = createFakeDocument(mongoose.model(ref), subDocument)
 							results.push(newDocument)
 						}
@@ -134,9 +134,9 @@ export async function populate(graph, options={}) {
 			const unpopulated = []
 			for(const index in this) {
 				const item = this[index]
-				if(options.exclude?.hasID(item.id)) continue
+				if(options?.exclude?.hasID(item.id)) continue
 				if(isPopulated(item)) {
-					findCount += await populationContext.findPopulatable(graph, item, options.exclude)
+					findCount += await populationContext.findPopulatable(graph, item, options)
 
 				} else {
 					unpopulated.push(index)
@@ -162,7 +162,7 @@ export async function populate(graph, options={}) {
 				findCount += 1
 			}
 		} else {
-			findCount = await populationContext.findPopulatable(graph, this, options.exclude)
+			findCount = await populationContext.findPopulatable(graph, this, options)
 		}
 		
 		if(findCount == 0) break
