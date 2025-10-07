@@ -55,7 +55,7 @@
 		<% } %>
 	</div>
 <% } %>
-<% if($.wyjazdy.length) { %>
+<% if($.wyjazdy.length || $.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
 	<hr>
 	<h2>
 		<i>hiking</i>
