@@ -1,4 +1,5 @@
 import HTTPError from "modules/server/error.js"
+import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetEvent, targetUnit}) {
 	// Check if unit already invited
@@ -6,5 +7,16 @@ export default async function({user, targetEvent, targetUnit}) {
 		throw new HTTPError(400, "Jednostka została już zaproszona na akcję")
 	}
 	
-	await targetEvent.inviteUnit(targetUnit)
+	// Automatically accept invite if user has funkcja in unit
+	let state = "pending"
+	const funkcjaInUnit = await user.getFunkcjaInUnit(targetUnit)
+	if(funkcjaInUnit?.type >= FunkcjaType.DRUŻYNOWY) {
+		state = "accepted"
+	}
+	
+	await targetEvent.inviteUnit(targetUnit, state)
+
+	return {
+		invitationState: state
+	}
 }

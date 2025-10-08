@@ -32,6 +32,23 @@ export default async function({user, targetEvent}) {
 		const subUnits = topUnit.getSubUnitsTree()
 		for await(const subUnit of subUnits) saveUnit(subUnit)
 	}
+
+	// Calculate user count
+	function calculateUserCount(unit) {
+		if(unit.userCount) return unit.userCount
+		
+		unit.userCount = unit.funkcje.length
+		for(const subUnit of unit.subUnits) {
+			unit.userCount += calculateUserCount(subUnit)
+		}
+		return unit.userCount
+	}
+
+	for(const unitID in units) {
+		const unit = units[unitID]
+		calculateUserCount(unit)
+	}
+
 	
 	topUnits = topUnits.map(unit => unit.id)
 

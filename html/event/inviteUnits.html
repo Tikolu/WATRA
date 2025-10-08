@@ -21,14 +21,20 @@
 		<% if(!unit) return %>
 		<% const unitInvite = $.targetEvent.invitedUnits.find(i => i.unit == unit.id) %>
 		<div class="unit">
-			<h3><!--<a href="/units/<%= unit.id %>">--><%= unit.displayName %><!--</a>--></h3>
-			<% if(unitInvite?.state == "accepted") { %>
-				<p>Zaakceptowano <i>check</i></p>
-			<% } else if(unitInvite?.state == "declined") { %>
-				<p>Odrzucono <i>close</i></p>
-			<% } else if(unitInvite?.state == "pending") { %>
-				<p>Oczekiwana odpowiedź... <i class="spin">progress_activity</i></p>
-			<% } %>
+			<div class="unit-title">
+				<h3><!--<a href="/units/<%= unit.id %>">--><%= unit.displayName %><!--</a>--></h3>
+			</div>
+			<p>
+				<% if(!unitInvite) { %>
+					Ilość użytkowników: <%= unit.userCount %>
+				<% } else if(unitInvite.state == "accepted") { %>
+					Zaakceptowano <i>check</i>
+				<% } else if(unitInvite.state == "declined") { %>
+					Odrzucono <i>close</i>
+				<% } else if(unitInvite.state == "pending") { %>
+					Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
+				<% } %>
+			</p>
 			<div class="button-row">
 				<% if(inviteOverride === true) { %>
 					<button disabled>Zaproszono</button>

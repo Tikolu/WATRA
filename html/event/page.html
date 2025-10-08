@@ -305,11 +305,12 @@
 	<% } else { %>
 		<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
 	<% } %>
-	<% if($.targetEvent.approvers.length == 0) { %>
+	<% if($.targetEvent.approvers.length == 0 && $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
 		<% if($.targetEvent.invitedUnits.filter(i => i.state == "accepted").length == 0) { %>
 			<p>Proces zatwierdzenia akcji można rozpocząć po zaakceptowaniu zaproszenia przez przynajmniej jedną jednostkę</p>
 		<% } else { %>
 			<p>Wybierz zatwierdzających aby rozpocząć</p>
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/chooseApprovers"><i>person_check</i>Wybierz zatwierdzających</button>
 		<% } %>
 	<% } %>
 	<% for(const approver of $.targetEvent.approvers) { %>
@@ -341,8 +342,5 @@
 				</div>
 			<% } %>
 		</div>
-	<% } %>
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
-		<button opens-dialog="/events/<%= $.targetEvent.id %>/chooseApprovers"><i>person_check</i>Wybierz zatwierdzających</button>
 	<% } %>
 <% } %>

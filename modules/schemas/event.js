@@ -336,14 +336,14 @@ export class EventClass extends UnitClass {
 	}
 
 	/** Invite unit to event */
-	async inviteUnit(unit) {
+	async inviteUnit(unit, state="pending") {
 		// Remove existing invites
 		this.invitedUnits = this.invitedUnits.filter(i => i.unit != unit.id)
 		
 		// Invite unit
 		this.invitedUnits.push({
 			unit: unit.id,
-			state: "pending"
+			state
 		})
 
 		unit.eventInvites.push(this.id)
