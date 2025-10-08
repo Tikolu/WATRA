@@ -11,5 +11,7 @@ export default async function({targetUnit, targetWyjazd, targetInvitation}) {
 	await targetWyjazd.save()
 	await targetUnit.save()
 
-	return targetInvitation.state
+	return {
+		invitationState: targetInvitation.state
+	}
 }

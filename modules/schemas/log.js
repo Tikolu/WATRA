@@ -31,6 +31,11 @@ export class LogClass {
 		ref: "Unit"
 	}
 
+	targetWyjazd = {
+		type: String,
+		ref: "Unit"
+	}
+
 	data = {}
 
 

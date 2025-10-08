@@ -6,5 +6,7 @@ export default async function({targetWyjazd, targetInvitation}) {
 
 	await targetWyjazd.save()
 
-	return targetInvitation.state
+	return {
+		invitationState: targetInvitation.state
+	}
 }
