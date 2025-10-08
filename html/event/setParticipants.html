@@ -1,0 +1,47 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/setParticipants"],
+	meta: {
+		unitID: $.targetUnit.id,
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1><%= $.targetUnit.displayName %></h1>
+<main>
+	<form>
+		<input type="checkbox" id="choose-all">
+		<label for="choose-all">Wybierz wszystkich</label>
+	</form>
+	<form id="member-list">
+		<% for(const member of $.availableMembers) { %>
+			<% const eventParticipant = $.targetInvitation.invitedUsers.find(p => p.user == member.id) %>
+			<input
+				type="checkbox"
+				id="member-<%= member.id %>"
+				name="participants"
+				value="<%= member.id %>"
+				<% if(eventParticipant) { %>
+					checked
+				<% } else if($.eventFunkcyjni.includes(member.id)) { %>
+					disabled
+				<% } %>
+			>
+			<label for="member-<%= member.id %>">
+				<%= member.displayName %>
+			</label>
+		<% } %>
+	</form>
+</main>
+<hr>
+<div class="warning">
+	<p>Uczestnicy zostaną dodani po potwierdzeniu uczestnictwa. Profile uczestników będą widoczne dla kadry akcji.</p>
+</div>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="unit/[unitID]/event/[eventID]/setParticipants">
+		<i>check</i>
+		Potwierdź uczestników
+	</button>
+</div>

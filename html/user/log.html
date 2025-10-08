@@ -30,11 +30,11 @@
 			</div>
 			<div id="unit-content">
 				<table>
-					<% if(logEntry.targetWyjazd) { %>
+					<% if(logEntry.targetEvent) { %>
 						<tr>
-							<th>Wyjazd:</th>
+							<th>Akcja</th>
 							<td>
-								<a href="/wyjazdy/<%= logEntry.targetWyjazd.id %>"><%= logEntry.targetWyjazd.displayName %></a>
+								<a href="/events/<%= logEntry.targetEvent.id %>"><%= logEntry.targetEvent.displayName %></a>
 							</td>
 						</tr>
 					<% } %>

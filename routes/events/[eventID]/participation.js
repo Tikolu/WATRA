@@ -1,0 +1,27 @@
+import html from "modules/html.js"
+import HTTPError from "modules/server/error.js"
+
+import User from "modules/schemas/user"
+
+export default async function({user, targetEvent, participant: targetUserID}) {
+	// Get user from DB, and check if exists
+	const targetUser = await User.findById(targetUserID)
+	if(!targetUser) throw new HTTPError(404, "Użytkownik nie istnieje")
+	
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.APPROVE, "Brak dostępu do użytkownika")
+
+	// Check if target user is a participant
+	const targetInvitation = targetEvent.findUserInvite(targetUser)
+	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
+
+	await targetInvitation.populate("user", {known: [targetUser]})
+	const eligibilityIssues = await targetInvitation.getEligibilityIssues()
+
+	return html("event/participation", {
+		user,
+		targetEvent,
+		targetInvitation,
+		eligibilityIssues
+	})
+}

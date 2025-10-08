@@ -31,7 +31,7 @@ export class LogClass {
 		ref: "Unit"
 	}
 
-	targetWyjazd = {
+	targetEvent = {
 		type: String,
 		ref: "Unit"
 	}

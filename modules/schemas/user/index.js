@@ -4,7 +4,7 @@ import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
 import Funkcja from "modules/schemas/funkcja.js"
-import Wyjazd from "modules/schemas/wyjazd.js"
+import Event from "modules/schemas/event.js"
 import Log from "modules/schemas/log.js"
 import userMedical from "modules/schemas/user/medical.js"
 
@@ -64,23 +64,23 @@ export class UserClass {
 			ref: "Funkcja"
 		}
 	]
-	funkcjeWyjazdowe = [
+	eventFunkcje = [
 		{
 			type: String,
 			ref: "Funkcja"
 		}
 	]
 
-	wyjazdInvites = [
+	eventInvites = [
 		{
 			type: String,
-			ref: "Wyjazd"
+			ref: "Event"
 		}
 	]
-	wyjazdApprovalRequests = [
+	eventApprovalRequests = [
 		{
 			type: String,
-			ref: "Wyjazd"
+			ref: "Event"
 		}
 	]
 
@@ -271,12 +271,12 @@ export class UserClass {
 
 	/** Adds an entry to the user's activity log */
 	async logEvent(eventType, options={}) {
-		const {targetUser, targetWyjazd, targetUnit, data} = options
+		const {targetUser, targetEvent, targetUnit, data} = options
 		const logEntry = new Log({
 			user: this.id,
 			eventType,
 			targetUser,
-			targetWyjazd,
+			targetEvent,
 			targetUnit,
 			data
 		})
@@ -304,14 +304,14 @@ schema.beforeDelete = async function() {
 		await child.save()
 	}
 
-	// Remove self from all wyjazdy
-	await this.populate("wyjazdInvites")
+	// Remove self from all events
+	await this.populate("eventInvites")
 	
-	for(const wyjazd of this.wyjazdInvites) {
-		const invite = wyjazd.findUserInvite(this)
+	for(const event of this.eventInvites) {
+		const invite = event.findUserInvite(this)
 		if(!invite) continue
 		await invite.delete()
-		await wyjazd.save()
+		await event.save()
 	}
 
 	// Delete all funkcje
@@ -332,12 +332,12 @@ schema.permissions = {
 		// Przyboczni of member unit and of all upper units can access
 		if(await user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, this.getUnitsTree())) return true
 
-		// Kadra of wyjazd can access
-		await this.populate("wyjazdInvites")
-		for(const wyjazd of this.wyjazdInvites) {
-			const invite = wyjazd.findUserInvite(this)
+		// Kadra of event can access
+		await this.populate("eventInvites")
+		for(const event of this.eventInvites) {
+			const invite = event.findUserInvite(this)
 			if(invite?.state != "accepted") continue
-			if(user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, wyjazd)) return true
+			if(user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, event)) return true
 		}
 
 		// Przyboczni of child's member unit and of all upper units can access

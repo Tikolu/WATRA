@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-import { FunkcjaType, FunkcjaNames, WyjazdoweFunkcjaNames} from "modules/types.js"
+import { FunkcjaType, FunkcjaNames, EventFunkcjaNames} from "modules/types.js"
 
 export class FunkcjaClass {
 	/* * Properties * */
@@ -16,9 +16,9 @@ export class FunkcjaClass {
 	}
 	unit = {
 		type: String,
-		ref: function() { return this.wyjazdowa ? "Wyjazd" : "Unit" },
+		ref: function() { return this.eventFunkcja ? "Event" : "Unit" },
 	}
-	wyjazdowa = {
+	eventFunkcja = {
 		type: Boolean,
 		index: true
 	}
@@ -29,8 +29,8 @@ export class FunkcjaClass {
 	/** Returns the funkcja type name. Will throw an error if the unit field is not populated */
 	get displayName() {
 		let funkcjaNames
-		if(this.wyjazdowa) {
-			funkcjaNames = WyjazdoweFunkcjaNames
+		if(this.eventFunkcja) {
+			funkcjaNames = EventFunkcjaNames
 		} else {
 			if(!this.populated("unit") || !this.unit) return "funkcja"
 			funkcjaNames = FunkcjaNames[this.unit.type]
@@ -45,7 +45,7 @@ const schema = mongoose.Schema.fromClass(FunkcjaClass)
 schema.beforeDelete = async function() {
 	// Remove self from user
 	await this.populate("user")
-	const funkcjeKey = this.wyjazdowa ? "funkcjeWyjazdowe" : "funkcje"
+	const funkcjeKey = this.eventFunkcja ? "eventFunkcje" : "funkcje"
 	this.user[funkcjeKey] = this.user[funkcjeKey].filter(f => f.id != this.id)
 	await this.user.save()
 

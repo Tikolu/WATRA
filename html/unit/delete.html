@@ -13,7 +13,7 @@
 		<h2>Usuń <%= $.targetUnit.displayName %> z jednej z jednostek nadrzędnych</h2>
 		<p><%= $.targetUnit.displayName %> pozostanie w reszcie jednostek</p>
 		<form id="remove-unit">
-			<label for="upper-unit-chooser">Unit:</label>
+			<label for="upper-unit-chooser">Jednostka:</label>
 			<select id="upper-unit-chooser" name="unitID">
 				<option disabled selected></option>
 				<% for(const upperUnit of $.targetUnit.upperUnits) { %>

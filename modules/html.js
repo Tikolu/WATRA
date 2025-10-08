@@ -4,7 +4,7 @@ import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
 
 import { FunkcjaType, UnitType } from "modules/types.js"
-import Wyjazd from "modules/schemas/wyjazd.js"
+import Event from "modules/schemas/event.js"
 
 const etaImports = {
 	Base64,
@@ -12,7 +12,7 @@ const etaImports = {
 	datetime,
 	FunkcjaType,
 	UnitType,
-	Wyjazd
+	Event
 }
 
 const eta = new Eta({

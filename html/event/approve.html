@@ -1,0 +1,25 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/approve"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1>Zatwierdź akcję</h1>
+<main>
+	<p>Potwierdzam że zapoznałem się z planem i analizą ryzyka akcji i że dostałem wszystkie dokumenty niezbędne do ocenienia ryzyka. Zatwierdzam tą akcję wraz z ustaloną komendą, i wyrażam zgodę aby się odbył.</p>
+	<form>
+		<input type="checkbox" id="signature" disabled>
+		<label for="signature">Podpis</label>
+	</form>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="event/[eventID]/approval/approve">
+		<i>check</i>
+		<span>Zatwierdź</span>
+	</button>
+</div>

@@ -41,7 +41,7 @@ export const FunkcjaNames = {
 	]
 }
 
-export const WyjazdoweFunkcjaNames = [
+export const EventFunkcjaNames = [
 	["szeregowy"],
 	["kadra"],
 	["komendant"]

@@ -1,6 +1,6 @@
 API.registerHandler("unit/[unitID]/subUnit/create", {
 	form: "create-unit",
-	progressText: "Tworzenie units...",
+	progressText: "Tworzenie jednostki...",
 	after: response => {
 		unitNameInput.value = ""
 		window.top.refreshDataOnShow = true
@@ -10,11 +10,11 @@ API.registerHandler("unit/[unitID]/subUnit/create", {
 
 API.registerHandler("unit/[unitID]/subUnit/link", {
 	form: "link-unit",
-	progressText: "Tworzenie units...",
+	progressText: "Dodawanie jednostki...",
 	successText: "Dodano jednostkę",
 	before: data => {
 		if(!data.subUnitID) {
-			throw "Nie wybrano units"
+			throw "Nie wybrano jednostki"
 		}
 		return true
 	}

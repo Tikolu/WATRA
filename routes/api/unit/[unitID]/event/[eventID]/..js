@@ -1,0 +1,19 @@
+import HTTPError from "modules/server/error.js"
+import Event from "modules/schemas/event.js";
+
+export async function open({user, targetUnit, eventID}) {
+	// Check permissions
+	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	
+	// Get event from DB, and check if exists
+	const targetEvent = await Event.findById(eventID)
+	if(!targetEvent) throw new HTTPError(404, "Akcja nie istnieje")
+	
+	// Check if unit is invited
+	const targetInvitation = targetEvent.invitedUnits.id(targetUnit.id)
+	if(!targetInvitation) {
+		throw new HTTPError(400, "Jednostka nie jest zaproszona na akcję")
+	}
+
+	this.addRouteData({targetEvent, targetInvitation})
+}

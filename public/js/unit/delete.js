@@ -1,7 +1,7 @@
 API.registerHandler("unit/[unitID]/subUnit/[subUnitID]/remove", {
 	form: "remove-unit",
-	progressText: "Usuwanie z units...",
-	successText: "Usunięto z units",
+	progressText: "Usuwanie z jednostki...",
+	successText: "Usunięto z jednostki",
 	validate: data => {
 		data.subUnitID = META.unitID
 		
@@ -15,7 +15,7 @@ API.registerHandler("unit/[unitID]/subUnit/[subUnitID]/remove", {
 })
 
 API.registerHandler("unit/[unitID]/delete", {
-	progressText: "Trwale usuwanie units...",
+	progressText: "Trwale usuwanie jednostki...",
 	after: () => {
 		window.top.history.back()
 	}

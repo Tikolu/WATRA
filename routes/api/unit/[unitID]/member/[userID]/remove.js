@@ -3,7 +3,7 @@ import { FunkcjaType } from "modules/types.js"
 
 export default async function({user, targetUnit, targetUser}) {
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY, "Brak dostępu do units")
+	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY, "Brak dostępu do jednostki")
 	await user.requirePermission(targetUser.PERMISSIONS.MODIFY, "Brak dostępu do użytkownika")
 
 	// User can only remove themselves if they are a drużynowy in an upper unit
@@ -12,7 +12,7 @@ export default async function({user, targetUnit, targetUser}) {
 	}
 
 	const targetFunkcja = await targetUser.getFunkcjaInUnit(targetUnit)
-	if(!targetFunkcja) throw new HTTPError(400, "Użytkownik nie jest członkiem units")
+	if(!targetFunkcja) throw new HTTPError(400, "Użytkownik nie jest członkiem jednostki")
 
 	// Ensure user has at least one other funkcja
 	if(!targetUser.isParent && targetUser.funkcje.length <= 1) throw Error("Użytkownik musi mieć przynajmniej jedną funkcję")

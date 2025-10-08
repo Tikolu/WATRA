@@ -34,10 +34,10 @@ export class UnitClass {
 			ref: "Unit"
 		}
 	]
-	wyjazdInvites = [
+	eventInvites = [
 		{
 			type: String,
-			ref: "Wyjazd"
+			ref: "Event"
 		}
 	]
 
@@ -113,7 +113,7 @@ export class UnitClass {
 		}
 		
 		// Add funkcja to user, unless already added
-		const userFunkcjeKey = funkcja.wyjazdowa ? "funkcjeWyjazdowe" : "funkcje"
+		const userFunkcjeKey = funkcja.eventFunkcja ? "eventFunkcje" : "funkcje"
 		if(!user[userFunkcjeKey].hasID(funkcja.id)) {
 			user[userFunkcjeKey].push(funkcja.id)
 		}
@@ -148,8 +148,7 @@ export class UnitClass {
 	/** Link an existing unit as subUnit */
 	async addSubUnit(subUnit) {
 		// Check unit type compatibility
-		if(subUnit.type >= this.type) throw Error("Nie można dodać units o wyższym lub równym typie")
-		if(this.type == 0) throw Error("Nie można dodać units pod zastęp") 
+		if(subUnit.type >= this.type) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
 		
 		// Add subUnit to subUnits, unless already added
 		if(!this.subUnits.hasID(subUnit.id)) {
@@ -169,7 +168,7 @@ export class UnitClass {
 	async removeSubUnit(subUnit) {
 		// Ensure subUnit has other upperUnits
 		if(subUnit.upperUnits.length <= 1) {
-			throw Error("Nie można usunąć units bo ma tylko jedną jednostkę nadrzędną")
+			throw Error("Nie można usunąć jednostki bo ma tylko jedną jednostkę nadrzędną")
 		}
 
 		// Remove subUnit from subUnits

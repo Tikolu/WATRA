@@ -1,0 +1,80 @@
+<% layout("/layouts/body", {
+	title: "Zapraszanie jednostek",
+	scripts: ["event/inviteUnits"],
+	styles: ["event/inviteUnits"],
+	meta: {
+		eventID: $.targetEvent.id
+	},
+	navPath: {
+		[$.targetEvent.displayName]: `/events/${$.targetEvent.id}`
+	}
+}) %>
+<h1 id="event-title"><%= $.targetEvent.displayName %></h1>
+
+<h2>Jednostki</h2>
+<input type="search" placeholder="Wyszukiwanie..." disabled>
+<select disabled>
+	<option>Rodzaj jednostki...</option>
+</select>
+<div id="unit-finder" class="unit-grid">
+	<% function displayUnit(unit, showSubUnits, inviteOverride=undefined) { %>
+		<% if(!unit) return %>
+		<% const unitInvite = $.targetEvent.invitedUnits.find(i => i.unit == unit.id) %>
+		<div class="unit">
+			<h3><!--<a href="/units/<%= unit.id %>">--><%= unit.displayName %><!--</a>--></h3>
+			<% if(unitInvite?.state == "accepted") { %>
+				<p>Zaakceptowano <i>check</i></p>
+			<% } else if(unitInvite?.state == "declined") { %>
+				<p>Odrzucono <i>close</i></p>
+			<% } else if(unitInvite?.state == "pending") { %>
+				<p>Oczekiwana odpowiedź... <i class="spin">progress_activity</i></p>
+			<% } %>
+			<div class="button-row">
+				<% if(inviteOverride === true) { %>
+					<button disabled>Zaproszono</button>
+				<% } else if(inviteOverride === false) { %>
+					<button disabled>Nie zaproszono</button>
+				<% } else if(unitInvite?.state == "pending" || unitInvite?.state == "accepted") { %>
+					<button class="dangerous" api="event/[eventID]/unit/<%= unit.id %>/uninvite">
+						<i>undo</i>
+						<span>Cofnij zaproszenie</span>
+					</button>
+				<% } else { %>
+					<button api="event/[eventID]/unit/<%= unit.id %>/invite">
+						<i>group_add</i>
+						<span>Zaproś <% if(unitInvite?.state == "declined") { %>ponownie<% } else { %>jednostkę<% } %></span>
+					</button>
+				<% } %>
+			</div>
+			<% if(showSubUnits && unit.subUnits.length) { %>
+				<details>
+					<summary>Jednostki</summary>
+					<div class="sub-units unit-grid">
+						<% for(const subUnit of unit.subUnits) { %>
+							<% displayUnit(
+								$.units[subUnit.id],
+								true,
+								(inviteOverride === true || unitInvite?.state) ? true : undefined
+							) %>
+						<% } %>
+					</div>
+				</details>
+			<% } %>
+		</div>
+	<% } %>
+
+	<% for(const unitID of $.topUnits) { %>
+		<% displayUnit($.units[unitID], true) %>
+	<% } %>
+</div>
+
+<% if($.targetEvent.invitedUnits.length) { %>
+	<hr>
+
+	<h2>Wysłane zaproszenia</h2>
+	<div class="unit-grid">
+		<% for(const invite of $.targetEvent.invitedUnits) { %>
+			<% displayUnit($.units[invite.unit], false) %>
+		<% } %>
+	</div>
+<% } %>

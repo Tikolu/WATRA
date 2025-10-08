@@ -194,45 +194,45 @@
 	</div>
 <% } %>
 
-<% if($.targetUser.funkcjeWyjazdowe.length > 0
+<% if($.targetUser.eventFunkcje.length > 0
 	  || $.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)
-	  && $.targetUser.wyjazdInvites.length > 0) {
+	  && $.targetUser.eventInvites.length > 0) {
 %>
 	<hr>
 	<h2>
 	<i>hiking</i>
-		Wyjazdy
+		Akcje
 	</h2>
-	<div id="wyjazd-list" class="unit-grid">
-		<% for(const funkcja of $.targetUser.funkcjeWyjazdowe) { %>
+	<div id="event-list" class="unit-grid">
+		<% for(const funkcja of $.targetUser.eventFunkcje) { %>
 			<%
 				if(
 					$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) && 
-					$.targetUser.wyjazdInvites.some(w => w.id == funkcja.unit?.id)
+					$.targetUser.eventInvites.some(w => w.id == funkcja.unit?.id)
 				) continue
 			%>
-			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
-				targetWyjazd: funkcja.unit,
+			<%~ include("/event/templates/eventEntry.html", {
+				targetEvent: funkcja.unit,
 				content: Text.capitalise(funkcja.displayName)
 			}) %>
 		<% } %>
 	</div>
 <% } %>
 
-<% if($.targetUser.wyjazdApprovalRequests.length) { %>
+<% if($.targetUser.eventApprovalRequests.length) { %>
 	<hr>
 	<h2>
 		<i>gavel</i>
 		Zatwierdzenia
 	</h2>
 	<div class="unit-grid">
-		<% for(const wyjazd of $.targetUser.wyjazdApprovalRequests) { %>
+		<% for(const event of $.targetUser.eventApprovalRequests) { %>
 			<%
-				const approvalState = wyjazd.getApprover($.targetUser)?.approved
+				const approvalState = event.getApprover($.targetUser)?.approved
 				if(approvalState === undefined) continue
 			%>
-			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
-				targetWyjazd: wyjazd,
+			<%~ include("/event/templates/eventEntry.html", {
+				targetEvent: event,
 				content: approvalState ? "Zatwierdzony" : "Oczekiwane zatwierdzenie",
 			}) %>
 		<% } %>

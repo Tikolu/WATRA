@@ -1,32 +1,32 @@
 import html from "modules/html.js"
-import Wyjazd from "modules/schemas/wyjazd.js"
+import Event from "modules/schemas/event.js"
 
 export default async function({user}) {
 	if(!user) return this.response.redirect("/login")
 
 	await user.populate({
 		"children": {
-			"wyjazdInvites": {},
+			"eventInvites": {},
 			"funkcje": "unit"
 		},
 		"funkcje": "unit",
-		"funkcjeWyjazdowe": "unit",
-		"wyjazdInvites": {},
-		"wyjazdApprovalRequests": {}
+		"eventFunkcje": "unit",
+		"eventInvites": {},
+		"eventApprovalRequests": {}
 	})
 
 	// Check permissions
-	await user.checkPermission(Wyjazd.PERMISSIONS.CREATE)
+	await user.checkPermission(Event.PERMISSIONS.CREATE)
 
-	const wyjazdy = [
-		...user.wyjazdInvites,
-		...user.wyjazdApprovalRequests,
-		...user.funkcjeWyjazdowe.map(f => f.unit),
-		...user.children.flatMap(c => c.wyjazdInvites)
+	const events = [
+		...user.eventInvites,
+		...user.eventApprovalRequests,
+		...user.eventFunkcje.map(f => f.unit),
+		...user.children.flatMap(c => c.eventInvites)
 	].unique("id")
 	
 	return html("main", {
 		user,
-		wyjazdy
+		events
 	})
 }

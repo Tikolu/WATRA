@@ -5,8 +5,8 @@ import html from "modules/html.js"
 export default async function({user, targetUser}) {
 	await targetUser.populate({
 		"funkcje": "unit",
-		"funkcjeWyjazdowe": "unit",
-		"wyjazdApprovalRequests": {},
+		"eventFunkcje": "unit",
+		"eventApprovalRequests": {},
 		"children": {
 			"funkcje": "unit"
 		},
@@ -24,9 +24,9 @@ export default async function({user, targetUser}) {
 		user.overridePermission(targetUser.PERMISSIONS.ADD_PARENT, false)
 	}
 	
-	// Load wyjazd invites
+	// Load event invites
 	if(await user.checkPermission(targetUser.PERMISSIONS.APPROVE)) {
-		await targetUser.populate("wyjazdInvites")
+		await targetUser.populate("eventInvites")
 	}
 	
 

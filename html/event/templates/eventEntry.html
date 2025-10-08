@@ -1,0 +1,25 @@
+<a href="/events/<%= $.targetEvent.id %>">
+	<div class="unit-header">
+		<div class="unit-image">
+			<i>hiking</i>
+		</div>
+		<div class="unit-title">
+			<h3><%= $.targetEvent.displayName %></h3>
+			<p>
+				<% if($.description) { %>
+					<%= $.description %>
+				<% } else { %>
+					<%= $.targetEvent.typeName %>
+				<% } %>
+			</p>
+		</div>
+	</div>
+	<div class="unit-content">
+		<% if($.content) { %>
+			<p><%= $.content %></p>
+		<% } %>
+		<% for(const warning of $.warnings || []) { %>
+			<p class="warning"><i>warning</i> <%= warning %></p>
+		<% } %>
+	</div>
+</a>

@@ -1,0 +1,60 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/participation"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1>
+	Uczestnictwo w <%= $.targetEvent.displayName %>
+</h1>
+<main>
+	<% if($.targetInvitation.user.id != $.user.id) { %>
+		<p><%= $.targetInvitation.user.displayName %></p>
+	<% } %>
+	<% if($.eligibilityIssues.length) { %>
+		<% for(const issue of $.eligibilityIssues) { %>
+			<p class="warning"><i>warning</i> <%= issue %></p>
+		<% } %>
+	<% } else { %>
+		<form id="event-participation">
+			<input type="radio" name="participation" id="participation-choice-yes" value="yes"
+				<%= $.targetInvitation.state == "accepted" ? "checked" : "" %>
+			>
+			<label for="participation-choice-yes">
+				<% if($.targetInvitation.user.id == $.user.id) { %>
+					Wezmę
+				<% } else { %>
+					<%= $.targetInvitation.user.name.first %> weźmie
+				<% } %>
+				udział
+			</label>
+			<input type="radio" name="participation" id="participation-choice-no" value="no"
+				<%= $.targetInvitation.state == "declined" ? "checked" : "" %>
+			>
+			<label for="participation-choice-no">
+				<% if($.targetInvitation.user.id == $.user.id) { %>
+					Nie wezmę
+				<% } else { %>
+					<%= $.targetInvitation.user.name.first %> nie weźmie
+				<% } %>
+				udziału
+			</label>
+		</form>
+		<form>
+			<input type="checkbox" disabled>
+			<label for="signature">Podpis</label>
+		</form>
+	<% } %>
+</main>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		<span>Anuluj</span>
+	</button>
+	<% if(!$.eligibilityIssues.length) { %>
+		<button api="event/[eventID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
+			<i>check</i>
+			<span>Potwierdź</span>
+		</button>
+	<% } %>
+</div>

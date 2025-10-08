@@ -1,0 +1,37 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/create"]
+}) %>
+<h1>Utwórz akcję</h1>
+<main>
+	<form>
+		<label for="event-name">Nazwa akcji:</label>
+		<input type="text" id="event-name" name="name" autocomplete="off" required>
+		<label for="event-start-date">Data rozpoczęcia:</label>
+		<input
+			type="date"
+			id="event-start-date"
+			name="startDate"
+			min="<%= MIN_DATE %>"
+			max="<%= MAX_DATE %>"
+		>
+		<label for="event-end-date">Data zakończenia:</label>
+		<input
+			type="date"
+			id="event-end-date"
+			name="endDate"
+			min="<%= MIN_DATE %>"
+			max="<%= MAX_DATE %>"
+		>
+	</form>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="event/create">
+		<i>check</i>
+		Utwórz
+	</button>
+</div>

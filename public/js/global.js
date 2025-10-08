@@ -368,7 +368,7 @@ const API = {
 		funkcjaID: "funkcje",
 		unitID: "units",
 		userID: "users",
-		wyjazdID: "wyjazdy"
+		eventID: "events"
 	},
 	onRequestStart: null,
 	onRequestEnd: null,

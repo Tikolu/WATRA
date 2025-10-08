@@ -15,9 +15,9 @@ export default async function({user, targetUnit}) {
 	// Sort funkcje
 	await targetUnit.sortFunkcje()
 	
-	// Load wyjazd invites
+	// Load event invites
 	if(await user.checkPermission(targetUnit.PERMISSIONS.MODIFY)) {
-		await targetUnit.populate("wyjazdInvites")
+		await targetUnit.populate("eventInvites")
 	}
 
 	await user.checkPermission(targetUnit.PERMISSIONS.DELETE)

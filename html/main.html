@@ -55,22 +55,22 @@
 		<% } %>
 	</div>
 <% } %>
-<% if($.wyjazdy.length || $.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
+<% if($.events.length || $.user.hasPermission(Event.PERMISSIONS.CREATE)) { %>
 	<hr>
 	<h2>
 		<i>hiking</i>
-		Wyjazdy
+		Akcje
 	</h2>
 	<div class="unit-grid">
-		<% for(const wyjazd of $.wyjazdy) { %>
+		<% for(const event of $.events) { %>
 			<%
-				const inviteStates = [$.user, ...$.user.children].map(u => wyjazd.findUserInvite(u)?.state)
-				const approvalState = wyjazd.getApprover($.user)?.approved
+				const inviteStates = [$.user, ...$.user.children].map(u => event.findUserInvite(u)?.state)
+				const approvalState = event.getApprover($.user)?.approved
 
 				if(approvalState === true && !inviteStates.length) continue
 			%>
-			<%~ include("wyjazd/templates/wyjazdEntry", {
-				targetWyjazd: wyjazd,
+			<%~ include("event/templates/eventEntry", {
+				targetEvent: event,
 				warnings: Array.conditional(
 					inviteStates.includes("pending"), "Oczekiwana odpowiedź",
 					approvalState === false, "Oczekiwane zatwierdzenie"
@@ -78,10 +78,10 @@
 			}) %>
 		<% } %>
 	</div>
-	<% if($.user.hasPermission(Wyjazd.PERMISSIONS.CREATE)) { %>
-		<button id="create-wyjazd-button" opens-dialog="/wyjazdy/create">
+	<% if($.user.hasPermission(Event.PERMISSIONS.CREATE)) { %>
+		<button id="create-event-button" opens-dialog="/events/create">
 			<i>tour</i>
-			<span>Utwórz wyjazd</span>
+			<span>Utwórz akcję</span>
 		</button>
 	<% } %>
 <% } %>

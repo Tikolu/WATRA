@@ -11,7 +11,7 @@
 		<input type="text" id="first-name-input" name="firstName" autocomplete="off">
 		<label for="last-name-input">Nazwisko:</label>
 		<input type="text" id="last-name-input" name="lastName" autocomplete="off">
-		<label for="unit-select"<%= $.units.length == 1 ? "hidden" : "" %>>Unit:</label>
+		<label for="unit-select"<%= $.units.length == 1 ? "hidden" : "" %>>Jednostka:</label>
 		<select id="unit-select" name="unitID" <%= $.units.length == 1 ? "hidden" : "" %>>
 			<% for(const unit of $.units) { %>
 				<option value="<%= unit.id %>"><%= unit.displayName %></option>

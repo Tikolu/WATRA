@@ -173,7 +173,7 @@ export async function connect(dbName="main") {
 		console.log("\x1b[32m[MongoDB]\x1b[0m Connected!")
 
 		// Initialise all schemas
-		await import("modules/schemas/wyjazd.js")
+		await import("modules/schemas/event.js")
 		await import("modules/schemas/funkcja.js")
 		await import("modules/schemas/unit.js")
 		await import("modules/schemas/user")

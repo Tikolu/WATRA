@@ -92,16 +92,16 @@
 	<% } %>
 <% } %>
 
-<% if($.targetUnit.wyjazdInvites?.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+<% if($.targetUnit.eventInvites?.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>
 		<i>hiking</i>
-		Wyjazdy
+		Akcje
 	</h2>
-	<div id="unit-wyjazd-list" class="unit-grid">
-		<% for(const wyjazd of $.targetUnit.wyjazdInvites || []) { %>
+	<div id="unit-event-list" class="unit-grid">
+		<% for(const event of $.targetUnit.eventInvites || []) { %>
 			<%
-				const invite = wyjazd.invitedUnits.find(i => i.unit == $.targetUnit.id)
+				const invite = event.invitedUnits.find(i => i.unit == $.targetUnit.id)
 
 				let content
 				if(invite.state == "accepted") {
@@ -112,8 +112,8 @@
 					}
 				}
 			%>
-			<%~ include("/wyjazd/templates/wyjazdEntry.html", {
-				targetWyjazd: wyjazd,
+			<%~ include("/event/templates/eventEntry.html", {
+				targetEvent: event,
 				content,
 				warnings: Array.conditional(
 					invite.state == "pending", "Oczekujące zaproszenie"
