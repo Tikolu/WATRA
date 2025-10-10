@@ -199,8 +199,12 @@ export async function setup() {
 		
 		const newUser = new User()
 		const newUnit = new Unit({
-			type: UnitType.CHORĄGIEW
+			type: UnitType.OKRĘG
 		})
+
+		await newUnit.addSubUnit(new Unit({
+			type: UnitType.CHORĄGIEW
+		}))
 
 		await newUnit.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
 		console.log("Test user access code:", await newUser.generateAccessCode())

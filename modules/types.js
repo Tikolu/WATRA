@@ -15,7 +15,8 @@ export const UnitType = {
 	ZASTĘP: 0,
 	DRUŻYNA: 1,
 	HUFIEC: 2,
-	CHORĄGIEW: 3
+	CHORĄGIEW: 3,
+	OKRĘG: 4
 }
 
 export const FunkcjaNames = {
@@ -38,6 +39,11 @@ export const FunkcjaNames = {
 		["szeregowy"],
 		["referent"],
 		["komendant"]
+	],
+	[UnitType.OKRĘG]: [
+		["szeregowy"],
+		["członek zarządu"],
+		["przewodniczący zarządu"],
 	]
 }
 
