@@ -686,6 +686,12 @@ function createURLDialog(url, open=false) {
 		})
 		
 		document.body.append(dialog)
+
+		// Remove dialog after data refresh
+		window.afterDataRefresh.unshift(() => {
+			if(dialog.open) return
+			dialog.remove()
+		})
 	}
 
 	iframe.onload = async () => {
