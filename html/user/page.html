@@ -158,7 +158,7 @@
 			<%~ include("templates/userEntry", {targetUser: child}) %>
 		<% } %>
 	</div>
-<% } else if($.targetUser.parents.length > 0 || $.targetUser.age < 18) { %>
+<% } else if($.targetUser.parents.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
 	<hr>
 	<h2>
 		<i>supervisor_account</i>
@@ -182,7 +182,7 @@
 	<hr>
 	<h2>
 		<i>groups</i>
-		Jednostki
+		Funkcje w jednostkach
 	</h2>
 	<div id="unit-list" class="unit-grid">
 		<% for(const funkcja of $.targetUser.funkcje) { %>
@@ -194,26 +194,38 @@
 	</div>
 <% } %>
 
-<% if($.targetUser.eventFunkcje.length > 0
-	  || $.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)
-	  && $.targetUser.eventInvites.length > 0) {
-%>
+<% if($.targetUser.eventFunkcje.length > 0) { %>
 	<hr>
 	<h2>
 	<i>hiking</i>
-		Akcje
+		Funkcje w akcjach
 	</h2>
-	<div id="event-list" class="unit-grid">
+	<div class="unit-grid">
 		<% for(const funkcja of $.targetUser.eventFunkcje) { %>
-			<%
-				if(
-					$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) && 
-					$.targetUser.eventInvites.some(w => w.id == funkcja.unit?.id)
-				) continue
-			%>
 			<%~ include("/event/templates/eventEntry.html", {
 				targetEvent: funkcja.unit,
 				content: Text.capitalise(funkcja.displayName)
+			}) %>
+		<% } %>
+	</div>
+<% } %>
+
+<% if($.targetUser.eventInvites.length > 0) { %>
+	<hr>
+	<h2>
+	<i>hiking</i>
+		Zaproszenia na akcje
+	</h2>
+	<div class="unit-grid">
+		<% for(const event of $.targetUser.eventInvites) { %>
+			<% const inviteState = event.findUserInvite($.targetUser)?.state %>
+			<%~ include("/event/templates/eventEntry.html", {
+				targetEvent: event,
+				content: ({
+					"pending": "Oczekujące zaproszenie",
+					"accepted": "Zaakceptowane zaproszenie",
+					"declined": "Odrzucone zaproszenie"
+				})[inviteState]
 			}) %>
 		<% } %>
 	</div>
@@ -223,7 +235,7 @@
 	<hr>
 	<h2>
 		<i>gavel</i>
-		Zatwierdzenia
+		Zatwierdzenia akcji
 	</h2>
 	<div class="unit-grid">
 		<% for(const event of $.targetUser.eventApprovalRequests) { %>

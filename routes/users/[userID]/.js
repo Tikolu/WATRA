@@ -6,6 +6,7 @@ export default async function({user, targetUser}) {
 	await targetUser.populate({
 		"funkcje": "unit",
 		"eventFunkcje": "unit",
+		"eventInvites": {},
 		"eventApprovalRequests": {},
 		"children": {
 			"funkcje": "unit"
@@ -22,11 +23,6 @@ export default async function({user, targetUser}) {
 	} else {
 		user.overridePermission(targetUser.PERMISSIONS.DELETE, false)
 		user.overridePermission(targetUser.PERMISSIONS.ADD_PARENT, false)
-	}
-	
-	// Load event invites
-	if(await user.checkPermission(targetUser.PERMISSIONS.APPROVE)) {
-		await targetUser.populate("eventInvites")
 	}
 	
 
