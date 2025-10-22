@@ -1,4 +1,5 @@
 API.registerHandler("user/[userID]/medical/update", {
+	form: element => element.parentElement,
 	successText: "Zapisano opis"
 })
 
@@ -7,7 +8,6 @@ API.registerHandler("user/[userID]/medical/add", {
 })
 
 API.registerHandler("user/[userID]/medical/remove", {
-	form: false,
 	progressText: "Usuwanie..."
 })
 

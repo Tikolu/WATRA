@@ -4,5 +4,5 @@ API.registerHandler("login", {
 		data.accessCode = data.accessCode.replaceAll(" ", "")
 		return !!data.accessCode
 	},
-	after: () => document.location.reload()
+	after: () => document.location.href = "/"
 })

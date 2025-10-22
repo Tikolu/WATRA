@@ -1,5 +1,4 @@
 API.registerHandler("user/[userID]/update/names", {
-	valueKey: "name",
 	successText: "Zapisano imię i nazwisko"
 })
 

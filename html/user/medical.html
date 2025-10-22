@@ -41,7 +41,7 @@
 					<% } %>
 				</label>
 				<% if(element.selected) { %>
-					<div id="<%= category.id %>-<%= element.id %>-details" class="form-scope">
+					<div id="<%= category.id %>-<%= element.id %>-details">
 						<label for="<%= category.id %>-<%= element.id %>-details-symptoms"><%= category.symptoms.heading %></label>
 						<textarea
 							id="<%= category.id %>-<%= element.id %>-details-symptoms"
@@ -94,7 +94,7 @@
 					<i>arrow_back</i>
 					Anuluj
 				</button>
-				<button api="user/[userID]/medical/add?category=<%= category.id %>">
+				<button api="user/[userID]/medical/add?category=<%= category.id %>" form="add-other-<%= category.id %>">
 					<i>add</i>
 					Dodaj
 				</button>

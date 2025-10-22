@@ -415,7 +415,7 @@ const API = {
 	 * Register an API handler
 	 * @param {string} api - API endpoint with segments in square brackets
 	 * @param {object} handler - Handler object with properties:
-	 *  - form: ID of form to use for data, defaults to element's parent form (or dialog)
+	 *  - form: ID of form to use for data, or function to call to get the form element
 	 *  - progressText: Text to show while processing
 	 *  - validate: Function to validate data before sending, should return true or an object with additional properties
 	 *  - before: Function to call before sending data, should return true to continue or false to cancel
@@ -432,6 +432,8 @@ const API = {
 	},
 
 	async executeHandler(element, api, data={}) {
+		console.log("Executing API handler", api)
+		
 		let handler = API.handlers[api]
 
 		// Find wildcard handler
@@ -453,21 +455,27 @@ const API = {
 		// Create POST data from META
 		data = {...META, ...data}
 
-		if(handler.form !== false) {
-			// Add form values to POST data
-			const formData = {}
+		const elements = [element]
+		const formData = {}
+
+		handler.form ||= element.getAttribute("form")
+		if(handler.form) {
 			// Find form container element
-			let formContainer = document.getElementById(handler.form)
-			if(!formContainer) {
-				for(const parentElement of element.parentElementChain) {
-					if(parentElement.matches("form, dialog, body, .form-scope")) {
-						formContainer = parentElement
-						break
-					}
-				}
+			let formContainer
+			if(handler.form instanceof HTMLElement) {
+				formContainer = handler.form
+			} else if(typeof handler.form == "function") {
+				formContainer = handler.form(element)
+			} else {
+				formContainer = document.getElementById(handler.form)
 			}
-			formContainer ||= element.parentElement
-			for(const formElement of formContainer?.querySelectorAll("[name]") || []) {
+			if(!formContainer) {
+				throw new Error(`Form not found for API handler ${api}`)
+			}
+			for(const formElement of formContainer.querySelectorAll("[name]") || []) {
+				// Skip already found element
+				if(elements.includes(formElement)) continue
+				
 				// Skip elements in embedded dialogs
 				let skipElement = false
 				for(const parentElement of formElement.parentElementChain) {
@@ -478,65 +486,69 @@ const API = {
 					}
 				}
 				if(skipElement) continue
-				let elementValue = formElement.value
-				
-				// Clear validity
-				formElement.classList.remove("invalid")
 
-				if(formElement.matches("[type=checkbox], [type=radio]")) {
-					// Default value for checkboxes
-					if(formElement.checked) {
-						if(!formElement.hasAttribute("value")) elementValue = true
+				elements.push(formElement)
+			}
+		}
 
-					// Ensure required checkboxes are checked
-					} else if(formElement.required) {
-						formElement.classList.add("invalid")
-						formElement.scrollIntoView()
-						return
+		for(const formElement of elements) {				
+			let elementValue = formElement.value
+			if(!elementValue && formElement.matches("[contenteditable]")) {
+				elementValue = formElement.innerText.trim()
+			}
+			
+			// Clear validity
+			formElement.classList.remove("invalid")
 
-					// Not checked - skip element
-					} else {
-						continue
-					}
-				}
+			if(formElement.matches("[type=checkbox], [type=radio]")) {
+				// Default value for checkboxes
+				if(formElement.checked) {
+					if(!formElement.hasAttribute("value")) elementValue = true
 
-				// Ensure required fields are filled
-				if(formElement.required && !elementValue) {
+				// Ensure required checkboxes are checked
+				} else if(formElement.required) {
 					formElement.classList.add("invalid")
-					formElement.scrollIntoView()
 					return
-				}
 
-				// If an element with this name was already encountered, turn value into an array
-				if(formData[formElement.name]) {
-					if(!Array.isArray(formData[formElement.name])) {
-						formData[formElement.name] = [formData[formElement.name]]
-					}
-					formData[formElement.name].push(elementValue)
+				// Not checked - skip element
 				} else {
-					formData[formElement.name] = elementValue
+					continue
 				}
 			}
-			data = {...data, ...formData}
+
+			if(
+				// Ensure required fields are filled
+				(formElement.required && !elementValue) ||
+				// Check element validity
+				formElement.checkValidity && !formElement.checkValidity()
+			) {
+				formElement.classList.add("invalid")
+				return
+			}
+
+			const valueKey = formElement.name || handler.valueKey || "value"
+			// If an element with this name was already encountered, turn value into an array
+			if(formData[valueKey]) {
+				if(!Array.isArray(formData[valueKey])) {
+					formData[valueKey] = [formData[valueKey]]
+				}
+				formData[valueKey].push(elementValue)
+			} else {
+				formData[valueKey] = elementValue
+			}
 		}
 
-		// Check element validity
-		if(!element.checkValidity()) {
-			element.classList.add("invalid")
-			return
-		}
-
-		// Add element value to POST data
-		handler.valueKey ||= element.name
-		if(element.value || handler.valueKey) {
-			handler.valueKey ||= "value"
-			data[handler.valueKey] = element.value
-		}
+		data = {...data, ...formData}
 
 		// Trigger data validation callback
 		if(handler.validate) {
 			const validationResponse = await handler.validate(data)
-			if(!validationResponse) return
+			if(!validationResponse) {
+				for(const formElement of elements) {
+					formElement.classList.add("invalid")
+				}
+				return
+			}
 			handler = {...handler, ...validationResponse}
 		}
 
@@ -562,34 +574,41 @@ const API = {
 			})
 		}
 
-		// Disable element during API call
-		element.disabled = true
-		element.classList.add("loading")
-		element.classList.remove("invalid")
+		// Disable elements during API call
+		for(const element of elements) {
+			element.disabled = true
+			element.classList.add("loading")
+			element.classList.remove("invalid")
+		}
 
 		if(Object.isEmpty(data)) data = undefined
 		try {
 			var response = await API.request(handler.api, data)
 		} catch(error) {
-			element.classList.add("invalid")
+			elements.forEach(e => e.classList.add("invalid"))
 			Popup.error(error)
 			return
 		} finally {
 			if(progressMessage) progressMessage.close()
-			// Re-enable element
-			element.disabled = false
-			element.classList.remove("loading")
+			// Re-enable elements
+			for(const element of elements) {
+				element.disabled = false
+				element.classList.remove("loading")
+			}
 		}
 
 		// Trigger "after" callback
 		await handler.after?.(response, data)
 
 		// Update element modified state
-		if(response[handler.valueKey] !== undefined) {
-			element.value = response[handler.valueKey]
+		for(const formElement of elements) {
+			const valueKey = formElement.name || handler.valueKey || "data"
+			if(response[valueKey] !== undefined) {
+				formElement.value = response[valueKey]
+			}
+			formElement.initialValue = formElement.value
+			formElement.modified = false
 		}
-		element.initialValue = element.value
-		element.modified = false
 
 		// Show success message
 		if(handler.successText) {
@@ -627,6 +646,7 @@ function processAPIAttributes() {
 		else if(element.matches("input")) event = "submit"
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
+		else if(element.matches("[contenteditable=plaintext-only]")) event = "blur"
 		else {
 			console.warn("API attribute not supported for this element:\n", element)
 			continue
@@ -831,6 +851,7 @@ function processCustomIDs() {
 		if(window[id]) continue
 		window[id] = element
 	}
+	window["main"] ||= document.querySelector("main")
 }
 processCustomIDs()
 window.afterDataRefresh.push(processCustomIDs)

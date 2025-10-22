@@ -1,4 +1,5 @@
 API.registerHandler("unit/[unitID]/member/[memberID]/mianujNaFunkcję", {
+	form: main,
 	progressText: "Mianowanie na funkcję...",
 	successText: "Zapisano",
 	validate: data => {		

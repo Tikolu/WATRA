@@ -14,6 +14,8 @@ API.registerHandler("event/[eventID]/update/description", {
 })
 
 API.registerHandler("event/[eventID]/update/dates", {
+	form: "event-dates",
+	validate: data => new Date(data.startDate) <= new Date(data.endDate),
 	successText: "Zapisano daty"
 })
 
