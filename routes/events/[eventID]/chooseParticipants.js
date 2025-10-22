@@ -1,7 +1,7 @@
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
 
-import Unit from "modules/schemas/unit.js"
+import Unit from "modules/schemas/unit"
 
 export default async function({user, targetEvent, unit: unitID}) {
 	// Get unit from DB, and check if exists

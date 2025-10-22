@@ -175,7 +175,7 @@ export async function connect(dbName="main") {
 		// Initialise all schemas
 		await import("modules/schemas/event.js")
 		await import("modules/schemas/funkcja.js")
-		await import("modules/schemas/unit.js")
+		await import("modules/schemas/unit")
 		await import("modules/schemas/user")
 
 		return true
@@ -188,7 +188,7 @@ export async function connect(dbName="main") {
 
 export async function setup() {
 	const {default: User} = await import("modules/schemas/user")
-	const {default: Unit} = await import("modules/schemas/unit.js")
+	const {default: Unit} = await import("modules/schemas/unit")
 	const { UnitType } = await import("modules/types.js")
 
 	const user = await User.findOne()

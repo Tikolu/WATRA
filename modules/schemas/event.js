@@ -5,7 +5,7 @@ import * as datetime from "jsr:@std/datetime"
 import Funkcja from "modules/schemas/funkcja.js"
 import HTTPError from "modules/server/error.js"
 
-import { UnitClass } from "modules/schemas/unit.js"
+import { UnitClass } from "modules/schemas/unit"
 import { FunkcjaType, UnitType, EventFunkcjaNames } from "modules/types.js"
 
 export class EventClass extends UnitClass {

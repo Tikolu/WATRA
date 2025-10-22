@@ -1,4 +1,4 @@
-import Unit from "modules/schemas/unit.js"
+import Unit from "modules/schemas/unit"
 import HTTPError from "modules/server/error.js"
 
 export async function open({user, unitID}) {

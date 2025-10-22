@@ -1,4 +1,4 @@
-import Unit from "modules/schemas/unit.js";
+import Unit from "modules/schemas/unit";
 
 export default async function({user, targetUnit}) {
 	// Check permissions
