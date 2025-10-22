@@ -25,13 +25,28 @@ export class UserClass {
 	/* * Properties * */
 
 	name = {
-		first: String,
-		last: String
+		first: {
+			type: String,
+			set: value => {
+				return Text.formatName(value)
+			}
+		},
+		last: {
+			type: String,
+			set: value => {
+				return Text.formatName(value)
+			}
+		}
 	}
 	dateOfBirth = {
 		type: Date,
 		min: MIN_DATE,
-		max: Date.now
+		max: Date.now,
+		validate: function(value) {
+			if(this.isParent && this.age < 18) {
+				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
+			}
+		}
 	}
 	email = {
 		type: String,
@@ -42,7 +57,15 @@ export class UserClass {
 	phone = {
 		type: String,
 		trim: true,
-		match: /^\+\d{1,3}\d{9}$/
+		match: /^\+\d{1,3}\d{9}$/,
+		set: phone => {
+			phone = phone.replaceAll(" ", "")
+			phone = phone.replace(/^00/, "+")
+			if(!phone.startsWith("+") && phone.length > 10) phone = `+${phone}`
+			if(phone.startsWith("8") && phone.length == 9) phone = `+353${phone}`
+			if(phone.startsWith("08")) phone = `+353${phone.slice(1)}`
+			return phone
+		}
 	}
 	
 	parents = [
@@ -118,53 +141,6 @@ export class UserClass {
 		this.accessCode = randomID(2, "numeric")
 		await this.save()
 		return this.accessCode
-	}
-
-	/** Updates the user's first an last name */
-	async updateName(first="", last="") {
-		this.name.first = Text.formatName(first)
-		this.name.last = Text.formatName(last)
-		await this.save()
-	}
-
-	/** Updates the date of birth and checks for any issues */
-	async updateDateOfBirth(date) {
-		if(!date) throw Error("Nie prawidłowa data urodzenia")
-		this.dateOfBirth = date
-		if(this.isParent && this.age < 18) {
-			throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
-		}
-		await this.save()
-	}
-
-	/** Updates the user's email */
-	async updateEmail(email) {
-		this.email = email
-		try {
-			await this.validate()
-		} catch {
-			throw Error("Nieprawidłowy adres e-mail")
-		}
-		
-		await this.save()
-	}
-
-	/** Updates the user's phone number */
-	async updatePhone(phone) {
-		phone = phone.replaceAll(" ", "")
-		phone = phone.replace(/^00/, "+")
-		if(!phone.startsWith("+") && phone.length > 10) phone = `+${phone}`
-		if(phone.startsWith("8") && phone.length == 9) phone = `+353${phone}`
-		if(phone.startsWith("08")) phone = `+353${phone.slice(1)}`
-
-		this.phone = phone
-		try {
-			await this.validate()
-		} catch {
-			throw Error("Nieprawidłowy numer telefonu")
-		}
-		
-		await this.save()
 	}
 
 	/** Adds the provided user as a parent to the user */

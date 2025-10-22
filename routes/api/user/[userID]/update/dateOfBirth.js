@@ -1,8 +1,9 @@
 import * as datetime from "jsr:@std/datetime"
 
 export default async function({targetUser, date}) {
-	// Update date of birth
-	await targetUser.updateDateOfBirth(date)
+	targetUser.dateOfBirth = date
+	
+	await targetUser.save()
 
 	if(targetUser.dateOfBirth) {
 		return {

@@ -1,6 +1,7 @@
 export default async function({targetEvent, name}) {	
-	// Update name
-	await targetEvent.updateName(name)
+	targetEvent.name = name
+	
+	await targetEvent.save()
 
 	return {
 		name: targetEvent.name,

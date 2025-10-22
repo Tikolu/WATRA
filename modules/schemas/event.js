@@ -20,22 +20,36 @@ export class EventClass extends UnitClass {
 		start: {
 			type: Date,
 			min: MIN_DATE,
-			max: MAX_DATE
+			max: MAX_DATE,
+			validate: {
+				validator: function(value) {
+					return value <= this.dates.end
+				},
+				message: "Data rozpoczęcia musi być przed datą zakończenia"
+			}
 		},
 		end: {
 			type: Date,
 			min: MIN_DATE,
-			max: MAX_DATE
+			max: MAX_DATE,
+			validate: {
+				validator: function(value) {
+					return this.dates.start <= value
+				},
+				message: "Data rozpoczęcia musi być przed datą zakończenia"
+			}
 		}
 	}
 
 	description = {
 		type: String,
+		trim: true,
 		default: ""
 	}
 
 	location = {
 		type: String,
+		trim: true,
 		default: ""
 	}
 
@@ -294,28 +308,6 @@ export class EventClass extends UnitClass {
 		})
 		
 		await super.setFunkcja(user, funkcja)
-	}
-
-	/** Sets the dates for the event */
-	async updateDates(startDate, endDate) {
-		this.dates.start = startDate ? new Date(startDate) : undefined
-		this.dates.end = endDate ? new Date(endDate) : undefined
-
-		if(this.dates.start && this.dates.end && this.dates.start >= this.dates.end) throw new Error("Data rozpoczęcia musi być przed datą końca")
-
-		await this.save()
-	}
-
-	/** Sets the description for the event */
-	async updateDescription(description) {
-		this.description = description || ""
-		await this.save()
-	}
-
-	/** Sets the location for the event */
-	async updateLocation(location) {
-		this.location = location || ""
-		await this.save()
 	}
 
 	/** Finds the user invite for a user */

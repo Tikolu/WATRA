@@ -10,7 +10,11 @@ export class UnitClass {
 	
 	name = {
 		type: String,
-		trim: true
+		trim: true,
+		set: value => {
+			value ||= ""
+			return value.replaceAll("\n", "")
+		}
 	}
 	type = {
 		type: Number,
@@ -57,12 +61,6 @@ export class UnitClass {
 
 
 	/* Methods */
-
-	/** Updates the unit name */
-	async updateName(name) {
-		this.name = name
-		await this.save()
-	}
 	
 	/** Add user to unit with a funkcja, any existing funkcja in the unit gets overwritten */
 	async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {

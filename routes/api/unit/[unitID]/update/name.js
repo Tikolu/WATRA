@@ -1,9 +1,10 @@
 export default async function({user, targetUnit, name}) {
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.MANAGE)
 	
 	// Update name
-	await targetUnit.updateName(name)
+	targetUnit.name = name
+	await targetUnit.save()
 
 	return {
 		name: targetUnit.name,

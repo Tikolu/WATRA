@@ -1,6 +1,7 @@
 export default async function({targetUser, email}) {
-	// Update email
-	await targetUser.updateEmail(email)
+	targetUser.email = email
+
+	await targetUser.save()
 
 	return {
 		email: targetUser.email

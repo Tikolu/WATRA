@@ -1,6 +1,7 @@
 export default async function({targetEvent, description}) {	
-	// Update description
-	await targetEvent.updateDescription(description)
+	targetEvent.description = description
+
+	await targetEvent.save()
 
 	return {
 		description: targetEvent.description

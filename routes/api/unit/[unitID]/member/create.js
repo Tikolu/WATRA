@@ -8,12 +8,11 @@ export default async function({user, targetUnit, firstName="", lastName="", crea
 	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
 
 	// Create user
-	const newUser = new User({
-		name: {
-			first: Text.formatName(firstName),
-			last: Text.formatName(lastName)
-		}
-	})
+	const newUser = new User()
+
+	// Set names
+	newUser.name.first = firstName
+	newUser.name.last = lastName
 
 	// Add user as member
 	await targetUnit.addMember(newUser)

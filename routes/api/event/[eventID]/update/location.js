@@ -1,6 +1,7 @@
 export default async function({targetEvent, location}) {	
-	// Update location
-	await targetEvent.updateLocation(location)
+	targetEvent.location = location
+
+	await targetEvent.save()
 
 	return {
 		location: targetEvent.location
