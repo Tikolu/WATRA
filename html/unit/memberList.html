@@ -1,0 +1,26 @@
+<% layout("/layouts/body", {
+	title: "Lista użytkowników",
+	scripts: ["unit/page"],
+	meta: {
+		unitID: $.targetUnit.id
+	},
+	navPath: {
+		[$.targetUnit.displayName]: `/units/${$.targetUnit.id}`
+	}
+}) %>
+<h1>	
+	<i>person</i>
+	<%= $.targetUnit.displayName %> - Lista użytkowników
+</h1>
+<% if($.members.length) { %>
+	<p><%= $.members.length %> użytkowników</p>
+	<div id="unit-member-list" class="unit-grid">
+		<% for(const member of $.members || []) { %>
+			<%~ include("/user/templates/userEntry.html", {
+				targetUser: member
+			}) %>
+		<% } %>
+	</div>
+<% } else { %>
+	<p>Brak użytkowników w tej jednostce.</p>
+<% } %>

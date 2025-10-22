@@ -74,16 +74,22 @@
 			}) %>
 		<% } %>
 	</div>
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
-		<button opens-dialog="/units/<%= $.targetUnit.id %>/mianowanie">
-			<i>add_moderator</i>
-			<span>Mianuj na funkcję</span>
+	<div class="button-row">
+		<button href="/units/<%= $.targetUnit.id %>/members">
+			<i>list</i>
+			<span>Pełna lista użytkowników</span>
 		</button>
-		<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
-			<i>person_add</i>
-			<span>Utwórz użytkownika</span>
-		</button>
-	<% } %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+			<button opens-dialog="/units/<%= $.targetUnit.id %>/mianowanie">
+				<i>add_moderator</i>
+				<span>Mianuj na funkcję</span>
+			</button>
+			<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
+				<i>person_add</i>
+				<span>Utwórz użytkownika</span>
+			</button>
+		<% } %>
+	</div>
 <% } %>
 
 <% if($.targetUnit.eventInvites?.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
