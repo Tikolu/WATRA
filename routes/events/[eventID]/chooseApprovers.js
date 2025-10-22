@@ -10,7 +10,7 @@ export default async function({user, targetEvent}) {
 	// Load approver users
 	await targetEvent.populate({
 		"approvers": {
-			"funkcja": "user"
+			"role": "user"
 		}
 	})
 	

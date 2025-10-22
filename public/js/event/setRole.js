@@ -1,4 +1,4 @@
-API.registerHandler("event/[eventID]/member/[memberID]/mianujNaFunkcję", {
+API.registerHandler("event/[eventID]/member/[memberID]/setRole", {
 	form: main,
 	progressText: "Mianowanie na funkcję...",
 	successText: "Zapisano",
@@ -6,11 +6,11 @@ API.registerHandler("event/[eventID]/member/[memberID]/mianujNaFunkcję", {
 		if(!data.memberID) {
 			throw new Error("Nie wybrano użytkownika")
 		}
-		if(!data.funkcjaType) {
+		if(!data.roleType) {
 			throw new Error("Nie wybrano funkcji")
 		}
 		
-		data.funkcjaType = Number(data.funkcjaType)
+		data.roleType = Number(data.roleType)
 		return true
 	}
 })

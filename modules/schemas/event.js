@@ -2,11 +2,11 @@ import mongoose from "mongoose"
 import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
-import Funkcja from "modules/schemas/funkcja.js"
+import Role from "modules/schemas/role.js"
 import HTTPError from "modules/server/error.js"
 
 import { UnitClass } from "modules/schemas/unit"
-import { FunkcjaType, UnitType, EventFunkcjaNames } from "modules/types.js"
+import { RoleType, UnitType, EventRoleNames } from "modules/types.js"
 
 export class EventClass extends UnitClass {
 	/* * Properties * */
@@ -99,15 +99,15 @@ export class EventClass extends UnitClass {
 
 						await this.populate("user")
 
-						// Set szeregowy funkcja for new participant
+						// Set szeregowy role for new participant
 						if(state == "accepted") {
-							await targetEvent.setFunkcja(this.user, 0)
+							await targetEvent.setRole(this.user, 0)
 						}
 
-						// Remove funkcja if declined
+						// Remove role if declined
 						if(state == "declined") {
-							const existingFunkcja = await this.user.getFunkcjaInUnit(targetEvent)
-							if(existingFunkcja) await existingFunkcja.delete()
+							const existingRole = await this.user.getRoleInUnit(targetEvent)
+							if(existingRole) await existingRole.delete()
 						}
 					}
 
@@ -152,8 +152,8 @@ export class EventClass extends UnitClass {
 					if(this.invitedUsers.some(i => i.user.id == participant.id)) continue
 
 					// Check if user has a funckja
-					const existingFunkcja = await participant.getFunkcjaInUnit(targetEvent)
-					if(existingFunkcja) continue
+					const existingRole = await participant.getRoleInUnit(targetEvent)
+					if(existingRole) continue
 					
 					// Add user to invited
 					this.invitedUsers.push({
@@ -183,15 +183,15 @@ export class EventClass extends UnitClass {
 					
 					await userInvite.delete()
 					
-					// Remove user's funkcja
-					const existingFunkcja = await userInvite.user.getFunkcjaInUnit(targetEvent)
-					if(existingFunkcja) {
-						existingFunkcja.$locals.test = "test"
-						await existingFunkcja.populate(
+					// Remove user's role
+					const existingRole = await userInvite.user.getRoleInUnit(targetEvent)
+					if(existingRole) {
+						existingRole.$locals.test = "test"
+						await existingRole.populate(
 							["unit", "user"],
 							{known: [targetEvent, userInvite.user]}
 						)
-						await existingFunkcja.delete()
+						await existingRole.delete()
 					}
 				}
 
@@ -213,14 +213,14 @@ export class EventClass extends UnitClass {
 				for(const unit of units) {
 					if(unit.type < UnitType.HUFIEC) continue
 
-					await unit.populate("funkcje")
-					for(const funkcja of unit.funkcje) {
-						if(funkcja.type < FunkcjaType.REFERENT) continue
-						await funkcja.populate(
+					await unit.populate("roles")
+					for(const role of unit.roles) {
+						if(role.type < RoleType.REFERENT) continue
+						await role.populate(
 							["user", "unit"],
 							{known: [unit]}
 						)
-						yield funkcja
+						yield role
 					}
 				}
 			}
@@ -229,9 +229,9 @@ export class EventClass extends UnitClass {
 
 	approvers = [
 		class {
-			funkcja = {
+			role = {
 				type: String,
-				ref: "Funkcja",
+				ref: "Role",
 				deriveID: true
 			}
 
@@ -300,14 +300,14 @@ export class EventClass extends UnitClass {
 
 	/* * Methods * */
 
-	/** Sets a funkcja for a event */
-	async setFunkcja(user, funkcjaType) {
-		const funkcja = new Funkcja({
-			type: funkcjaType,
-			eventFunkcja: true
+	/** Sets a role for a event */
+	async setRole(user, roleType) {
+		const role = new Role({
+			type: roleType,
+			eventRole: true
 		})
 		
-		await super.setFunkcja(user, funkcja)
+		await super.setRole(user, role)
 	}
 
 	/** Finds the user invite for a user */
@@ -318,9 +318,9 @@ export class EventClass extends UnitClass {
 		}
 	}
 
-	/** Returns possible funkcje for a event */
-	getFunkcjaOptions() {
-		return super.getFunkcjaOptions(EventFunkcjaNames)
+	/** Returns possible roles for a event */
+	getRoleOptions() {
+		return super.getRoleOptions(EventRoleNames)
 	}
 
 	getUpperUnitsTree() {
@@ -381,58 +381,58 @@ export class EventClass extends UnitClass {
 	}
 
 	/** Set approvers from a list */
-	async setApprovers(funkcjaIDs) {
-		const funkcje = await Funkcja.find({_id: funkcjaIDs})
+	async setApprovers(roleIDs) {
+		const roles = await Role.find({_id: roleIDs})
 		
 		await this.populate({
 			"approvers": 
-				{"funkcja": "user"}
+				{"role": "user"}
 			},
-			{known: funkcje}
+			{known: roles}
 		)
 
 		// Remove approvers not on list
 		for(const approver of [...this.approvers]) {
-			if(funkcje.hasID(approver.id)) continue
+			if(roles.hasID(approver.id)) continue
 
 			// Remove from user
-			approver.funkcja.user.eventApprovalRequests = approver.funkcja.user.eventApprovalRequests.filter(id => id != this.id)
-			await approver.funkcja.user.save()
+			approver.role.user.eventApprovalRequests = approver.role.user.eventApprovalRequests.filter(id => id != this.id)
+			await approver.role.user.save()
 
 			await approver.delete()
 		}
 
 		// Add new approvers
-		for(const funkcja of funkcje) {
+		for(const role of roles) {
 			// Check if user already added
-			if(this.approvers.id(funkcja.id)) continue
+			if(this.approvers.id(role.id)) continue
 
 			// Ensure approver is in candidates
 			const candidates = await this.findApproverCandidates()
-			if(!candidates.some(c => c.id == funkcja.id)) {
+			if(!candidates.some(c => c.id == role.id)) {
 				throw new HTTPError(400, "Użytkownik nie może być zatwierdzającym")
 			}
 
-			// Ensure other funkcja of the same user is not added
-			await funkcja.populate("user")
+			// Ensure other role of the same user is not added
+			await role.populate("user")
 			await this.populate({
-				"approvers": "funkcja"
+				"approvers": "role"
 			})
 			for(const approver of this.approvers) {
-				if(approver.funkcja.user.id != funkcja.user.id) continue
-				if(approver.id == funkcja.id) continue
+				if(approver.role.user.id != role.user.id) continue
+				if(approver.id == role.id) continue
 				throw new HTTPError(400, "Użytkownik jest już zatwierdzającym")
 			}
 
 			// Add approver
-			this.approvers.push({funkcja})
+			this.approvers.push({role})
 
 			// Add approval request to user
-			if(!funkcja.user.eventApprovalRequests.hasID(this.id)) {
-				funkcja.user.eventApprovalRequests.push(this.id)
+			if(!role.user.eventApprovalRequests.hasID(this.id)) {
+				role.user.eventApprovalRequests.push(this.id)
 			}
 			
-			await funkcja.user.save()
+			await role.user.save()
 		}
 
 		await this.save()
@@ -441,24 +441,24 @@ export class EventClass extends UnitClass {
 	/** Get an approver of a user */
 	getApprover(user) {
 		for(const approver of this.approvers) {
-			if(user.funkcje.hasID(approver.funkcja.id)) return approver
+			if(user.roles.hasID(approver.role.id)) return approver
 		}
 	}
 
-	/** Generates a list of users which can be mianowani na funkcję */
-	async * usersForMianowanie() {
+	/** Generates a list of users which can have a role assigned */
+	async * usersForAssignment() {
 		await this.populate({
 			"invitedUnits": {
 				"invitedUsers": {
 					"user": {}
 				}
 			},
-			"funkcje": "user"
+			"roles": "user"
 		})
 		
-		// Get all funkcje already added
-		for(const funkcja of this.funkcje) {
-			yield funkcja.user
+		// Get all roles already added
+		for(const role of this.roles) {
+			yield role.user
 		}
 
 		// Get all accepted invites
@@ -485,20 +485,20 @@ schema.beforeDelete = async function() {
 	// Remove all approvers
 	await this.setApprovers([])
 
-	await this.populate("funkcje")
+	await this.populate("roles")
 
-	// Remove all funkcje
-	for(const funkcja of this.funkcje) {
-		await funkcja.populate("unit", {known: [this]})
-		await funkcja.delete()
+	// Remove all roles
+	for(const role of this.roles) {
+		await role.populate("unit", {known: [this]})
+		await role.delete()
 	}
 }
 
 schema.permissions = {
 	async CREATE(user) {
 		// Kadra of a unit can create a event
-		await user.populate("funkcje")
-		return user.funkcje.some(f => f.type >= FunkcjaType.PRZYBOCZNY)
+		await user.populate("roles")
+		return user.roles.some(f => f.type >= RoleType.PRZYBOCZNY)
 	},
 	
 	async ACCESS(user) {
@@ -515,29 +515,29 @@ schema.permissions = {
 		}
 
 		// Check for kadra access
-		const userFunkcja = await user.getFunkcjaInUnit(this)
-		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
+		const userRole = await user.getRoleInUnit(this)
+		if(userRole?.type >= RoleType.KADRA) return true
 
 		// Drużynowi of invited units (and upper units) can access
 		await this.populate({"invitedUnits": "unit"})
-		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit))) return true
-		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit.getUpperUnitsTree()))) return true
+		if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit))) return true
+		if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit.getUpperUnitsTree()))) return true
 
 		return false
 	},
 
 	async PARTICIPANT_ACCESS(user) {
 		// Only kadra can access user data
-		const userFunkcja = await user.getFunkcjaInUnit(this)
-		if(userFunkcja?.type >= FunkcjaType.KADRA) return true
+		const userRole = await user.getRoleInUnit(this)
+		if(userRole?.type >= RoleType.KADRA) return true
 
 		return false
 	},
 
 	APPROVE(user) {
-		// Users with funkcje on the approver list can approve
-		for(const userFunkcja of user.funkcje) {
-			const approver = this.approvers.id(userFunkcja.id)
+		// Users with roles on the approver list can approve
+		for(const userRole of user.roles) {
+			const approver = this.approvers.id(userRole.id)
 			if(!approver) continue
 			return true
 		}
@@ -546,8 +546,8 @@ schema.permissions = {
 
 	async MODIFY(user) {
 		// Komendant of a event can modify
-		const userFunkcja = await user.getFunkcjaInUnit(this)
-		if(userFunkcja?.type == FunkcjaType.KOMENDANT) return true
+		const userRole = await user.getRoleInUnit(this)
+		if(userRole?.type == RoleType.KOMENDANT) return true
 
 		return false
 	}

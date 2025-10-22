@@ -1,8 +1,8 @@
 import html from "modules/html.js"
-import { FunkcjaType } from "modules/types.js"
+import { RoleType } from "modules/types.js"
 
 export default async function({user, targetEvent}) {
-	// await targetEvent.populate({"funkcje": ["user", "unit"]})
+	// await targetEvent.populate({"roles": ["user", "unit"]})
 
 	const units = {}
 	let topUnits
@@ -17,11 +17,11 @@ export default async function({user, targetEvent}) {
 		}
 	}
 	
-	await user.populate("funkcje")
-	for(const funkcja of user.funkcje) {
-		if(funkcja.type < FunkcjaType.PRZYBOCZNY) continue
-		await funkcja.populate({"unit": {"funkcje": "user"}})
-		const unit = funkcja.unit
+	await user.populate("roles")
+	for(const role of user.roles) {
+		if(role.type < RoleType.PRZYBOCZNY) continue
+		await role.populate({"unit": {"roles": "user"}})
+		const unit = role.unit
 		saveUnit(unit)
 
 		const upperUnits = unit.getUpperUnitsTree(Object.keys(units))
@@ -37,7 +37,7 @@ export default async function({user, targetEvent}) {
 	function calculateUserCount(unit) {
 		if(unit.userCount) return unit.userCount
 		
-		unit.userCount = unit.funkcje.length
+		unit.userCount = unit.roles.length
 		for(const subUnit of unit.subUnits) {
 			unit.userCount += calculateUserCount(subUnit)
 		}

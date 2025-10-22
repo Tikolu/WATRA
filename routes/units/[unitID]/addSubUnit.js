@@ -1,5 +1,5 @@
 import html from "modules/html.js"
-import { FunkcjaType, UnitType } from "modules/types.js"
+import { RoleType, UnitType } from "modules/types.js"
 
 export default async function({user, targetUnit}) {
 	// Check for permissions
@@ -10,11 +10,11 @@ export default async function({user, targetUnit}) {
 	
 	// Find units that can be linked as subUnits
 	const unitsForLinking = []
-	await user.populate("funkcje")
-	for(const funkcja of user.funkcje) {
-		if(funkcja.type < FunkcjaType.DRUŻYNOWY) continue
-		await funkcja.populate("unit")
-		for await(const unit of funkcja.unit.getSubUnitsTree()) {
+	await user.populate("roles")
+	for(const role of user.roles) {
+		if(role.type < RoleType.DRUŻYNOWY) continue
+		await role.populate("unit")
+		for await(const unit of role.unit.getSubUnitsTree()) {
 			// Skip units of higher type
 			if(unit.type >= targetUnit.type) continue
 			// Skip units which already are subUnits

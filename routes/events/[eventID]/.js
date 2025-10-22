@@ -1,5 +1,5 @@
 import html from "modules/html.js"
-import { FunkcjaType } from "modules/types.js"
+import { RoleType } from "modules/types.js"
 
 export default async function({user, targetEvent}) {
 	await targetEvent.populate({
@@ -15,9 +15,9 @@ export default async function({user, targetEvent}) {
 
 	// Check for participant access permission
 	if(await user.checkPermission(targetEvent.PERMISSIONS.PARTICIPANT_ACCESS)) {
-		// Populate event funkcje, as well as users and units of funkcje
+		// Populate event roles, as well as users and units of roles
 		await targetEvent.populate({
-			"funkcje": ["user", "unit"],
+			"roles": ["user", "unit"],
 			"invitedUnits": {
 				"invitedUsers": {
 					"user": {}
@@ -25,8 +25,8 @@ export default async function({user, targetEvent}) {
 			}
 		})
 
-		// Sort funkcje
-		await targetEvent.sortFunkcje()
+		// Sort roles
+		await targetEvent.sortRoles()
 
 	}
 
@@ -35,7 +35,7 @@ export default async function({user, targetEvent}) {
 		// Load approver data
 		await targetEvent.populate({
 			"approvers": {
-				"funkcja": ["user", "unit"]
+				"role": ["user", "unit"]
 			}
 		})
 
@@ -48,7 +48,7 @@ export default async function({user, targetEvent}) {
 		// Load approver data
 		await targetEvent.populate({
 			"approvers": {
-				"funkcja": ["user", "unit"]
+				"role": ["user", "unit"]
 			}
 		})
 	}

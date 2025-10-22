@@ -44,7 +44,7 @@
 		</button>
 		<dialog id="access-code-dialog">
 			<h1>Kod dostępu</h1>
-			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent && $.targetUser.funkcje.every(f => !f.unit.type <= UnitType.DRUŻYNA)) { %>
+			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent && $.targetUser.roles.every(f => !f.unit.type <= UnitType.DRUŻYNA)) { %>
 				<p class="warning">
 					<i>warning</i>
 					Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, nie konta rodzica/opiekuna!
@@ -90,7 +90,7 @@
 			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
 		>
 
-		<% if($.targetUser.funkcje.length > 0) { %>
+		<% if($.targetUser.roles.length > 0) { %>
 			<label for="date-of-birth-input">Data urodzenia:</label>
 			<input
 				type="date" id="date-of-birth-input"
@@ -132,7 +132,7 @@
 	<% } %>
 </section>
 <div class="button-row">
-	<% if($.targetUser.funkcje.length > 0 || $.targetUser.medical.entries.length) { %>
+	<% if($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length) { %>
 		<button href="/users/<%= $.targetUser.id %>/medical">
 			<i>medical_information</i>
 			Dane medyczne
@@ -178,33 +178,33 @@
 	<% } %>
 <% } %>
 
-<% if($.targetUser.funkcje.length > 0) { %>
+<% if($.targetUser.roles.length > 0) { %>
 	<hr>
 	<h2>
 		<i>groups</i>
 		Funkcje w jednostkach
 	</h2>
 	<div id="unit-list" class="unit-grid">
-		<% for(const funkcja of $.targetUser.funkcje) { %>
+		<% for(const role of $.targetUser.roles) { %>
 			<%~ include("/unit/templates/unitEntry", {
-				targetUnit: funkcja.unit,
-				content: Text.capitalise(funkcja.displayName)
+				targetUnit: role.unit,
+				content: Text.capitalise(role.displayName)
 			}) %>
 		<% } %>
 	</div>
 <% } %>
 
-<% if($.targetUser.eventFunkcje.length > 0) { %>
+<% if($.targetUser.eventRoles.length > 0) { %>
 	<hr>
 	<h2>
 	<i>hiking</i>
 		Funkcje w akcjach
 	</h2>
 	<div class="unit-grid">
-		<% for(const funkcja of $.targetUser.eventFunkcje) { %>
+		<% for(const role of $.targetUser.eventRoles) { %>
 			<%~ include("/event/templates/eventEntry.html", {
-				targetEvent: funkcja.unit,
-				content: Text.capitalise(funkcja.displayName)
+				targetEvent: role.unit,
+				content: Text.capitalise(role.displayName)
 			}) %>
 		<% } %>
 	</div>

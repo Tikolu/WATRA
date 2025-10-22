@@ -365,7 +365,7 @@ window.afterDataRefresh = []
 const API = {
 	handlers: {},
 	dataUpdateKeys: {
-		funkcjaID: "funkcje",
+		roleID: "roles",
 		unitID: "units",
 		userID: "users",
 		eventID: "events"

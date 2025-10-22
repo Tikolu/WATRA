@@ -130,26 +130,26 @@
 <% } %>
 
 <% if($.user.hasPermission($.targetEvent.PERMISSIONS.PARTICIPANT_ACCESS)) { %>
-	<% if($.targetEvent.funkcje?.length > 0 || $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+	<% if($.targetEvent.roles?.length > 0 || $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
 		<hr>
 		<h2>
 			<i>article_person</i>
 			Kadra
 		</h2>
 		<div id="event-member-list" class="unit-grid">
-			<% for(const funkcja of $.targetEvent.funkcje || []) { %>
-				<% if(funkcja.type === FunkcjaType.SZEREGOWY && $.targetEvent.findUserInvite(funkcja.user)) continue %>
+			<% for(const role of $.targetEvent.roles || []) { %>
+				<% if(role.type === RoleType.SZEREGOWY && $.targetEvent.findUserInvite(role.user)) continue %>
 				<%~ include("/user/templates/userEntry", {
-					targetUser: funkcja.user,
-					description: Text.capitalise(funkcja.displayName),
+					targetUser: role.user,
+					description: Text.capitalise(role.displayName),
 					warnings: Array.conditional(
-						!funkcja.user.medical.confirmed && funkcja.user.funkcje.length > 0, "Nie zatwierdzone dane medyczne"
+						!role.user.medical.confirmed && role.user.roles.length > 0, "Nie zatwierdzone dane medyczne"
 					)
 				}) %>
 			<% } %>
 		</div>
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
-			<button opens-dialog="/events/<%= $.targetEvent.id %>/mianowanie">
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/setRole">
 				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
 			</button>
@@ -314,18 +314,18 @@
 	<% } %>
 	<% for(const approver of $.targetEvent.approvers) { %>
 		<div class="section-unit approval-block">
-			<h3><%= approver.funkcja.user.displayName %></h3>
-			<p><%= Text.capitalise(approver.funkcja.displayName) %>, <%= approver.funkcja.unit.displayName %></p>
+			<h3><%= approver.role.user.displayName %></h3>
+			<p><%= Text.capitalise(approver.role.displayName) %>, <%= approver.role.unit.displayName %></p>
 			<% if(approver.approved) { %>
 				<p>
 					Zatwierdzono <i>check</i><br>
 					<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
 				</p>
-			<% } else if(approver.funkcja.user.id != $.user.id) { %>
+			<% } else if(approver.role.user.id != $.user.id) { %>
 				<p>Oczekiwane zatwierdzenie... <i class="spin">progress_activity</i></p>
 			<% } %>
 			
-			<% if(approver.funkcja.user.id == $.user.id) { %>
+			<% if(approver.role.user.id == $.user.id) { %>
 				<div class="button-row">
 					<% if(approver.approved) { %>
 						<button api="event/[eventID]/approval/unapprove" class="dangerous">

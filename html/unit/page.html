@@ -60,17 +60,17 @@
 
 
 
-<% if($.targetUnit.funkcje?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+<% if($.targetUnit.roles?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
 	<hr>
 	<h2>
 		<i>person</i>
 		Użytkownicy
 	</h2>
 	<div id="unit-member-list" class="unit-grid">
-		<% for(const funkcja of $.targetUnit.funkcje || []) { %>
+		<% for(const role of $.targetUnit.roles || []) { %>
 			<%~ include("/user/templates/userEntry.html", {
-				targetUser: funkcja.user,
-				description: Text.capitalise(funkcja.displayName)
+				targetUser: role.user,
+				description: Text.capitalise(role.displayName)
 			}) %>
 		<% } %>
 	</div>
@@ -80,7 +80,7 @@
 			<span>Pełna lista użytkowników</span>
 		</button>
 		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
-			<button opens-dialog="/units/<%= $.targetUnit.id %>/mianowanie">
+			<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole">
 				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
 			</button>

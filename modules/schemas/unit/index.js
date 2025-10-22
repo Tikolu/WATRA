@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 import * as Text from "modules/text.js"
 
-import Funkcja from "modules/schemas/funkcja.js"
+import Role from "modules/schemas/role.js"
 
-import { FunkcjaType, UnitType, FunkcjaNames } from "modules/types.js"
+import { RoleType, UnitType, RoleNames } from "modules/types.js"
 
 export class UnitClass {
 	/* * Properties * */
@@ -20,10 +20,10 @@ export class UnitClass {
 		type: Number,
 		enum: Object.values(UnitType)
 	}
-	funkcje = [
+	roles = [
 		{
 			type: String,
-			ref: "Funkcja"
+			ref: "Role"
 		}
 	]
 	subUnits = [
@@ -62,85 +62,85 @@ export class UnitClass {
 
 	/* Methods */
 	
-	/** Add user to unit with a funkcja, any existing funkcja in the unit gets overwritten */
-	async setFunkcja(user, funkcjaType=FunkcjaType.SZEREGOWY) {
-		// Populate funkcje
-		await this.populate("funkcje")
+	/** Add user to unit with a role, any existing role in the unit gets overwritten */
+	async setRole(user, roleType=RoleType.SZEREGOWY) {
+		// Populate roles
+		await this.populate("roles")
 
-		let funkcja
+		let role
 		
-		// Value is a Funkcja instance: add the funkcja	directly
-		if(funkcjaType instanceof Funkcja) funkcja = funkcjaType
+		// Value is a Role instance: add the role	directly
+		if(roleType instanceof Role) role = roleType
 
-		// Value is a FunkcjaType: create new funkcja with said type
-		else if(Object.values(FunkcjaType).includes(funkcjaType)) {
-			funkcja = new Funkcja({
-				type: funkcjaType
+		// Value is a RoleType: create new role with said type
+		else if(Object.values(RoleType).includes(roleType)) {
+			role = new Role({
+				type: roleType
 			})
 
 		} else throw Error("Nieprawidłowy typ funkcji")
 
-		// Attempt to find existing funkcja of user in this unit
-		const existingFunkcja = this.funkcje.find(f => f.user.id == user.id)
-		if(existingFunkcja) {
-			// Check if existing funkcja is the same
-			if(existingFunkcja.type === funkcja.type) throw Error(`Użytkownik już ma tą funkcję`)
+		// Attempt to find existing role of user in this unit
+		const existingRole = this.roles.find(f => f.user.id == user.id)
+		if(existingRole) {
+			// Check if existing role is the same
+			if(existingRole.type === role.type) throw Error(`Użytkownik już ma tą funkcję`)
 			
-			funkcja = new Funkcja({
-				...funkcja.toObject(),
-				_id: existingFunkcja.id
+			role = new Role({
+				...role.toObject(),
+				_id: existingRole.id
 			})
-			funkcja.$isNew = false
+			role.$isNew = false
 		}
 
-		funkcja.user = user.id
-		funkcja.unit = this.id
+		role.user = user.id
+		role.unit = this.id
 
 		// Only one drużynowy per unit, only one (pod)zastępowy per zastęp
-		if(funkcja.type == 2 || (this.type == UnitType.ZASTĘP && funkcja.type == 1)) {
-			const funkcjaGłówna = this.funkcje.find(f => f.type == funkcja.type)
-			if(funkcjaGłówna) {
-				await funkcjaGłówna.populate("unit")
-				throw Error(`${this.typeName} ma już funkcję: ${funkcjaGłówna.displayName}`)
+		if(role.type == 2 || (this.type == UnitType.ZASTĘP && role.type == 1)) {
+			const roleGłówna = this.roles.find(f => f.type == role.type)
+			if(roleGłówna) {
+				await roleGłówna.populate("unit")
+				throw Error(`${this.typeName} ma już funkcję: ${roleGłówna.displayName}`)
 			}
 		}
 
-		// Add funkcja to unit, unless already added
-		if(!this.funkcje.hasID(funkcja.id)) {
-			this.funkcje.push(funkcja)
+		// Add role to unit, unless already added
+		if(!this.roles.hasID(role.id)) {
+			this.roles.push(role)
 		}
 		
-		// Add funkcja to user, unless already added
-		const userFunkcjeKey = funkcja.eventFunkcja ? "eventFunkcje" : "funkcje"
-		if(!user[userFunkcjeKey].hasID(funkcja.id)) {
-			user[userFunkcjeKey].push(funkcja.id)
+		// Add role to user, unless already added
+		const userRolesKey = role.eventRole ? "eventRoles" : "roles"
+		if(!user[userRolesKey].hasID(role.id)) {
+			user[userRolesKey].push(role.id)
 		}
 
-		await funkcja.save()
+		await role.save()
 		await this.save()
 		await user.save()
 
-		// Delete any szeregowy funkcje in upper units
+		// Delete any szeregowy roles in upper units
 		for await(const upperUnit of this.getUpperUnitsTree()) {
-			const existingFunkcja = await user.getFunkcjaInUnit(upperUnit)
-			if(existingFunkcja?.type === FunkcjaType.SZEREGOWY) {
-				await existingFunkcja.delete()
+			const existingRole = await user.getRoleInUnit(upperUnit)
+			if(existingRole?.type === RoleType.SZEREGOWY) {
+				await existingRole.delete()
 			}
 		}
 		
 
-		return funkcja
+		return role
 	}
 
 	/** Add user as szeregowy */
 	async addMember(user) {
-		await this.setFunkcja(user)
+		await this.setRole(user)
 	}
 
 	/** Check if user is in unit */
 	async hasMember(user) {
-		await this.populate("funkcje")
-		return this.funkcje.some(f => f.user.id == user.id)
+		await this.populate("roles")
+		return this.roles.some(f => f.user.id == user.id)
 	}
 	
 	/** Link an existing unit as subUnit */
@@ -179,22 +179,22 @@ export class UnitClass {
 		await subUnit.save()
 	}
 
-	/** Returns a list of possible funkcja levels and names for this unit */
-	getFunkcjaOptions(funkcjaNames=FunkcjaNames[this.type]) {
-		const funkcjaOptions = []
-		for(const funkcjaLevel in funkcjaNames) {
-			for(const funkcjaName of funkcjaNames[funkcjaLevel]) {
-				funkcjaOptions.push([funkcjaLevel, funkcjaName])
+	/** Returns a list of possible role levels and names for this unit */
+	getRoleOptions(roleNames=RoleNames[this.type]) {
+		const roleOptions = []
+		for(const roleLevel in roleNames) {
+			for(const roleName of roleNames[roleLevel]) {
+				roleOptions.push([roleLevel, roleName])
 			}
 		}
-		return funkcjaOptions
+		return roleOptions
 	}
 
-	/** Sorts funkcje based on type and user name */
-	async sortFunkcje() {
-		await this.populate({"funkcje": "user"})
-		this.funkcje.sort((a, b) => {
-			// Place users with highest funkcja at the start
+	/** Sorts roles based on type and user name */
+	async sortRoles() {
+		await this.populate({"roles": "user"})
+		this.roles.sort((a, b) => {
+			// Place users with highest role at the start
 			if(a.type != b.type) return b.type - a.type
 
 			// Place users without a name at the end
@@ -258,12 +258,12 @@ export class UnitClass {
 	/** List of all direct members */
 	async getMembers(exclude=[]) {
 		exclude = [...exclude]
-		await this.populate({"funkcje": "user"}, {exclude})
+		await this.populate({"roles": "user"}, {exclude})
 		const users = []
-		for(const funkcja of this.funkcje) {
-			if(exclude.hasID(funkcja.user.id)) continue
-			exclude.push(funkcja.user.id)
-			users.push(funkcja.user)
+		for(const role of this.roles) {
+			if(exclude.hasID(role.user.id)) continue
+			exclude.push(role.user.id)
+			users.push(role.user)
 		}
 		return users
 	}
@@ -293,7 +293,7 @@ schema.beforeDelete = async function() {
 	await this.populate({
 		"upperUnits": {},
 		"subUnits": {},
-		"funkcje": "user"
+		"roles": "user"
 	})
 	
 	// Chose primary upper unit
@@ -301,14 +301,14 @@ schema.beforeDelete = async function() {
 	if(!primaryUpperUnit) throw Error("Nie można usunąć units bez jednostek nadrzędnych")
 
 	// Add all members to primary upper unit
-	for(const funkcja of this.funkcje) {
-		// Skip adding if user already has a funkcja in the primary upper unit
-		if(await funkcja.user.hasFunkcjaInUnits(f => f >= FunkcjaType.SZEREGOWY, primaryUpperUnit)) continue
-		await primaryUpperUnit.addMember(funkcja.user)
+	for(const role of this.roles) {
+		// Skip adding if user already has a role in the primary upper unit
+		if(await role.user.hasRoleInUnits(f => f >= RoleType.SZEREGOWY, primaryUpperUnit)) continue
+		await primaryUpperUnit.addMember(role.user)
 	}
 	
-	// Delete funkcje
-	await Funkcja.deleteMany({unit: this.id})
+	// Delete roles
+	await Role.deleteMany({unit: this.id})
 
 	// Remove self from all upperUnits
 	for(const upperUnit of this.upperUnits) {

@@ -1,10 +1,10 @@
 import html from "modules/html.js"
-import { FunkcjaType } from "modules/types.js"
+import { RoleType } from "modules/types.js"
 
 export default async function({user, targetUnit}) {
-	// Populate unit funkcje, as well as users and units of funkcje
+	// Populate unit roles, as well as users and units of roles
 	await targetUnit.populate({
-		"funkcje": ["user", "unit"]
+		"roles": ["user", "unit"]
 	})
 	// Populate sub and upper units
 	await targetUnit.populate([
@@ -12,8 +12,8 @@ export default async function({user, targetUnit}) {
 		"upperUnits"
 	])
 	
-	// Sort funkcje
-	await targetUnit.sortFunkcje()
+	// Sort roles
+	await targetUnit.sortRoles()
 	
 	// Load event invites
 	if(await user.checkPermission(targetUnit.PERMISSIONS.MODIFY)) {

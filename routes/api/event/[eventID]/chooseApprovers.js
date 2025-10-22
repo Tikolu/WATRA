@@ -5,6 +5,6 @@ export default async function({user, targetEvent, approvers}) {
 	await targetEvent.setApprovers(approvers)
 
 	return {
-		approvers: targetEvent.approvers.map(a => a.funkcja.id)
+		approvers: targetEvent.approvers.map(a => a.role.id)
 	}
 }

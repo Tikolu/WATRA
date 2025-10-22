@@ -3,11 +3,11 @@ import randomID from "modules/randomID.js"
 import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
-import Funkcja from "modules/schemas/funkcja.js"
+import Role from "modules/schemas/role.js"
 import Event from "modules/schemas/event.js"
 import Log from "modules/schemas/log.js"
 
-import { FunkcjaType } from "modules/types.js"
+import { RoleType } from "modules/types.js"
 import HTTPError from "modules/server/error.js"
 
 import userMedical from "./medical.js"
@@ -81,16 +81,16 @@ export class UserClass {
 		}
 	]
 
-	funkcje = [
+	roles = [
 		{
 			type: String,
-			ref: "Funkcja"
+			ref: "Role"
 		}
 	]
-	eventFunkcje = [
+	eventRoles = [
 		{
 			type: String,
-			ref: "Funkcja"
+			ref: "Role"
 		}
 	]
 
@@ -154,31 +154,31 @@ export class UserClass {
 		await this.save()
 	}
 
-	/** Returns the user's funkcja in the given unit */
-	async getFunkcjaInUnit(unit) {
-		await unit.populate("funkcje")
-		for(const funkcja of unit.funkcje) {
-			if(this.id == funkcja.user.id) {
-				return funkcja
+	/** Returns the user's role in the given unit */
+	async getRoleInUnit(unit) {
+		await unit.populate("roles")
+		for(const role of unit.roles) {
+			if(this.id == role.user.id) {
+				return role
 			}
 		}
 	}
 
-	/** Checks if the user has a funkcja in any of the given units */
-	async hasFunkcjaInUnits(requiredFunkcja, ...units) {
+	/** Checks if the user has a role in any of the given units */
+	async hasRoleInUnits(requiredRole, ...units) {
 		for(const unit of units) {
 			if(unit instanceof Array || Symbol.asyncIterator in unit) {
 				for await(const asyncUnit of unit) {
-					if(await this.hasFunkcjaInUnits(requiredFunkcja, asyncUnit)) return true
+					if(await this.hasRoleInUnits(requiredRole, asyncUnit)) return true
 				}
 			} else {
-				const funkcja = await this.getFunkcjaInUnit(unit)
-				if(typeof requiredFunkcja == "function") {
-					const checkResult = await requiredFunkcja(funkcja?.type)
+				const role = await this.getRoleInUnit(unit)
+				if(typeof requiredRole == "function") {
+					const checkResult = await requiredRole(role?.type)
 					if(checkResult === true) return true
-				} else if(requiredFunkcja instanceof Array) {
-					if(requiredFunkcja.includes(funkcja?.type)) return true
-				} else if(funkcja?.type === requiredFunkcja) return true
+				} else if(requiredRole instanceof Array) {
+					if(requiredRole.includes(role?.type)) return true
+				} else if(role?.type === requiredRole) return true
 			}
 		}
 		return false
@@ -237,11 +237,11 @@ export class UserClass {
 
 	/** Returns an asynchronous list of all user's units and upper units */
 	async * getUnitsTree() {
-		await this.populate("funkcje")
-		for(const funkcja of this.funkcje) {
-			await funkcja.populate("unit")
-			yield funkcja.unit
-			yield * funkcja.unit.getUpperUnitsTree()
+		await this.populate("roles")
+		for(const role of this.roles) {
+			await role.populate("unit")
+			yield role.unit
+			yield * role.unit.getUpperUnitsTree()
 		}
 	}
 
@@ -266,8 +266,8 @@ schema.beforeDelete = async function() {
 	// Delete parents
 	await this.populate("parents")
 	for(const parent of this.parents) {
-		// Keep parents with funkcje
-		if(parent.funkcje.length > 0) continue
+		// Keep parents with roles
+		if(parent.roles.length > 0) continue
 		// Keep parents other children
 		if(parent.children.length > 1) continue
 		await parent.delete()
@@ -290,8 +290,8 @@ schema.beforeDelete = async function() {
 		await event.save()
 	}
 
-	// Delete all funkcje
-	await Funkcja.deleteMany({user: this.id})
+	// Delete all roles
+	await Role.deleteMany({user: this.id})
 }
 
 schema.permissions = await import("./permissions.js")

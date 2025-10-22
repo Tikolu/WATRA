@@ -1,5 +1,5 @@
 import html from "modules/html.js"
-import { FunkcjaType } from "modules/types.js"
+import { RoleType } from "modules/types.js"
 
 export default async function({user, targetUnit}) {
 	// Check for permissions

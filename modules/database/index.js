@@ -174,7 +174,7 @@ export async function connect(dbName="main") {
 
 		// Initialise all schemas
 		await import("modules/schemas/event.js")
-		await import("modules/schemas/funkcja.js")
+		await import("modules/schemas/role.js")
 		await import("modules/schemas/unit")
 		await import("modules/schemas/user")
 
@@ -195,7 +195,7 @@ export async function setup() {
 	const unit = await Unit.findOne()
 
 	if(!user && !unit) {
-		const { FunkcjaType } = await import("modules/types.js")
+		const { RoleType } = await import("modules/types.js")
 		
 		const newUser = new User()
 		const newUnit = new Unit({
@@ -206,7 +206,7 @@ export async function setup() {
 			type: UnitType.CHORĄGIEW
 		}))
 
-		await newUnit.setFunkcja(newUser, FunkcjaType.DRUŻYNOWY)
+		await newUnit.setRole(newUser, RoleType.DRUŻYNOWY)
 		console.log("Test user access code:", await newUser.generateAccessCode())
 	}
 }

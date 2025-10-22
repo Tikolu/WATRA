@@ -1,4 +1,4 @@
-export const FunkcjaType = {
+export const RoleType = {
 	SZEREGOWY: 0,
 
 	PODZASTĘPOWY: 1,
@@ -19,7 +19,7 @@ export const UnitType = {
 	OKRĘG: 4
 }
 
-export const FunkcjaNames = {
+export const RoleNames = {
 	[UnitType.ZASTĘP]: [
 		["szeregowy"],
 		["podzastępowy"],
@@ -47,7 +47,7 @@ export const FunkcjaNames = {
 	]
 }
 
-export const EventFunkcjaNames = [
+export const EventRoleNames = [
 	["szeregowy"],
 	["kadra"],
 	["komendant"]

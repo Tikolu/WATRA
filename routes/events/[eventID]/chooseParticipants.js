@@ -21,8 +21,8 @@ export default async function({user, targetEvent, unit: unitID}) {
 	const availableMembers = await Array.fromAsync(targetUnit.getSubMembers())
 
 	// Get list of event funkcyjni
-	await targetEvent.populate("funkcje")
-	const eventFunkcyjni = targetEvent.funkcje.map(f => f.user.id)
+	await targetEvent.populate("roles")
+	const eventFunkcyjni = targetEvent.roles.map(f => f.user.id)
 	
 	return html("event/setParticipants", {
 		user,

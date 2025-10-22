@@ -4,15 +4,15 @@ import html from "modules/html.js"
 
 export default async function({user, targetUser}) {
 	await targetUser.populate({
-		"funkcje": "unit",
-		"eventFunkcje": "unit",
+		"roles": "unit",
+		"eventRoles": "unit",
 		"eventInvites": {},
 		"eventApprovalRequests": {},
 		"children": {
-			"funkcje": "unit"
+			"roles": "unit"
 		},
 		"parents": {
-			"funkcje": "unit"
+			"roles": "unit"
 		}
 	})
 

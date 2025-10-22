@@ -1,4 +1,4 @@
-import { FunkcjaType } from "modules/types.js"
+import { RoleType } from "modules/types.js"
 
 export async function ACCESS(user) {
 	// User can access themselves
@@ -11,20 +11,20 @@ export async function ACCESS(user) {
 	if(user.parents.hasID(this.id)) return true
 
 	// Przyboczni of member unit and of all upper units can access
-	if(await user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, this.getUnitsTree())) return true
+	if(await user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, this.getUnitsTree())) return true
 
 	// Kadra of event can access
 	await this.populate("eventInvites")
 	for(const event of this.eventInvites) {
 		const invite = event.findUserInvite(this)
 		if(invite?.state != "accepted") continue
-		if(user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, event)) return true
+		if(user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, event)) return true
 	}
 
 	// Przyboczni of child's member unit and of all upper units can access
 	await this.populate("children")
 	for(const child of this.children) {
-		if(await user.hasFunkcjaInUnits(f => f >= FunkcjaType.PRZYBOCZNY, child.getUnitsTree())) return true
+		if(await user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, child.getUnitsTree())) return true
 	}
 
 	return false
@@ -40,12 +40,12 @@ export async function MODIFY(user) {
 	// Parent can modify their children
 	if(user.children.hasID(this.id)) return true
 	// Druyżynowi of member unit and of all upper units can modify
-	if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUnitsTree())) return true
+	if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.getUnitsTree())) return true
 	// Druyżynowi of child's member unit and of all upper units can modify
 	if(this.isParent) {
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, child.getUnitsTree())) return true
+			if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, child.getUnitsTree())) return true
 		}
 	}
 	return false
@@ -56,7 +56,7 @@ export async function ADD_PARENT(user) {
 	if(this.age && this.age >= 18) return false
 	
 	// Druyżynowi of member unit and of all upper units can add parents
-	if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUnitsTree())) return true
+	if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.getUnitsTree())) return true
 
 	return false
 }
@@ -70,7 +70,7 @@ export async function DELETE(user) {
 		if(await user.checkPermission(child.PERMISSIONS.DELETE)) return true
 	}
 	// Druyżynowi of member unit and of all upper units can delete
-	if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUnitsTree())) return true
+	if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.getUnitsTree())) return true
 	return false
 }
 
