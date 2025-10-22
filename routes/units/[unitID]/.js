@@ -21,6 +21,7 @@ export default async function({user, targetUnit}) {
 	}
 
 	await user.checkPermission(targetUnit.PERMISSIONS.DELETE)
+	await user.checkPermission(targetUnit.PERMISSIONS.MANAGE)
 	
 	return html("unit/page", {
 		user,

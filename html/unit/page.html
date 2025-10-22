@@ -26,14 +26,12 @@
 <% } %>
 <div class="button-row">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.DELETE)) { %>
-		<h3>Usuwanie</h3>
 		<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">
 			<i>delete</i>
 			<span>Usuń jednostkę</span>
 		</button>
 	<% } %>
-<% } %>
-
+</div>
 <% if($.targetUnit.subUnits?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) && $.targetUnit.type > 0) { %>
 	<hr>
 	<h2>

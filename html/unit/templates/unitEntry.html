@@ -9,8 +9,7 @@
 				<% if($.description) { %>
 					<%= $.description %>
 				<% } else { %>
-					<%= $.targetUnit.typeName %>
-					<% if($.targetUnit.upperUnits[0]?.displayName) { %>, <%= $.targetUnit.upperUnits[0]?.displayName %><% } %>
+					<%= $.targetUnit.typeName %><% if($.targetUnit.upperUnits[0]?.displayName) { %>, <%= $.targetUnit.upperUnits[0]?.displayName %><% } %>
 				<% } %>
 			</p>
 		</div>

@@ -346,6 +346,16 @@ schema.permissions = {
 		return false
 	},
 
+	async MANAGE(user) {
+		// Drużynowy of upper units can rename, unless unit is a top-level unit
+		if(this.upperUnits.length) {
+			if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUpperUnitsTree())) return true
+		} else if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this)) {
+			return true
+		}
+		return false
+	},
+
 	async DELETE(user) {
 		// Drużynowy of upper units can delete
 		if(await user.hasFunkcjaInUnits(FunkcjaType.DRUŻYNOWY, this.getUpperUnitsTree())) return true
