@@ -15,11 +15,11 @@
 <div class="unit-grid">
 	<%~ include("user/templates/userEntry", {
 		targetUser: $.user,
-		warnings: Array.conditional(
-			!$.user.name.first || !$.user.name.last, "Uzupełnij swoje imię i nazwisko",
-			!$.user.email || !$.user.phone, "Uzupełnij swój adres e-mail i numer telefonu",
+		warnings: $.user.hasPermission($.user.PERMISSIONS.MODIFY) ? Array.conditional(
+			!$.user.name.first || !$.user.name.last, "Ustaw swoje imię i nazwisko",
+			!$.user.email || !$.user.phone, "Ustaw swój adres e-mail i numer telefonu",
 			!$.user.medical.confirmed && $.user.funkcje.length > 0, "Uzupełnij i zatwierdź swoje dane medyczne"
-		)
+		) : []
 	}) %>
 </div>
 <% if($.user.funkcje.length > 0) { %>
@@ -31,7 +31,10 @@
 	<div class="unit-grid">
 		<% for(const funkcja of $.user.funkcje) { %>
 			<%~ include("unit/templates/unitEntry", {
-				targetUnit: funkcja.unit
+				targetUnit: funkcja.unit,
+				warnings: Array.conditional(
+					!funkcja.unit.name, "Ustaw nazwę jednostki"
+				)
 			}) %>
 		<% } %>
 	</div>
