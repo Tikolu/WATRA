@@ -33,7 +33,7 @@ export class LogClass {
 
 	targetEvent = {
 		type: String,
-		ref: "Unit"
+		ref: "Event"
 	}
 
 	data = {}
