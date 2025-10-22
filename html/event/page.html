@@ -23,6 +23,11 @@
 </h1>
 <p id="event-type"><%= $.targetEvent.typeName %></p>
 
+<hr>
+<h2>
+	<i>info</i>
+	Szczegóły akcji
+</h2>
 <h3>
 	<i>assignment</i>
 	Opis akcji
@@ -43,15 +48,15 @@
 				<i>calendar_today</i>
 				Daty
 			</h3>
-			<form>
-				<label for="event-name-input">Od:</label>
+			<form id="event-dates">
+				<label for="event-start-date-input">Od:</label>
 				<input
-					type="datetime-local"
+					type="date"
 					id="event-start-date-input"
-					min="<%= MIN_DATE %>T00:00"
-					max="<%= MAX_DATE %>T00:00"
+					min="<%= MIN_DATE %>"
+					max="<%= MAX_DATE %>"
 					<% if($.targetEvent.dates.start) { %>
-						value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-ddTHH:mm") %>"
+						value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-dd") %>"
 					<% } %>
 					api="event/[eventID]/update/dates"
 					name="startDate"
@@ -60,14 +65,14 @@
 					<%- } %>
 				>
 
-				<label for="event-name-input">Do:</label>
+				<label for="event-end-date-input">Do:</label>
 				<input
-					type="datetime-local"
+					type="date"
 					id="event-end-date-input"
-					min="<%= MIN_DATE %>T00:00"
-					max="<%= MAX_DATE %>T00:00"
+					min="<%= MIN_DATE %>"
+					max="<%= MAX_DATE %>"
 					<% if($.targetEvent.dates.end) { %>
-						value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-ddTHH:mm") %>"
+						value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd") %>"
 					<% } %>
 					api="event/[eventID]/update/dates"
 					name="endDate"

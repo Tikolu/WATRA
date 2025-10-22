@@ -45,7 +45,7 @@ export async function exit({user}) {
 
 	let output = this.lastOutput
 	if(user && user.logEvent && !this.logging.disabled) {
-		await user.logEvent(this.request.address.pathname.replace(/^\/api\//, ""), {
+		await user.logEvent(decodeURI(this.request.address.pathname).replace(/^\/api\//, ""), {
 			targetUser: this.routeData.targetUser,
 			targetUnit: this.routeData.targetUnit,
 			targetEvent: this.routeData.targetEvent,
@@ -55,18 +55,22 @@ export async function exit({user}) {
 
 	output ||= {}
 
-	if(typeof output == "object") {
-		try {
-			output = JSON.stringify(output)
-		} catch {
-			this.response.statusCode = 500
-			output = JSON.stringify({
-				error: {
-					code: 500,
-					message: "Failed to generate API output",
-				}
-			})
+	if(typeof output != "object") {
+		output = {
+			data: output
 		}
+	}
+		
+	try {
+		output = JSON.stringify(output)
+	} catch {
+		this.response.statusCode = 500
+		output = JSON.stringify({
+			error: {
+				code: 500,
+				message: "Failed to generate API output",
+			}
+		})
 	}
 
 	return output
