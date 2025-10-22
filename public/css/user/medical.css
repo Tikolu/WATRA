@@ -7,7 +7,7 @@ h1 {
 	width: 100%;
 }
 
-#medical-categories label {
+#medical-categories > form > label {
 	grid-column: 1 / -1;
 	white-space: normal;
 }

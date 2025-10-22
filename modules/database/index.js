@@ -77,7 +77,7 @@ mongoose.plugin(schema => {
 mongoose.plugin(schema => {
 	if(!schema.permissions) return
 	schema.virtual("PERMISSIONS").get(function() {
-		schema.permissions._modelName = this.constructor.modelName
+		const modelName = this.constructor.modelName
 		if(this.$locals.boundPermissionFunctions) {
 			return this.$locals.boundPermissionFunctions
 		}
@@ -86,7 +86,7 @@ mongoose.plugin(schema => {
 			const permission = schema.permissions[permissionName]
 			if(typeof permission != "function") continue
 			const boundPermission = permission.bind(this)
-			boundPermission.permissionSource = [schema.permissions._modelName, this.id]
+			boundPermission.permissionSource = [modelName, this.id]
 			PERMISSIONS[permissionName] = boundPermission
 		}
 		this.$locals.boundPermissionFunctions = PERMISSIONS
