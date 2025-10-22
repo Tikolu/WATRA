@@ -6,29 +6,25 @@
 		unitID: $.targetUnit.id
 	}
 }) %>
-<h1 id="unit-title"><%= $.targetUnit.displayName %></h1>
+<h1 id="unit-title">
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE)) { %>
+		<input
+			type="text"
+			name="name"
+			placeholder="Nazwa jednostki"
+			autocomplete="off"
+			api="unit/[unitID]/update/name"
+			value="<%= $.targetUnit.name || "" %>"
+			title="Zmień nazwę"
+		>
+	<% } else { %>
+		<%= $.targetUnit.displayName %>
+	<% } %>
+</h1>
 <% if($.targetUnit.upperUnits?.length > 0) { %>
 	<p>(<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
 <% } %>
-
-<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
-	<hr>
-	<h2>
-		<i>manufacturing</i>
-		Ustawienia
-	</h2>
-	<form>
-		<label for="unit-name-input">Nazwa:</label>
-		<input
-			type="text"
-			id="unit-name-input"
-			autocomplete="off"
-			value="<%= $.targetUnit.name || "" %>"
-			api="unit/[unitID]/update/name"
-			<% $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) ? "" : "disabled" %>
-		>
-	</form>
-
+<div class="button-row">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.DELETE)) { %>
 		<h3>Usuwanie</h3>
 		<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">

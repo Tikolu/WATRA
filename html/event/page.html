@@ -6,28 +6,22 @@
 		eventID: $.targetEvent.id
 	}
 }) %>
-<h1 id="event-title"><%= $.targetEvent.displayName %></h1>
-<p id="event-type"><%= $.targetEvent.typeName %></p>
-
-<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
-	<hr>
-	<h2>
-		<i>manufacturing</i>
-		Szczegóły akcji
-	</h2>
-	<form>
-		<label for="event-name-input">Nazwa:</label>
+<h1 id="event-title">
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
 		<input
 			type="text"
-			id="event-name-input"
-			autocomplete="off"
-			value="<%= $.targetEvent.name || "" %>"
-			api="event/[eventID]/update/name"
 			name="name"
-			<% $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+			placeholder="Nazwa akcji"
+			autocomplete="off"
+			api="event/[eventID]/update/name"
+			value="<%= $.targetEvent.name || "" %>"
+			title="Zmień nazwę"
 		>
-	</form>
-<% } %>
+	<% } else { %>
+		<%= $.targetEvent.displayName %>
+	<% } %>
+</h1>
+<p id="event-type"><%= $.targetEvent.typeName %></p>
 
 <h3>
 	<i>assignment</i>
