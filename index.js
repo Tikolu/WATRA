@@ -11,7 +11,7 @@ import "modules/util.js"
 
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
-	boolean: ["clear-database", "disable-caching"],
+	boolean: ["clear-database", "development"],
 	string: ["host", "port", "db"]
 })
 
@@ -36,7 +36,7 @@ const databaseSetupPromise = (async () => {
 server.start({
 	host: args.host,
 	port: args.port,
-	caching: !args["disable-caching"],
+	dev: args["development"],
 	async beforeRequest() {
 		await databaseSetupPromise
 	}

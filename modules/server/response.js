@@ -4,7 +4,7 @@ import * as Token from "modules/server/token.js"
  * ServerResponse class, representing a mutable response from the server
  */
 export default class {
-	constructor() {
+	constructor(debug) {
 		this.statusCode = 200
 		this.body = undefined
 		this.headers = new Headers()
@@ -12,7 +12,9 @@ export default class {
 		this.streaming = false
 
 		// Track server timings
-		this.lastTiming = performance.now()
+		this.debug = debug
+		if(this.debug) this.lastTiming = performance.now()
+		this.registerTiming("server", "open response")
 	}
 
 	/** Closes the response - disables further writing */
@@ -75,8 +77,10 @@ export default class {
 
 	/** Registers server timings, which are later sent in the Server-Timing header */
 	registerTiming(name, description) {
+		if(!this.debug) return
+
 		const now = performance.now()
-		const duration = now - this.lastTiming
+		const duration = now - (this.lastTiming || now)
 		this.lastTiming = now
 
 		// Replace non ASCII characters
