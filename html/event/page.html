@@ -138,12 +138,18 @@
 		</h2>
 		<div id="event-member-list" class="unit-grid">
 			<% for(const role of $.targetEvent.roles || []) { %>
-				<% if(role.type === RoleType.SZEREGOWY && $.targetEvent.findUserInvite(role.user)) continue %>
+				<%
+					if(role.type === RoleType.SZEREGOWY && $.targetEvent.findUserInvite(role.user)) continue
+					const md = role.user.missingDetails
+				%>
 				<%~ include("/user/templates/userEntry", {
 					targetUser: role.user,
 					description: Text.capitalise(role.displayName),
 					warnings: Array.conditional(
-						!role.user.medical.confirmed && role.user.roles.length > 0, "Nie zatwierdzone dane medyczne"
+						md.includes("names"), "Brak imienia i nazwiska",
+						md.includes("contact"), "Brak danych kontaktowych",
+						md.includes("dob"), "Brak daty urodzenia",
+						md.includes("medical"), "Nie zatwierdzone dane medyczne"
 					)
 				}) %>
 			<% } %>

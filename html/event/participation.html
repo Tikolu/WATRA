@@ -11,10 +11,10 @@
 	<% if($.targetInvitation.user.id != $.user.id) { %>
 		<p><%= $.targetInvitation.user.displayName %></p>
 	<% } %>
-	<% if($.eligibilityIssues.length) { %>
-		<% for(const issue of $.eligibilityIssues) { %>
-			<p class="warning"><i>warning</i> <%= issue %></p>
-		<% } %>
+	<% if(!$.targetInvitation.user.profileComplete) { %>
+		<p class="warning"><i>warning</i> Uzupełnij wszystkie dane na profilu uczestnika, aby móc potwierdzić jego udział w akcji.</p>
+	<% } else if($.targetInvitation.user.parents.length > 0 && $.targetInvitation.user.parents.every(p => !p.profileComplete)) { %>
+		<p class="warning"><i>warning</i> Uzupełnij wszystkie dane na profilu rodzica uczestnika, aby móc potwierdzić jego udział w akcji.</p>
 	<% } else { %>
 		<form id="event-participation">
 			<input type="radio" name="participation" id="participation-choice-yes" value="yes"

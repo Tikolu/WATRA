@@ -6,7 +6,6 @@ import Role from "modules/schemas/role.js"
 import HTTPError from "modules/server/error.js"
 
 import { UnitClass } from "modules/schemas/unit"
-import { RoleType, UnitType, EventRoleNames } from "modules/types.js"
 
 export class EventClass extends UnitClass {
 	/* * Properties * */
@@ -88,16 +87,22 @@ export class EventClass extends UnitClass {
 						// Ignore existing state
 						if(this.state === state) return
 
+						await this.populate("user")
+
 						// Check participant eligibility
-						const eligibilityIssues = await this.getEligibilityIssues()
-						if(eligibilityIssues.length) {
-							throw new HTTPError(400, "Użytkownik nie spełnia wymagań do uczestnictwa")
+						if(!this.user.profileComplete) {
+							throw new HTTPError(400, "Brakuje danych na profilu uczestnika")
+						}
+						// Check parent eligibility
+						if(this.user.parents.length > 0) {
+							await this.populate("parents")
+							if(this.parents.every(p => !p.profileComplete)) {
+								throw new HTTPError(400, "Brakuje danych na profilu rodzica uczestnika")
+							}
 						}
 
 						this.state = state
 						await targetEvent.save()
-
-						await this.populate("user")
 
 						// Set szeregowy role for new participant
 						if(state == "accepted") {
@@ -109,17 +114,6 @@ export class EventClass extends UnitClass {
 							const existingRole = await this.user.getRoleInUnit(targetEvent)
 							if(existingRole) await existingRole.delete()
 						}
-					}
-
-					/** Checks if the user is eligible to participate */
-					async getEligibilityIssues() {
-						await this.populate("user")
-						
-						return Array.conditional(
-							!this.user.name.first || !this.user.name.last, "Uczestnik musi mieć ustawione imię i nazwisko aby uczestniczyć",
-							!this.user.dateOfBirth, "Uczestnik musi mieć ustawioną datę urodzenia aby uczestniczyć",
-							!this.user.medical.confirmed, "Uczestnik musi mieć zatwierdzone dane medyczne aby uczestniczyć"
-						)
 					}
 
 				}
@@ -211,11 +205,9 @@ export class EventClass extends UnitClass {
 				units.push(...await Array.fromAsync(this.unit.getUpperUnitsTree()))
 
 				for(const unit of units) {
-					if(unit.type < UnitType.HUFIEC) continue
-
 					await unit.populate("roles")
 					for(const role of unit.roles) {
-						if(role.type < RoleType.REFERENT) continue
+						if(role.config.tags.includes("approveEvent")) continue
 						await role.populate(
 							["user", "unit"],
 							{known: [unit]}
@@ -496,15 +488,11 @@ schema.beforeDelete = async function() {
 
 schema.permissions = {
 	async CREATE(user) {
-		// Kadra of a unit can create a event
 		await user.populate("roles")
-		return user.roles.some(f => f.type >= RoleType.PRZYBOCZNY)
+		return user.roles.some(r => r.config.tags.includes("createEvent"))
 	},
 	
 	async ACCESS(user) {
-		// Approvers can access
-		if(await user.checkPermission(this.PERMISSIONS.APPROVE)) return true
-
 		// Invited users can access
 		if(this.findUserInvite(user)) return true
 
@@ -518,18 +506,17 @@ schema.permissions = {
 		const userRole = await user.getRoleInUnit(this)
 		if(userRole?.type >= RoleType.KADRA) return true
 
-		// Drużynowi of invited units (and upper units) can access
+		// Check roles in invited units
 		await this.populate({"invitedUnits": "unit"})
-		if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit))) return true
-		if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.invitedUnits.map(i => i.unit.getUpperUnitsTree()))) return true
+		for(const i of this.invitedUnits) {
+			if(await user.hasPermissionInUnit("accessEventInvited", i.unit)) return true
+		}
 
 		return false
 	},
 
 	async PARTICIPANT_ACCESS(user) {
-		// Only kadra can access user data
-		const userRole = await user.getRoleInUnit(this)
-		if(userRole?.type >= RoleType.KADRA) return true
+		if(await user.hasPermissionInUnit("accessParticipant")) return true
 
 		return false
 	},
@@ -545,9 +532,7 @@ schema.permissions = {
 	},
 
 	async MODIFY(user) {
-		// Komendant of a event can modify
-		const userRole = await user.getRoleInUnit(this)
-		if(userRole?.type == RoleType.KOMENDANT) return true
+		if(await user.hasPermissionInUnit("modifyEvent")) return true
 
 		return false
 	}

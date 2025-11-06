@@ -15,8 +15,10 @@ export default async function({user, targetEvent, participant: targetUserID}) {
 	const targetInvitation = targetEvent.findUserInvite(targetUser)
 	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
 
-	await targetInvitation.populate("user", {known: [targetUser]})
-	const eligibilityIssues = await targetInvitation.getEligibilityIssues()
+	await targetInvitation.populate(
+		{"user": "parents"},
+		{known: [targetUser]}
+	)
 
 	return html("event/participation", {
 		user,

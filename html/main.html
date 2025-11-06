@@ -15,12 +15,20 @@
 <div class="unit-grid">
 	<%~ include("user/templates/userEntry", {
 		targetUser: $.user,
-		warnings: $.user.hasPermission($.user.PERMISSIONS.MODIFY) ? Array.conditional(
-			!$.user.name.first || !$.user.name.last, "Ustaw swoje imię i nazwisko",
-			!$.user.email || !$.user.phone, "Ustaw swój adres e-mail i numer telefonu",
-			!$.user.dateOfBirth && $.user.roles.length > 0, "Ustaw swoją datę urodzenia",
-			!$.user.medical.confirmed && $.user.roles.length > 0 && $.user.hasPermission($.user.PERMISSIONS.APPROVE), "Uzupełnij i zatwierdź swoje dane medyczne"
-		) : []
+		warnings: (() => {
+			// Only show warnings if user can edit their details
+			if(!$.user.hasPermission($.user.PERMISSIONS.EDIT)) return
+			
+			const md = $.user.missingDetails
+			
+			return Array.conditional(
+				md.includes("name"), "Brak imienia i nazwiska",
+				md.includes("contact"), "Brak danych kontaktowych",
+				md.includes("dob"), "Brak daty urodzenia",
+				// Only show medical warning is user can approve
+				md.includes("medical") && $.user.hasPermission($.user.PERMISSIONS.APPROVE), "Nie zatwierdzone dane medyczne",
+			)
+		})() || []
 	}) %>
 </div>
 <% if($.user.roles.length > 0) { %>
@@ -48,12 +56,14 @@
 	</h2>
 	<div class="unit-grid">
 		<% for(const child of $.user.children) { %>
+			<% const md = $.user.missingDetails %>
 			<%~ include("user/templates/userEntry", {
 				targetUser: child,
 				warnings: Array.conditional(
-					!child.name.first || !child.name.last, "Uzupełnij imię i nazwisko",
-					!child.dateOfBirth, "Uzupełnij datę urodzenia",
-					!child.medical.confirmed, "Uzupełnij i zatwierdź dane medyczne"
+					md.includes("names"), "Brak imienia i nazwiska",
+					md.includes("contact"), "Brak danych kontaktowych",
+					md.includes("dob"), "Brak daty urodzenia",
+					md.includes("medical"), "Nie zatwierdzone dane medyczne"
 				)
 			}) %>
 		<% } %>
