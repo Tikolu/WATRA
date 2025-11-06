@@ -6,15 +6,10 @@ import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetUser}) {
 	// Check permissions
-	await user.checkPermission(targetUser.PERMISSIONS.MODIFY)
+	await user.checkPermission(targetUser.PERMISSIONS.EDIT)
 	await user.checkPermission(targetUser.PERMISSIONS.APPROVE)
 
-	let editable = user.hasPermission(targetUser.PERMISSIONS.APPROVE)
-	if(targetUser.medical.confirmed) {
-		editable = false
-	} else if(!editable) {
-		throw new HTTPError(403, "Dane medyczne czekają na zatwierdzenie")
-	}
+	const editable = user.hasPermission(targetUser.PERMISSIONS.EDIT) && !targetUser.medical.confirmed
 
 	const displayCategories = []
 

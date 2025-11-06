@@ -17,7 +17,8 @@ export default async function({user}) {
 
 	// Check permissions
 	await user.checkPermission(Event.PERMISSIONS.CREATE)
-	await user.checkPermission(user.PERMISSIONS.MODIFY)
+	await user.checkPermission(user.PERMISSIONS.EDIT)
+	await user.checkPermission(user.PERMISSIONS.APPROVE)
 
 	const events = [
 		...user.eventInvites,
