@@ -25,8 +25,7 @@
 				md.includes("name"), "Brak imienia i nazwiska",
 				md.includes("contact"), "Brak danych kontaktowych",
 				md.includes("dob"), "Brak daty urodzenia",
-				// Only show medical warning is user can approve
-				md.includes("medical") && $.user.hasPermission($.user.PERMISSIONS.APPROVE), "Nie zatwierdzone dane medyczne",
+				md.includes("medical"), "Nie zatwierdzone dane medyczne",
 			)
 		})() || []
 	}) %>

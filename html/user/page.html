@@ -61,6 +61,29 @@
 	<% } %>
 </div>
 
+<%
+	const md = $.user.missingDetails
+	const userWarnings = Array.conditional(
+		md.includes("name"), "Brak imienia i nazwiska",
+		md.includes("contact"), "Brak danych kontaktowych",
+		md.includes("dob"), "Brak daty urodzenia",
+		md.includes("medical"), "Nie zatwierdzone dane medyczne",
+	)
+%>
+<% if(userWarnings.length > 0) { %>
+	<hr>
+	<!-- <h2>
+		<i>warning</i>
+		Uwagi
+	</h2> -->
+	<% for(const warning of userWarnings) { %>
+		<p class="warning">
+			<i>warning</i>
+			<%= warning %>
+		</p>
+	<% } %>
+<% } %>
+
 <hr>
 <h2>
 	<i>assignment</i>
