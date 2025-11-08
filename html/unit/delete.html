@@ -19,7 +19,7 @@
 				<% for(const upperUnit of $.targetUnit.upperUnits) { %>
 					<option
 						value="<%= upperUnit.id %>"
-						<% if(!$.user.hasPermission(upperUnit.PERMISSIONS.MODIFY)) { %>
+						<% if(!$.user.hasPermission(upperUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 							disabled
 						<% } %>
 					>

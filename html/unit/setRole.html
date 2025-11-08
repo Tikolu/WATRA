@@ -12,9 +12,10 @@
 	<% if($.usersForAssignment.length) { %>
 		<h2>Wybierz funkcję</h2>
 		<form id="role-select">
-			<% for(const [roleLevel, roleName] of $.targetUnit.getRoleOptions() || []) { %>
-				<input type="radio" name="roleType" value="<%= roleLevel %>" id="role-<%= roleLevel %>">
-				<label for="role-<%= roleLevel %>"><%= roleName %></label>
+			<% for(const roleID of $.targetUnit.config.roles || []) { %>
+				<% const role = Config.roles[roleID] %>
+				<input type="radio" name="roleType" value="<%= roleID %>" id="role-<%= roleID %>">
+				<label for="role-<%= roleID %>"><%= role.name %></label>
 			<% } %>
 			<input type="radio" name="roleType" value="remove" id="role-remove">
 			<label for="role-remove">Usuń z jednostki</label>
@@ -40,7 +41,7 @@
 	<% if($.usersForAssignment.length) { %>
 		<button id="set-role-button" api="unit/[unitID]/member/[memberID]/setRole">
 			<i>check</i>
-			<span>Potwierdź set-role</span>
+			<span>Potwierdź mianowanie</span>
 		</button>
 	<% } %>
 </div>

@@ -5,7 +5,7 @@ import User from "modules/schemas/user"
 
 export default async function({user, targetUnit, firstName="", lastName="", createParent=false}) {
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.CREATE_USER)
 
 	// Create user
 	const newUser = new User()

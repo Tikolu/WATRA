@@ -7,7 +7,7 @@
 	}
 }) %>
 <h1 id="unit-title">
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE)) { %>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
 		<input
 			type="text"
 			name="name"
@@ -25,14 +25,14 @@
 	<p>(<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
 <% } %>
 <div class="button-row">
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.DELETE)) { %>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
 		<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">
 			<i>delete</i>
 			<span>Usuń jednostkę</span>
 		</button>
 	<% } %>
 </div>
-<% if($.targetUnit.subUnits?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) && $.targetUnit.type > 0) { %>
+<% if($.targetUnit.subUnits?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 	<hr>
 	<h2>
 		<i>groups</i>
@@ -50,7 +50,7 @@
 			<% } %>
 		<% } %>
 	</div>
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY) && $.targetUnit.type > 0) { %>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 		<button id="add-sub-unit-button" opens-dialog="/units/<%= $.targetUnit.id %>/addSubUnit">
 			<i>add</i>
 			<span>Dodaj jednostkę</span>
@@ -60,7 +60,7 @@
 
 
 
-<% if($.targetUnit.roles?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+<% if($.targetUnit.roles?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER) || $.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
 	<hr>
 	<h2>
 		<i>person</i>
@@ -79,11 +79,13 @@
 			<i>list</i>
 			<span>Pełna lista użytkowników</span>
 		</button>
-		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
 			<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole">
 				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
 			</button>
+		<% } %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER)) { %>
 			<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
 				<i>person_add</i>
 				<span>Utwórz użytkownika</span>
@@ -92,7 +94,7 @@
 	</div>
 <% } %>
 
-<% if($.targetUnit.eventInvites?.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.MODIFY)) { %>
+<% if($.targetUnit.eventInvites?.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT) || $.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES)) { %>
 	<hr>
 	<h2>
 		<i>hiking</i>

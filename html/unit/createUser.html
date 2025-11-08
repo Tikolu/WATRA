@@ -25,7 +25,7 @@
 	<h2>Dodatkowe konta</h2>
 	<form>
 		<input type="checkbox" id="parent-create" name="createParent"
-			<% if($.units[0].type <= UnitType.DRUŻYNA) { %>
+			<% if($.units[0].defaultRole?.hasTag("preventLogin")) { %>
 				checked
 			<% } %>
 		>

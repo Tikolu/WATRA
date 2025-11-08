@@ -19,3 +19,14 @@ API.registerHandler("unit/[unitID]/subUnit/link", {
 		return true
 	}
 })
+
+unitDepartmentSelect.onchange = () => {
+	unitTypeSelect.value = ""
+	for(const option of unitTypeSelect.options) {
+		option.hidden = unitDepartmentSelect.value != option.dataset.department
+		if(!option.hidden && !unitTypeSelect.value) {
+			unitTypeSelect.value = option.value
+		}
+	}
+}
+unitDepartmentSelect.onchange()

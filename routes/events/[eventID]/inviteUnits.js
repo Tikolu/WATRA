@@ -1,5 +1,5 @@
 import html from "modules/html.js"
-import { RoleType } from "modules/types.js"
+import Config from "modules/config.js"
 
 export default async function({user, targetEvent}) {
 	// await targetEvent.populate({"roles": ["user", "unit"]})

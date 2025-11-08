@@ -1,5 +1,6 @@
-import { RoleType } from "modules/types.js"
+import Config from "modules/config.js"
 
+/** Accessing the user's profile page and any user details */
 export async function ACCESS(user) {
 	// User can access themselves
 	if(user.id == this.id) return true
@@ -10,77 +11,118 @@ export async function ACCESS(user) {
 	// Child can access their parents
 	if(user.parents.hasID(this.id)) return true
 
-	// Przyboczni of member unit and of all upper units can access
-	if(await user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, this.getUnitsTree())) return true
+	// Users with "accessUser" role in any unit/upperUnit of user can access
+	if(await user.hasRoleInUnits("accessUser", this.getUnitsTree())) return true
 
-	// Kadra of event can access
-	await this.populate("eventInvites")
-	for(const event of this.eventInvites) {
-		const invite = event.findUserInvite(this)
-		if(invite?.state != "accepted") continue
-		if(user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, event)) return true
-	}
-
-	// Przyboczni of child's member unit and of all upper units can access
-	await this.populate("children")
-	for(const child of this.children) {
-		if(await user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, child.getUnitsTree())) return true
-	}
-
-	return false
-}
-
-export async function MODIFY(user) {
-	if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
-	// Niepełnoletni with parents cannot modify their own details
-	if(user.id == this.id) {
-		if(this.age && this.age < 18 && this.parents?.length > 0) return false
-		return true
-	}
-	// Parent can modify their children
-	if(user.children.hasID(this.id)) return true
-	// Druyżynowi of member unit and of all upper units can modify
-	if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.getUnitsTree())) return true
-	// Druyżynowi of child's member unit and of all upper units can modify
-	if(this.isParent) {
+	// Users with "accessUser" role in any unit/upperUnit of any child can access parent
+	if(this.parent) {
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, child.getUnitsTree())) return true
+			if(await user.hasRoleInUnits("accessUser", child.getUnitsTree())) return true
 		}
 	}
+
+	// await this.populate("eventInvites")
+	// for(const event of this.eventInvites) {
+	// 	const invite = event.findUserInvite(this)
+	// 	if(invite?.state != "accepted") continue
+	// 	if(user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, event)) return true
+	// }
+
 	return false
 }
 
-export async function ADD_PARENT(user) {
-	// Cannot add parent to adult
-	if(this.age && this.age >= 18) return false
+/** Editing user details, such as name, contact details, medical */
+export async function EDIT(user) {
+	// Lack of ACCESS permission denies EDIT
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// Users can edit themselves if they are adults, have no parents, or have no set age
+	if(user.id == this.id) {
+		if(this.age === null) return true
+		if(this.age >= Config.adultAge || 0) return true
+		if(this.parents?.length == 0) return true
+	}
 	
-	// Druyżynowi of member unit and of all upper units can add parents
-	if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.getUnitsTree())) return true
+	// Parent can edit their children
+	if(user.children.hasID(this.id)) return true
+
+	// Users with "manageUser" role in any unit/upperUnit of user can edit
+	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+
+	// Users with "manageUser" role in any unit/upperUnit of any child can edit parent
+	if(this.parent) {
+		await this.populate("children")
+		for(const child of this.children) {
+			if(await user.hasRoleInUnits("manageUser", child.getUnitsTree())) return true
+		}
+	}
 
 	return false
 }
 
+/** Creating parent users or adding existing users as parents to the user */
+export async function ADD_PARENT(user) {
+	// Lack of EDIT permission denies ADD_PARENT
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+
+	// Cannot add parents to user with existing, incomplete parent profiles
+	await this.populate("parents")
+	for(const parent of this.parents) {
+		if(!parent.profileComplete) return false
+	}
+
+	// Cannot add parent to adult
+	if(this.age !== null && this.age >= Config.adultAge) return false
+
+	// "manageUser" roles in user's unit or upper units can add parents
+	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+
+	// Parents can add other parents
+	if(this.parents.hasID(user.id)) return true
+
+	return false
+}
+
+/** Deleting the user */
 export async function DELETE(user) {
+	// Lack of EDIT permission denies DELETE
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+
 	// User can never delete themselves
 	if(user.id == this.id) return false
-	// A parent of a user which can be deleted can also be deleted
-	await this.populate("children")
-	for(const child of this.children) {
-		if(await user.checkPermission(child.PERMISSIONS.DELETE)) return true
-	}
-	// Druyżynowi of member unit and of all upper units can delete
-	if(await user.hasRoleInUnits(RoleType.DRUŻYNOWY, this.getUnitsTree())) return true
+
+	// "deleteUser" roles in user's unit or upper units can add parents
+	if(await user.hasRoleInUnits("deleteUser", this.getUnitsTree())) return true
+
 	return false
 }
 
+/** Making important / legal decisions for the user */
 export async function APPROVE(user) {
-	if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
-	// Niepełnoletni cannot approve themselves
+	// Lack of EDIT permission denies APPROVE
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+
+	// Non-adults, or users without set age cannot approve themselves
 	if(user.id == this.id) {
-		if(this.age && this.age < 18) return false
+		if(this.age === null) return false
+		if(this.age < Config.adultAge) return false
 		return true
 	}
+	
 	// Parent can approve their children
 	if(user.children.hasID(this.id)) return true
+
+	return false
+}
+
+/** Accessing the user's activity log */
+export async function ACCESS_ACTIVITY(user) {
+	// Lack of ACCESS permission denies ACCESS_ACTIVITY
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+	
+	// "accessActivity" roles in any unit/upperUnit of user can access
+	if(await user.hasRoleInUnits("accessActivity", this.getUnitsTree())) return true
+	
+	return false
 }

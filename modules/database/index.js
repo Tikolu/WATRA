@@ -189,24 +189,17 @@ export async function connect(dbName="main") {
 export async function setup() {
 	const {default: User} = await import("modules/schemas/user")
 	const {default: Unit} = await import("modules/schemas/unit")
-	const { UnitType } = await import("modules/types.js")
 
 	const user = await User.findOne()
 	const unit = await Unit.findOne()
 
 	if(!user && !unit) {
-		const { RoleType } = await import("modules/types.js")
-		
 		const newUser = new User()
 		const newUnit = new Unit({
-			type: UnitType.OKRĘG
+			type: "okręg"
 		})
 
-		await newUnit.addSubUnit(new Unit({
-			type: UnitType.CHORĄGIEW
-		}))
-
-		await newUnit.setRole(newUser, RoleType.DRUŻYNOWY)
+		await newUnit.setRole(newUser, "przewodniczącyZarząduOkręgu")
 		console.log("Test user access code:", await newUser.generateAccessCode())
 	}
 }

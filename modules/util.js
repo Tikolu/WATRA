@@ -8,6 +8,7 @@ Object.isEmpty = object => {
 	return false
 }
 
+
 /** Function for creating an array from conditional pairs */
 Array.conditional = (...values) => {
 	const result = []
@@ -18,21 +19,52 @@ Array.conditional = (...values) => {
 	return result
 }
 
+
 /** Function for getting unique items from an array */
 Object.defineProperty(Array.prototype, "unique", {
-	value: function(key) {
+	value: function(key, returnValues=false) {
 		const output = []
 		for(const item of this) {
 			if(key === undefined) {
 				if(output.includes(item)) {
 					continue
 				}
+			} else if(returnValues) {
+				if(output.includes(item[key])) continue
 			} else if(output.find(i => i[key] === item[key])) {
 				continue
 			}
-			output.push(item)
+			output.push(returnValues ? item[key] : item)
 		}
 
 		return output
+	}
+})
+
+
+/** AsyncGenerator functions */
+const tempAsyncGenerator = (async function* () { yield })()
+tempAsyncGenerator.return()
+const asyncGeneratorPrototype = tempAsyncGenerator.constructor.prototype
+Object.defineProperty(asyncGeneratorPrototype, "find", {
+	value: async function(callback) {
+		for await(const item of this) {
+			if(await callback(item)) {
+				await this.return()
+				return item
+			}
+		}
+		return undefined
+	}
+})
+Object.defineProperty(asyncGeneratorPrototype, "some", {
+	value: async function(callback) {
+		for await(const item of this) {
+			if(await callback(item)) {
+				await this.return()
+				return true
+			}
+		}
+		return false
 	}
 })

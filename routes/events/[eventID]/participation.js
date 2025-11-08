@@ -24,6 +24,5 @@ export default async function({user, targetEvent, participant: targetUserID}) {
 		user,
 		targetEvent,
 		targetInvitation,
-		eligibilityIssues
 	})
 }

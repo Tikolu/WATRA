@@ -4,7 +4,7 @@ import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetUser}) {
 	// Check for permissions
-	await user.requirePermission(targetUser.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUser.PERMISSIONS.EDIT)
 
 	// Generate access code for user
 	await targetUser.generateAccessCode()

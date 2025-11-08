@@ -23,7 +23,7 @@ async function handlePublicFile(url, response) {
 	if(!type) return
 
 	response.headers.set("Content-Type", `${type}; charset=utf-8`)
-	response.headers.set("Cache-Control", cachingEnabled ? "max-age=31536000, immutable" : "no-store")
+	response.headers.set("Cache-Control", developmentMode ? "no-store" : "max-age=31536000, immutable")
 	response.write(await Deno.readFile(url))
 	response.close()
 	return true
@@ -32,7 +32,7 @@ async function handlePublicFile(url, response) {
 async function handler(req) {
 	// Initialize request object from request and blank response object
 	const request = new ServerRequest(req)
-	const response = new ServerResponse()
+	const response = new ServerResponse(developmentMode)
 
 	// If a cookie header is present, parse cookies
 	if(request.headers.has("Cookie")) {
@@ -53,15 +53,16 @@ async function handler(req) {
 	// Send the token, if one is present
 	if(response.token) await response.sendToken()
 	
+	response.registerTiming("server", "close response")
 	return response.toResponse()
 }
 
 let server;
 const controller = new AbortController()
-let cachingEnabled = true
+let developmentMode = false
 
-export function start({host, port, caching=true, beforeRequest}) {
-	cachingEnabled = caching
+export function start({host, port, dev=false, beforeRequest}) {
+	developmentMode = dev
 
 	server = Deno.serve({
 		host,

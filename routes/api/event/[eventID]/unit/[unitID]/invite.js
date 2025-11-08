@@ -1,5 +1,5 @@
 import HTTPError from "modules/server/error.js"
-import { RoleType } from "modules/types.js"
+import Config from "modules/config.js"
 
 export default async function({user, targetEvent, targetUnit}) {
 	// Check if unit already invited

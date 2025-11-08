@@ -37,18 +37,18 @@
 			</div>
 		</dialog>
 	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY)) { %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
 		<button id="generate-access-code-button" api="user/[userID]/accessCode/generate">
 			<i>password</i>
 			<span>Wygeneruj kod dostępu</span>
 		</button>
 		<dialog id="access-code-dialog">
 			<h1>Kod dostępu</h1>
-			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent && $.targetUser.roles.every(f => !f.unit.type <= UnitType.DRUŻYNA)) { %>
-				<p class="warning">
+			<% if($.targetUser.id != $.user.id && !$.targetUser.isParent) { %>
+				<!-- <p class="warning">
 					<i>warning</i>
 					Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, nie konta rodzica/opiekuna!
-				</p>
+				</p> -->
 			<% } %>
 			<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
 			<input type="text" class="access-code" id="user-access-code-container" disabled>
@@ -62,7 +62,7 @@
 </div>
 
 <%
-	const md = $.user.missingDetails
+	const md = $.targetUser.missingDetails
 	const userWarnings = Array.conditional(
 		md.includes("name"), "Brak imienia i nazwiska",
 		md.includes("contact"), "Brak danych kontaktowych",
@@ -72,10 +72,10 @@
 %>
 <% if(userWarnings.length > 0) { %>
 	<hr>
-	<!-- <h2>
+	<h2>
 		<i>warning</i>
 		Uwagi
-	</h2> -->
+	</h2>
 	<% for(const warning of userWarnings) { %>
 		<p class="warning">
 			<i>warning</i>
@@ -99,7 +99,7 @@
 			value="<%= $.targetUser.name.first || "" %>"
 			api="user/[userID]/update/names"
 			name="firstName"
-			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+			<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 		>
 
 		<label for="last-name-input">Nazwisko:</label>
@@ -110,7 +110,7 @@
 			value="<%= $.targetUser.name.last || "" %>"
 			api="user/[userID]/update/names"
 			name="lastName"
-			<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+			<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 		>
 
 		<% if($.targetUser.roles.length > 0) { %>
@@ -123,12 +123,12 @@
 					value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
 				<% } %>
 				api="user/[userID]/update/dateOfBirth"
-				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : " disabled" %>
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : " disabled" %>
 			>
 		<% } %>
 	</form>
 	<% if($.targetUser.email || $.targetUser.phone ||
-		 ($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) && !$.targetUser.parents.hasID($.user.id))) { %>
+		 ($.user.hasPermission($.targetUser.PERMISSIONS.EDIT) && !$.targetUser.parents.hasID($.user.id))) { %>
 		<form>
 			<label for="email-input">E-mail:</label>
 			<input
@@ -138,7 +138,7 @@
 				value="<%= $.targetUser.email || "" %>"
 				api="user/[userID]/update/email"
 				name="email"
-				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 			>
 
 			<label for="phone-input">Telefon:</label>
@@ -149,7 +149,7 @@
 				value="<%= Text.formatPhone($.targetUser.phone, $.targetUser.phone?.startsWith("+353")) || "" %>"
 				api="user/[userID]/update/phone"
 				name="phone"
-				<%= $.user.hasPermission($.targetUser.PERMISSIONS.MODIFY) ? "" : "disabled" %>
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 			>
 		</form>
 	<% } %>
@@ -161,7 +161,7 @@
 			Dane medyczne
 		</button>
 	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.MODIFY)) { %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
 		<button href="/users/<%= $.targetUser.id %>/log">
 			<i>history</i>
 			Log aktywności

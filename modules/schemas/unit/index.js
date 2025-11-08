@@ -3,7 +3,7 @@ import * as Text from "modules/text.js"
 
 import Role from "modules/schemas/role.js"
 
-import { RoleType, UnitType, RoleNames } from "modules/types.js"
+import Config from "modules/config.js"
 
 export class UnitClass {
 	/* * Properties * */
@@ -17,8 +17,8 @@ export class UnitClass {
 		}
 	}
 	type = {
-		type: Number,
-		enum: Object.values(UnitType)
+		type: String,
+		enum: Object.keys(Config.units)
 	}
 	roles = [
 		{
@@ -48,6 +48,13 @@ export class UnitClass {
 
 	/* * Getters * */
 
+	/** Returns the unit type object from config */
+	get config() {
+		const config = Config.units[this.type]
+		if(!config) throw new Error(`Invalid unit type: ${this.type}`)
+		return config
+	}
+
 	/** Returns the full unit name */
 	get displayName() {
 		return this.name || `(${this.typeName.toLowerCase()} bez nazwy)`
@@ -55,30 +62,31 @@ export class UnitClass {
 	
 	/** Returns the unit type name */
 	get typeName() {
-		const type = Object.keys(UnitType)[this.type] || "unit"
-		return Text.capitalise(type)
+		return this.config?.name || "jednostka"
 	}
 
 
 	/* Methods */
 	
 	/** Add user to unit with a role, any existing role in the unit gets overwritten */
-	async setRole(user, roleType=RoleType.SZEREGOWY) {
+	async setRole(user, roleType=this.config.defaultRole) {
 		// Populate roles
 		await this.populate("roles")
 
 		let role
 		
-		// Value is a Role instance: add the role	directly
-		if(roleType instanceof Role) role = roleType
+		if(!roleType) throw Error("Jednostka nie ma skonfigurowanych funkcji")
+		
+		// Value is a Role instance: add the role directly
+		else if(roleType instanceof Role) role = roleType
 
-		// Value is a RoleType: create new role with said type
-		else if(Object.values(RoleType).includes(roleType)) {
+		// Value is a role type: create new role with said type
+		else if(this.config.roles.includes(roleType)) {
 			role = new Role({
 				type: roleType
 			})
 
-		} else throw Error("Nieprawidłowy typ funkcji")
+		} else throw Error(`Nieprawidłowy typ funkcji "${roleType}"`)
 
 		// Attempt to find existing role of user in this unit
 		const existingRole = this.roles.find(f => f.user.id == user.id)
@@ -96,12 +104,22 @@ export class UnitClass {
 		role.user = user.id
 		role.unit = this.id
 
-		// Only one drużynowy per unit, only one (pod)zastępowy per zastęp
-		if(role.type == 2 || (this.type == UnitType.ZASTĘP && role.type == 1)) {
-			const roleGłówna = this.roles.find(f => f.type == role.type)
-			if(roleGłówna) {
-				await roleGłówna.populate("unit")
-				throw Error(`${this.typeName} ma już funkcję: ${roleGłówna.displayName}`)
+		// Enforce role count limit
+		if("limit" in role.config) {
+			const otherRolesOfType = this.roles.filter(f => f.type == role.type)
+			if(otherRolesOfType.length >= role.config.limit) {
+				throw Error(`Przekroczono limit (${role.config.limit}) funkcji typu "${role.config.name}"`)
+			}
+		}
+
+		// Enforce role age limits
+		const userAge = user.age
+		if(userAge !== null) {
+			if(userAge < role.config.minAge || 0) {
+				throw Error(`Użytkownik nie spełnia wymaganego wieku (${role.config.minAge}) dla funkcji typu "${role.config.name}"`)
+			}
+			if(userAge > role.config.maxAge || Infinity) {
+				throw Error(`Użytkownik przekracza maksymalny wiek (${role.config.maxAge}) dla funkcji typu "${role.config.name}"`)
 			}
 		}
 
@@ -120,13 +138,13 @@ export class UnitClass {
 		await this.save()
 		await user.save()
 
-		// Delete any szeregowy roles in upper units
-		for await(const upperUnit of this.getUpperUnitsTree()) {
-			const existingRole = await user.getRoleInUnit(upperUnit)
-			if(existingRole?.type === RoleType.SZEREGOWY) {
-				await existingRole.delete()
-			}
-		}
+		// Delete any "membershipOnly" roles in upper units
+		// for await(const upperUnit of this.getUpperUnitsTree()) {
+		// 	const existingRole = await user.getRoleInUnit(upperUnit)
+		// 	if(existingRole.hasTag("membershipOnly")) {
+		// 		await existingRole.delete()
+		// 	}
+		// }
 		
 
 		return role
@@ -146,7 +164,7 @@ export class UnitClass {
 	/** Link an existing unit as subUnit */
 	async addSubUnit(subUnit) {
 		// Check unit type compatibility
-		if(subUnit.type >= this.type) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
+		if(subUnit.config.rank >= this.config.rank) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
 		
 		// Add subUnit to subUnits, unless already added
 		if(!this.subUnits.hasID(subUnit.id)) {
@@ -179,15 +197,16 @@ export class UnitClass {
 		await subUnit.save()
 	}
 
-	/** Returns a list of possible role levels and names for this unit */
-	getRoleOptions(roleNames=RoleNames[this.type]) {
-		const roleOptions = []
-		for(const roleLevel in roleNames) {
-			for(const roleName of roleNames[roleLevel]) {
-				roleOptions.push([roleLevel, roleName])
-			}
+	/** Returns a list of possible subUnit types for this unit */
+	getSubUnitOptions() {
+		const options = []
+		for(const unitTypeID in Config.units) {
+			const unitType = Config.units[unitTypeID]
+			// Exclude units with equal or higher rank
+			if(unitType.rank >= this.config.rank) continue
+			options.push(unitType)
 		}
-		return roleOptions
+		return options
 	}
 
 	/** Sorts roles based on type and user name */
@@ -195,7 +214,9 @@ export class UnitClass {
 		await this.populate({"roles": "user"})
 		this.roles.sort((a, b) => {
 			// Place users with highest role at the start
-			if(a.type != b.type) return b.type - a.type
+			const aType = Config.roles[a.type].rank
+			const bType = Config.roles[b.type].rank
+			if(aType != bType) return bType - aType
 
 			// Place users without a name at the end
 			const aNoName = Object.isEmpty(a.user.name.toObject())
@@ -298,12 +319,12 @@ schema.beforeDelete = async function() {
 	
 	// Chose primary upper unit
 	const primaryUpperUnit = this.upperUnits[0]
-	if(!primaryUpperUnit) throw Error("Nie można usunąć units bez jednostek nadrzędnych")
+	if(!primaryUpperUnit) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
 
 	// Add all members to primary upper unit
 	for(const role of this.roles) {
 		// Skip adding if user already has a role in the primary upper unit
-		if(await role.user.hasRoleInUnits(f => f >= RoleType.SZEREGOWY, primaryUpperUnit)) continue
+		if(await primaryUpperUnit.hasMember(role.user)) continue
 		await primaryUpperUnit.addMember(role.user)
 	}
 	

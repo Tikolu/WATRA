@@ -1,9 +1,9 @@
 import html from "modules/html.js"
-import { RoleType, UnitType } from "modules/types.js"
+import Config from "modules/config.js"
 
 export default async function({user, targetUnit}) {
 	// Check for permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.ADD_SUBUNIT)
 	
 	// Get subUnits
 	const subUnitsTree = await Array.fromAsync(targetUnit.getSubUnitsTree())
@@ -12,11 +12,11 @@ export default async function({user, targetUnit}) {
 	const unitsForLinking = []
 	await user.populate("roles")
 	for(const role of user.roles) {
-		if(role.type < RoleType.DRUŻYNOWY) continue
 		await role.populate("unit")
+		if(!await user.checkPermission(role.unit.PERMISSIONS.EDIT)) continue
 		for await(const unit of role.unit.getSubUnitsTree()) {
-			// Skip units of higher type
-			if(unit.type >= targetUnit.type) continue
+			// Skip units of higher or equal rank
+			if(unit.config.rank >= targetUnit.config.rank) continue
 			// Skip units which already are subUnits
 			if(subUnitsTree.hasID(unit.id)) continue
 			if(unitsForLinking.hasID(unit.id)) continue
@@ -26,17 +26,19 @@ export default async function({user, targetUnit}) {
 		}
 	}
 
-	// Find units types for creating new subUnit
-	const subUnitsTypes = []
-	for(const [typeName, type] of Object.entries(UnitType)) {
-		if(type >= targetUnit.type) continue
-		subUnitsTypes.unshift({name: typeName, value: type})
-	}
-	
+	// Find unit types for creating new subUnit
+	const subUnitTypes = targetUnit.getSubUnitOptions()
+
+	// Find unique departments
+	const departmentOptions = subUnitTypes.unique("department", true).map(departmentID =>
+		({value: departmentID, name: Config.departments[departmentID]?.name})
+	)
+
 	return html("unit/addSubUnit", {
 		user,
 		targetUnit,
 		unitsForLinking,
-		subUnitsTypes
+		subUnitTypes,
+		departmentOptions
 	})
 }

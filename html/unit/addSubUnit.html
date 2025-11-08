@@ -16,10 +16,29 @@
 			autocomplete="off"
 			value=""
 		>
+
+		<label for="unit-department-select">Pion:</label>
+		<select id="unit-department-select" name="department">
+			<% for(const department of $.departmentOptions) { %>
+				<option
+					value="<%= department.value || "" %>"
+					<% if($.targetUnit.config.department == department.value) { %>
+						selected
+					<% } %>
+				><%= department.name || "(brak)" %></option>
+			<% } %>
+		</select>
+		
 		<label for="unit-type-select">Rodzaj:</label>
 		<select id="unit-type-select" name="type">
-			<% for(const type of $.subUnitsTypes) { %>
-				<option value="<%= type.value %>"><%= Text.capitalise(type.name) %></option>
+			<% for(const type of $.subUnitTypes) { %>
+				<option
+					value="<%= type.id %>"
+					data-department="<%= type.department || "" %>"
+					<% if($.targetUnit.config.department != type.department) { %>
+						hidden
+					<% } %>
+				><%= type.name %></option>
 			<% } %>
 		</select>
 	</form>

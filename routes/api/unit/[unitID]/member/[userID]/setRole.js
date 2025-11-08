@@ -1,13 +1,13 @@
 import HTTPError from "modules/server/error.js"
-import { RoleType } from "modules/types.js"
+import Config from "modules/config.js"
 
 export default async function({user, targetUnit, targetUser, roleType}) {
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY, "Brak dostępu do jednostki")
-	await user.requirePermission(targetUser.PERMISSIONS.MODIFY, "Brak dostępu do użytkownika")
+	await user.requirePermission(targetUnit.PERMISSIONS.SET_ROLE, "Brak dostępu do jednostki")
+	await user.requirePermission(targetUser.PERMISSIONS.EDIT, "Brak dostępu do użytkownika")
 
-	// User can only change their own role if they are a drużynowy in an upper unit
-	if(user.id == targetUser.id && !await user.hasRoleInUnits(RoleType.DRUŻYNOWY, targetUnit.getUpperUnitsTree())) {
+	// User can only set their own role if they have a "setRole" role in an upper unit
+	if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", targetUnit.getUpperUnitsTree())) {
 		throw new HTTPError(400, "Nie można zmienić własnej funkcji")
 	}
 

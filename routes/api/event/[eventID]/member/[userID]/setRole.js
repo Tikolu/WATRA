@@ -3,7 +3,7 @@ import HTTPError from "modules/server/error.js"
 export default async function({user, targetEvent, targetUser, roleType}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.MODIFY, "Brak dostępu do akji")
-	await user.requirePermission(targetUser.PERMISSIONS.MODIFY, "Brak dostępu do użytkownika")
+	await user.requirePermission(targetUser.PERMISSIONS.EDIT, "Brak dostępu do użytkownika")
 
 	// User cannot set their own role
 	if(user.id == targetUser.id) throw new HTTPError(400, "Nie można mianować samego siebie")

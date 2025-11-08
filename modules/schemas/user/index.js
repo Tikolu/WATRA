@@ -7,7 +7,7 @@ import Role from "modules/schemas/role.js"
 import Event from "modules/schemas/event.js"
 import Log from "modules/schemas/log.js"
 
-import { RoleType } from "modules/types.js"
+import Config from "modules/config.js"
 import HTTPError from "modules/server/error.js"
 
 import userMedical from "./medical.js"
@@ -42,9 +42,18 @@ export class UserClass {
 		type: Date,
 		min: MIN_DATE,
 		max: Date.now,
-		validate: function(value) {
-			if(this.isParent && this.age < 18) {
+		validate: async function(value) {
+			// Enforce parents to be adults
+			if(this.isParent && this.age < Config.adultAge) {
 				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
+			}
+
+			// Enforce role age restrictions
+			await this.populate("roles")
+			for(const role of this.roles) {
+				if(this.age < (role.config.minAge || 0) || this.age > (role.config.maxAge || Infinity)) {
+					throw Error(`Data urodzin nie jest komatybilna z funkcją "${role.config.name}"`)
+				}
 			}
 		}
 	}
@@ -133,6 +142,31 @@ export class UserClass {
 		return this.children.length > 0
 	}
 
+	/** List of required missing details */
+	get missingDetails() {
+		// Required for all users
+		const missingDetails = Array.conditional(
+			!this.name.first || !this.name.last, "name"
+		)
+
+		// Required for parent users
+		if(this.isParent) missingDetails.push(...Array.conditional(
+			!this.email || !this.phone, "contact"
+		))
+			
+		// Required for users with roles
+		if(this.roles.length > 0) missingDetails.push(...Array.conditional(
+			!this.dateOfBirth, "dob",
+			!this.medical.confirmed, "medical"
+		))
+
+		return missingDetails
+	}
+
+	/** True if user has no missing details */
+	get profileComplete() {
+		return this.missingDetails.length == 0
+	}
 
 	/* * Methods * */
 
@@ -164,7 +198,7 @@ export class UserClass {
 		}
 	}
 
-	/** Checks if the user has a role in any of the given units */
+	/** Checks if the user has a role with the given tag in any of the given units */
 	async hasRoleInUnits(requiredRole, ...units) {
 		for(const unit of units) {
 			if(unit instanceof Array || Symbol.asyncIterator in unit) {
@@ -173,23 +207,35 @@ export class UserClass {
 				}
 			} else {
 				const role = await this.getRoleInUnit(unit)
-				if(typeof requiredRole == "function") {
-					const checkResult = await requiredRole(role?.type)
+				if(!role) continue
+				else if(typeof requiredRole == "function") {
+					const checkResult = await requiredRole(role)
 					if(checkResult === true) return true
 				} else if(requiredRole instanceof Array) {
-					if(requiredRole.includes(role?.type)) return true
-				} else if(role?.type === requiredRole) return true
+					if(requiredRole.some(tag => role.hasTag(tag))) return true
+				} else if(role.hasTag(requiredRole)) return true
 			}
 		}
 		return false
 	}
 
 	/** Checks permission and returns the result. The result is cached for future calls */
-	async checkPermission(permission) {
+	async checkPermission(permission, fromCache=false) {
+		if(!(permission instanceof Function)) {
+			if(permission instanceof Object) {
+				for(const index in permission) {
+					await this.checkPermission(permission[index], fromCache)
+				}
+				return
+			} else {
+				throw Error(`Invalid permission "${permission}"`)
+			}
+		}
 		this.$locals.permissionCache ||= []
 		for(const cacheEntry of this.$locals.permissionCache) {
 			if(cacheEntry[0] == permission) return cacheEntry[1]
 		}
+		if(fromCache) return undefined
 		const permissionState = await permission(this)
 		this.$locals.permissionCache.push([permission, permissionState])
 		return permissionState
@@ -203,6 +249,9 @@ export class UserClass {
 
 	/** Returns the permission state from cache. Will throw an error if permission is not in cache */
 	hasPermission(permission) {
+		if(!(permission instanceof Function)) {
+			throw Error("Invalid permission")
+		}
 		this.$locals.permissionCache ||= []
 		for(const cacheEntry of this.$locals.permissionCache) {
 			if(cacheEntry[0] == permission) return cacheEntry[1]

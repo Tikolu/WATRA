@@ -207,7 +207,7 @@ export class EventClass extends UnitClass {
 				for(const unit of units) {
 					await unit.populate("roles")
 					for(const role of unit.roles) {
-						if(role.config.tags.includes("approveEvent")) continue
+						if(role.hasTag("approveEvent")) continue
 						await role.populate(
 							["user", "unit"],
 							{known: [unit]}
@@ -489,7 +489,7 @@ schema.beforeDelete = async function() {
 schema.permissions = {
 	async CREATE(user) {
 		await user.populate("roles")
-		return user.roles.some(r => r.config.tags.includes("createEvent"))
+		return user.roles.some(r => r.hasTag("createEvent"))
 	},
 	
 	async ACCESS(user) {

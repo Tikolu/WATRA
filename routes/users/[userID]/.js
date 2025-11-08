@@ -16,14 +16,8 @@ export default async function({user, targetUser}) {
 		}
 	})
 
-	// Check permissions
-	if(await user.checkPermission(targetUser.PERMISSIONS.MODIFY)) {
-		await user.checkPermission(targetUser.PERMISSIONS.DELETE)
-		await user.checkPermission(targetUser.PERMISSIONS.ADD_PARENT)
-	} else {
-		user.overridePermission(targetUser.PERMISSIONS.DELETE, false)
-		user.overridePermission(targetUser.PERMISSIONS.ADD_PARENT, false)
-	}
+	// Check all permissions
+	await user.checkPermission(targetUser.PERMISSIONS)
 	
 
 	return html("user/page", {user, targetUser})

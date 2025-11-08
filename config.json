@@ -1,0 +1,252 @@
+{
+	"name": "Związek Harcerstwa Polskiego",
+	"orgs": {
+		"orgHarcerzy": {
+			"name": "Organizacja Harcerzy"
+		},
+		"orgHarcerek": {
+			"name": "Organizacja Harcerek"
+		}
+	},
+	"adultAge": 18,
+	"departments": {
+		"skrzaty": {
+			"name": "Skrzaty"
+		},
+		"zuchy": {
+			"name": "Zuchy"
+		},
+		"harc": {
+			"name": "Harcerze"
+		},
+		"wędro": {
+			"name": "Wędrownicy"
+		}
+	},
+	"units": {
+		"okręg": {
+			"name": "Okręg",
+			"rank": 5,
+			"roles": [
+				"przewodniczącyZarząduOkręgu",
+				"członekZarząduOkręgu"
+			]
+		},
+		"chorągiew": {
+			"name": "Chorągiew",
+			"rank": 4,
+			"roles": [
+				"komendantChorągwi",
+				"referent",
+				"szeregowy"
+			]
+		},
+		"hufiec": {
+			"name": "Hufiec",
+			"rank": 3,
+			"roles": [
+				"hufcowy",
+				"referent",
+				"szeregowy"
+			]
+		},
+		"ośrodek": {
+			"name": "Ośrodek",
+			"rank": 2
+		},
+		"gromada": {
+			"name": "Gromada Zuchowa",
+			"department": "zuchy",
+			"rank": 1,
+			"roles": [
+				"drużynowy",
+				"przyboczny",
+				"kadra",
+				"zuch"
+			]
+		},
+		"drużynaHarc": {
+			"name": "Drużyna Harcerska",
+			"department": "harc",
+			"rank": 1,
+			"roles": [
+				"drużynowy",
+				"przyboczny",
+				"kadra",
+				"szeregowy"
+			]
+		},
+		"drużynaWędro": {
+			"name": "Drużyna Wędrownicza",
+			"department": "wędro",
+			"rank": 1,
+			"roles": [
+				"drużynowy",
+				"przyboczny",
+				"szeregowy"
+			]
+		},
+		"gromadka": {
+			"name": "Gromadka Skrzatowa",
+			"department": "skrzaty",
+			"rank": 0,
+			"roles": [
+				"drużynowy",
+				"przyboczny",
+				"skrzat"
+			]
+		},
+		"szóstka": {
+			"name": "Szóstka",
+			"department": "zuchy",
+			"rank": 0,
+			"roles": [
+				"szóstkowy",
+				"zuch"
+			]
+		},
+		"zastęp": {
+			"name": "Zastęp",
+			"department": "harc",
+			"rank": 0,
+			"roles": [
+				"zastępowy",
+				"podzastępowy",
+				"szeregowy"
+			]
+
+		},
+		"patrol": {
+			"name": "Patrol",
+			"department": "wędro",
+			"rank": 0,
+			"roles": [
+				"patrolowy",
+				"szeregowy"
+			]
+		}
+	},
+	"roles": {
+		"przewodniczącyZarząduOkręgu": {
+			"name": "Przewodniczący zarządu",
+			"rank": 2,
+			"limit": 1,
+			"minAge": 18,
+			"tags": [
+				"manageSubUnit",
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"createEvent",
+				"accessActivity"
+			]
+		},
+		"członekZarząduOkręgu": {
+			"name": "Członek zarządu",
+			"rank": 1,
+			"tags": [
+				"accessUser",
+				"manageUser",
+				"createEvent",
+				"accessActivity"
+			]
+		},
+
+		"komendantChorągwi": {
+			"name": "Komendant chorągwi",
+			"rank": 2,
+			"limit": 1,
+			"minAge": 18,
+			"tags": [
+				"manageSubUnit",
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"createEvent",
+				"accessActivity"
+			]
+		},
+		"referent": {
+			"name": "Referent",
+			"rank": 1,
+			"minAge": 18,
+			"tags": [
+				"accessUser",
+				"createEvent"
+			]
+		},
+
+		"hufcowy": {
+			"name": "Hufcowy",
+			"rank": 2,
+			"limit": 1,
+			"minAge": 18,
+			"tags": [
+				"manageSubUnit",
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"createEvent",
+				"accessActivity"
+			]
+		},
+
+		"drużynowy": {
+			"name": "Drużynowy",
+			"rank": 2,
+			"limit": 1,
+			"tags": [
+				"manageSubUnit",
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"createEvent",
+				"accessActivity"
+			]
+		},
+		"przyboczny": {
+			"name": "Przyboczny",
+			"rank": 1,
+			"tags": [
+				"accessUser"
+			]
+		},
+		"kadra": {
+			"name": "Kadra",
+			"rank": 1,
+			"tags": [
+				"accessUser"
+			]
+		},
+
+		"zastępowy": {
+			"name": "Zastępowy",
+			"rank": 2
+		},
+		"podzastępowy": {
+			"name": "Podzastępowy",
+			"rank": 2
+		},
+		"patrolowy": {
+			"name": "Patrolowy",
+			"rank": 2
+		},
+		"szóstkowy": {
+			"name": "Szóstkowy",
+			"rank": 2
+		},
+
+		"szeregowy": {
+			"name": "Szeregowy",
+			"rank": 0
+		},
+		"zuch": {
+			"name": "Zuch",
+			"rank": 0
+		},
+		"skrzat": {
+			"name": "Skrzat",
+			"rank": 0
+		}
+	}
+}

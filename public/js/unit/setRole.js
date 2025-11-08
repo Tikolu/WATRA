@@ -3,6 +3,8 @@ API.registerHandler("unit/[unitID]/member/[memberID]/setRole", {
 	progressText: "Mianowanie na funkcję...",
 	successText: "Zapisano",
 	validate: data => {		
+		console.log(data)
+		
 		if(!data.memberID) {
 			throw new Error("Nie wybrano użytkownika")
 		}
@@ -15,7 +17,6 @@ API.registerHandler("unit/[unitID]/member/[memberID]/setRole", {
 			successText: "Usunięto"
 		}
 
-		data.roleType = Number(data.roleType)
 		return true
 	}
 })

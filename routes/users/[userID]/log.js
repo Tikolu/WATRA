@@ -5,7 +5,7 @@ import Log from "modules/schemas/log.js"
 
 export default async function({user, targetUser}) {
 	// Check permissions
-	await user.requirePermission(targetUser.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUser.PERMISSIONS.ACCESS_ACTIVITY)
 
 	const logs = await Log.find({
 		$or: [

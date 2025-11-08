@@ -1,7 +1,7 @@
 import HTTPError from "modules/server/error.js"
 
 import Event from "modules/schemas/event.js"
-import { RoleType } from "modules/types.js"
+import Config from "modules/config.js"
 
 export default async function({user, name, startDate, endDate}) {
 	if(!user) throw new HTTPError(403)

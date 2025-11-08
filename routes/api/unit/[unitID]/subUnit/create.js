@@ -3,7 +3,7 @@ import Unit from "modules/schemas/unit";
 
 export default async function({user, targetUnit, type, name=""}) {
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.ADD_SUBUNIT)
 	
 	// Create unit, calculating type if not specified
 	const subUnit = new Unit({

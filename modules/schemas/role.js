@@ -1,14 +1,12 @@
 import mongoose from "mongoose"
-
-import { RoleType, RoleNames, EventRoleNames} from "modules/types.js"
+import Config from "modules/config.js"
 
 export class RoleClass {
 	/* * Properties * */
 
 	type = {
-		type: Number,
-		enum: Object.values(RoleType),
-		default: RoleType.SZEREGOWY
+		type: String,
+		enum: Object.keys(Config.roles)
 	}
 	user = {
 		type: String,
@@ -17,6 +15,7 @@ export class RoleClass {
 	unit = {
 		type: String,
 		ref: function() { return this.eventRole ? "Event" : "Unit" },
+		alias: "event"
 	}
 	eventRole = {
 		type: Boolean,
@@ -26,17 +25,26 @@ export class RoleClass {
 
 	/* * Getters * */
 
-	/** Returns the role type name. Will throw an error if the unit field is not populated */
+	/** Returns the role type object from config  */
+	get config() {
+		const config = Config.roles[this.type]
+		if(!config) throw new Error(`Invalid role type: ${this.type}`)
+		return config
+	}
+
+	/** Returns the role type name */
 	get displayName() {
-		let roleNames
-		if(this.eventRole) {
-			roleNames = EventRoleNames
-		} else {
-			if(!this.populated("unit") || !this.unit) return "role"
-			roleNames = RoleNames[this.unit.type]
+		return this.config.name || "(nieznana funkcja)"
+	}
+
+	/* Methods */
+
+	/** Checks if the role has the given tag in config */
+	hasTag(tag) {
+		if(!(tag in Config.tags)) {
+			throw new Error(`Unknown role tag "${tag}"`)
 		}
-				
-		return roleNames?.[this.type][0] || "(nieznana funkcja)"
+		return this.config.tags.includes(tag)
 	}
 }
 
