@@ -16,6 +16,7 @@ header {
 header #user-profile-link {
 	border-left: 1px solid var(--border);
 	padding-left: 0.5em;
+	margin-left: 0.5em;
 	text-decoration: none;
 }
 

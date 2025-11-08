@@ -338,7 +338,7 @@ async function refreshPageData() {
 			const elementIndex = [...oldDoc.children].filter(e => !e.classList.contains("removing")).indexOf(newChild)
 			if(elementIndex == newChildIndex) continue
 			console.log(elementIndex < 0 ? "Adding" : "Re-ordering", newChild, "to", oldDoc)
-			oldDoc.append(newChild)
+			oldDoc.insertBefore(newChild, oldDoc.children[newChildIndex] || null)
 
 			if(!newChild.matches(noAnimate) && elementIndex == -1) (async () => {
 				newChild.classList.add("adding")
@@ -660,6 +660,7 @@ function processAPIAttributes() {
 processAPIAttributes()
 window.afterDataRefresh.push(processAPIAttributes)
 
+let urlDialogs = []
 function createURLDialog(url, open=false) {
 	let iframe, dialog = document.querySelector(`dialog.frame[data-url="${url}"]`)
 
@@ -687,11 +688,7 @@ function createURLDialog(url, open=false) {
 		
 		document.body.append(dialog)
 
-		// Remove dialog after data refresh
-		window.afterDataRefresh.unshift(() => {
-			if(dialog.open) return
-			dialog.remove()
-		})
+		urlDialogs.push(dialog)
 	}
 
 	iframe.onload = async () => {
@@ -715,6 +712,13 @@ function createURLDialog(url, open=false) {
 
 // "opens-dialog" attribute
 function processDialogOpeners() {
+	// Remove all URL dialogs
+	urlDialogs = urlDialogs.filter(dialog => {
+		if(dialog.open) return true
+		dialog.remove()
+		return false
+	})
+	
 	for(const opener of window.dialogOpeners || []) {
 		if(opener.removeDialogOpener) opener.removeDialogOpener()
 	}

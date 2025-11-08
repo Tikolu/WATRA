@@ -176,6 +176,8 @@ function constructNavPath() {
 	homeLink.insertAdjacentHTML("afterend", pathHTML)
 }
 constructNavPath()
+// Scroll to end of nav
+document.querySelector("nav a:last-child").scrollIntoViewIfNeeded?.()
 window.afterDataRefresh.push(constructNavPath)
 
 if(!META.error) {
