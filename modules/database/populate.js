@@ -1,7 +1,10 @@
 import mongoose from "mongoose"
+import { Logger } from "modules/logger.js";
+
+const logger = new Logger("Populate", 32)
 
 function createFakeDocument(model, id, placeholder=true) {
-	console.log(`\x1b[32m[MongoDB]\x1b[0m Creating fake ${model.modelName} ${id}`)
+	logger.log(`Creating fake ${model.modelName} ${id}`)
 	const newDocument = new model({
 		_id: id
 	})
@@ -115,7 +118,7 @@ class PopulationContext {
 
 
 export async function populate(graph, options={}) {
-	if(options.log) console.log(`\n\n\n\x1b[32m[MongoDB]\x1b[0m Populating ${Array.isArray(this) ? "array" : (this.constructor.modelName + " " + this.id)}`)
+	if(options.log) logger.log(`\n\n\n Populating ${Array.isArray(this) ? "array" : (this.constructor.modelName + " " + this.id)}`)
 	options.known = [...(options.known || [])]
 	options.known.push(this)
 

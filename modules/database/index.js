@@ -2,8 +2,11 @@ import mongoose from "mongoose"
 
 import shortID from "modules/database/shortID.js"
 import { populate, isPopulated } from "modules/database/populate.js"
+import { Logger } from "modules/logger.js";
 
 const MONGO_URI = "mongodb://localhost:27017"
+
+const logger = new Logger("MongoDB", 32)
 
 // Helper functions to simplify IDs and arrays of IDs
 String.prototype.__defineGetter__("id", function() {
@@ -63,7 +66,7 @@ mongoose.plugin(schema => {
 			}
 			for(const document of documents) {
 				document.$locals.disabledListeners ||= {}
-				console.log(`\x1b[32m[MongoDB]\x1b[0m Calling ${callbackName} for ${document.constructor.modelName} ${document.id}`)
+				logger.log(`Calling ${callbackName} for ${document.constructor.modelName} ${document.id}`)
 				if(document.$locals.disabledListeners[callbackName]) continue
 				document.$locals.disabledListeners[callbackName] = true
 				await schema[callbackName].call(document)
@@ -155,7 +158,7 @@ mongoose.plugin(schema => schema.methods.refresh = async function() {
 	const newDocument = await this.constructor.findById(this.id)
 	if(!newDocument) throw Error(`Document ${this.constructor.modelName} ${this.id} not found`)
 	Object.assign(this, newDocument.toObject())
-	console.log("\x1b[32m[MongoDB]\x1b[0m Refreshed document", this)
+	logger.log("Refreshed document", this)
 })
 
 // Delete function (alias of deleteOne)
@@ -166,45 +169,29 @@ mongoose.plugin(schema => schema.methods.delete = async function() {
 
 // Establish connection to database
 export async function connect(dbName="main") {
-	console.log("\x1b[32m[MongoDB]\x1b[0m Connecting...")
+	logger.log("Connecting...")
 	try {
 		await mongoose.connect(MONGO_URI, { dbName })
 		
-		console.log("\x1b[32m[MongoDB]\x1b[0m Connected!")
+		logger.log("Connected!")
 
 		// Initialise all schemas
-		await import("modules/schemas/event.js")
-		await import("modules/schemas/role.js")
-		await import("modules/schemas/unit")
-		await import("modules/schemas/user")
+		// await import("modules/schemas/event.js")
+		// await import("modules/schemas/role.js")
+		// await import("modules/schemas/unit")
+		// await import("modules/schemas/user")
 
 		return true
 		
 	} catch(error) {
-		console.log("\x1b[32m[MongoDB]\x1b[0m Error:", error.message)
+		logger.log("Error:", error.message)
 		throw error
 	}
 }
 
-export async function setup() {
-	const {default: User} = await import("modules/schemas/user")
-	const {default: Unit} = await import("modules/schemas/unit")
-
-	const user = await User.findOne()
-	const unit = await Unit.findOne()
-
-	if(!user && !unit) {
-		const newUser = new User()
-		const newUnit = new Unit({
-			type: "okręg"
-		})
-
-		await newUnit.setRole(newUser, "przewodniczącyZarząduOkręgu")
-		console.log("Test user access code:", await newUser.generateAccessCode())
-	}
-}
-
 export async function clear() {
-	console.log("\x1b[32m[MongoDB]\x1b[0m Clearing database...")
+	logger.log("Clearing database...")
 	await mongoose.connection.dropDatabase()
 }
+
+export const setup = await import("./setup.js")

@@ -1,11 +1,13 @@
 import mime from "npm:mime"
 import { join as joinPath } from "node:path"
 
-
 import ServerRequest from "modules/server/request.js"
 import ServerResponse from "modules/server/response.js"
 
 import findRoute from "modules/server/route.js"
+import { Logger } from "modules/logger.js"
+
+const logger = new Logger("Server", 34)
 
 async function handlePublicFile(url, response) {
 	url = joinPath("public", url)
@@ -69,7 +71,7 @@ export function start({host, port, dev=false, beforeRequest}) {
 		port,
 		signal: controller.signal,
 		onListen({port}) {
-			console.log(`\x1b[34m[Server]\x1b[0m  Started on port ${port}`)
+			logger.log(` Started on port ${port}`)
 		},
 	}, beforeRequest ?
 		async req => {

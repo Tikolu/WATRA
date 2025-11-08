@@ -8,6 +8,7 @@ globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
 import * as server from "modules/server"
 import * as cli from "jsr:@std/cli"
 import "modules/util.js"
+import { Logger } from "modules/logger.js"
 
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
@@ -28,7 +29,9 @@ const databaseSetupPromise = (async () => {
 		Deno.exit()
 	}
 
-	await database.setup()
+	if(await database.setup.required()) {
+		await database.setup.start()
+	}
 })()
 
 
@@ -43,8 +46,9 @@ server.start({
 })
 
 // Handle errors in async functions used without await
+const logger = new Logger("Critical", 91)
 globalThis.addEventListener("unhandledrejection", event => {
 	event.preventDefault()
-	console.log("\n\x1b[91m[Critical]\x1b[0m UNHANDLED REJECTION!")
+	logger.log("UNHANDLED REJECTION!")
 	console.error(event.reason)
 })

@@ -1,0 +1,8 @@
+{
+	"type": "okręg",
+	"users": [
+		{
+			"generateAccessCode": true
+		}
+	]
+}
