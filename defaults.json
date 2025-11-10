@@ -1,8 +1,10 @@
 {
-	"type": "okręg",
-	"users": [
-		{
-			"generateAccessCode": true
-		}
-	]
+	"unit": {
+		"type": "okręg",
+		"users": [
+			{
+				"generateAccessCode": true
+			}
+		]
+	}
 }
