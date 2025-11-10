@@ -185,7 +185,7 @@ export async function populate(graph, options={}) {
 				let results = []
 				if(queryIDs.length) {
 					if(options.log) console.log("Requesting", ref, "from DB:", queryIDs)
-					results = await model.find({_id: queryIDs})
+					results = await model.find({_id: queryIDs}, options.select)
 				}
 				for(const id of queryIDs) {
 					if(!results.some(r => r?.id == id)) {
