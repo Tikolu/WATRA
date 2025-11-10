@@ -1,5 +1,8 @@
 <% layout("/layouts/dialog", {
-	scripts: ["event/create"]
+	scripts: ["unit/createEvent"],
+	meta: {
+		unitID: $.targetUnit.id
+	}
 }) %>
 <h1>Utwórz akcję</h1>
 <main>
@@ -30,7 +33,7 @@
 		<i>arrow_back</i>
 		Anuluj
 	</button>
-	<button api="event/create">
+	<button api="unit/[unitID]/event/create">
 		<i>check</i>
 		Utwórz
 	</button>

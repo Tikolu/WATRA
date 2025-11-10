@@ -2,7 +2,7 @@ import html from "modules/html.js"
 
 export default async function({user, targetEvent}) {
 	// Check for permissions
-	await user.requirePermission(targetEvent.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
 	
 	// Get list of possible users which can have a role assigned
 	const usersForAssignment = []

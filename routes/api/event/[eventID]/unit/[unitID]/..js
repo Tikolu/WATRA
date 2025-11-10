@@ -3,7 +3,7 @@ import Unit from "modules/schemas/unit"
 
 export async function open({user, targetEvent, unitID}) {
 	// Check permissions
-	await user.requirePermission(targetEvent.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
 	
 	// Get unit from DB, and check if exists
 	const targetUnit = await Unit.findById(unitID)

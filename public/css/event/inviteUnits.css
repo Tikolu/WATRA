@@ -1,7 +1,23 @@
-.unit:has(> details[open]) {
-	grid-column: 1 / -1;
+main {
+	height: 20em;
 }
 
-.unit > details {
+details summary {
+	text-decoration: none;
+}
+
+.unit-details {
+	padding-left: 1em;
+	margin-left: 0.3em;
+	border-left: 1px solid var(--border);
+	margin-bottom: 0.5em;
+}
+
+div + .subunit-list {
 	margin-top: 0.5em;
+}
+
+.unit-details p {
+	margin-top: 0;
+	margin-bottom: 0.5em;
 }

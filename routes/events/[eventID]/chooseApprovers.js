@@ -2,7 +2,7 @@ import html from "modules/html.js"
 
 export default async function({user, targetEvent}) {
 	// Check permissions
-	await user.requirePermission(targetEvent.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
 	
 	// Find approver candidates
 	const approverOptions = await targetEvent.findApproverCandidates()

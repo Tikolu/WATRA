@@ -38,6 +38,12 @@ export class UnitClass {
 			ref: "Unit"
 		}
 	]
+	events = [
+		{
+			type: String,
+			ref: "Event"
+		}
+	]
 	eventInvites = [
 		{
 			type: String,
@@ -305,6 +311,17 @@ export class UnitClass {
 				yield member
 			}
 		}
+	}
+
+	/* Counts the amount of members */
+	countMembers(recursive=false) {
+		let count = this.roles.length
+		if(recursive) {
+			for(const subUnit of this.subUnits) {
+				count += subUnit.countMembers(true)
+			}
+		}
+		return count
 	}
 }
 

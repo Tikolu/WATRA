@@ -1,5 +1,4 @@
 import html from "modules/html.js"
-import Event from "modules/schemas/event.js"
 
 export default async function({user}) {
 	if(!user) return this.response.redirect("/login")
@@ -16,7 +15,6 @@ export default async function({user}) {
 	})
 
 	// Check permissions
-	await user.checkPermission(Event.PERMISSIONS.CREATE)
 	await user.checkPermission(user.PERMISSIONS.EDIT)
 	await user.checkPermission(user.PERMISSIONS.APPROVE)
 

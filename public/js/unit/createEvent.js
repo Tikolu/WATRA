@@ -1,4 +1,4 @@
-API.registerHandler("event/create", {
+API.registerHandler("unit/[unitID]/event/create", {
 	form: "event-details",
 	progressText: "Tworzenie akcji...",
 	after: response => {

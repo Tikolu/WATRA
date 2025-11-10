@@ -7,7 +7,7 @@
 	}
 }) %>
 <h1 id="event-title">
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<input
 			type="text"
 			name="name"
@@ -21,7 +21,7 @@
 		<%= $.targetEvent.displayName %>
 	<% } %>
 </h1>
-<p id="event-type"><%= $.targetEvent.typeName %></p>
+<p>(akcja w <%~ include("/templates/linkList", $.targetEvent.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
 
 <hr>
 <h2>
@@ -36,20 +36,26 @@
 	id="event-description-input"
 	api="event/[eventID]/update/description"
 	name="description"
-	<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+	<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		disabled
 	<% } %>
 ><%= $.targetEvent.description || "" %></textarea>
 
 <section>
-	<% if($.targetEvent.dates.start || $.targetEvent.dates.end || $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+	<% if($.targetEvent.dates.start || $.targetEvent.dates.end || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<div>
 			<h3>
 				<i>calendar_today</i>
-				Daty
+				<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.length == 0) { %>
+					Data
+				<% } else { %>
+					Daty
+				<% } %>
 			</h3>
 			<form id="event-dates">
-				<label for="event-start-date-input">Od:</label>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.length > 0) { %>
+					<label for="event-start-date-input">Od:</label>
+				<% } %>
 				<input
 					type="date"
 					id="event-start-date-input"
@@ -60,30 +66,32 @@
 					<% } %>
 					api="event/[eventID]/update/dates"
 					name="startDate"
-					<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+					<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 						disabled
 					<%- } %>
 				>
 
-				<label for="event-end-date-input">Do:</label>
-				<input
-					type="date"
-					id="event-end-date-input"
-					min="<%= MIN_DATE %>"
-					max="<%= MAX_DATE %>"
-					<% if($.targetEvent.dates.end) { %>
-						value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd") %>"
-					<% } %>
-					api="event/[eventID]/update/dates"
-					name="endDate"
-					<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
-						disabled
-					<%- } %>
-				>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.length > 0) { %>
+					<label for="event-end-date-input">Do:</label>
+					<input
+						type="date"
+						id="event-end-date-input"
+						min="<%= MIN_DATE %>"
+						max="<%= MAX_DATE %>"
+						<% if($.targetEvent.dates.end) { %>
+							value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd") %>"
+						<% } %>
+						api="event/[eventID]/update/dates"
+						name="endDate"
+						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+							disabled
+						<%- } %>
+					>
+				<% } %>
 			</form>
 		</div>
 	<% } %>
-	<% if($.targetEvent.location || $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+	<% if($.targetEvent.location || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<div>
 			<h3>
 				<i>distance</i>
@@ -98,7 +106,7 @@
 					api="event/[eventID]/update/location"
 					name="location"
 					placeholder="(brak lokalizacji)"
-					<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+					<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 						disabled
 					<% } %>
 				>
@@ -107,7 +115,7 @@
 	<% } %>
 </section>
 
-<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 	<br>
 	<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
 		<i>delete</i>
@@ -130,7 +138,7 @@
 <% } %>
 
 <% if($.user.hasPermission($.targetEvent.PERMISSIONS.PARTICIPANT_ACCESS)) { %>
-	<% if($.targetEvent.roles?.length > 0 || $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+	<% if($.targetEvent.roles?.length > 0 || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<hr>
 		<h2>
 			<i>article_person</i>
@@ -139,7 +147,7 @@
 		<div id="event-member-list" class="unit-grid">
 			<% for(const role of $.targetEvent.roles || []) { %>
 				<%
-					if(role.type === RoleType.SZEREGOWY && $.targetEvent.findUserInvite(role.user)) continue
+					if(role.config.rank <= 0 && $.targetEvent.findUserInvite(role.user)) continue
 					const md = role.user.missingDetails
 				%>
 				<%~ include("/user/templates/userEntry", {
@@ -154,7 +162,7 @@
 				}) %>
 			<% } %>
 		</div>
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/setRole">
 				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
@@ -165,35 +173,35 @@
 
 <% if(
 	$.targetEvent.invitedUnits.length > 0 ||
-	$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY) ||
-	$.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MODIFY))
+	$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
+	$.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MANAGE_INVITES))
 ) { %>
 	<hr>
 	<h2>
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			Uczestnicy
 		<% } else { %>
 			Zaproszone jednostki
 		<% } %>
 	</h2>
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
-		<button href="/events/<%= $.targetEvent.id %>/inviteUnits" class="add-user-button">
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteUnits">
 			<i>person_add</i>
 			<span>Zaproś jednostki</span>
 		</button>
 	<% } %>
 	<% for(const unitInvite of $.targetEvent.invitedUnits || []) { %>
 		<%
-			if(unitInvite.state == "declined" && !$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) continue
+			if(unitInvite.state == "declined" && !$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) continue
 			if(
 				unitInvite.state == "pending" &&
-				!$.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY) &&
-				!$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)
+				!$.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES) &&
+				!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)
 			) continue
 		%>
 		<div class="section-unit">
 			<h3><%= unitInvite.unit.displayName %></h3>
-			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 				<p>
 					<% if(unitInvite.state == "accepted") { %>
 						Zaakceptowano zaproszenie <i>check</i>
@@ -209,17 +217,17 @@
 						<span>Cofnij zaproszenie</span>
 					</button>
 				<% } %>
-				<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY) && unitInvite.state != "declined") { %>
+				<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && unitInvite.state != "declined") { %>
 					<hr>
 				<% } %>
 			<% } %>
-			<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY)) { %>
+			<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
 				<% if(unitInvite.state == "accepted") { %>
-					<p>Zaproszeni uczestnicy: <%= unitInvite.invitedUsers.length %></p>
+					<p>Dodani uczestnicy: <%= unitInvite.invitedParticipants.length %></p>
 					<div class="button-row">
 						<button opens-dialog="/events/<%= $.targetEvent.id %>/chooseParticipants?unit=<%= unitInvite.unit.id %>">
 							<i>group_add</i>
-							<% if(unitInvite.invitedUsers.length > 0) { %>
+							<% if(unitInvite.invitedParticipants.length > 0) { %>
 								<span>Edytuj uczestników</span>
 							<% } else { %>
 								<span>Dodaj uczestników</span>
@@ -241,14 +249,14 @@
 				<% } %>
 			<% } %>
 			<% if(
-				unitInvite.invitedUsers.length &&
+				unitInvite.invitedParticipants.length &&
 				(
-					$.user.hasPermission(unitInvite.unit.PERMISSIONS.MODIFY) || 
-					$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)
+					$.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES) || 
+					$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)
 				)
 			) { %>
 				<div class="unit-grid">
-					<% for(const userInvite of unitInvite.invitedUsers) { %>
+					<% for(const userInvite of unitInvite.invitedParticipants) { %>
 						<%
 							let content = ""
 							if(userInvite.state == "accepted") {
@@ -300,7 +308,7 @@
 <% } %>
 
 <% if(
-	$.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY) ||
+	$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
 	$.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE)
 ) { %>
 	<hr>
@@ -310,18 +318,16 @@
 	<% } else { %>
 		<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
 	<% } %>
-	<% if($.targetEvent.approvers.length == 0 && $.user.hasPermission($.targetEvent.PERMISSIONS.MODIFY)) { %>
-		<% if($.targetEvent.invitedUnits.filter(i => i.state == "accepted").length == 0) { %>
-			<p>Proces zatwierdzenia akcji można rozpocząć po zaakceptowaniu zaproszenia przez przynajmniej jedną jednostkę</p>
-		<% } else { %>
-			<p>Wybierz zatwierdzających aby rozpocząć</p>
-			<button opens-dialog="/events/<%= $.targetEvent.id %>/chooseApprovers"><i>person_check</i>Wybierz zatwierdzających</button>
-		<% } %>
+	<% if($.targetEvent.approvers.length == 0) { %>
+		<p class="warning">
+			<i>warning</i>
+			Brak kandydatów na zatwierdzających
+		</p>
 	<% } %>
-	<% for(const approver of $.targetEvent.approvers) { %>
+	<% for(const approver of $.targetEvent.approvers || []) { %>
 		<div class="section-unit approval-block">
 			<h3><%= approver.role.user.displayName %></h3>
-			<p><%= Text.capitalise(approver.role.displayName) %>, <%= approver.role.unit.displayName %></p>
+			<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
 			<% if(approver.approved) { %>
 				<p>
 					Zatwierdzono <i>check</i><br>

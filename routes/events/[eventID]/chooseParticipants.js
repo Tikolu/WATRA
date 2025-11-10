@@ -9,7 +9,7 @@ export default async function({user, targetEvent, unit: unitID}) {
 	if(!targetUnit) throw new HTTPError(404, "Jednostka nie istnieje")
 
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.MANAGE_INVITES)
 	
 	// Check unit invitation state
 	const targetInvitation = targetEvent.invitedUnits.id(targetUnit.id)
@@ -19,17 +19,13 @@ export default async function({user, targetEvent, unit: unitID}) {
 	this.addRouteData({targetUnit, targetInvitation})
 	
 	const availableMembers = await Array.fromAsync(targetUnit.getSubMembers())
+	const subUnits = await targetUnit.getSubUnitsTree()
 
-	// Get list of event funkcyjni
-	await targetEvent.populate("roles")
-	const eventFunkcyjni = targetEvent.roles.map(f => f.user.id)
-	
 	return html("event/setParticipants", {
 		user,
 		targetUnit,
 		targetEvent,
 		targetInvitation,
-		availableMembers,
-		eventFunkcyjni
+		availableMembers
 	})
 }

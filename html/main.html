@@ -55,7 +55,7 @@
 	</h2>
 	<div class="unit-grid">
 		<% for(const child of $.user.children) { %>
-			<% const md = $.user.missingDetails %>
+			<% const md = child.missingDetails %>
 			<%~ include("user/templates/userEntry", {
 				targetUser: child,
 				warnings: Array.conditional(
@@ -68,7 +68,7 @@
 		<% } %>
 	</div>
 <% } %>
-<% if($.events.length || $.user.hasPermission(Event.PERMISSIONS.CREATE)) { %>
+<% if($.events.length) { %>
 	<hr>
 	<h2>
 		<i>hiking</i>
@@ -91,10 +91,4 @@
 			}) %>
 		<% } %>
 	</div>
-	<% if($.user.hasPermission(Event.PERMISSIONS.CREATE)) { %>
-		<button id="create-event-button" opens-dialog="/events/create">
-			<i>tour</i>
-			<span>Utwórz akcję</span>
-		</button>
-	<% } %>
 <% } %>

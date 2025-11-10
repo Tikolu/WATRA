@@ -4,14 +4,13 @@ import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
 
 import Config from "modules/config.js"
-import Event from "modules/schemas/event.js"
+import Event from "modules/schemas/event"
 
 const etaImports = {
 	Base64,
 	Text,
 	datetime,
-	Config,
-	Event
+	Config
 }
 
 const eta = new Eta({

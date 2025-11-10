@@ -4,7 +4,7 @@ import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
 import Role from "modules/schemas/role.js"
-import Event from "modules/schemas/event.js"
+import Event from "modules/schemas/event"
 import Log from "modules/schemas/log.js"
 
 import Config from "modules/config.js"

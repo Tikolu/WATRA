@@ -1,9 +1,9 @@
 import HTTPError from "modules/server/error.js"
-import Event from "modules/schemas/event.js";
+import Event from "modules/schemas/event";
 
 export async function open({user, targetUnit, eventID}) {
 	// Check permissions
-	await user.requirePermission(targetUnit.PERMISSIONS.MODIFY)
+	await user.requirePermission(targetUnit.PERMISSIONS.MANAGE_INVITES)
 	
 	// Get event from DB, and check if exists
 	const targetEvent = await Event.findById(eventID)

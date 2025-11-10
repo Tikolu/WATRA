@@ -30,7 +30,12 @@
 			"roles": [
 				"przewodniczącyZarząduOkręgu",
 				"członekZarząduOkręgu"
-			]
+			],
+			"eventRules": {
+				"create": false,
+				"invite": false,
+				"link": false
+			}
 		},
 		"chorągiew": {
 			"name": "Chorągiew",
@@ -39,7 +44,12 @@
 				"komendantChorągwi",
 				"referent",
 				"szeregowy"
-			]
+			],
+			"eventRules": {
+				"create": true,
+				"invite": false,
+				"link": true
+			}
 		},
 		"hufiec": {
 			"name": "Hufiec",
@@ -48,11 +58,21 @@
 				"hufcowy",
 				"referent",
 				"szeregowy"
-			]
+			],
+			"eventRules": {
+				"create": true,
+				"invite": false,
+				"link": true
+			}
 		},
 		"ośrodek": {
 			"name": "Ośrodek",
-			"rank": 2
+			"rank": 2,
+			"eventRules": {
+				"create": false,
+				"invite": false,
+				"link": false	
+			}
 		},
 		"gromada": {
 			"name": "Gromada Zuchowa",
@@ -114,7 +134,6 @@
 				"podzastępowy",
 				"szeregowy"
 			]
-
 		},
 		"patrol": {
 			"name": "Patrol",
@@ -126,6 +145,19 @@
 			]
 		}
 	},
+
+	"event": {
+		"roles": [
+			"komendant",
+			"opiekunAkcji",
+			"uczestnik"
+		],
+		"topUnitTypes": [
+			"ośrodek"
+		],
+		"approvalsRequired": 2
+	},
+	
 	"roles": {
 		"przewodniczącyZarząduOkręgu": {
 			"name": "Przewodniczący zarządu",
@@ -137,7 +169,8 @@
 				"setRole",
 				"accessUser",
 				"manageUser",
-				"createEvent",
+				"manageEvent",
+				"manageEventInvite",
 				"accessActivity"
 			]
 		},
@@ -147,7 +180,8 @@
 			"tags": [
 				"accessUser",
 				"manageUser",
-				"createEvent",
+				"manageEvent",
+				"manageEventInvite",
 				"accessActivity"
 			]
 		},
@@ -162,7 +196,9 @@
 				"setRole",
 				"accessUser",
 				"manageUser",
-				"createEvent",
+				"manageEvent",
+				"manageEventInvite",
+				"approveEvent",
 				"accessActivity"
 			]
 		},
@@ -172,7 +208,8 @@
 			"minAge": 18,
 			"tags": [
 				"accessUser",
-				"createEvent"
+				"manageEvent",
+				"manageEventInvite"
 			]
 		},
 
@@ -186,7 +223,9 @@
 				"setRole",
 				"accessUser",
 				"manageUser",
-				"createEvent",
+				"manageEvent",
+				"manageEventInvite",
+				"approveEvent",
 				"accessActivity"
 			]
 		},
@@ -200,7 +239,8 @@
 				"setRole",
 				"accessUser",
 				"manageUser",
-				"createEvent",
+				"manageEvent",
+				"manageEventInvite",
 				"accessActivity"
 			]
 		},
@@ -246,6 +286,28 @@
 		},
 		"skrzat": {
 			"name": "Skrzat",
+			"rank": 0
+		},
+
+		"komendant": {
+			"name": "Komendant",
+			"rank": 2,
+			"tags": [
+				"manageEvent",
+				"setRole",
+				"accessUser"
+			]
+		},
+		"opiekunAkcji": {
+			"name": "Opiekun",
+			"minAge": 18,
+			"rank": 1,
+			"tags": [
+				"accessUser"
+			]
+		},
+		"uczestnik": {
+			"name": "Uczestnik",
 			"rank": 0
 		}
 	}

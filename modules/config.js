@@ -16,10 +16,13 @@ config.tags = {
 	"accessUser": {},
 	"manageUser": {},
 	"deleteUser": {},
-	
-	"createEvent": {},
+
+	"manageEvent": {},
 	"accessActivity": {},
-	"manageInvites": {}
+	"manageEventInvite": {},
+	"approveEvent": {},
+
+	"cannotApproveEvent": {}
 }
 
 // Process roles
@@ -67,7 +70,23 @@ for(const unitID in config.units) {
 	if(unit.defaultRole && !unit.roles.includes(unit.defaultRole)) {
 		throw new ConfigError(`Unit "${unitID}" has invalid defaultRole "${unit.defaultRole}"`)
 	}
+
+	// Default eventRules
+	unit.eventRules ||= {
+		create: true,
+		invite: true,
+		link: true
+	}
 }
+
+
+// Process event config
+if(!config.event) {
+	throw new ConfigError("Missing event config")
+}
+config.event.roles ||= []
+config.event.topUnitTypes ||= Object.keys(config.units)[0]
+
 
 // console.log(config)
 export default config

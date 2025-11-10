@@ -2,7 +2,7 @@ import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetEvent, targetUser, roleType}) {
 	// Check permissions
-	await user.requirePermission(targetEvent.PERMISSIONS.MODIFY, "Brak dostępu do akji")
+	await user.requirePermission(targetEvent.PERMISSIONS.EDIT, "Brak dostępu do akji")
 	await user.requirePermission(targetUser.PERMISSIONS.EDIT, "Brak dostępu do użytkownika")
 
 	// User cannot set their own role

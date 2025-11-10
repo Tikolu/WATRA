@@ -1,5 +1,5 @@
 import HTTPError from "modules/server/error.js"
-import Event from "modules/schemas/event.js"
+import Event from "modules/schemas/event"
 
 export async function open({user, targetUnit, eventID}) {
 	// Check permissions

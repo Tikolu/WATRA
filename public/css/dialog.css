@@ -2,6 +2,10 @@
 	--border-color: var(--secondary-border)
 }
 
+html {
+	height: 100%;
+}
+
 body {
 	display: flex;
 	flex-direction: column;
@@ -19,11 +23,13 @@ body h2 {
 	font-size: 1.25em;
 }
 
-body > .button-row:last-child button:first-child{
+body > .button-row:last-child button:first-child:not(.confirm) {
 	margin-right: auto;
 }
 
 main {
+	overflow: auto;
+	max-height: 100%;
 	max-width: none;
 	margin: 0;
 }

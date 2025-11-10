@@ -11,11 +11,16 @@
 	<% if($.targetInvitation.user.id != $.user.id) { %>
 		<p><%= $.targetInvitation.user.displayName %></p>
 	<% } %>
+	<% let canParticipate = true %>
 	<% if(!$.targetInvitation.user.profileComplete) { %>
-		<p class="warning"><i>warning</i> Uzupełnij wszystkie dane na profilu uczestnika, aby móc potwierdzić jego udział w akcji.</p>
-	<% } else if($.targetInvitation.user.parents.length > 0 && $.targetInvitation.user.parents.every(p => !p.profileComplete)) { %>
-		<p class="warning"><i>warning</i> Uzupełnij wszystkie dane na profilu rodzica uczestnika, aby móc potwierdzić jego udział w akcji.</p>
-	<% } else { %>
+		<% canParticipate = false %>
+		<p class="warning"><i>warning</i> Uzupełnij dane na profilu uczestnika, aby móc potwierdzić udział w akcji.</p>
+	<% } %>
+	<% if($.targetInvitation.user.parents.length > 0 && $.targetInvitation.user.parents.every(p => !p.profileComplete)) { %>
+		<% canParticipate = false %>
+		<p class="warning"><i>warning</i> Uzupełnij dane na profilu rodzica uczestnika, aby móc potwierdzić udział w akcji.</p>
+	<% } %>
+	<% if(canParticipate) { %>
 		<form id="event-participation">
 			<input type="radio" name="participation" id="participation-choice-yes" value="yes"
 				<%= $.targetInvitation.state == "accepted" ? "checked" : "" %>
@@ -44,6 +49,10 @@
 			<input type="checkbox" disabled>
 			<label for="signature">Podpis</label>
 		</form>
+		<button class="confirm" api="event/[eventID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
+			<i>check</i>
+			<span>Potwierdź</span>
+		</button>
 	<% } %>
 </main>
 <div class="button-row">
@@ -51,10 +60,4 @@
 		<i>arrow_back</i>
 		<span>Anuluj</span>
 	</button>
-	<% if(!$.eligibilityIssues.length) { %>
-		<button api="event/[eventID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
-			<i>check</i>
-			<span>Potwierdź</span>
-		</button>
-	<% } %>
 </div>

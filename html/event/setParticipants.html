@@ -1,5 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["event/setParticipants"],
+	styles: ["event/setParticipants"],
 	meta: {
 		unitID: $.targetUnit.id,
 		eventID: $.targetEvent.id
@@ -11,25 +12,35 @@
 		<input type="checkbox" id="choose-all">
 		<label for="choose-all">Wybierz wszystkich</label>
 	</form>
-	<form id="member-list">
-		<% for(const member of $.availableMembers) { %>
-			<% const eventParticipant = $.targetInvitation.invitedUsers.find(p => p.user == member.id) %>
-			<input
-				type="checkbox"
-				id="member-<%= member.id %>"
-				name="participants"
-				value="<%= member.id %>"
-				<% if(eventParticipant) { %>
-					checked
-				<% } else if($.eventFunkcyjni.includes(member.id)) { %>
-					disabled
-				<% } %>
-			>
-			<label for="member-<%= member.id %>">
-				<%= member.displayName %>
-			</label>
+	<hr>
+	<% function displayUnit(unit) { %>
+		<% if(unit.id != $.targetUnit.id) { %>
+			<h3><%= unit.displayName %></h3>
 		<% } %>
-	</form>
+		<form>
+			<% for(const {user: member} of unit.roles) { %>
+				<% const eventParticipant = $.targetEvent.findUserInvite(member) %>
+				<input
+					type="checkbox"
+					id="member-<%= member.id %>"
+					name="participants"
+					value="<%= member.id %>"
+					<% if(eventParticipant && eventParticipant.originUnit == $.targetUnit.id) { %>
+						checked
+					<% } else if(eventParticipant) { %>
+						disabled
+					<% } %>
+				>
+				<label for="member-<%= member.id %>">
+					<%= member.displayName %>
+				</label>
+			<% } %>
+			<% for(const subUnit of unit.subUnits) { %>
+				<% displayUnit(subUnit) %>
+			<% } %>
+		</form>
+	<% } %>
+	<% displayUnit($.targetUnit) %>
 </main>
 <hr>
 <div class="warning">

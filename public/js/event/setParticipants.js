@@ -1,5 +1,5 @@
 API.registerHandler("unit/[unitID]/event/[eventID]/setParticipants", {
-	form: "member-list",
+	form: main,
 	progressText: "Ustawianie uczestników...",
 	successText: "Ustawiono uczestników akcji",
 	validate: data => {
@@ -8,4 +8,4 @@ API.registerHandler("unit/[unitID]/event/[eventID]/setParticipants", {
 	}
 })
 
-chooseAll.globalCheckbox(memberList)
+chooseAll.globalCheckbox(main)

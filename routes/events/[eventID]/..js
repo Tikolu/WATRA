@@ -1,4 +1,4 @@
-import Event from "modules/schemas/event.js"
+import Event from "modules/schemas/event"
 import HTTPError from "modules/server/error.js"
 
 export async function open({user, eventID}) {

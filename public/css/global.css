@@ -74,7 +74,7 @@ form {
 	margin: 1em 0;
 }
 
-form button:last-child, form h1, form h2 {
+form button:last-child, form h1, form h2, form h3 {
 	margin-bottom: 0.5em;
 	white-space: nowrap;
 	grid-column: 1 / -1;
@@ -246,6 +246,11 @@ details > summary {
 details > summary:hover {
 	opacity: 0.5;
 }
+
+details > summary > * {
+	display: inline;
+}
+
 
 pre {
 	overflow-x: auto;

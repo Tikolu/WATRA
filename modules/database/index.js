@@ -174,13 +174,6 @@ export async function connect(dbName="main") {
 		await mongoose.connect(MONGO_URI, { dbName })
 		
 		logger.log("Connected!")
-
-		// Initialise all schemas
-		// await import("modules/schemas/event.js")
-		// await import("modules/schemas/role.js")
-		// await import("modules/schemas/unit")
-		// await import("modules/schemas/user")
-
 		return true
 		
 	} catch(error) {

@@ -3,7 +3,7 @@ import HTTPError from "modules/server/error.js"
 export default async function({targetUnit, targetEvent, targetInvitation}) {
 	// Decline invite
 	targetInvitation.state = "declined"
-	targetInvitation.invitedUsers = []
+	targetInvitation.invitedParticipants = []
 
 	// Remove event from unit.eventInvites
 	targetUnit.eventInvites = targetUnit.eventInvites.filter(id => id != targetEvent.id)

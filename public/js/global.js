@@ -793,6 +793,8 @@ function processCustomInputElements() {
 				if(checkboxes instanceof HTMLElement) {
 					checkboxes = checkboxes.querySelectorAll("input[type=checkbox]")
 				}
+				// Remove self from list
+				checkboxes = Array.from(checkboxes).filter(c => c != input)
 				
 				input.onchange = async () => {
 					for(const checkbox of checkboxes) {

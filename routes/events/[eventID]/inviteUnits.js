@@ -1,14 +1,12 @@
 import html from "modules/html.js"
 import Config from "modules/config.js"
+import Unit from "modules/schemas/unit"
 
 export default async function({user, targetEvent}) {
-	// await targetEvent.populate({"roles": ["user", "unit"]})
-
+	const topUnits = await Unit.find({"type": Config.event.topUnitTypes})
 	const units = {}
-	let topUnits
 
 	function saveUnit(unit) {
-		units[unit.id] = unit
 		// Find units of highest type
 		if(topUnits && topUnits[0].type === unit.type) {
 			topUnits.push(unit)
@@ -16,46 +14,16 @@ export default async function({user, targetEvent}) {
 			topUnits = [unit]
 		}
 	}
-	
-	await user.populate("roles")
-	for(const role of user.roles) {
-		if(role.type < RoleType.PRZYBOCZNY) continue
-		await role.populate({"unit": {"roles": "user"}})
-		const unit = role.unit
-		saveUnit(unit)
-
-		const upperUnits = unit.getUpperUnitsTree(Object.keys(units))
-		for await(const upperUnit of upperUnits) saveUnit(upperUnit)
-	}
 
 	for(const topUnit of topUnits) {	
 		const subUnits = topUnit.getSubUnitsTree()
-		for await(const subUnit of subUnits) saveUnit(subUnit)
+		for await(const unit of subUnits) units[unit.id] = unit
 	}
-
-	// Calculate user count
-	function calculateUserCount(unit) {
-		if(unit.userCount) return unit.userCount
-		
-		unit.userCount = unit.roles.length
-		for(const subUnit of unit.subUnits) {
-			unit.userCount += calculateUserCount(subUnit)
-		}
-		return unit.userCount
-	}
-
-	for(const unitID in units) {
-		const unit = units[unitID]
-		calculateUserCount(unit)
-	}
-
-	
-	topUnits = topUnits.map(unit => unit.id)
 
 	return html("event/inviteUnits", {
 		user,
-		units,
+		targetEvent,
 		topUnits,
-		targetEvent
+		units,
 	})
 }
