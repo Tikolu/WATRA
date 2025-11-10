@@ -106,6 +106,8 @@ class PopulationContext {
 							newDocument = createFakeDocument(mongoose.model(ref), subDocument)
 							results.push(newDocument)
 						}
+						newDocument.$__parent = document
+						newDocument.$__.parent = document
 						newArray.push(newDocument)
 					}
 					document[key] = arrayPopulate ? newArray : newArray[0]
