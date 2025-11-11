@@ -21,20 +21,23 @@ export function isPopulated(object) {
 
 
 class PopulationContext {
-	constructor(known=[]) {
+	constructor(known = []) {
 		this.entries = {}
-
 		for(const knownDocument of known) {
-			const modelName = knownDocument.constructor.modelName
-			if(!modelName) continue
-			this.entries[modelName] ||= {		
-				model: mongoose.model(modelName),
-				documentIDs: [],
-				callbacks: [],
-				results: []
-			}
-			this.entries[modelName].results.push(knownDocument)
+			this.saveKnownDocument(known)
 		}
+	}
+
+	saveKnownDocument(knownDocument) {
+		const modelName = knownDocument.constructor.modelName
+		if(!modelName) return
+		this.entries[modelName] ||= {		
+			model: mongoose.model(modelName),
+			documentIDs: [],
+			callbacks: [],
+			results: []
+		}
+		this.entries[modelName].results.push(knownDocument)
 	}
 
 	registerPopulateCallback(ref, IDs, callback) {
@@ -124,13 +127,16 @@ export async function populate(graph, options={}) {
 	options.known = [...(options.known || [])]
 	options.known.push(this)
 
-	let parentDocument = this.parent ? this.parent() : null
+	let parentDocument = this.parent?.(), populationContext
 	while(parentDocument && !options.known.includes(parentDocument)) {
 		options.known.push(parentDocument)
+		populationContext ||= parentDocument.$locals.populationContext
 		parentDocument = parentDocument.parent()
 	}
 
-	const populationContext = new PopulationContext(options.known)
+	populationContext ||= new PopulationContext(options.known)
+	this.$locals ||= {}
+	this.$locals.populationContext = populationContext
 
 	let loopCount = 1
 	while(true) {
@@ -177,10 +183,9 @@ export async function populate(graph, options={}) {
 
 		const populatePromises = []
 		for(const ref in populationContext.entries) {
-			const {model, documentIDs, callbacks, results} = populationContext.entries[ref]
+			const {model, documentIDs, results} = populationContext.entries[ref]
 			const queryIDs = documentIDs.filter(id => !results.some(r => r?.id == id))
 
-			
 			const query = async () => {
 				let results = []
 				if(queryIDs.length) {
@@ -194,10 +199,10 @@ export async function populate(graph, options={}) {
 					}
 				}
 				populationContext.entries[ref].results.push(...results)
-				for(const callback of callbacks) {
+				for(const callback of populationContext.entries[ref].callbacks) {
 					callback(populationContext.entries[ref].results)
 				}
-				populationContext.entries[ref].documentIDs = []
+				populationContext.entries[ref].documentIDs = populationContext.entries[ref].documentIDs.filter(id => !queryIDs.includes(id))
 				populationContext.entries[ref].callbacks = []
 			}
 

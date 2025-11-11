@@ -243,7 +243,7 @@ export class UnitClass {
 
 		for(const upperUnit of this.upperUnits) {
 			if(exclude.hasID(upperUnit.id)) continue
-			exclude.push(upperUnit.id)
+			// exclude.push(upperUnit.id)
 			if(condition && !await condition(upperUnit)) continue
 			yield upperUnit
 			yield * upperUnit.getUpperUnitsTree(exclude, condition)
@@ -257,7 +257,7 @@ export class UnitClass {
 
 		for(const subUnit of this.subUnits) {
 			if(exclude.hasID(subUnit.id)) continue
-			exclude.push(subUnit.id)
+			// exclude.push(subUnit.id)
 			if(condition && !await condition(subUnit)) continue
 			yield subUnit
 			yield * subUnit.getSubUnitsTree(exclude, condition)
@@ -267,16 +267,16 @@ export class UnitClass {
 	/* Recursive list of all units (sub and upper) */
 	async * getUnitsTree(exclude=[], condition) {
 		exclude = [...exclude]
-		exclude.push(subUnit.id)
+		// exclude.push(subUnit.id)
 		yield this
 		for(const subUnit of this.getSubUnitsTree(exclude, condition)) {
 			if(exclude.hasID(subUnit.id)) continue
-			exclude.push(subUnit.id)
+			// exclude.push(subUnit.id)
 			yield subUnit
 		}
 		for(const upperUnit of this.getUpperUnitsTree(exclude, condition)) {
 			if(exclude.hasID(upperUnit.id)) continue
-			exclude.push(upperUnit.id)
+			// exclude.push(upperUnit.id)
 			yield upperUnit
 			yield * upperUnit.getUnitsTree(exclude, condition)
 		}
@@ -289,7 +289,7 @@ export class UnitClass {
 		const users = []
 		for(const role of this.roles) {
 			if(exclude.hasID(role.user.id)) continue
-			exclude.push(role.user.id)
+			// exclude.push(role.user.id)
 			users.push(role.user)
 		}
 		return users
@@ -300,14 +300,14 @@ export class UnitClass {
 		exclude = [...exclude]
 		// Yield all members of this unit
 		for(const member of await this.getMembers(exclude)) {
-			exclude.push(member.id)
+			// exclude.push(member.id)
 			yield member
 		}
 		// Yield all members of the all subUnits
-		for await(const subUnit of this.getSubUnitsTree()) {
+		for await(const subUnit of await this.getSubUnitsTree()) {
 			for(const member of await subUnit.getMembers(exclude)) {
 				if(exclude.hasID(member.id)) continue
-				exclude.push(member.id)
+				// exclude.push(member.id)
 				yield member
 			}
 		}
