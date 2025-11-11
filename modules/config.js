@@ -9,6 +9,8 @@ class ConfigError extends Error {
 
 // Tag types
 config.tags = {
+	"public": {},			
+
 	"editUnit": {},
 	"manageSubUnit": {},
 	"setRole": {},

@@ -1,6 +1,6 @@
 <% layout("/layouts/body", {
 	title: "Lista użytkowników",
-	scripts: ["unit/page"],
+	styles: ["unit/memberList"],
 	meta: {
 		unitID: $.targetUnit.id
 	},
@@ -13,14 +13,33 @@
 	<%= $.targetUnit.displayName %> - Lista użytkowników
 </h1>
 <% if($.members.length) { %>
-	<p>Ilość użytkowników: <%= $.members.length %></p>
-	<div id="unit-member-list" class="unit-grid">
-		<% for(const member of $.members || []) { %>
-			<%~ include("/user/templates/userEntry.html", {
-				targetUser: member
-			}) %>
+	<% function displayUnit(unit) { %>
+		<% const memberCount = unit.countMembers(true) %>
+		<% if(memberCount == 0) return %>
+		<% if(unit.id != $.targetUnit.id) { %>
+			<h3>
+				<a href="/units/<%= unit.id %>">
+					<%= unit.displayName %>
+				</a>
+			</h3>
 		<% } %>
-	</div>
+		<!-- <p>Ilość użytkowników: <%= memberCount %></p> -->
+		<% if(unit.roles.length > 0) { %>
+			<div class="unit-grid">
+				<% for(const {user} of unit.roles) { %>
+					<%~ include("/user/templates/userEntry.html", {
+						targetUser: user
+					}) %>
+				<% } %>
+			</div>
+		<% } %>
+		<% for(const subUnit of unit.subUnits) { %>
+			<div class="sub-unit">
+				<% displayUnit(subUnit) %>
+			</div>
+		<% } %>
+	<% } %>
+	<% displayUnit($.targetUnit) %>
 <% } else { %>
 	<p>Brak użytkowników w tej jednostce.</p>
 <% } %>

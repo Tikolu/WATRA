@@ -22,12 +22,13 @@ export async function ACCESS(user) {
 		}
 	}
 
-	// await this.populate("eventInvites")
-	// for(const event of this.eventInvites) {
-	// 	const invite = event.findUserInvite(this)
-	// 	if(invite?.state != "accepted") continue
-	// 	if(user.hasRoleInUnits(f => f >= RoleType.PRZYBOCZNY, event)) return true
-	// }
+	// Users with "accessUser" role in events in which user is a participant can access
+	await this.populate("eventInvites")
+	for(const event of this.eventInvites) {
+		const invite = event.findUserInvite(this)
+		if(invite?.state != "accepted") continue
+		if(user.hasRoleInUnits("accessUser", event)) return true
+	}
 
 	return false
 }

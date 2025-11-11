@@ -165,6 +165,8 @@
 			"limit": 1,
 			"minAge": 18,
 			"tags": [
+				"public",
+				
 				"manageSubUnit",
 				"setRole",
 				"accessUser",
@@ -178,6 +180,8 @@
 			"name": "Członek zarządu",
 			"rank": 1,
 			"tags": [
+				"public",
+
 				"accessUser",
 				"manageUser",
 				"manageEvent",
@@ -192,6 +196,8 @@
 			"limit": 1,
 			"minAge": 18,
 			"tags": [
+				"public",
+
 				"manageSubUnit",
 				"setRole",
 				"accessUser",
@@ -207,6 +213,8 @@
 			"rank": 1,
 			"minAge": 18,
 			"tags": [
+				"public",
+				
 				"accessUser",
 				"manageEvent",
 				"manageEventInvite"
@@ -219,6 +227,8 @@
 			"limit": 1,
 			"minAge": 18,
 			"tags": [
+				"public",
+				
 				"manageSubUnit",
 				"setRole",
 				"accessUser",
@@ -235,6 +245,8 @@
 			"rank": 2,
 			"limit": 1,
 			"tags": [
+				"public",
+				
 				"manageSubUnit",
 				"setRole",
 				"accessUser",
@@ -248,6 +260,8 @@
 			"name": "Przyboczny",
 			"rank": 1,
 			"tags": [
+				"public",
+				
 				"accessUser"
 			]
 		},
@@ -293,6 +307,8 @@
 			"name": "Komendant",
 			"rank": 2,
 			"tags": [
+				"public",
+				
 				"manageEvent",
 				"setRole",
 				"accessUser"
@@ -303,12 +319,10 @@
 			"minAge": 18,
 			"rank": 1,
 			"tags": [
+				"public",
+				
 				"accessUser"
 			]
-		},
-		"uczestnik": {
-			"name": "Uczestnik",
-			"rank": 0
 		}
 	}
 }

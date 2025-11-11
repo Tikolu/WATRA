@@ -1,0 +1,8 @@
+h3 + p {
+	margin-top: -1em;
+}
+
+.sub-unit {
+	padding-left: 1em;
+	border-left: 1px solid var(--border);
+}

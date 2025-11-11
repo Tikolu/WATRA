@@ -1,18 +1,12 @@
 /** Accessing the unit's page and any unit details */
-export async function ACCESS(user) {
-	// Allow access if user is a member of the unit
-	if(await this.hasMember(user)) return true
+export function ACCESS(user) {
+	return true
+}
 
-	// Allow access if user's child is a member of the unit
-	await user.populate("children")
-	for(const child of user.children) {
-		if(await this.hasMember(child)) return true
-	}
-	
-	// Allow access if user is a member of any upperUnit
-	for await(const upperUnit of this.getUpperUnitsTree()) {
-		if(await upperUnit.hasMember(user)) return true
-	}
+/** Accessing the unit's members */
+export async function ACCESS_MEMBERS(user) {
+	// "accessUser" roles in this unit or upper units can access members
+	if(await user.hasRoleInUnits("accessUser", this, this.getUpperUnitsTree())) return true
 
 	return false
 }

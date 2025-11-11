@@ -4,7 +4,7 @@
 			<i>person</i>
 		</div>
 		<div class="unit-title">
-			<h3><%= $.targetUser.displayName %></h3>
+			<h3><%= $.targetUser.displayName || "(użytkownik)" %></h3>
 			<p>
 				<% if($.description) { %>
 					<%= $.description %>

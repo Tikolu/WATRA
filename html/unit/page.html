@@ -32,6 +32,50 @@
 		</button>
 	<% } %>
 </div>
+
+<% if($.targetUnit.roles?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER) || $.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
+	<hr>
+	<h2>
+		<i>person</i>
+		Użytkownicy
+	</h2>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) &&
+		($.targetUnit.roles?.length > 0 || $.targetUnit.subUnits?.length > 0)
+	) { %>
+		<a href="/units/<%= $.targetUnit.id %>/members" class="heading-link">Pełna lista</a>
+	<% } %>
+	<% if($.targetUnit.roles?.length == 0) { %>
+		<p>Brak użytkowników</p>
+	<% } else { %>
+		<div id="unit-member-list" class="unit-grid">
+			<% function displayUser(role) { %>
+				<% if(!$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
+				<%~ include("/user/templates/userEntry.html", {
+					targetUser: role.user,
+					description: role.displayName
+				}) %>
+			<% } %>
+			<% for(const role of $.targetUnit.roles.filter(r => r.config.rank > 0)) displayUser(role) %>
+			<hr class="grid-break">
+			<% for(const role of $.targetUnit.roles.filter(r => r.config.rank <= 0)) displayUser(role) %>
+		</div>
+	<% } %>
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
+			<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole">
+				<i>add_moderator</i>
+				<span>Mianuj na funkcję</span>
+			</button>
+		<% } %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER)) { %>
+			<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
+				<i>person_add</i>
+				<span>Utwórz użytkownika</span>
+			</button>
+		<% } %>
+	</div>
+<% } %>
+
 <% if($.targetUnit.subUnits?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 	<hr>
 	<h2>
@@ -58,45 +102,8 @@
 	<% } %>
 <% } %>
 
-
-
-<% if($.targetUnit.roles?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER) || $.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
-	<hr>
-	<h2>
-		<i>person</i>
-		Użytkownicy
-	</h2>
-	<div id="unit-member-list" class="unit-grid">
-		<% for(const role of $.targetUnit.roles || []) { %>
-			<%~ include("/user/templates/userEntry.html", {
-				targetUser: role.user,
-				description: Text.capitalise(role.displayName)
-			}) %>
-		<% } %>
-	</div>
-	<div class="button-row">
-		<button href="/units/<%= $.targetUnit.id %>/members">
-			<i>list</i>
-			<span>Pełna lista użytkowników</span>
-		</button>
-		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
-			<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole">
-				<i>add_moderator</i>
-				<span>Mianuj na funkcję</span>
-			</button>
-		<% } %>
-		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER)) { %>
-			<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
-				<i>person_add</i>
-				<span>Utwórz użytkownika</span>
-			</button>
-		<% } %>
-	</div>
-<% } %>
-
 <% if(
 	$.targetUnit.events.length > 0 ||
-	$.targetUnit.eventInvites.length > 0 ||
 	$.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT) ||
 	$.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES)
 ) { %>

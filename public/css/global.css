@@ -293,6 +293,12 @@ p.warning + p.warning {
 	margin-top: -0.5em;
 }
 
+.heading-link {
+	display: block;
+	margin-top: -1em;
+	margin-bottom: 1em;
+}
+
 /* Custom layouts */
 
 .button-row {
@@ -300,6 +306,10 @@ p.warning + p.warning {
 	flex-wrap: wrap;
 	margin-top: 0.5em;
 	gap: 0.5em;
+}
+
+.button-row:not(:has(button)) {
+	display: none;
 }
 
 .unit-grid, .unit-list {
@@ -376,6 +386,18 @@ p.warning + p.warning {
 
 	& > div {
 		border: 1px solid var(--border)
+	}
+
+	& > .grid-break {
+		display: block;
+		grid-column: 1 / -1;
+		visibility: hidden;
+		margin: 0;
+		height: 0;
+
+		&:last-child {
+			display: none;
+		}
 	}
 }
 
