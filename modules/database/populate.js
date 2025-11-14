@@ -21,32 +21,34 @@ export function isPopulated(object) {
 
 
 class PopulationContext {
-	constructor(known = []) {
+	constructor(known = [], label) {
+		this.owner = label
 		this.entries = {}
 		for(const knownDocument of known) {
-			this.saveKnownDocument(known)
+			this.saveKnownDocument(knownDocument)
 		}
+	}
+
+	setupEntry(model) {
+		if(this.entries[model]) return
+		this.entries[model] = {		
+			model: mongoose.model(model),
+			documentIDs: [],
+			callbacks: [],
+			results: []
+		}
+		return this.entries[model]
 	}
 
 	saveKnownDocument(knownDocument) {
 		const modelName = knownDocument.constructor.modelName
 		if(!modelName) return
-		this.entries[modelName] ||= {		
-			model: mongoose.model(modelName),
-			documentIDs: [],
-			callbacks: [],
-			results: []
-		}
+		this.setupEntry(modelName)
 		this.entries[modelName].results.push(knownDocument)
 	}
 
 	registerPopulateCallback(ref, IDs, callback) {
-		this.entries[ref] ||= {
-			model: mongoose.model(ref),
-			documentIDs: [],
-			callbacks: [],
-			results: []
-		}
+		this.setupEntry(ref)
 		this.entries[ref].callbacks.push(callback)
 		let count = 0
 		for(const id of IDs) {
@@ -57,7 +59,7 @@ class PopulationContext {
 		return count
 	}
 
-	async findPopulatable(graph, document, options) {
+	findPopulatable(graph, document, options) {
 		if(typeof graph == "string") graph = [graph]
 		if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
 		
@@ -70,10 +72,10 @@ class PopulationContext {
 				if(subGraph && subDocument) {
 					if(Array.isArray(subDocument)) {
 						for(const item of subDocument) {
-							findCounter += await this.findPopulatable(subGraph, item, options)
+							findCounter += this.findPopulatable(subGraph, item, options)
 						}
 					} else if(typeof subDocument == "object") {
-						findCounter += await this.findPopulatable(subGraph, subDocument, options)
+						findCounter += this.findPopulatable(subGraph, subDocument, options)
 					}
 				}
 			} else if(!Array.isArray(document[key]) || document[key].length > 0) {
@@ -84,7 +86,7 @@ class PopulationContext {
 
 				let ref = schemaDefinition.ref
 				if(typeof ref == "function") {
-					ref = await ref.call(document)
+					ref = ref.call(document)
 				} else if(typeof ref != "string") {
 					throw Error(`Path ${key} cannot be populated, invalid ref`)
 				}
@@ -119,11 +121,21 @@ class PopulationContext {
 		}
 		return findCounter
 	}
+
+	finalise(model, foundIDs) {
+		const entry = this.entries[model]
+		for(const callback of entry.callbacks) {
+			callback(entry.results)
+		}
+		entry.documentIDs = entry.documentIDs.filter(id => !foundIDs.includes(id))
+		entry.callbacks = []
+	}
 }
 
 
-export async function populate(graph, options={}) {
-	if(options.log) logger.log(`\n\n\n Populating ${Array.isArray(this) ? "array" : (this.constructor.modelName + " " + this.id)}`)
+export function populate(graph, options={}) {
+	const label = Array.isArray(this) ? "array" : (this.constructor.modelName + " " + this.id)
+	if(options.log) logger.log("Populating", label)
 	options.known = [...(options.known || [])]
 	options.known.push(this)
 
@@ -134,12 +146,13 @@ export async function populate(graph, options={}) {
 		parentDocument = parentDocument.parent()
 	}
 
-	populationContext ||= new PopulationContext(options.known)
-	this.$locals ||= {}
+	if(options.log) logger.log("Known documents", options.known)
+
+	populationContext ||= new PopulationContext(options.known, label)
+	if(!this.$locals) Object.defineProperty(this, "$locals", {value: {}})
 	this.$locals.populationContext = populationContext
 
-	let loopCount = 1
-	while(true) {
+	function loop(loopCount=1) {
 		let findCount = 0
 		if(Array.isArray(this)) {
 			const unpopulated = []
@@ -147,7 +160,7 @@ export async function populate(graph, options={}) {
 				const item = this[index]
 				if(options?.exclude?.hasID(item.id)) continue
 				if(isPopulated(item)) {
-					findCount += await populationContext.findPopulatable(graph, item, options)
+					findCount += populationContext.findPopulatable(graph, item, options)
 
 				} else {
 					unpopulated.push(index)
@@ -173,41 +186,75 @@ export async function populate(graph, options={}) {
 				findCount += 1
 			}
 		} else {
-			findCount = await populationContext.findPopulatable(graph, this, options)
+			findCount = populationContext.findPopulatable(graph, this, options)
 		}
 		
-		if(findCount == 0) break
+		if(findCount == 0) {
+			if(options.log) logger.log("Finished!")
+			return false
+		}
 		if(loopCount >= 10) throw Error("Database population loop count exceeded")
-		if(options.log) console.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populationContext.entries)
-		loopCount += 1
+		if(options.log) logger.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populationContext.entries)
 
 		const populatePromises = []
 		for(const ref in populationContext.entries) {
 			const {model, documentIDs, results} = populationContext.entries[ref]
 			const queryIDs = documentIDs.filter(id => !results.some(r => r?.id == id))
 
-			const query = async () => {
-				let results = []
-				if(queryIDs.length) {
-					if(options.log) console.log("Requesting", ref, "from DB:", queryIDs)
-					results = await model.find({_id: queryIDs}, options.select)
+			if(queryIDs.length) {
+				if(options.sync) {
+					logger.log(`Pending ${ref} queries: ${queryIDs.join(", ")}`)
+					throw Error("Cannot perform synchronous population with pending database queries")
 				}
-				for(const id of queryIDs) {
-					if(!results.some(r => r?.id == id)) {
-						if(options.placeholders === false) continue
-						results.push(createFakeDocument(model, id, false))
+
+				const query = async () => {
+					if(options.log) logger.log("Requesting", ref, "from DB:", queryIDs)
+					const results = await model.find({_id: queryIDs}, options.select)
+					for(const id of queryIDs) {
+						if(!results.some(r => r?.id == id)) {
+							if(options.placeholders === false) continue
+							results.push(createFakeDocument(model, id, false))
+						}
 					}
+					populationContext.entries[ref].results.push(...results)
+					populationContext.finalise(ref, queryIDs)
 				}
-				populationContext.entries[ref].results.push(...results)
-				for(const callback of populationContext.entries[ref].callbacks) {
-					callback(populationContext.entries[ref].results)
-				}
-				populationContext.entries[ref].documentIDs = populationContext.entries[ref].documentIDs.filter(id => !queryIDs.includes(id))
-				populationContext.entries[ref].callbacks = []
+				
+				populatePromises.push(query())
+
+			} else {
+				populationContext.finalise(ref, [])
 			}
 
-			populatePromises.push(query())
 		}
-		await Promise.all(populatePromises)
+		return populatePromises.length ? Promise.all(populatePromises) : true
 	}
+
+	const documentContext = {
+		document: this
+	}
+
+	if(options.sync) {
+		let loopCount = 1
+		while(true) {
+			const loopContinuing = loop.call(documentContext.document, loopCount)
+			if(!loopContinuing) break
+			loopCount += 1
+		}
+
+	} else return new Promise(resolve => {
+		let loopCount = 1
+		function asyncLoop() {
+			const loopResult = loop.call(documentContext.document, loopCount)
+			if(loopResult instanceof Promise) {
+				loopResult.then(() => {
+					loopCount += 1
+					asyncLoop()
+				})
+			} else {
+				resolve()
+			}
+		}
+		asyncLoop.call(documentContext.document)
+	})
 }
