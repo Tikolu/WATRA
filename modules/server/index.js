@@ -25,7 +25,7 @@ async function handlePublicFile(url, response) {
 	if(!type) return
 
 	response.headers.set("Content-Type", `${type}; charset=utf-8`)
-	response.headers.set("Cache-Control", developmentMode ? "no-store" : "max-age=31536000, immutable")
+	response.headers.set("Cache-Control", "max-age=31536000, immutable")
 	response.write(await Deno.readFile(url))
 	response.close()
 	return true

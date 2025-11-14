@@ -52,7 +52,7 @@ export class UserClass {
 			await this.populate("roles")
 			for(const role of this.roles) {
 				if(this.age < (role.config.minAge || 0) || this.age > (role.config.maxAge || Infinity)) {
-					throw Error(`Data urodzin nie jest komatybilna z funkcją "${role.config.name}"`)
+					throw Error(`Data urodzin nie jest kompatybilna z grupą wiekową "${role.config.name.default}"`)
 				}
 			}
 		}
@@ -75,6 +75,12 @@ export class UserClass {
 			if(phone.startsWith("08")) phone = `+353${phone.slice(1)}`
 			return phone
 		}
+	}
+
+	org = {
+		type: String,
+		enum: Object.keys(Config.orgs),
+		required: () => Object.keys(Config.orgs).length > 1
 	}
 	
 	parents = [

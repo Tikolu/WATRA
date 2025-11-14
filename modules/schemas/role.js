@@ -34,7 +34,14 @@ export class RoleClass {
 
 	/** Returns the role type name */
 	get displayName() {
-		return this.config.name || "(nieznana funkcja)"
+		const nameConfig = this.config.name
+		return nameConfig[this.org] || nameConfig["default"]
+	}
+
+	/** Attempts to get the org of the role by looking at the user and unit */
+	get org() {
+		this.populate("user", {sync: true})
+		return this.user.org || this.unit.org || null
 	}
 
 	/* Methods */

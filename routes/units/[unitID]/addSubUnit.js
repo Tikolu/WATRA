@@ -1,7 +1,9 @@
 import html from "modules/html.js"
 import Config from "modules/config.js"
 
-export default async function({user, targetUnit}) {
+export default async function({user, targetUnit, orgContext}) {
+	orgContext ||= targetUnit.org 
+	
 	// Check for permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.ADD_SUBUNIT)
 	
@@ -26,7 +28,13 @@ export default async function({user, targetUnit}) {
 		}
 	}
 
-	// Find unit types for creating new subUnit
+	// Find org types
+	const orgs = [{value: null, name: ""}]
+	for(const orgID in Config.orgs) {
+		orgs.push({value: orgID, name: Config.orgs[orgID].name})
+	}
+
+	// Find unit types
 	const subUnitTypes = targetUnit.getSubUnitOptions()
 
 	// Find unique departments
@@ -38,6 +46,8 @@ export default async function({user, targetUnit}) {
 		user,
 		targetUnit,
 		unitsForLinking,
+		orgContext,
+		orgs,
 		subUnitTypes,
 		departmentOptions
 	})

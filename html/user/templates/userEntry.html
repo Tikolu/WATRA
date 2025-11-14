@@ -1,4 +1,8 @@
-<a href="/users/<%= $.targetUser.id %>">
+<%
+	$.classList ||= []
+	if(!Array.isArray($.classList)) $.classList = [$.classList]
+%>
+<a href="/users/<%= $.targetUser.id %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
 	<div class="unit-header">
 		<div class="unit-image">
 			<i>person</i>

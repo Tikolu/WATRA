@@ -20,6 +20,15 @@ API.registerHandler("unit/[unitID]/subUnit/link", {
 	}
 })
 
+unitOrgSelect.onchange = () => {
+	for(const option of main.querySelectorAll("option")) {
+		let nameVariants = option.dataset.nameVariants
+		if(!nameVariants) continue
+		nameVariants = JSON.parse(nameVariants)
+		option.textContent = nameVariants[unitOrgSelect.value] || nameVariants.default || "(brak)"
+	}
+}
+
 unitDepartmentSelect.onchange = () => {
 	unitTypeSelect.value = ""
 	for(const option of unitTypeSelect.options) {

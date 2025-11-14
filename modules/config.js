@@ -1,12 +1,5 @@
 import config from "../config.json" with { type: "json" }
 
-class ConfigError extends Error {
-	constructor(message) {
-		super(message)
-		this.name = "ConfigError"
-	}
-}
-
 // Tag types
 config.tags = {
 	"public": {},			
@@ -27,6 +20,41 @@ config.tags = {
 	"cannotApproveEvent": {}
 }
 
+class ConfigError extends Error {
+	constructor(message) {
+		super(message)
+		this.name = "ConfigError"
+	}
+}
+
+function processName(entity) {
+	// Default to entity id
+	entity.name ||= entity.id
+	
+	// Convert to object
+	if(typeof entity.name == "string") {
+		entity.name = {default: entity.name}
+	}
+
+	// Default name variant
+	entity.name.default ||= entity.name[Object.keys(entity.name)[0]]
+}
+
+// Process orgs
+config.orgs ||= {}
+for(const orgID in config.orgs) {
+	const org = config.orgs[orgID]
+
+	// Prevent invalid org name
+	if(orgID == "default") {
+		throw new ConfigError("Invalid org ID \"default\"")
+	}
+
+	// Default values
+	org.id = orgID
+	org.name ||= orgID
+}
+
 // Process roles
 for(const roleID in config.roles) {
 	const role = config.roles[roleID]
@@ -35,7 +63,8 @@ for(const roleID in config.roles) {
 	role.id = roleID
 	role.tags ||= []
 	role.rank ||= 0
-	role.name ||= roleID
+
+	processName(role)
 
 	// Ensure tags exist
 	for(const tag of role.tags) {
@@ -45,10 +74,26 @@ for(const roleID in config.roles) {
 	}	
 }
 
+// Process departments
+config.departments ||= {}
+for(const departmentID in config.departments) {
+	const department = config.departments[departmentID]
+
+	// Default values
+	department.id = departmentID
+	
+	processName(department)
+}
+
 // Process units
 for(const unitID in config.units) {
 	const unit = config.units[unitID]
+
+	// Default values
 	unit.id = unitID
+	unit.rank ||= 0
+	
+	processName(unit)
 
 	// Ensure roles exist
 	for(const roleName of unit.roles || []) {

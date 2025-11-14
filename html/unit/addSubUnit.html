@@ -17,6 +17,18 @@
 			value=""
 		>
 
+		<label for="unit-org-select">Organizacja:</label>
+		<select id="unit-org-select" name="org">
+			<% for(const org of $.orgs) { %>
+				<option
+					value="<%= org.value || "" %>"
+					<% if($.orgContext == org.value) { %>
+						selected
+					<% } %>
+				><%= org.name || "(brak)" %></option>
+			<% } %>
+		</select>
+
 		<label for="unit-department-select">Pion:</label>
 		<select id="unit-department-select" name="department">
 			<% for(const department of $.departmentOptions) { %>
@@ -25,7 +37,12 @@
 					<% if($.targetUnit.config.department == department.value) { %>
 						selected
 					<% } %>
-				><%= department.name || "(brak)" %></option>
+					<% if(department.name && Object.keys(department.name).length > 1) { %>
+						data-name-variants="<%= JSON.stringify(department.name) %>"
+					<% } %>
+				>
+					<%= department.name?.[$.orgContext] || department.name?.default || "(brak)" %>
+				</option>
 			<% } %>
 		</select>
 		
@@ -38,7 +55,12 @@
 					<% if($.targetUnit.config.department != type.department) { %>
 						hidden
 					<% } %>
-				><%= type.name %></option>
+					<% if(Object.keys(type.name).length > 1) { %>
+						data-name-variants="<%= JSON.stringify(type.name) %>"
+					<% } %>
+				>
+					<%= type.name[$.orgContext] || type.name.default %>
+				</option>
 			<% } %>
 		</select>
 	</form>

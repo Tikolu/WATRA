@@ -3,16 +3,21 @@ import * as Text from "modules/text.js"
 
 import User from "modules/schemas/user"
 
-export default async function({user, targetUnit, firstName="", lastName="", createParent=false}) {
+export default async function({user, targetUnit, firstName="", lastName="", org, createParent=false}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.CREATE_USER)
 
 	// Create user
-	const newUser = new User()
+	const newUser = new User({
+		org
+	})
 
 	// Set names
 	newUser.name.first = firstName
 	newUser.name.last = lastName
+
+	// Validate user
+	await newUser.validate()
 
 	// Add user as member
 	await targetUnit.addMember(newUser)

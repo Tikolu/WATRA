@@ -1,4 +1,8 @@
-<a href="/units/<%= $.targetUnit.id %>">
+<%
+	$.classList ||= []
+	if(!Array.isArray($.classList)) $.classList = [$.classList]
+%>
+<a href="/units/<%= $.targetUnit.id %><%= $.org ? `?org=${$.org}` : "" %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
 	<div class="unit-header">
 		<div class="unit-image">
 			<i>groups</i>

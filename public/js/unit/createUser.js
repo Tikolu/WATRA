@@ -5,3 +5,12 @@ API.registerHandler("unit/[unitID]/member/create", {
 		window.top.createURLDialog(`/users/${response.userID}/accessCodes`, true)
 	}
 })
+
+unitSelect.onchange = () => {
+	orgSelect.disabled = false
+	const targetOrg = unitSelect.selectedOptions[0].dataset.org
+	if(targetOrg) {
+		orgSelect.value = targetOrg
+		orgSelect.disabled = true
+	}
+}

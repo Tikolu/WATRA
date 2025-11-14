@@ -20,6 +20,10 @@ export class UnitClass {
 		type: String,
 		enum: Object.keys(Config.units)
 	}
+	org = {
+		type: String,
+		enum: Object.keys(Config.orgs)
+	}
 	roles = [
 		{
 			type: String,
@@ -68,7 +72,8 @@ export class UnitClass {
 	
 	/** Returns the unit type name */
 	get typeName() {
-		return this.config?.name || "jednostka"
+		const nameConfig = this.config.name
+		return nameConfig[this.org] || nameConfig["default"]
 	}
 
 
@@ -81,7 +86,7 @@ export class UnitClass {
 
 		let role
 		
-		if(!roleType) throw Error("Jednostka nie ma skonfigurowanych funkcji")
+		if(!roleType) throw Error(`Jednostka "${this.typeName}" nie ma skonfigurowanych funkcji`)
 		
 		// Value is a Role instance: add the role directly
 		else if(roleType instanceof Role) role = roleType
@@ -105,10 +110,15 @@ export class UnitClass {
 				_id: existingRole.id
 			})
 			role.$isNew = false
-		}
+		} 
 
 		role.user = user.id
 		role.unit = this.id
+
+		// Check org mismatch
+		if(this.org && this.org != user.org) {
+			throw Error(`Nie można przypisać użytkownika z organizacji "${Config.orgs[user.org].name}" do jednostki z organizacji "${Config.orgs[this.org].name}"`)
+		}
 
 		// Enforce role count limit
 		if("limit" in role.config) {
@@ -216,13 +226,15 @@ export class UnitClass {
 	}
 
 	/** Sorts roles based on type and user name */
-	async sortRoles() {
+	async sortRoles(sortByType=true) {
 		await this.populate({"roles": "user"})
 		this.roles.sort((a, b) => {
 			// Place users with highest role at the start
-			const aType = Config.roles[a.type].rank
-			const bType = Config.roles[b.type].rank
-			if(aType != bType) return bType - aType
+			if(sortByType) {
+				const aType = Config.roles[a.type].rank
+				const bType = Config.roles[b.type].rank
+				if(aType != bType) return bType - aType
+			}
 
 			// Place users without a name at the end
 			const aNoName = Object.isEmpty(a.user.name.toObject())
@@ -234,6 +246,17 @@ export class UnitClass {
 			
 			return a.user.displayName.localeCompare(b.user.displayName)
 		})
+	}
+
+	/** List of subUnits in the given org */
+	orgSubUnits(org=this.org) {
+		const subUnits = []
+		for(const subUnit of this.subUnits) {
+			// If org is given, and subUnit's org (if present) is different, skip it
+			if(org && subUnit.org && subUnit.org != org) continue
+			subUnits.push(subUnit)
+		}
+		return subUnits
 	}
 
 	/** Recursive generator of all upperUnits */
@@ -251,16 +274,16 @@ export class UnitClass {
 	}
 
 	/** Recursive generator of all subUnits */
-	async * getSubUnitsTree(exclude=[], condition) {
+	async * getSubUnitsTree(exclude=[], org=this.org, condition) {
 		exclude = [...exclude]
 		await this.populate("subUnits", {exclude})
 
-		for(const subUnit of this.subUnits) {
+		for(const subUnit of this.orgSubUnits(org)) {
 			if(exclude.hasID(subUnit.id)) continue
 			// exclude.push(subUnit.id)
 			if(condition && !await condition(subUnit)) continue
 			yield subUnit
-			yield * subUnit.getSubUnitsTree(exclude, condition)
+			yield * subUnit.getSubUnitsTree(exclude, org, condition)
 		}
 	}
 
@@ -318,7 +341,7 @@ export class UnitClass {
 		let count = this.roles.length
 		if(recursive) {
 			for(const subUnit of this.subUnits) {
-				count += subUnit.countMembers(true)
+				count += subUnit.countMembers?.(true) || 0
 			}
 		}
 		return count

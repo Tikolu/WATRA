@@ -1,7 +1,9 @@
 import html from "modules/html.js"
 import Config from "modules/config.js"
+import HTTPError from "modules/server/error.js"
 
-export default async function({user, targetUnit}) {
+export default async function({user, targetUnit, orgContext}) {
+	
 	await targetUnit.populate([
 		"roles",
 		"subUnits",
@@ -9,8 +11,8 @@ export default async function({user, targetUnit}) {
 		"events"
 	])
 	await targetUnit.populate(
-		{"roles": ["user", "unit"]},
-		{select: "name"}
+		{"roles": "user"},
+		{select: ["name", "org"]}
 	)
 	
 	// Sort roles
@@ -26,6 +28,7 @@ export default async function({user, targetUnit}) {
 	
 	return html("unit/page", {
 		user,
-		targetUnit
+		targetUnit,
+		orgContext
 	})
 }

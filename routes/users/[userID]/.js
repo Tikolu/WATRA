@@ -7,7 +7,6 @@ export default async function({user, targetUser}) {
 		"roles": "unit",
 		"eventRoles": "unit",
 		"eventInvites": {},
-		"eventApprovalRequests": {},
 		"children": {
 			"roles": "unit"
 		},

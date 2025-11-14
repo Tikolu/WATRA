@@ -328,6 +328,11 @@ p.warning + p.warning {
 
 		text-decoration: none;
 
+		&.faded {
+			color: var(--secondary-background);
+			background-color: var(--disabled-input-background);
+		}
+
 		& > .unit-header {
 			display: flex;
 		}

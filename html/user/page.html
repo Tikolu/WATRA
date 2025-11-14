@@ -10,6 +10,9 @@
 	<i>person</i>
 	<%= $.targetUser.displayName %>
 </h1>
+<% if($.targetUser.org) { %>
+	<p>(<%= Config.orgs[$.targetUser.org].name %>)</p>
+<% } %>
 <div class="button-row">
 	<% if($.user.id == $.targetUser.id) { %>
 		<button id="logout-button" href="/logout">

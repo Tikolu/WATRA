@@ -1,6 +1,6 @@
 import html from "modules/html.js"
 
-export default async function({user, targetUnit}) {
+export default async function({user, targetUnit, orgContext}) {
 	await user.requirePermission(targetUnit.PERMISSIONS.ACCESS_MEMBERS)
 	
 	const members = await Array.fromAsync(targetUnit.getSubMembers())
@@ -8,6 +8,7 @@ export default async function({user, targetUnit}) {
 	return html("unit/memberList", {
 		user,
 		targetUnit,
-		members
+		members,
+		orgContext
 	})
 }

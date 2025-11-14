@@ -13,7 +13,8 @@
 	<%= $.targetUnit.displayName %> - Lista użytkowników
 </h1>
 <% if($.members.length) { %>
-	<% function displayUnit(unit) { %>
+	<% function displayUnit(unit, org) { %>
+		<% org ||= unit.org %>
 		<% const memberCount = unit.countMembers(true) %>
 		<% if(memberCount == 0) return %>
 		<% if(unit.id != $.targetUnit.id) { %>
@@ -27,19 +28,20 @@
 		<% if(unit.roles.length > 0) { %>
 			<div class="unit-grid">
 				<% for(const {user} of unit.roles) { %>
+					<% if(org && user.org != org) continue %>
 					<%~ include("/user/templates/userEntry.html", {
 						targetUser: user
 					}) %>
 				<% } %>
 			</div>
 		<% } %>
-		<% for(const subUnit of unit.subUnits) { %>
+		<% for(const subUnit of unit.orgSubUnits(org)) { %>
 			<div class="sub-unit">
-				<% displayUnit(subUnit) %>
+				<% displayUnit(subUnit, org) %>
 			</div>
 		<% } %>
 	<% } %>
-	<% displayUnit($.targetUnit) %>
+	<% displayUnit($.targetUnit, $.orgContext) %>
 <% } else { %>
 	<p>Brak użytkowników w tej jednostce.</p>
 <% } %>

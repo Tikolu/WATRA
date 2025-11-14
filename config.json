@@ -2,10 +2,10 @@
 	"name": "Związek Harcerstwa Polskiego",
 	"orgs": {
 		"orgHarcerzy": {
-			"name": "Organizacja Harcerzy"
+			"name": "Organizacja harcerzy"
 		},
 		"orgHarcerek": {
-			"name": "Organizacja Harcerek"
+			"name": "Organizacja harcerek"
 		}
 	},
 	"adultAge": 18,
@@ -17,10 +17,16 @@
 			"name": "Zuchy"
 		},
 		"harc": {
-			"name": "Harcerze"
+			"name": {
+				"orgHarcerzy": "Harcerze",
+				"orgHarcerek": "Harcerki"
+			}
 		},
 		"wędro": {
-			"name": "Wędrownicy"
+			"name": {
+				"orgHarcerzy": "Wędrownicy",
+				"orgHarcerek": "Wędrowniczki"
+			}
 		}
 	},
 	"units": {
@@ -75,7 +81,7 @@
 			}
 		},
 		"gromada": {
-			"name": "Gromada Zuchowa",
+			"name": "Gromada zuchowa",
 			"department": "zuchy",
 			"rank": 1,
 			"roles": [
@@ -86,7 +92,11 @@
 			]
 		},
 		"drużynaHarc": {
-			"name": "Drużyna Harcerska",
+			"name": {
+				"default": "Drużyna harcerska",
+				"orgHarcerzy": "Drużyna harcerzy",
+				"orgHarcerek": "Drużyna harcerek"
+			},
 			"department": "harc",
 			"rank": 1,
 			"roles": [
@@ -97,7 +107,11 @@
 			]
 		},
 		"drużynaWędro": {
-			"name": "Drużyna Wędrownicza",
+			"name": {
+				"default": "Drużyna wędrownicza",
+				"orgHarcerzy": "Drużyna wędrowników",
+				"orgHarcerek": "Drużyna wędrowniczek"
+			},
 			"department": "wędro",
 			"rank": 1,
 			"roles": [
@@ -107,7 +121,7 @@
 			]
 		},
 		"gromadka": {
-			"name": "Gromadka Skrzatowa",
+			"name": "Gromadka skrzatowa",
 			"department": "skrzaty",
 			"rank": 0,
 			"roles": [
@@ -126,7 +140,11 @@
 			]
 		},
 		"zastęp": {
-			"name": "Zastęp",
+			"name": {
+				"default": "Zastęp",
+				"orgHarcerzy": "Zastęp harcerzy",
+				"orgHarcerek": "Zastęp harcerek"
+			},
 			"department": "harc",
 			"rank": 0,
 			"roles": [
@@ -136,7 +154,11 @@
 			]
 		},
 		"patrol": {
-			"name": "Patrol",
+			"name": {
+				"default": "Patrol wędrowniczy",
+				"orgHarcerzy": "Patrol wędrowników",
+				"orgHarcerek": "Patrol wędrowniczek"
+			},
 			"department": "wędro",
 			"rank": 0,
 			"roles": [
@@ -160,7 +182,10 @@
 	
 	"roles": {
 		"przewodniczącyZarząduOkręgu": {
-			"name": "Przewodniczący zarządu",
+			"name": {
+				"orgHarcerzy": "Przewodniczący zarządu",
+				"orgHarcerek": "Przewodnicząca zarządu"
+			},
 			"rank": 2,
 			"limit": 1,
 			"minAge": 18,
@@ -191,7 +216,10 @@
 		},
 
 		"komendantChorągwi": {
-			"name": "Komendant chorągwi",
+			"name": {
+				"orgHarcerzy": "Komendant chorągwi",
+				"orgHarcerek": "Komendantka chorągwi"
+			},
 			"rank": 2,
 			"limit": 1,
 			"minAge": 18,
@@ -209,7 +237,10 @@
 			]
 		},
 		"referent": {
-			"name": "Referent",
+			"name": {
+				"orgHarcerzy": "Referent",
+				"orgHarcerek": "Referentka"
+			},
 			"rank": 1,
 			"minAge": 18,
 			"tags": [
@@ -222,7 +253,10 @@
 		},
 
 		"hufcowy": {
-			"name": "Hufcowy",
+			"name": {
+				"orgHarcerzy": "Hufcowy",
+				"orgHarcerek": "Hufcowa"
+			},
 			"rank": 2,
 			"limit": 1,
 			"minAge": 18,
@@ -241,7 +275,10 @@
 		},
 
 		"drużynowy": {
-			"name": "Drużynowy",
+			"name": {
+				"orgHarcerzy": "Drużynowy",
+				"orgHarcerek": "Drużynowa"
+			},
 			"rank": 2,
 			"limit": 1,
 			"tags": [
@@ -257,7 +294,10 @@
 			]
 		},
 		"przyboczny": {
-			"name": "Przyboczny",
+			"name": {
+				"orgHarcerzy": "Przyboczny",
+				"orgHarcerek": "Przyboczna"
+			},
 			"rank": 1,
 			"tags": [
 				"public",
@@ -274,37 +314,59 @@
 		},
 
 		"zastępowy": {
-			"name": "Zastępowy",
+			"name": {
+				"orgHarcerzy": "Zastępowy",
+				"orgHarcerek": "Zastępowa"
+			},
 			"rank": 2
 		},
 		"podzastępowy": {
-			"name": "Podzastępowy",
+			"name": {
+				"orgHarcerzy": "Podzastępowy",
+				"orgHarcerek": "Podzastępowa"
+			},
 			"rank": 2
 		},
 		"patrolowy": {
-			"name": "Patrolowy",
+			"name": {
+				"orgHarcerzy": "Patrolowy",
+				"orgHarcerek": "Patrolowa"
+			},
 			"rank": 2
 		},
 		"szóstkowy": {
-			"name": "Szóstkowy",
+			"name": {
+				"orgHarcerzy": "Szóstkowy",
+				"orgHarcerek": "Szóstkowa"
+			},
 			"rank": 2
 		},
 
 		"szeregowy": {
-			"name": "Szeregowy",
+			"name": {
+				"orgHarcerzy": "Szeregowy",
+				"orgHarcerek": "Szeregowa"
+			},
+			"minAge": 9,
 			"rank": 0
 		},
 		"zuch": {
 			"name": "Zuch",
+			"minAge": 6,
+			"maxAge": 11,
 			"rank": 0
 		},
 		"skrzat": {
 			"name": "Skrzat",
+			"maxAge": 6,
 			"rank": 0
 		},
 
 		"komendant": {
-			"name": "Komendant",
+			"name": {
+				"orgHarcerzy": "Komendant",
+				"orgHarcerek": "Komendantka"
+			},
 			"rank": 2,
 			"tags": [
 				"public",

@@ -6,6 +6,8 @@
 		unitID: $.targetUnit.id
 	}
 }) %>
+<% const orgParam = $.orgContext ? `?org=${$.orgContext}` : "" %>
+
 <h1 id="unit-title">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
 		<input
@@ -22,7 +24,12 @@
 	<% } %>
 </h1>
 <% if($.targetUnit.upperUnits?.length > 0) { %>
-	<p>(<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
+	<p>
+		<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>
+		<% if($.targetUnit.org) { %>
+			(<%= Config.orgs[$.targetUnit.org]?.name || $.targetUnit.org %>)
+		<% } %>
+	</p>
 <% } %>
 <div class="button-row">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
@@ -39,36 +46,41 @@
 		<i>person</i>
 		Użytkownicy
 	</h2>
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) &&
-		($.targetUnit.roles?.length > 0 || $.targetUnit.subUnits?.length > 0)
-	) { %>
-		<a href="/units/<%= $.targetUnit.id %>/members" class="heading-link">Pełna lista</a>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 1) { %>
+		<a href="/units/<%= $.targetUnit.id %>/members<%= orgParam %>" class="heading-link">Pełna lista</a>
 	<% } %>
-	<% if($.targetUnit.roles?.length == 0) { %>
-		<p>Brak użytkowników</p>
-	<% } else { %>
+	<% if($.targetUnit.roles?.length > 0) { %>
 		<div id="unit-member-list" class="unit-grid">
-			<% function displayUser(role) { %>
-				<% if(!$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
-				<%~ include("/user/templates/userEntry.html", {
-					targetUser: role.user,
-					description: role.displayName
-				}) %>
+			<% function displayUsers(roles) { %>
+				<% for(const role of roles) { %>
+					<% if(!$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
+					<%~ include("/user/templates/userEntry.html", {
+						targetUser: role.user,
+						description: role.displayName,
+						classList: $.orgContext && role.org != $.orgContext ? "faded" : null
+					}) %>
+				<% } %>
 			<% } %>
-			<% for(const role of $.targetUnit.roles.filter(r => r.config.rank > 0)) displayUser(role) %>
+			<% displayUsers($.targetUnit.roles.filter(r => r.config.rank > 0)) %>
 			<hr class="grid-break">
-			<% for(const role of $.targetUnit.roles.filter(r => r.config.rank <= 0)) displayUser(role) %>
+			<% if($.orgContext) { %>
+				<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org == $.orgContext)) %>
+				<hr class="grid-break">
+				<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org != $.orgContext)) %>
+			<% } else { %>
+				<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0)) %>
+			<% } %>
 		</div>
 	<% } %>
 	<div class="button-row">
 		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
-			<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole">
+			<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole<%= orgParam %>">
 				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
 			</button>
 		<% } %>
 		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER)) { %>
-			<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser">
+			<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser<%= orgParam %>">
 				<i>person_add</i>
 				<span>Utwórz użytkownika</span>
 			</button>
@@ -84,18 +96,30 @@
 	</h2>
 	<div id="sub-unit-list" class="unit-grid">
 		<% for(const subUnit of $.targetUnit.subUnits || []) { %>
-			<% if(!subUnit) { %>
-				<div>(nieznana jednostka)</div>
-			<% } else { %>
-				<%~ include("templates/unitEntry.html", {
-					targetUnit: subUnit,
-					description: Text.capitalise(subUnit.typeName)
-				}) %>
-			<% } %>
+			<%
+				let org, fade
+			
+				// If subUnit is in different org, fade it, unless this is its only upperUnit
+				if($.orgContext && subUnit.org && subUnit.org != $.orgContext && subUnit.upperUnits.length == 1) fade = true
+			
+				else {
+					// Pass org context to subUnit links, if subUnit org is different
+					if($.orgContext && subUnit.org != $.orgContext) org = $.orgContext
+					// Create new org context, if subUnit is in different org
+					else if(subUnit.org != $.targetUnit.org) org = $.targetUnit.org
+				}
+				
+			%>
+			<%~ include("templates/unitEntry.html", {
+				targetUnit: subUnit,
+				description: subUnit.typeName,
+				org,
+				classList: fade ? "faded" : null
+			}) %>
 		<% } %>
 	</div>
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
-		<button id="add-sub-unit-button" opens-dialog="/units/<%= $.targetUnit.id %>/addSubUnit">
+		<button id="add-sub-unit-button" opens-dialog="/units/<%= $.targetUnit.id %>/addSubUnit<%= orgParam %>">
 			<i>add</i>
 			<span>Dodaj jednostkę</span>
 		</button>

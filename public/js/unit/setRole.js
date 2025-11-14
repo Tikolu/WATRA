@@ -21,3 +21,12 @@ API.registerHandler("unit/[unitID]/member/[memberID]/setRole", {
 	}
 })
 
+userSelect.onchange = () => {
+	const org = userSelect.querySelector("input:checked")?.dataset.org
+	for(const input of roleSelect.querySelectorAll("input")) {
+		let nameVariants = input.dataset.nameVariants
+		if(!nameVariants) continue
+		nameVariants = JSON.parse(nameVariants)
+		input.labels[0].textContent = nameVariants[org] || nameVariants["default"]
+	}
+}

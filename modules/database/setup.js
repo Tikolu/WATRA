@@ -36,7 +36,8 @@ async function createUnit(unit) {
 	} else {
 		newUnit = new Unit({
 			type: unit.type,
-			name: unit.name
+			name: unit.name,
+			org: unit.org
 		})
 		logger.log(`Creating ${newUnit.typeName} - ${newUnit.displayName}`)
 	}
@@ -55,7 +56,9 @@ async function createUnit(unit) {
 		} else if(user.generate) {
 			await generateUsers(newUnit, user.generate, user.role)
 		} else {
-			newUser = new User()
+			newUser = new User({
+				org: user.org
+			})
 			if(Array.isArray(user.name)) {
 				newUser.name.first = user.name[0]
 				newUser.name.last = user.name[1]
