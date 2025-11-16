@@ -1,24 +1,5 @@
-// Service worker for streaming updates
-const streamingWorkerState = {
-	instance: null,
-	registering: false,
-	lastHeartBeat: 0
-}
-async function checkStreamingWorkerHeartbeat() {
-	// Check if last heartbeat was over 2 seconds ago
-	if(Date.now() - streamingWorkerState.lastHeartBeat < 2000) return
-	if(streamingWorkerState.registering) return
-	streamingWorkerState.registering = true
-	// If worker exists, unregister it
-	await streamingWorkerState.instance?.unregister()
-	// Register new worker
-	streamingWorkerState.instance = await navigator.serviceWorker.register("/js/worker/streaming.js")
-	debug("Registered new Streaming worker")
-	await streamingWorkerState.instance?.ready
-	await sleep(2500)
-	streamingWorkerState.registering = false
-}
-
+// Shared worker for streaming updates
+const streamingWorker = "SharedWorker" in window ? new SharedWorker("/js/worker/streaming.js") : null
 
 // Refresh conditions system
 const pageRefreshConditions = []
@@ -71,30 +52,28 @@ window.initialLoadTime = Date.now()
 window.updatedTime = Date.now()
 window.onpageshow = event => {
 	window.unloading = false
-	// Start service worker heartbeat check
-	streamingWorkerState.interval = setInterval(checkStreamingWorkerHeartbeat, 2000)
 
-	// Detect update events from worker
-	window.streamingChannel = new BroadcastChannel("streaming")
-	window.streamingChannel.onmessage = message => {
-		const {event, type, id} = message.data
+	if(streamingWorker) {
+		// Start worker port
+		streamingWorker.port.start()
 		
-		// Worker heartbeat event
-		if(event == "heartbeat") {
-			streamingWorkerState.lastHeartBeat = Date.now()
+		// Detect update events from worker
+		streamingWorker.port.onmessage = message => {
+			const {event, type, id} = message.data
 			
-		// Worker error event
-		} else if(event == "error") {
-			throw `WorkerError: ${message.data.error}`
+			// Worker error event
+			if(event == "error") {
+				throw `StreamingWorkerError: ${message.data.error}`
 
-		// Data updated
-		} else if(event == "update") {
-			trackDataUpdate(type, id)
-			checkRefreshCondition(type, id)
+			// Data updated
+			} else if(event == "update") {
+				trackDataUpdate(type, id)
+				checkRefreshCondition(type, id)
 
-		// Unknown event
-		} else {
-			throw new Error(`Unknown event: ${event}`)
+			// Unknown event
+			} else {
+				throw new Error(`Unknown worker event: ${event}`)
+			}
 		}
 	}
 	
@@ -122,12 +101,10 @@ window.onpageshow = event => {
 }
 
 window.onbeforeunload = () => {
-	// Close the streaming channel
 	console.log("Unloading...")
-	window.streamingChannel.close()
 	window.unloading = true
-	// Stop service worker heartbeat check
-	clearInterval(streamingWorkerState.interval)
+	// Close the worker port
+	streamingWorker?.port.close()
 }
 
 document.onvisibilitychange = event => {
