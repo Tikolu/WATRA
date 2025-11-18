@@ -33,9 +33,9 @@ class PopulationContext {
 		if(this.entries[model]) return
 		this.entries[model] = {		
 			model: mongoose.model(model),
-			documentIDs: [],
+			required: [],
 			callbacks: [],
-			results: []
+			results: {}
 		}
 		return this.entries[model]
 	}
@@ -44,26 +44,22 @@ class PopulationContext {
 		const modelName = knownDocument.constructor.modelName
 		if(!modelName) return
 		this.setupEntry(modelName)
-		this.entries[modelName].results.push(knownDocument)
+		this.entries[modelName].results[knownDocument.id] ||= knownDocument
 	}
 
 	registerPopulateCallback(ref, IDs, callback) {
 		this.setupEntry(ref)
 		this.entries[ref].callbacks.push(callback)
-		let count = 0
 		for(const id of IDs) {
-			if(this.entries[ref].documentIDs.includes(id)) continue
-			this.entries[ref].documentIDs.push(id)
-			count += 1
+			if(this.entries[ref].required.includes(id)) continue
+			this.entries[ref].required.push(id)
 		}
-		return count
 	}
 
 	findPopulatable(graph, document, options) {
 		if(typeof graph == "string") graph = [graph]
 		if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
-		
-		let findCounter = 0
+				
 		for(const key in graph) {
 			if(typeof key != "string") throw Error("Invalid populate path")
 			if(document.populated(key)) {
@@ -72,10 +68,10 @@ class PopulationContext {
 				if(subGraph && subDocument) {
 					if(Array.isArray(subDocument)) {
 						for(const item of subDocument) {
-							findCounter += this.findPopulatable(subGraph, item, options)
+							this.findPopulatable(subGraph, item, options)
 						}
 					} else if(typeof subDocument == "object") {
-						findCounter += this.findPopulatable(subGraph, subDocument, options)
+						this.findPopulatable(subGraph, subDocument, options)
 					}
 				}
 			} else if(!Array.isArray(document[key]) || document[key].length > 0) {
@@ -100,16 +96,15 @@ class PopulationContext {
 					if(options?.exclude?.hasID(subDocument.id)) continue
 					populateIDs.push(subDocument.id)
 				}
-				
-				findCounter += this.registerPopulateCallback(ref, populateIDs, results => {
+				this.registerPopulateCallback(ref, populateIDs, results => {
 					const newArray = []
 					for(const subDocument of subDocuments) {
 						if(typeof subDocument != "string") continue
-						let newDocument = results.find(r => r.id == subDocument)
+						let newDocument = results[subDocument]
 						if(!newDocument) {
 							if(options?.placeholders === false) continue
 							newDocument = createFakeDocument(mongoose.model(ref), subDocument)
-							results.push(newDocument)
+							results[subDocument] = newDocument
 						}
 						newDocument.$__parent = document
 						newDocument.$__.parent = document
@@ -119,15 +114,22 @@ class PopulationContext {
 				})
 			}
 		}
-		return findCounter
 	}
 
-	finalise(model, foundIDs) {
+	countRequired() {
+		let count = 0
+		for(const model in this.entries) {
+			count += this.entries[model].required.length
+		}
+		return count
+	}
+
+	finalise(model) {
 		const entry = this.entries[model]
 		for(const callback of entry.callbacks) {
 			callback(entry.results)
 		}
-		entry.documentIDs = entry.documentIDs.filter(id => !foundIDs.includes(id))
+		entry.required = []
 		entry.callbacks = []
 	}
 }
@@ -146,21 +148,19 @@ export function populate(graph, options={}) {
 		parentDocument = parentDocument.parent()
 	}
 
-	if(options.log) logger.log("Known documents", options.known)
-
 	populationContext ||= new PopulationContext(options.known, label)
 	if(!this.$locals) Object.defineProperty(this, "$locals", {value: {}})
 	this.$locals.populationContext = populationContext
+	if(options.log) logger.log(`Using population context of ${populationContext.owner}`)
 
 	function loop(loopCount=1) {
-		let findCount = 0
 		if(Array.isArray(this)) {
 			const unpopulated = []
 			for(const index in this) {
 				const item = this[index]
 				if(options?.exclude?.hasID(item.id)) continue
 				if(isPopulated(item)) {
-					findCount += populationContext.findPopulatable(graph, item, options)
+					populationContext.findPopulatable(graph, item, options)
 
 				} else {
 					unpopulated.push(index)
@@ -172,34 +172,41 @@ export function populate(graph, options={}) {
 					const newArray = []
 					for(const index of unpopulated) {
 						const subDocument = this[index]
-						let newDocument = results.find(r => r?.id == subDocument.id)
+						let newDocument = results[subDocument.id]
 						if(!newDocument) {
 							if(options.placeholders === false) continue
 							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id)
-							results.push(newDocument)
+							results[subDocument.id] = newDocument
 						}
 						newArray.push(newDocument)
 					}
 					this.length = 0
 					this.push(...newArray)
 				})
-				findCount += 1
 			}
 		} else {
-			findCount = populationContext.findPopulatable(graph, this, options)
+			populationContext.findPopulatable(graph, this, options)
 		}
 		
+		const findCount = populationContext.countRequired()
 		if(findCount == 0) {
 			if(options.log) logger.log("Finished!")
 			return false
 		}
-		if(loopCount >= 10) throw Error("Database population loop count exceeded")
-		if(options.log) logger.log(`Pass ${loopCount}, found ${findCount} populatable paths:`, populationContext.entries)
+		if(loopCount >= 10) {
+			for(const model in populationContext.entries) {
+				const required = populationContext.entries[model].required
+				if(!required.length) continue
+				logger.log(`${model}s still required:`, required)
+			}
+			throw Error("Database population loop count exceeded")
+		}
+		if(options.log) logger.log(`Pass ${loopCount}, ${findCount} populatable paths required`)
 
 		const populatePromises = []
 		for(const ref in populationContext.entries) {
-			const {model, documentIDs, results} = populationContext.entries[ref]
-			const queryIDs = documentIDs.filter(id => !results.some(r => r?.id == id))
+			const {model, required, results} = populationContext.entries[ref]
+			const queryIDs = required.filter(id => !results[id])
 
 			if(queryIDs.length) {
 				if(options.sync) {
@@ -209,21 +216,23 @@ export function populate(graph, options={}) {
 
 				const query = async () => {
 					if(options.log) logger.log("Requesting", ref, "from DB:", queryIDs)
-					const results = await model.find({_id: queryIDs}, options.select)
+					const queryResults = await model.find({_id: queryIDs}, options.select)
 					for(const id of queryIDs) {
-						if(!results.some(r => r?.id == id)) {
+						if(!queryResults.some(r => r?.id == id)) {
 							if(options.placeholders === false) continue
-							results.push(createFakeDocument(model, id, false))
+							queryResults.push(createFakeDocument(model, id, false))
 						}
 					}
-					populationContext.entries[ref].results.push(...results)
-					populationContext.finalise(ref, queryIDs)
+					for(const doc of queryResults) {
+						populationContext.entries[ref].results[doc.id] = doc
+					}
+					populationContext.finalise(ref)
 				}
 				
 				populatePromises.push(query())
 
 			} else {
-				populationContext.finalise(ref, [])
+				populationContext.finalise(ref)
 			}
 
 		}
@@ -251,6 +260,9 @@ export function populate(graph, options={}) {
 					loopCount += 1
 					asyncLoop()
 				})
+			} else if(loopResult) {
+				loopCount += 1
+				asyncLoop()
 			} else {
 				resolve()
 			}
