@@ -174,7 +174,7 @@ async function refreshPageData() {
 	window.refreshing = true
 	debug("Refreshing page data...")
 	
-	const response = await fetch(document.location)
+	const response = await fetch(document.location, {redirect: "manual"})
 	if(!response.ok) {
 		// Reload on error
 		document.location.reload()
@@ -417,6 +417,7 @@ const API = {
 	 * @param {object} handler - Handler object with properties:
 	 *  - form: ID of form to use for data, or function to call to get the form element
 	 *  - progressText: Text to show while processing
+	 *  - persistProgress: Whether to keep progress popup open after request is complete
 	 *  - validate: Function to validate data before sending, should return true or an object with additional properties
 	 *  - before: Function to call before sending data, should return true to continue or false to cancel
 	 *  - after: Function to call after receiving response, should return a promise if async
@@ -425,7 +426,7 @@ const API = {
 	 *  - successText: Text to show on success
 	 */
 	registerHandler(api, handler) {
-		if(api in this.handlers) {
+		if(api in this.handlers && !handler.overwrite) {
 			throw new Error(`API handler already registered for ${api}`)
 		}
 		this.handlers[api] = handler
@@ -452,8 +453,8 @@ const API = {
 		// Clone handler for modifying
 		handler = {...handler, api}
 
-		// Create POST data from META
-		data = {...META, ...data}
+		// Create POST data from META and handler data
+		data = {...META, ...data, ...handler.data}
 
 		const elements = [element]
 		const formData = {}
@@ -542,7 +543,7 @@ const API = {
 
 		// Trigger data validation callback
 		if(handler.validate) {
-			const validationResponse = await handler.validate(data)
+			const validationResponse = await handler.validate(data, element)
 			if(!validationResponse) {
 				for(const formElement of elements) {
 					formElement.classList.add("invalid")
@@ -562,7 +563,7 @@ const API = {
 		})
 
 		// Trigger "before" callback
-		if(handler.before && !await handler.before(data)) return
+		if(handler.before && !await handler.before(data, element)) return
 
 		// Show loading message
 		let progressMessage
@@ -584,21 +585,24 @@ const API = {
 		if(Object.isEmpty(data)) data = undefined
 		try {
 			var response = await API.request(handler.api, data)
+
+			// Trigger "after" callback
+			await handler.after?.(response, data, element)
 		} catch(error) {
+			if(progressMessage) progressMessage.close()
 			elements.forEach(e => e.classList.add("invalid"))
+			await handler.error?.(response, data, element)
+			console.error(error)
 			Popup.error(error)
 			return
 		} finally {
-			if(progressMessage) progressMessage.close()
+			if(progressMessage && !handler.persistProgress) progressMessage.close()
 			// Re-enable elements
 			for(const element of elements) {
 				element.disabled = false
 				element.classList.remove("loading")
 			}
 		}
-
-		// Trigger "after" callback
-		await handler.after?.(response, data)
 
 		// Update element modified state
 		for(const formElement of elements) {
