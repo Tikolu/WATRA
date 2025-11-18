@@ -251,6 +251,18 @@ details > summary > * {
 	display: inline;
 }
 
+dl {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+
+	& > dt {
+		font-weight: bold;
+	}
+
+	& > dd {
+		margin-left: 1em;
+	}
+}
 
 pre {
 	overflow-x: auto;
@@ -337,14 +349,21 @@ p.warning + p.warning {
 			display: flex;
 		}
 
+		& > h3 {
+			margin: 0;
+		}
+
 		& .unit-image {
+			width: 2em;
+			height: 2em;
 			margin-right: 0.5em;
 			display: flex;
 		}
 
-		& .unit-image > i {
+		& .unit-image > i, & .unit-image > img {
 			margin: auto;
 			font-size: 2em;
+			width: 100%;
 		}
 
 		& .unit-title {

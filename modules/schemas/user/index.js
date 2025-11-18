@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import randomID from "modules/randomID.js"
 import * as Text from "modules/text.js"
 import * as datetime from "jsr:@std/datetime"
 
@@ -11,6 +10,7 @@ import Config from "modules/config.js"
 import HTTPError from "modules/server/error.js"
 
 import userMedical from "./medical.js"
+import userAuth from "./auth.js"
 
 export class UserClass {
 	/* * Static functions * */
@@ -18,7 +18,7 @@ export class UserClass {
 	/** Finds a user by their access code */
 	static findByAccessCode(code) {
 		if(!/^\d+$/.test(code)) return null
-		return this.findOne({ accessCode: code })
+		return this.findOne({ "auth.accessCode": code })
 	}
 	
 	
@@ -123,8 +123,7 @@ export class UserClass {
 	]
 
 	medical = userMedical
-
-	accessCode = String
+	auth = userAuth
 
 	/* * Getters * */
 
@@ -175,13 +174,6 @@ export class UserClass {
 	}
 
 	/* * Methods * */
-
-	/** Generates, saves and returns an access code for a user */
-	async generateAccessCode() {
-		this.accessCode = randomID(2, "numeric")
-		await this.save()
-		return this.accessCode
-	}
 
 	/** Adds the provided user as a parent to the user */
 	async addParent(parent) {

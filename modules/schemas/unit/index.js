@@ -112,8 +112,8 @@ export class UnitClass {
 			role.$isNew = false
 		} 
 
-		role.user = user.id
-		role.unit = this.id
+		role.user = user
+		role.unit = this
 
 		// Check org mismatch
 		if(this.org && this.org != user.org) {

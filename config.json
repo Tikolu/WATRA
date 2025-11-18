@@ -1,5 +1,6 @@
 {
 	"name": "Związek Harcerstwa Polskiego",
+	"host": "dev.system-harcerski.tikolu.net",
 	"orgs": {
 		"orgHarcerzy": {
 			"name": "Organizacja harcerzy"

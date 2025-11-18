@@ -41,3 +41,51 @@ API.registerHandler("user/[userID]/parent/create", {
 		document.location.href = `/users/${response.userID}`
 	}
 })
+
+API.registerHandler("passkey/create", {
+	progressText: "Tworzenie klucza dostępu...",
+	after: async (response, data, element) => {
+		try {
+			const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(response.creationOptions)
+			var credential = await navigator.credentials.create({publicKey})
+		} catch(error) {
+			console.error(error)
+			throw "Anulowano tworzenie klucza"
+		}
+
+		API.executeHandler(element, "passkey/save", {
+			credential: credential.toJSON()
+		})
+	}
+})
+
+API.registerHandler("passkey/save", {
+	progressText: "Zapisywanie klucza dostępu...",
+	successText: "Zapisano klucz dostępu!",
+	error: async (response, data) => {
+		await deleteCredential(data.credential.id)
+	}
+})
+
+API.registerHandler("passkey/[passkeyID]/delete", {
+	progressText: "Usuwanie klucza dostępu...",
+	successText: "Usunięto klucz dostępu",
+	after: async response => {
+		await deleteCredential(response.passkeyID)
+	}
+})
+
+async function deleteCredential(id) {
+	await PublicKeyCredential.signalUnknownCredential?.({
+		rpId: window.location.hostname,
+		credentialId: id
+	})
+}
+
+API.registerHandler("logout", {
+	progressText: "Wylogowywanie...",
+	overwrite: true,
+	data: {
+		userID: undefined
+	}
+})

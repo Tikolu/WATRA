@@ -1,5 +1,5 @@
 <% layout("/layouts/dialog", {
-	// scripts: ["user/switcher"],
+	scripts: ["login", "user/switcher"],
 	meta: {
 		user: $.user.id
 	}
@@ -8,17 +8,23 @@
 	<h1>
 		<i>person</i>
 		<%= $.user.displayName %>
-		<div class="button-row">
-			<button href="/users/<%= $.user.id %>">
-				<i>person</i>
-				<span>Profil</span>
-			</button>
-			<button href="/logout">
-				<i>logout</i>
-				<span>Wyloguj</span>
-			</button>
-		</div>
 	</h1>
+	<% if($.user.auth.keys.length == 0) { %>
+		<p class="warning">
+			<i>warning</i>
+			Nie dodano klucza dostępu - konto nie jest zabezpieczone!
+		</p>
+	<% } %>
+	<div class="button-row">
+		<button href="/users/<%= $.user.id %>">
+			<i>person</i>
+			<span>Profil</span>
+		</button>
+		<button api="logout">
+			<i>logout</i>
+			<span>Wyloguj</span>
+		</button>
+	</div>
 	<% if($.savedUsers.length) { %>
 		<hr>
 		<h2>
@@ -37,7 +43,7 @@
 						</div>
 					</div>
 					<div class="unit-content button-row">
-						<button href="/logout/switch?userID=<%= user.id %>">
+						<button api="login/getKeys?userID=<%= user.id %>">
 							<i>login</i>
 							<span>Zaloguj</span>
 						</button>

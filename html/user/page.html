@@ -15,7 +15,7 @@
 <% } %>
 <div class="button-row">
 	<% if($.user.id == $.targetUser.id) { %>
-		<button id="logout-button" href="/logout">
+		<button id="logout-button" api="logout">
 			<i>logout</i>
 			<span>Wyloguj</span>
 		</button>
@@ -171,6 +171,63 @@
 		</button>
 	<% } %>
 </div>
+
+<% if($.targetUser.id == $.user.id) { %>
+	<hr>
+	<h2>
+		<i>key</i>
+		Klucze dostępu
+	</h2>
+	<p>Klucze dostępu są używane aby logować się do systemu. Można dodać kilka kluczy dostępu, aby umożliwić logowanie z różnych urządzeń.</p>
+	<div class="unit-grid">
+		<% for(const key of $.targetUser.auth.keys) { %>
+			<% const provider = key.provider %>
+			<div>
+				<div class="unit-header">
+					<div class="unit-image">
+						<% if(provider?.icon_light) { %>
+							<img src="<%= provider?.icon_light %>">
+						<% } else { %>
+							<i>passkey</i>
+						<% } %>
+					</div>
+					<div class="unit-title">
+						<h3><%= provider?.name || "Klucz dostępu" %></h3>
+					</div>
+				</div>
+				<dl>
+					<dt>Dodano</dt>
+					<dd><%= datetime.format(key.created, "yyyy-MM-dd HH:mm") %></dd>
+					<dt>Ostatnio użyto</dt>
+					<dd><%= key.lastUsed ? datetime.format(key.lastUsed, "yyyy-MM-dd HH:mm") : "Nigdy" %></dd>
+				</dl>
+				<div class="button-row">
+					<button class="dangerous" api="passkey/<%= key.id %>/delete">
+						<i>delete</i>
+						<span>Usuń</span>
+					</button>
+				</div>
+			</div>
+		<% } %>
+	</div>
+	<button id="add-passkey-button" api="passkey/create">
+		<i>add</i>
+		<span>Utwórz klucz dostępu</span>
+	</button>
+	<dialog id="delete-passkey-dialog">
+		<h1>Trwale usunąć klucz dostępu?</h1>
+		<p>Nie będzie można się nim więcej logować.</p>
+		<div class="button-row">
+			<button>
+				<i>arrow_back</i>
+				<span>Anuluj</span>
+			</button>
+			<button class="dangerous" command>
+				<i>delete</i>
+				<span>Usuń</span>
+			</button>
+		</div>
+<% } %>
 
 <% if($.targetUser.isParent) { %>
 	<hr>

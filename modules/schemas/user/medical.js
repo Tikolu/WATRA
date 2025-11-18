@@ -2,6 +2,8 @@ import { medicalCategories } from "modules/medical.js"
 import * as Text from "modules/text.js"
 
 export default class {
+	_id = false
+
 	confirmed = {
 		type: Boolean,
 		default: false

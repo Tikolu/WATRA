@@ -18,6 +18,9 @@ export default async function({user, targetUser}) {
 	// Check all permissions
 	await user.checkPermission(targetUser.PERMISSIONS)
 	
+	if(user.id == targetUser.id) {
+		await targetUser.auth.populate("keys")
+	}
 
 	return html("user/page", {user, targetUser})
 }

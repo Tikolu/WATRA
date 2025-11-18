@@ -1,4 +1,4 @@
-const dialog = frameElement.parentElement
+window.dialog = frameElement.parentElement
 
 // After starting an API request, close the dialog
 API.onRequestStart = async () => {
@@ -8,17 +8,20 @@ API.onRequestStart = async () => {
 }
 // After a successful API request, reset the frame
 API.onRequestSuccess = () => {
-	dialog.close()
-	sleep(250).then(() => {
-		frameElement.style.height = null
-		frameElement.src = ""
-	})
+	dialog.fullClose()
 }
 // After a failed API request, re-open the dialog
 API.onRequestError = () => {
 	frameElement.classList.add("loaded")
 	if(dialog.open) return
 	dialog.showModal()
+}
+
+dialog.fullClose = async () => {
+	dialog.close()
+	await sleep(250)
+	frameElement.style.height = null
+	frameElement.src = ""
 }
 
 // Move button

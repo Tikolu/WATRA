@@ -15,6 +15,11 @@ async function generateUsers(unit, count, role) {
 				last: Defaults.names.last.random()
 			}
 		})
+
+		const f = newUser.name.first.endsWith("a")
+		newUser.org = f ? "orgHarcerek" : "orgHarcerzy"
+		if(unit.org && newUser.org != unit.org) continue
+		
 		await unit.setRole(newUser, role)
 	}
 }
@@ -68,7 +73,7 @@ async function createUnit(unit) {
 		}
 		await newUnit.setRole(newUser, user.role)
 		if(user.generateAccessCode) {
-			const accessCode = await newUser.generateAccessCode()
+			const accessCode = await newUser.auth.generateAccessCode()
 			logger.log(`${newUser.displayName}'s access code:`, accessCode)
 		}
 	}

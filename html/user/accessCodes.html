@@ -9,12 +9,12 @@
 	<% if(!$.targetUser.parents.length) { %>
 		<h2>Nowy użytkownik</h2>
 		<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
-		<input type="text" class="access-code" disabled value="<%= $.targetUser.accessCode %>">
+		<input type="text" class="access-code" disabled value="<%= $.targetUser.auth.accessCode %>">
 	<% } else { %>
 		<!-- <hr> -->
 		<h2>Rodzic / opiekun</h2>
 		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
-		<input type="text" class="access-code" disabled value="<%= $.targetUser.parents[0].accessCode %>">
+		<input type="text" class="access-code" disabled value="<%= $.targetUser.parents[0].auth.accessCode %>">
 	<% } %>
 </main>
 <hr>
