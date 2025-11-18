@@ -1,5 +1,3 @@
-import * as Token from "modules/server/token.js"
-
 /**
  * ServerResponse class, representing a mutable response from the server
  */
@@ -68,11 +66,6 @@ export default class {
 		})
 
 		return response
-	}
-
-	/** Encode and send the web token object */
-	async sendToken() {
-		await Token.send(this)
 	}
 
 	/** Registers server timings, which are later sent in the Server-Timing header */

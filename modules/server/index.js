@@ -1,9 +1,9 @@
 import mime from "npm:mime"
 import { join as joinPath } from "node:path"
 
+import Token from "./token.js"
 import ServerRequest from "modules/server/request.js"
 import ServerResponse from "modules/server/response.js"
-
 import findRoute from "modules/server/route.js"
 import { Logger } from "modules/logger.js"
 
@@ -40,7 +40,12 @@ async function handler(req) {
 	if(request.headers.has("Cookie")) {
 		request.getCookies()
 		// If a token cookie is present, parse token
-		if(request.cookies.token) await request.parseToken()
+		if(request.cookies.token) {
+			request.token = new Token(await Token.parse(request.cookies.token))
+		}
+	// Otherwise, create blank token
+	} else {
+		request.token = new Token()
 	}
 
 	// If URL ends with a file extension, check if a matching file exists
@@ -52,8 +57,9 @@ async function handler(req) {
 	// Final fallback, if reponse has not been closed, close it
 	if(response.open && !response.streaming) response.close();
 
-	// Send the token, if one is present
-	if(response.token) await response.sendToken()
+	// Send the token
+	const tokenCookie = await request.token.toCookie()
+	if(tokenCookie) response.headers.set("Set-Cookie", tokenCookie)
 	
 	response.registerTiming("server", "close response")
 	return response.toResponse()

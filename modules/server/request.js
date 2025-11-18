@@ -1,11 +1,8 @@
-import * as Token from "modules/server/token.js";
-
 /**
  * ServerRequest class, extends the built in Deno Request class with additional functionality
  */
 export default class extends Request {
 	cookies = {}
-	token = {}
 
 	constructor(request) {
 		super(request)
@@ -38,9 +35,5 @@ export default class extends Request {
 			this.cookies[name] = decodeURIComponent(value)
 		}
 		return this.cookies
-	}
-
-	async parseToken() {
-		await Token.parse(this)
 	}
 }

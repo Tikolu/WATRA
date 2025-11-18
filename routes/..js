@@ -1,4 +1,6 @@
 import html from "modules/html.js"
+
+import Session from "modules/session.js"
 import User from "modules/schemas/user"
 
 const errorMessages = {
@@ -22,16 +24,17 @@ export async function open() {
 	// Add route data from URL parameters
 	this.addRouteData(Object.fromEntries(this.request.address.searchParams), false)
 	
-	// Get user ID from token
-	const userID = this.request.token?.active
+	// Initialise session
+	this.token = this.request.token
+	this.session = new Session(this.token)
 	
 	// If user ID is set, lookup and validate the user
-	if(userID && this.routePath[0] != "logout") {
-		const user = await User.findById(userID)
+	if(this.token.active) {
+		const user = await User.findById(this.token.active)
 
 		// If user does not exist, logout fully
 		if(!user) {
-			this.response.redirect("/logout/full")
+			this.session.logout(true)
 			return
 		}
 		this.addRouteData({user})
@@ -44,6 +47,7 @@ export function exit({user}) {
 	if(this.lastError) {
 		// Default code for all errors is 500
 		const code = this.lastError.httpCode || 500
+		// Redirect 404 errors to login page
 		if(code == 404 && !user && this.routePath[0] != "login") {
 			this.response.redirect("/login")
 			return
@@ -61,7 +65,7 @@ export function exit({user}) {
 			},
 			ip: this.request.headers.get("x-forwarded-for"),
 			path: this.request.address.pathname,
-			client: this.request.token?.client,
+			client: this.token.client,
 			userAgent: this.request.headers.get("user-agent"),
 			user
 		})
@@ -70,7 +74,7 @@ export function exit({user}) {
 	// Convert output to string
 	if(typeof this.lastOutput != "string") this.lastOutput = String(this.lastOutput)
 	
-	// Write to this.response and close it
+	// Write to response and close it
 	this.response.write(this.lastOutput)
 	this.response.close()
 }

@@ -3,41 +3,78 @@ import sha256 from "modules/sha256.js";
 
 const SERVER_PRIVATE_KEY = "secret"
 
-export async function parse(request) {
-	request.token = {}
-	if(!request.cookies.token) return
+export default class {
+	/** Parses and verifies a token from a cookie string */
+	static async parse(cookie) {
+		if(!cookie) return
 
-	const tokenData = request.cookies.token.split(".")
-	if(tokenData.length != 2) return
+		// Parse token data from cookie
+		const tokenData = cookie.split(".")
+		if(tokenData.length != 2) return
 
-	const tokenHash = await sha256(tokenData[0] + SERVER_PRIVATE_KEY)
-	if(tokenHash !== tokenData[1]) return
-	
-	try {
-		let token = Base64.decode(tokenData[0])
-		token = JSON.parse(token)
-		request.token = token
-	} catch {
-		return
-	}
-}
-
-export async function send(response) {
-	let token;
-	try {
-		token = JSON.stringify(response.token)	
-	} catch {
-		token = ""
+		// Verify token signature
+		const tokenHash = await sha256(tokenData[0] + SERVER_PRIVATE_KEY)
+		if(tokenHash !== tokenData[1]) return
+		
+		try {
+			const token = Base64.decode(tokenData[0])
+			return JSON.parse(token)
+		} catch {
+			return
+		}
 	}
 
-	if(token == "{}" || token == "\"\"") token = ""
-	else token = Base64.encode(token)
+	constructor(token) {
+		this.token = token || {}
+		this.modified = false
+		
+		// Proxy to track modifications
+		const proxyHandler = {
+			get(target, property) {
+				if(property in target) return target[property]
+				const value = target.token[property]
+				return value
+			},
+			set(target, property, value) {
+				if(property in target) {
+					target[property] = value
+				} else {
+					target.token[property] = value
+					target.modified = true
+				}
+				return true
+			},
+			deleteProperty(target, property) {
+				delete target.token[property]
+				target.modified = true
+				return true
+			}
+		}
+		return new Proxy(this, proxyHandler)
+	}
 
-	if(token) {
-		const hash = await sha256(token + SERVER_PRIVATE_KEY)
-		const cookie = `${token}.${hash}`
-		response.headers.set("Set-Cookie", `token=${cookie}; Max-Age=34560000; Path=/; Secure; HttpOnly`)
-	} else {
-		response.headers.set("Set-Cookie", `token=; Max-Age=-1; Path=/`)
+	/** Signs a token and returns its cookie string */
+	async toCookie() {
+		// Skip if token is unmodified
+		if(!this.modified) return
+
+		let token
+		try {
+			token = JSON.stringify(this.token)	
+		} catch {
+			token = ""
+		}
+
+		if(token == "{}" || token == "\"\"") token = ""
+		else token = Base64.encode(token)
+
+		if(token) {
+			// Sign token
+			const hash = await sha256(token + SERVER_PRIVATE_KEY)
+			return `token=${token}.${hash}; Max-Age=34560000; Path=/; Secure; HttpOnly`
+		} else {
+			// Clear token cookie if token is empty
+			return "token=; Max-Age=-1; Path=/"
+		}
 	}
 }
