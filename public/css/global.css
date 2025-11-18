@@ -341,7 +341,7 @@ p.warning + p.warning {
 		text-decoration: none;
 
 		&.faded {
-			color: var(--secondary-background);
+			color: var(--border);
 			background-color: var(--disabled-input-background);
 		}
 
@@ -402,7 +402,7 @@ p.warning + p.warning {
 		transition: background-color 250ms;
 		opacity: 1 !important;
 		
-		&:hover, &:focus-visible {
+		&:not(.faded):hover, &:not(.faded):focus-visible {
 			background-color: var(--secondary-hover-background);
 			opacity: 1 !important;
 		}
