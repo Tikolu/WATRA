@@ -10,12 +10,16 @@ const logger = new Logger("MongoDB", 32)
 
 // Helper functions to simplify IDs and arrays of IDs
 String.prototype.__defineGetter__("id", function() {
-	if(!shortID.validate.test(this)) return undefined
-	else return this
+	return this
 })
 Object.defineProperty(Array.prototype, "hasID", {
 	value: function(id) {
 		return this.some(value => value?.id === id)
+	}
+})
+Object.defineProperty(Array.prototype, "id", {
+	value: function(id) {
+		return this.find(value => value?.id === id)
 	}
 })
 
@@ -26,10 +30,11 @@ Object.defineProperty(Array.prototype, "populate", {
 
 // Globally use custom string IDs
 mongoose.plugin(schema => {
-	if(schema.tree._id.default) return
-	schema.add({
-		_id: shortID
-	})
+	if(schema.tree._id?.type == "ObjectId") {
+		schema.add({
+			_id: shortID
+		})
+	}
 })
 
 // Globally enable optimistic concurrency

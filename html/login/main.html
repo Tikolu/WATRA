@@ -1,9 +1,16 @@
 <% layout("/layouts/login", {
-	title: "Logowanie",
-	scripts: ["login/main"]
+	title: "System Harcerski",
+	scripts: ["login"]
 }) %>
-<h1>Logowanie</h1>
+<h1>System Harcerski</h1>
+
+<button id="login-button" api="login/getKeys">
+	<i>passkey</i>
+	Zaloguj
+</button>
+
 <% if($.savedUsers && $.savedUsers.length > 0) { %>
+	<hr>
 	<h2>Ostatnie logowania</h2>
 	<div class="unit-grid">
 		<% for(const user of $.savedUsers) { %>
@@ -17,11 +24,11 @@
 					</div>
 				</div>
 				<div class="unit-content button-row">
-					<button href="/login/<%= user.id %>">
+					<button api="login/getKeys?userID=<%= user.id %>">
 						<i>login</i>
 						<span>Zaloguj</span>
 					</button>
-					<button href="/logout/full?userID=<%= user.id %>" class="dangerous">
+					<button api="logout?remove=<%= user.id %>" class="dangerous"<% if(user.auth.keys.length == 0) { %> data-warning<% } %>>
 						<i>close</i>
 						<span>Usuń z listy</span>
 					</button>
@@ -29,8 +36,26 @@
 			</div>
 		<% } %>
 	</div>
-	<h2>Nowy użytkownik</h2>
+	<% if($.savedUsers.some(user => user.auth.keys.length == 0)) { %>
+		<dialog id="full-logout-warning">
+			<h1>Usuwasz ostatnią metodę logowania</h1>
+			<p>Użytkownik nie posiada kluczy dostępu - po usunięcu z listy, konieczne będzie uzyskanie nowego kodu, aby się zalogować.</p>
+			<div class="button-row">
+				<button>
+					<i>arrow_back</i>
+					<span>Anuluj</span>
+				</button>
+				<button class="dangerous" command>
+					<i>delete</i>
+					<span>Usuń z listy</span>
+				</button>
+			</div>
+		</dialog>
+	<% } %>
 <% } %>
+
+<hr>
+<h2>Nowy użytkownik</h2>
 <form>
 	<label for="user-code-input">Kod dostępu:</label>
 	<input
@@ -40,7 +65,7 @@
 		maxlength="9"
 		autocomplete="off"
 		inputmode="numeric"
-		api="login"
+		api="login/accessCode"
 		name="accessCode"
 	>
-</form>
+</form>	

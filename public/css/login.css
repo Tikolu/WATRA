@@ -21,6 +21,13 @@ main > h1 {
 	width: 10em;
 }
 
+#login-button {
+	display: block;
+	margin: 4em auto;
+	padding: 1em 2em;
+	font-size: 1em;
+}
+
 .unit-grid {
 	--unit-grid-columns: 2;
 }
