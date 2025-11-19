@@ -1,4 +1,4 @@
-import { Error } from "mongoose"
+import {Error as MongooseError} from "mongoose"
 
 const errorMessages = {
 	400: "Invalid URL",
@@ -36,7 +36,7 @@ export default class HTTPError extends Error {
 		}
 
 		// Handle mongoose ValidationError
-		if(message instanceof Error.ValidationError) {
+		if(message instanceof MongooseError.ValidationError) {
 			message = handleMongooseValidationError(message)
 		}
 
