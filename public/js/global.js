@@ -661,6 +661,7 @@ function processAPIAttributes() {
 		let event
 		if(element.matches("button")) event = "click"
 		else if(element.matches("input[type=checkbox]")) event = "change"
+		else if(element.matches("input[type^=date]")) event = "blur"
 		else if(element.matches("input")) event = "submit"
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
@@ -780,6 +781,7 @@ window.afterDataRefresh.push(processDialogOpeners)
 // Custom input fields
 function processCustomInputElements() {
 	for(const input of document.querySelectorAll("input")) {
+		// Skip if input has already been modified
 		if(input.customised) continue
 		input.customised = true 
 		
@@ -799,9 +801,18 @@ function processCustomInputElements() {
 		
 		// Custom date input
 		if(input.matches("[type^=date]")) {
+			input.addEventListener("keydown", event => input.lastKeyboardInputTime = event.timeStamp)
+			
 			input.addEventListener("change", event => {
-				if(!input.value || input.matches(":focus")) return
-				input.blur()
+				if(!input.value) return
+				input.lastKeyboardInputTime ||= 0
+				// If last keyboard input was over 100ms ago, assume change was caused by date picker
+				if(event.timeStamp - input.lastKeyboardInputTime < 100) return
+				// Stupid hack for mobile Chrome
+				const newInput = document.createElement("input")
+				input.insertAdjacentElement("afterend", newInput)
+				newInput.focus()
+				newInput.remove()
 			})
 		}
 
