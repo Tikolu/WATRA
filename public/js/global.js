@@ -6,10 +6,12 @@ window.onunhandledrejection = event => Popup.error(event.reason)
 function debug() {
 	console.log(...arguments)
 	if(!Local.debug) return
-	for(const arg of arguments) {
+	let str = ""
+	for(let arg of arguments) {
 		if(typeof arg != "string") arg = JSON.stringify(arg)
-		Popup.info(arg, "build")
+		str += arg + " "
 	}
+	Popup.info(str, "build")
 }
 
 // Base64 helper functions
@@ -81,6 +83,14 @@ const Popup = window.top.Popup || {
 
 		// Get focused element
 		const focusElement = document.activeElement
+		// If focus is in an input, prevent dialog from stealing focus
+		if(focusElement.matches("input, textarea")) {
+			focusElement.preventAPIRequest = true
+			sleep(10).then(() => {
+				focusElement.focus()
+				focusElement.preventAPIRequest = false
+			})
+		}
 
 		// Find potential existing dialog
 		const existingDialog = document.querySelector("body > dialog.message[open]")
@@ -111,12 +121,6 @@ const Popup = window.top.Popup || {
 			dialog.timings.hide = Date.now()
 			dialog.close()
 		})
-
-
-		// If focus is in an input, prevent dialog from stealing focus
-		if(focusElement.matches("input, textarea")) {
-			sleep(100).then(() => focusElement.focus())
-		}
 
 		return dialog
 	},
@@ -389,6 +393,8 @@ const API = {
 	onRequestError: null,
 	onRequestSuccess: null,
 
+	executionQueue: [],
+
 	async request(get="", post=undefined) {
 		if(this.onRequestStart) await this.onRequestStart()
 		let options = {
@@ -447,8 +453,19 @@ const API = {
 	},
 
 	async executeHandler(element, api, data={}) {
-		console.log("Executing API handler", api)
-		
+		// Get API from element
+		api ||= element.getAttribute("api")
+		if(!api) throw new Error("API not specified")
+
+		// Skip if element has preventAPIRequest flag
+		if(element?.preventAPIRequest) return
+
+		// Skip execution if request is already in the queue for this API and element
+		if(this.executionQueue.some(entry => entry.api == api && entry.element == element)) {
+			console.log(`Skipping duplicate API request for ${api}`)
+			return
+		}
+
 		let handler = API.handlers[api]
 
 		// Find wildcard handler
@@ -464,186 +481,218 @@ const API = {
 
 		if(!handler) throw new Error(`API handler not found for ${api}`)
 
-		// Clone handler for modifying
-		handler = {...handler, api}
+		const request = async function() {
+			console.log("Executing API handler", api)
 
-		// Create POST data from META and handler data
-		data = {...META, ...data, ...handler.data}
+			// Clone handler for modifying
+			handler = {...handler, api}
 
-		const elements = [element]
-		const formData = {}
+			// Create POST data from META and handler data
+			data = {...META, ...data, ...handler.data}
 
-		handler.form ||= element.getAttribute("form")
-		if(handler.form) {
-			// Find form container element
-			let formContainer
-			if(handler.form instanceof HTMLElement) {
-				formContainer = handler.form
-			} else if(typeof handler.form == "function") {
-				formContainer = handler.form(element)
-			} else {
-				formContainer = document.getElementById(handler.form)
+			const elements = element ? [element] : []
+			const formData = {}
+
+			handler.form ||= element?.getAttribute("form")
+			if(handler.form) {
+				// Find form container element
+				let formContainer
+				if(handler.form instanceof HTMLElement) {
+					formContainer = handler.form
+				} else if(typeof handler.form == "function") {
+					formContainer = handler.form(element)
+				} else {
+					formContainer = document.getElementById(handler.form)
+				}
+				if(!formContainer) {
+					throw new Error(`Form not found for API handler ${api}`)
+				}
+				for(const formElement of formContainer.querySelectorAll("[name]") || []) {
+					// Skip already found element
+					if(elements.includes(formElement)) continue
+					
+					// Skip elements in embedded dialogs
+					let skipElement = false
+					for(const parentElement of formElement.parentElementChain) {
+						if(parentElement == formContainer) break
+						if(parentElement.matches("dialog")) {
+							skipElement = true
+							break
+						}
+					}
+					if(skipElement) continue
+
+					elements.push(formElement)
+				}
 			}
-			if(!formContainer) {
-				throw new Error(`Form not found for API handler ${api}`)
-			}
-			for(const formElement of formContainer.querySelectorAll("[name]") || []) {
-				// Skip already found element
-				if(elements.includes(formElement)) continue
+
+			for(const formElement of elements) {
+				let elementValue = formElement.value
+				if(!elementValue && formElement.matches("[contenteditable]")) {
+					elementValue = formElement.innerText.trim()
+				}
 				
-				// Skip elements in embedded dialogs
-				let skipElement = false
-				for(const parentElement of formElement.parentElementChain) {
-					if(parentElement == formContainer) break
-					if(parentElement.matches("dialog")) {
-						skipElement = true
-						break
+				// Clear validity
+				formElement.classList.remove("invalid")
+
+				if(formElement.matches("[type=checkbox], [type=radio]")) {
+					// Default value for checkboxes
+					if(formElement.checked) {
+						if(!formElement.hasAttribute("value")) elementValue = true
+
+					// Ensure required checkboxes are checked
+					} else if(formElement.required) {
+						formElement.classList.add("invalid")
+						return
+
+					// Not checked - skip element
+					} else {
+						continue
 					}
 				}
-				if(skipElement) continue
 
-				elements.push(formElement)
-			}
-		}
-
-		for(const formElement of elements) {				
-			let elementValue = formElement.value
-			if(!elementValue && formElement.matches("[contenteditable]")) {
-				elementValue = formElement.innerText.trim()
-			}
-			
-			// Clear validity
-			formElement.classList.remove("invalid")
-
-			if(formElement.matches("[type=checkbox], [type=radio]")) {
-				// Default value for checkboxes
-				if(formElement.checked) {
-					if(!formElement.hasAttribute("value")) elementValue = true
-
-				// Ensure required checkboxes are checked
-				} else if(formElement.required) {
+				if(
+					// Ensure required fields are filled
+					(formElement.required && !elementValue) ||
+					// Check element validity
+					formElement.checkValidity && !formElement.checkValidity()
+				) {
 					formElement.classList.add("invalid")
 					return
+				}
 
-				// Not checked - skip element
+				const valueKey = formElement.name || handler.valueKey || "value"
+				// If an element with this name was already encountered, turn value into an array
+				if(formData[valueKey]) {
+					if(!Array.isArray(formData[valueKey])) {
+						formData[valueKey] = [formData[valueKey]]
+					}
+					formData[valueKey].push(elementValue)
 				} else {
-					continue
+					formData[valueKey] = elementValue
 				}
 			}
 
-			if(
-				// Ensure required fields are filled
-				(formElement.required && !elementValue) ||
-				// Check element validity
-				formElement.checkValidity && !formElement.checkValidity()
-			) {
-				formElement.classList.add("invalid")
-				return
-			}
+			data = {...data, ...formData}
 
-			const valueKey = formElement.name || handler.valueKey || "value"
-			// If an element with this name was already encountered, turn value into an array
-			if(formData[valueKey]) {
-				if(!Array.isArray(formData[valueKey])) {
-					formData[valueKey] = [formData[valueKey]]
+			// Trigger data validation callback
+			if(handler.validate) {
+				const validationResponse = await handler.validate(data, element)
+				if(!validationResponse) {
+					for(const formElement of elements) {
+						formElement.classList.add("invalid")
+					}
+					return
 				}
-				formData[valueKey].push(elementValue)
-			} else {
-				formData[valueKey] = elementValue
+				handler = {...handler, ...validationResponse}
 			}
-		}
 
-		data = {...data, ...formData}
-
-		// Trigger data validation callback
-		if(handler.validate) {
-			const validationResponse = await handler.validate(data, element)
-			if(!validationResponse) {
-				for(const formElement of elements) {
-					formElement.classList.add("invalid")
-				}
-				return
-			}
-			handler = {...handler, ...validationResponse}
-		}
-
-		// Replace segments in API string
-		handler.api = handler.api.replaceAll(/\[\w+\]/g, segment => {
-			segment = segment.slice(1, -1)
-			const value = data[segment]
-			if(!value) throw new Error(`Missing value for ${segment}`)
-			delete data[segment]
-			return value
-		})
-
-		// Trigger "before" callback
-		if(handler.before && !await handler.before(data, element)) return
-
-		// Show loading message
-		let progressMessage
-		if(handler.progressText) {
-			progressMessage = Popup.create({
-				message: handler.progressText,
-				type: "progress",
-				icon: "progress_activity",
+			// Replace segments in API string
+			handler.api = handler.api.replaceAll(/\[\w+\]/g, segment => {
+				segment = segment.slice(1, -1)
+				const value = data[segment]
+				if(!value) throw new Error(`Missing value for ${segment}`)
+				delete data[segment]
+				return value
 			})
-		}
 
-		// Disable elements during API call
-		for(const element of elements) {
-			element.disabled = true
-			element.classList.add("loading")
-			element.classList.remove("invalid")
-		}
+			// Trigger "before" callback
+			if(handler.before && !await handler.before(data, element)) return
 
-		if(Object.isEmpty(data)) data = undefined
-		try {
-			var response = await API.request(handler.api, data)
+			// Show loading message
+			let progressMessage
+			if(handler.progressText) {
+				progressMessage = Popup.create({
+					message: handler.progressText,
+					type: "progress",
+					icon: "progress_activity",
+				})
+			}
 
-			// Trigger "after" callback
-			await handler.after?.(response, data, element)
-		} catch(error) {
-			if(progressMessage) progressMessage.close()
-			elements.forEach(e => e.classList.add("invalid"))
-			await handler.error?.(response, data, element)
-			console.error(error)
-			Popup.error(error)
-			return
-		} finally {
-			if(progressMessage && !handler.persistProgress) progressMessage.close()
-			// Re-enable elements
+			// Disable elements during API call
 			for(const element of elements) {
-				element.disabled = false
-				element.classList.remove("loading")
+				// Skip focused elements
+				if(element == document.activeElement) continue
+				
+				element.disabled = true
+				element.classList.add("loading")
+				element.classList.remove("invalid")
+			}
+
+			if(Object.isEmpty(data)) data = undefined
+			try {
+				var response = await API.request(handler.api, data)
+
+				// Trigger "after" callback
+				await handler.after?.(response, data, element)
+			} catch(error) {
+				if(progressMessage) progressMessage.close()
+				elements.forEach(e => e.classList.add("invalid"))
+				await handler.error?.(response, data, element)
+				console.error(error)
+				Popup.error(error)
+				return
+			} finally {
+				if(progressMessage && !handler.persistProgress) progressMessage.close()
+				// Re-enable elements
+				for(const element of elements) {
+					element.disabled = false
+					element.classList.remove("loading")
+				}
+			}
+
+			// Update element modified state
+			for(const formElement of elements) {
+				const valueKey = formElement.name || handler.valueKey || "data"
+				if(response[valueKey] !== undefined) {
+					formElement.value = response[valueKey]
+				}
+				formElement.initialValue = formElement.value
+				formElement.modified = false
+			}
+
+			// Show success message
+			if(handler.successText) {
+				Popup.success(handler.successText)
+			}
+
+			// Track data updates
+			for(const key in API.dataUpdateKeys) {
+				const type = API.dataUpdateKeys[key]
+				const id = data?.[key] || response?.[key] || META?.[key]
+				if(!id) continue
+				trackDataUpdate(type, id)
+			}
+
+			// Trigger data refresh
+			if(handler.refresh !== false) {
+				await window.top.refreshPageData()
 			}
 		}
 
-		// Update element modified state
-		for(const formElement of elements) {
-			const valueKey = formElement.name || handler.valueKey || "data"
-			if(response[valueKey] !== undefined) {
-				formElement.value = response[valueKey]
-			}
-			formElement.initialValue = formElement.value
-			formElement.modified = false
+		// Add request to queue
+		let completionPromiseResolver
+		this.executionQueue.push({
+			element,
+			api,
+			request,
+			promise: new Promise(resolve => completionPromiseResolver = resolve)
+		})
+		
+		// If queue contains other requests, wait for them to finish
+		if(this.executionQueue.length > 1) {
+			const previousRequest = this.executionQueue[this.executionQueue.length - 2]
+			await previousRequest.promise
 		}
-
-		// Show success message
-		if(handler.successText) {
-			Popup.success(handler.successText)
-		}
-
-		// Track data updates
-		for(const key in API.dataUpdateKeys) {
-			const type = API.dataUpdateKeys[key]
-			const id = data?.[key] || response?.[key] || META?.[key]
-			if(!id) continue
-			trackDataUpdate(type, id)
-		}
-
-		// Trigger data refresh
-		if(handler.refresh !== false) {
-			await window.top.refreshPageData()
+		
+		try {
+			// Execute this request
+			return await request()
+		} finally {
+			// Resolve promise
+			completionPromiseResolver()
+			// Remove from queue
+			this.executionQueue.shift()
 		}
 	}
 }
