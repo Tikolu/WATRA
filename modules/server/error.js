@@ -1,3 +1,5 @@
+import { Error } from "mongoose"
+
 const errorMessages = {
 	400: "Invalid URL",
 	403: "Forbidden",
@@ -13,6 +15,16 @@ function isValidCode(code) {
 	return true
 }
 
+function handleMongooseValidationError(error) {
+	for(const key in error.errors || {}) {
+		const err = error.errors[key]
+		if(err.kind == "user defined") return err.message
+		else return `Nieprawidłowa wartość: "${err.value}"`
+	}
+	// Fallback to error
+	return error
+}
+
 export default class HTTPError extends Error {
 	constructor(code=500, message="") {
 		// Setup error code
@@ -23,13 +35,18 @@ export default class HTTPError extends Error {
 			code = 500
 		}
 
+		// Handle mongoose ValidationError
+		if(message instanceof Error.ValidationError) {
+			message = handleMongooseValidationError(message)
+		}
+
 		// Setup error message
 		let defaultMessage = false
 		if(!message) {
 			message = errorMessages[code] || errorMessages[500]
 			defaultMessage = true
 		}
-		
+
 		super(message)
 
 		this.httpCode = code
@@ -43,7 +60,7 @@ export default class HTTPError extends Error {
 			for(let line of stack) {
 				if(line.includes(" (ext:")) continue
 				line = line.replaceAll(SERVER_ROOT, "")
-				if(line.includes(" (file:///")) continue
+				if(line.includes("file:///")) continue
 				newStack.push(line)
 			}
 			this.stack = newStack.join("\n")
