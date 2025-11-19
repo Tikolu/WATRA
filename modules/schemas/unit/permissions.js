@@ -44,6 +44,9 @@ export async function MANAGE_INVITES(user) {
 	// Lack of ACCESS permission denies MANAGE_INVITES
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// Cannot manage invites in unit without "invite" eventRule
+	if(!this.config.eventRules.invite) return false
+
 	// "manageEventInvite" roles in this unit or upper units can create new users
 	if(await user.hasRoleInUnits("manageEventInvite", this, this.getUpperUnitsTree())) return true
 

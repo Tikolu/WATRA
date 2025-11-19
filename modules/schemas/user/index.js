@@ -72,7 +72,7 @@ export class UserClass {
 			phone = phone.replace(/^00/, "+")
 			if(!phone.startsWith("+") && phone.length > 10) phone = `+${phone}`
 			if(phone.startsWith("8") && phone.length == 9) phone = `+353${phone}`
-			if(phone.startsWith("08")) phone = `+353${phone.slice(1)}`
+			if(phone.startsWith("08") && phone.length == 10) phone = `+353${phone.slice(1)}`
 			return phone
 		}
 	}
@@ -80,7 +80,13 @@ export class UserClass {
 	org = {
 		type: String,
 		enum: Object.keys(Config.orgs),
-		required: () => Object.keys(Config.orgs).length > 1
+		required: function() {
+			// Not required for users without role
+			if(this.roles.length == 0) return false
+
+			// Otherwise, required if orgs are configures
+			else if(Object.keys(Config.orgs).length > 1) return true
+		}
 	}
 	
 	parents = [
