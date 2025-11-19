@@ -127,3 +127,14 @@ export async function ACCESS_ACTIVITY(user) {
 	
 	return false
 }
+
+/** Generating access code for the user */
+export async function GENERATE_ACCESS_CODE(user) {
+	// Cannot generate for user with access keys
+	if(this.auth.keys.length > 0) return false
+
+	// EDIT permission allows GENERATE_ACCESS_CODE
+	if(await user.checkPermission(this.PERMISSIONS.EDIT)) return true
+
+	return false
+}

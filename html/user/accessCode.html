@@ -1,0 +1,42 @@
+<% layout("/layouts/dialog", {
+	styles: ["user/page"],
+}) %>
+<h1>
+	<i>password</i>
+	Kod dostępu
+</h1>
+<main>
+	<% function accessCodeContainer(code) { %>
+		<div class="access-code-container" onclick="copy(this.children[1])">
+			<%~ include("/templates/qrCode", {
+				data: `https://${Config.host}#${code.replaceAll(" ", "%20")}`
+			}) %>
+			<p class="access-code"><%= code %></p>
+			<p>Naciśnij aby skopiować</p>
+		</div>
+	<% } %>
+
+	<% if(!$.parentCode) { %>
+		<h2>Nowy użytkownik</h2>
+		<% if($.targetUser.id != $.user.id && !$.targetUser.isParent) { %>
+			<p class="warning">
+				<i>warning</i>
+				Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, nie konta rodzica/opiekuna!
+			</p>
+		<% } %>
+		<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
+		<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
+	<% } else { %>
+		<!-- <hr> -->
+		<h2>Rodzic / opiekun</h2>
+		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
+		<% accessCodeContainer($.targetUser.parents[0].auth.formattedAccessCode) %>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Zamknij
+	</button>
+</div>

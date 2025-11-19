@@ -52,6 +52,20 @@ Array.create = value => {
 	return [value]
 }
 
+// Text copy function
+async function copy(text) {
+	if(text instanceof HTMLElement) {
+		let range = document.createRange()
+		let selection = window.getSelection()
+		range.selectNodeContents(text)
+		selection.removeAllRanges()
+		selection.addRange(range)
+		text = selection.toString()
+	}
+	await navigator.clipboard.writeText(text)
+	Popup.success("Skopiowano", "content_copy")
+}
+
 // Popups and dialogs
 const Popup = window.top.Popup || {
 	create({message, type, icon, time=3500}) {

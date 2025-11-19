@@ -1,13 +1,32 @@
+.access-code-container {
+	text-align: center;
+	margin: 1em 0;
+}
+
+.access-code-container img {
+	margin: 1em 0;
+	border-radius: var(--border-radius);
+	height: 10em;
+}
+
 .access-code {
-	display: block;
+	background-color: var(--disabled-input-background);
+	color: var(--input-text);
+	border-radius: var(--border-radius);
+
+	padding: 0.5em 0;
 	margin: auto;
-	margin-bottom: 1.5em;
 	
 	font-size: 1.5em;
 
 	width: 8em;
 	font-family: monospace;
-	text-align: center;
 
 	user-select: all;
+	cursor: text;
+}
+
+.access-code + p {
+	font-size: 0.8em;
+	margin: 0;
 }

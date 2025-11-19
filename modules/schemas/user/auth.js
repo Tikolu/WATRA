@@ -21,11 +21,6 @@ export default class {
 	/** Generates, saves and returns an access code for the user */
 	async generateAccessCode() {
 		const targetUser = this.parent()
-
-		// User with passkey cannot use access codes
-		if(this.keys.length > 0) {
-			throw Error("Nie można wygenerować kodu dostępu dla użytkownika z kluczami dostępu")
-		}
 		
 		// Generate access code
 		this.accessCode = randomID(8, "numeric")
@@ -37,7 +32,7 @@ export default class {
 		}
 		
 		await targetUser.save()
-		return this.accessCode
+		return this.formattedAccessCode
 	}
 
 	/** Generates options for creating a new passkey */
@@ -94,5 +89,10 @@ export default class {
 		
 		await passkey.save()
 		await targetUser.save()
+	}
+
+	/** Formats the access code nicely */
+	get formattedAccessCode() {
+		return this.accessCode.replace(/(\d{4})/g, "$1 ").trim()
 	}
 }

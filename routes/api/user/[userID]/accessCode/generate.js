@@ -1,6 +1,6 @@
 export default async function({user, targetUser}) {
 	// Check permissions
-	await user.requirePermission(targetUser.PERMISSIONS.EDIT)
+	await user.requirePermission(targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)
 	
 	// Generate access code
 	const accessCode = await targetUser.auth.generateAccessCode()

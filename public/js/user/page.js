@@ -23,17 +23,6 @@ API.registerHandler("user/[userID]/delete", {
 	after: () => history.back()
 })
 
-API.registerHandler("user/[userID]/accessCode/generate", {
-	progressText: "Generowanie kodu dostępu...",
-	after: response => {
-		// Format access code
-		const accessCode = response.accessCode.replace(/(\d{4})/g, "$1 ").trim()
-		
-		userAccessCodeContainer.value = accessCode
-		accessCodeDialog.result()
-	}
-})
-
 API.registerHandler("user/[userID]/parent/create", {
 	progressText: "Tworzenie rodzica...",
 	after: response => {
@@ -70,6 +59,7 @@ API.registerHandler("passkey/save", {
 API.registerHandler("passkey/[passkeyID]/delete", {
 	progressText: "Usuwanie klucza dostępu...",
 	successText: "Usunięto klucz dostępu",
+	before: () => deletePasskeyDialog.result(),
 	after: async response => {
 		await deleteCredential(response.passkeyID)
 	}
@@ -84,7 +74,6 @@ async function deleteCredential(id) {
 
 API.registerHandler("logout", {
 	progressText: "Wylogowywanie...",
-	overwrite: true,
 	data: {
 		userID: undefined
 	}
