@@ -2,6 +2,5 @@ delete API.onRequestStart
 delete API.onRequestSuccess
 
 API.registerHandler("logout", {
-	progressText: "Wylogowywanie...",
-	overwrite: true
+	progressText: "Wylogowywanie..."
 })

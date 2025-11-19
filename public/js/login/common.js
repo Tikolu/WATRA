@@ -1,12 +1,3 @@
-API.registerHandler("login/accessCode", {
-	progressText: "Logowanie...",
-	validate: data => {
-		data.accessCode = data.accessCode.replaceAll(" ", "")
-		return !!data.accessCode
-	},
-	after: () => document.location.href = "/"
-})
-
 API.registerHandler("login/getKeys", {
 	progressText: "Logowanie...",
 	after: async (response, data, element) => {
@@ -39,14 +30,5 @@ API.registerHandler("login/verify", {
 	after: () => {
 		top.refreshPageData()
 		window.dialog?.fullClose()
-	}
-})
-
-API.registerHandler("logout", {
-	progressText: "Usuwanie z listy...",
-	before: (data, element) => {
-		if(!("warning" in element.dataset)) return true
-
-		return fullLogoutWarning.result()
 	}
 })
