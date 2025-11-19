@@ -1,9 +1,9 @@
 <a href="/events/<%= $.targetEvent.id %>">
-	<div class="unit-header">
-		<div class="unit-image">
+	<div class="entry-header">
+		<div class="entry-image">
 			<i>hiking</i>
 		</div>
-		<div class="unit-title">
+		<div class="entry-title">
 			<h3><%= $.targetEvent.displayName %></h3>
 			<p>
 				<% if($.description) { %>
@@ -18,7 +18,7 @@
 			</p>
 		</div>
 	</div>
-	<div class="unit-content">
+	<div class="entry-content">
 		<% if($.content) { %>
 			<p><%= $.content %></p>
 		<% } %>

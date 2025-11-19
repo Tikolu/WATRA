@@ -12,18 +12,18 @@
 <% if($.savedUsers && $.savedUsers.length > 0) { %>
 	<hr>
 	<h2>Ostatnie logowania</h2>
-	<div class="unit-grid">
+	<div class="entry-grid">
 		<% for(const user of $.savedUsers) { %>
 			<div>
-				<div class="unit-header">
-					<div class="unit-image">
+				<div class="entry-header">
+					<div class="entry-image">
 						<i>person</i>
 					</div>
-					<div class="unit-title">
+					<div class="entry-title">
 						<h3><%= user.displayName %></h3>
 					</div>
 				</div>
-				<div class="unit-content button-row">
+				<div class="entry-content button-row">
 					<button api="login/getKeys?userID=<%= user.id %>">
 						<i>login</i>
 						<span>Zaloguj</span>

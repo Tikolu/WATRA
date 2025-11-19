@@ -13,14 +13,14 @@
 	<i>history</i>
 	<%= $.targetUser.displayName %> - log aktywności
 </h1>
-<div class="unit-list">
+<div class="entry-list">
 	<% if ($.logs.length == 0) { %>
 		<p>Brak wpisów w logu aktywności.</p>
 	<% } %>
 	<% for(let index = $.logs.length - 1; index >= 0; index--) { %>
 		<% const logEntry = $.logs[index] %>
 		<div>
-			<div class="unit-title">
+			<div class="entry-title">
 				<h3>
 					<%= logEntry.eventType %>
 				</h3>
@@ -28,7 +28,7 @@
 					<%= datetime.format(logEntry.time, "yyyy-MM-dd HH:mm:ss") %>
 				</p>
 			</div>
-			<div id="unit-content">
+			<div id="entry-content">
 				<table>
 					<% if(logEntry.targetEvent) { %>
 						<tr>

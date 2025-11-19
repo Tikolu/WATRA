@@ -163,19 +163,19 @@
 		Klucze dostępu
 	</h2>
 	<p>Klucze dostępu są używane aby logować się do systemu. Można dodać kilka kluczy dostępu, aby umożliwić logowanie z różnych urządzeń.</p>
-	<div class="unit-grid">
+	<div class="entry-grid">
 		<% for(const key of $.targetUser.auth.keys) { %>
 			<% const provider = key.provider %>
 			<div>
-				<div class="unit-header">
-					<div class="unit-image">
+				<div class="entry-header">
+					<div class="entry-image">
 						<% if(provider?.icon_light) { %>
 							<img src="<%= provider?.icon_light %>">
 						<% } else { %>
 							<i>passkey</i>
 						<% } %>
 					</div>
-					<div class="unit-title">
+					<div class="entry-title">
 						<h3><%= provider?.name || "Klucz dostępu" %></h3>
 					</div>
 				</div>
@@ -220,7 +220,7 @@
 		<i>supervisor_account</i>
 		Podopieczni
 	</h2>
-	<div id="child-list" class="unit-grid">
+	<div id="child-list" class="entry-grid">
 		<% for(const child of $.targetUser.children || []) { %>
 			<% child.defaultName = "(podopieczny)" %>
 			<%~ include("templates/userEntry", {targetUser: child}) %>
@@ -232,7 +232,7 @@
 		<i>supervisor_account</i>
 		Rodzice / opiekunowie
 	</h2>
-	<div id="parent-list" class="unit-grid">
+	<div id="parent-list" class="entry-grid">
 		<% for(const parent of $.targetUser.parents || []) { %>
 			<% parent.defaultName = "(rodzic / opiekun)" %>
 			<%~ include("templates/userEntry", {targetUser: parent}) %>
@@ -252,7 +252,7 @@
 		<i>groups</i>
 		Funkcje w jednostkach
 	</h2>
-	<div id="unit-list" class="unit-grid">
+	<div class="entry-grid">
 		<% for(const role of $.targetUser.roles) { %>
 			<%~ include("/unit/templates/unitEntry", {
 				targetUnit: role.unit,
@@ -268,7 +268,7 @@
 	<i>hiking</i>
 		Funkcje w akcjach
 	</h2>
-	<div class="unit-grid">
+	<div class="entry-grid">
 		<% for(const role of $.targetUser.eventRoles) { %>
 			<%~ include("/event/templates/eventEntry.html", {
 				targetEvent: role.unit,
@@ -284,7 +284,7 @@
 	<i>hiking</i>
 		Zaproszenia na akcje
 	</h2>
-	<div class="unit-grid">
+	<div class="entry-grid">
 		<% for(const event of $.targetUser.eventInvites) { %>
 			<% const inviteState = event.findUserInvite($.targetUser)?.state %>
 			<%~ include("/event/templates/eventEntry.html", {
@@ -305,7 +305,7 @@
 		<i>gavel</i>
 		Zatwierdzenia akcji
 	</h2>
-	<div class="unit-grid">
+	<div class="entry-grid">
 		<% for(const event of $.targetUser.eventApprovalRequests) { %>
 			<%
 				const approvalState = event.getApprover($.targetUser)?.approved

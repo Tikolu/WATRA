@@ -3,11 +3,11 @@
 	if(!Array.isArray($.classList)) $.classList = [$.classList]
 %>
 <a href="/users/<%= $.targetUser.id %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
-	<div class="unit-header">
-		<div class="unit-image">
+	<div class="entry-header">
+		<div class="entry-image">
 			<i>person</i>
 		</div>
-		<div class="unit-title">
+		<div class="entry-title">
 			<h3><%= $.targetUser.displayName || "(użytkownik)" %></h3>
 			<p>
 				<% if($.description) { %>
@@ -18,7 +18,7 @@
 			</p>
 		</div>
 	</div>
-	<div class="unit-content">
+	<div class="entry-content">
 		<% if($.content) { %>
 			<p><%= $.content %></p>
 		<% } %>

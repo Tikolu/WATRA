@@ -28,12 +28,12 @@ main > h1 {
 	font-size: 1em;
 }
 
-.unit-grid {
-	--unit-grid-columns: 2;
+.entry-grid {
+	--entry-grid-columns: 2;
 }
 
 @media (max-width: 37.5em) {
-	.unit-grid {
-		--unit-grid-columns: 1;
+	.entry-grid {
+		--entry-grid-columns: 1;
 	}
 }

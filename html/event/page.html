@@ -144,7 +144,7 @@
 			<i>article_person</i>
 			Kadra
 		</h2>
-		<div id="event-member-list" class="unit-grid">
+		<div id="event-member-list" class="entry-grid">
 			<% for(const role of $.targetEvent.roles || []) { %>
 				<%
 					if(role.config.rank <= 0 && $.targetEvent.findUserInvite(role.user)) continue
@@ -255,7 +255,7 @@
 					$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)
 				)
 			) { %>
-				<div class="unit-grid">
+				<div class="entry-grid">
 					<% for(const userInvite of unitInvite.invitedParticipants) { %>
 						<%
 							let content = ""

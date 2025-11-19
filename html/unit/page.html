@@ -8,7 +8,7 @@
 }) %>
 <% const orgParam = $.orgContext ? `?org=${$.orgContext}` : "" %>
 
-<h1 id="unit-title">
+<h1 id="entry-title">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
 		<input
 			type="text"
@@ -50,7 +50,7 @@
 		<a href="/units/<%= $.targetUnit.id %>/members<%= orgParam %>" class="heading-link">Pełna lista</a>
 	<% } %>
 	<% if($.targetUnit.roles?.length > 0) { %>
-		<div id="unit-member-list" class="unit-grid">
+		<div id="unit-member-list" class="entry-grid">
 			<% function displayUsers(roles) { %>
 				<% for(const role of roles) { %>
 					<% if(!$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
@@ -94,7 +94,7 @@
 		<i>groups</i>
 		Jednostki
 	</h2>
-	<div id="sub-unit-list" class="unit-grid">
+	<div id="sub-unit-list" class="entry-grid">
 		<% for(const subUnit of $.targetUnit.subUnits || []) { %>
 			<%
 				let org, fade
@@ -137,7 +137,7 @@
 		Akcje
 	</h2>
 	<% if($.targetUnit.events.length) { %>
-		<div id="unit-event-list" class="unit-grid">
+		<div id="unit-event-list" class="entry-grid">
 			<% for(const event of $.targetUnit.events) { %>
 				<%~ include("/event/templates/eventEntry.html", {
 					targetEvent: event
@@ -148,7 +148,7 @@
 	<% const eventInvites = $.targetUnit.eventInvites.filter(e => !$.targetUnit.events.hasID(e.id)) %>
 	<% if(eventInvites.length && $.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES)) { %>
 		<h3>Zaproszenia na akcje</h3>
-		<div id="invited-event-list" class="unit-grid">
+		<div id="invited-event-list" class="entry-grid">
 			<% for(const event of eventInvites) { %>
 				<%
 					const invite = event.invitedUnits.id($.targetUnit.id)
