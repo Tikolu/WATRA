@@ -42,7 +42,12 @@
 	<% } %>
 </div>
 
-<% if($.targetUnit.roles?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER) || $.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
+<% if(
+	($.targetUnit.roles.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS)) ||
+	$.targetUnit.roles.some(role => role.hasTag("public") || role.user.id == $.user.id) ||
+	$.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER) ||
+	$.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)
+) { %>
 	<section>
 		<h2>
 			<i>person</i>
@@ -54,20 +59,25 @@
 		<% if($.targetUnit.roles?.length > 0) { %>
 			<div id="unit-member-list" class="entry-grid">
 				<% function displayUsers(roles) { %>
+					<% let displayed = false %>
 					<% for(const role of roles) { %>
-						<% if(!$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
+						<% if(role.user.id != $.user.id && !$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
+						<% displayed = true %>
 						<%~ include("/user/templates/userEntry.html", {
 							targetUser: role.user,
 							description: role.displayName,
 							classList: $.orgContext && role.org != $.orgContext ? "faded" : null
 						}) %>
 					<% } %>
+					<% return displayed %>
 				<% } %>
-				<% displayUsers($.targetUnit.roles.filter(r => r.config.rank > 0)) %>
-				<hr class="grid-break">
-				<% if($.orgContext) { %>
-					<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org == $.orgContext)) %>
+				<% if(displayUsers($.targetUnit.roles.filter(r => r.config.rank > 0))) { %>
 					<hr class="grid-break">
+				<% } %>
+				<% if($.orgContext) { %>
+					<% if(displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org == $.orgContext))) { %>
+						<hr class="grid-break">
+					<% } %>
 					<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org != $.orgContext)) %>
 				<% } else { %>
 					<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0)) %>
@@ -97,30 +107,32 @@
 			<i>groups</i>
 			Jednostki
 		</h2>
-		<div id="sub-unit-list" class="entry-grid">
-			<% for(const subUnit of $.targetUnit.subUnits || []) { %>
-				<%
-					let org, fade
-				
-					// If subUnit is in different org, fade it, unless this is its only upperUnit
-					if($.orgContext && subUnit.org && subUnit.org != $.orgContext && subUnit.upperUnits.length == 1) fade = true
-				
-					else {
-						// Pass org context to subUnit links, if subUnit org is different
-						if($.orgContext && subUnit.org != $.orgContext) org = $.orgContext
-						// Create new org context, if subUnit is in different org
-						else if(subUnit.org != $.targetUnit.org) org = $.targetUnit.org
-					}
+		<% if($.targetUnit.subUnits?.length > 0) { %>
+			<div id="sub-unit-list" class="entry-grid">
+				<% for(const subUnit of $.targetUnit.subUnits || []) { %>
+					<%
+						let org, fade
 					
-				%>
-				<%~ include("templates/unitEntry.html", {
-					targetUnit: subUnit,
-					description: subUnit.typeName,
-					org,
-					classList: fade ? "faded" : null
-				}) %>
-			<% } %>
-		</div>
+						// If subUnit is in different org, fade it, unless this is its only upperUnit
+						if($.orgContext && subUnit.org && subUnit.org != $.orgContext && subUnit.upperUnits.length == 1) fade = true
+					
+						else {
+							// Pass org context to subUnit links, if subUnit org is different
+							if($.orgContext && subUnit.org != $.orgContext) org = $.orgContext
+							// Create new org context, if subUnit is in different org
+							else if(subUnit.org != $.targetUnit.org) org = $.targetUnit.org
+						}
+						
+					%>
+					<%~ include("templates/unitEntry.html", {
+						targetUnit: subUnit,
+						description: subUnit.typeName,
+						org,
+						classList: fade ? "faded" : null
+					}) %>
+				<% } %>
+			</div>
+		<% } %>
 		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 			<button id="add-sub-unit-button" opens-dialog="/units/<%= $.targetUnit.id %>/addSubUnit<%= orgParam %>">
 				<i>add</i>
