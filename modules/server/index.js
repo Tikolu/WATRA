@@ -43,10 +43,9 @@ async function handler(req) {
 		if(request.cookies.token) {
 			request.token = new Token(await Token.parse(request.cookies.token))
 		}
-	// Otherwise, create blank token
-	} else {
-		request.token = new Token()
 	}
+	// Otherwise, create blank token
+	request.token ||= new Token()
 
 	// If URL ends with a file extension, check if a matching file exists
 	if(/.\.[a-z]{2,4}$/.test(request.address.pathname)) await handlePublicFile(request.address.pathname, response)
