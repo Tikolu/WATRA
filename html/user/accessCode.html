@@ -1,5 +1,5 @@
 <% layout("/layouts/dialog", {
-	styles: ["user/page"],
+	styles: ["user/accessCode"],
 }) %>
 <h1>
 	<i>password</i>
@@ -7,10 +7,10 @@
 </h1>
 <main>
 	<% function accessCodeContainer(code) { %>
-		<div class="access-code-container" onclick="copy(this.children[1])">
-			<%~ include("/templates/qrCode", {
-				data: `https://${Config.host}#${code.replaceAll(" ", "%20")}`
-			}) %>
+		<%~ include("/templates/qrCode", {
+			data: `https://${Config.host}#${code.replaceAll(" ", "%20")}`
+		}) %>
+		<div class="access-code-container" onclick="copy(this.children[0])">
 			<p class="access-code"><%= code %></p>
 			<p>Naciśnij aby skopiować</p>
 		</div>

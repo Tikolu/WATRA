@@ -2,7 +2,7 @@ API.registerHandler("unit/[unitID]/member/create", {
 	form: main,
 	progressText: "Tworzenie użytkownika...",
 	after: (response, data) => {
-		window.top.createURLDialog(`/users/${response.userID}/accessCode?parent=${data.createParent}`, true)
+		window.top.createURLDialog(`/users/${response.userID}/accessCode?parent=${data.createParent || ""}`, true)
 	}
 })
 

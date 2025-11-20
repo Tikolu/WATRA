@@ -1,7 +1,6 @@
 <% layout("/layouts/body", {
 	title: $.targetUser.displayName,
 	scripts: ["user/page"],
-	styles: ["user/page"],
 	meta: {
 		userID: $.targetUser.id
 	}
@@ -56,6 +55,9 @@
 		md.includes("dob"), "Brak daty urodzenia",
 		md.includes("medical"), "Nie zatwierdzone dane medyczne",
 	)
+	if($.user.id == $.targetUser.id && $.targetUser.auth.keys.length == 0) {
+		userWarnings.unshift("Dodaj klucz dostępu do konta")
+	}
 %>
 <% if(userWarnings.length > 0) { %>
 	<section>
