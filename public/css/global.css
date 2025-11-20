@@ -3,9 +3,6 @@
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20,700,1);
 
-@import url(/css/themes/light.css?v=2);
-@import url(/css/themes/dark.css?v=2) (prefers-color-scheme: dark);
-
 /* Content layout */
 
 body {

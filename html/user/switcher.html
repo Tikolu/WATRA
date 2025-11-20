@@ -26,32 +26,48 @@
 		</button>
 	</div>
 	<% if($.savedUsers.length) { %>
-		<hr>
-		<h2>
-			<i>switch_account</i>
-			Zmień konto
-		</h2>
-		<div class="entry-grid narrow">
-			<% for(const user of $.savedUsers) { %>
-				<div>
-					<div class="entry-header">
-						<div class="entry-image">
-							<i>person</i>
+		<section>
+			<h2>
+				<i>switch_account</i>
+				Inne konta
+			</h2>
+			<div class="entry-grid narrow">
+				<% for(const user of $.savedUsers) { %>
+					<div>
+						<div class="entry-header">
+							<div class="entry-image">
+								<i>person</i>
+							</div>
+							<div class="entry-title">
+								<h3><%= user.displayName %></h3>
+							</div>
 						</div>
-						<div class="entry-title">
-							<h3><%= user.displayName %></h3>
+						<div class="entry-content button-row">
+							<button api="login/getKeys?userID=<%= user.id %>">
+								<i>login</i>
+								<span>Zaloguj</span>
+							</button>
 						</div>
 					</div>
-					<div class="entry-content button-row">
-						<button api="login/getKeys?userID=<%= user.id %>">
-							<i>login</i>
-							<span>Zaloguj</span>
-						</button>
-					</div>
-				</div>
-			<% } %>
-		</div>
+				<% } %>
+			</div>
+		</section>
 	<% } %>
+
+	<section>
+		<h2>
+			<i>settings</i>
+			Ustawienia
+		</h2>
+		<form>
+			<label for="theme-chooser">Motyw:</label>
+			<select id="theme-chooser">
+				<option value="auto">Automatyczny</option>
+				<option value="light">Jasny</option>
+				<option value="dark">Ciemny</option>
+			</select>
+		</form>
+	</section>
 </main>
 <hr>
 <div class="button-row">

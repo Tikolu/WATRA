@@ -68,18 +68,6 @@ async function copy(text) {
 	Popup.success("Skopiowano", "content_copy")
 }
 
-// Set browser accent color
-function themeUpdate() {
-	const colour = window.getComputedStyle(document.documentElement).getPropertyValue("--surface-4")
-	const meta = document.querySelector("meta[name=theme-color]") || document.createElement("meta")
-	meta.name = "theme-color"
-	meta.content = colour
-	document.head.append(meta)
-}
-themeUpdate()
-// Detect theme change
-window.matchMedia("(prefers-color-scheme: dark)").onchange = themeUpdate
-
 // Popups and dialogs
 const Popup = window.top.Popup || {
 	create({message, type, icon, time=3500}) {
