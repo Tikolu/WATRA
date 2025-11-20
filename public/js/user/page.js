@@ -66,10 +66,21 @@ API.registerHandler("passkey/[passkeyID]/delete", {
 })
 
 async function deleteCredential(id) {
-	await PublicKeyCredential.signalUnknownCredential?.({
-		rpId: window.location.hostname,
-		credentialId: id
-	})
+	try {
+		await PublicKeyCredential.signalUnknownCredential?.({
+			rpId: window.location.hostname,
+			credentialId: id
+		})
+	} catch(error) {
+		sleep(500).then(() => {
+			Popup.create({
+				message: "Twoja przeglądarka nie obsługuje automatycznego kasowania kluczy dostępu i należy go ręcznie usunąć w ustawieniach",
+				time: false,
+				type: "error",
+				icon: "warning"
+			})
+		})
+	}
 }
 
 API.registerHandler("logout", {

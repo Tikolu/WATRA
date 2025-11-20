@@ -109,7 +109,7 @@ const Popup = window.top.Popup || {
 
 		if(icon) dialog.innerHTML = `<i>${icon}</i>`
 		dialog.innerHTML += `
-			<p>${message}</p>
+			<p>${message?.replaceAll("\n", "<br>")}</p>
 			<button class="icon" onclick="this.parentElement.close()">close</button>
 		`
 
@@ -123,6 +123,8 @@ const Popup = window.top.Popup || {
 				focusElement.preventAPIRequest = false
 			})
 		}
+
+		time ||= Infinity
 
 		// Find potential existing dialog
 		const existingDialog = document.querySelector("body > dialog.message[open]")
