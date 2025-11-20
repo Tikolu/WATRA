@@ -38,15 +38,17 @@ export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// Users can edit themselves if they are adults, have no parents, or have no set age
+	// Users can edit themselves if they are adults or have no set age
 	if(user.id == this.id) {
 		if(this.age === null) return true
 		if(this.age >= Config.adultAge || 0) return true
-		if(this.parents?.length == 0) return true
-	}
-	
+		// if(this.parents?.length == 0) return true
+
 	// Parent can edit their children
-	if(user.children.hasID(this.id)) return true
+	} else if(user.children.hasID(this.id)) return true
+
+	// Cannot edit a user who has finished setup
+	else if(user.profileComplete) return false
 
 	// Users with "manageUser" role in any unit/upperUnit of user can edit
 	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true

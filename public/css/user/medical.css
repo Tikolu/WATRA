@@ -7,7 +7,7 @@ h1 {
 	width: 100%;
 }
 
-#medical-categories form > label {
+#medical-categories section > form > label {
 	grid-column: 1 / -1;
 	white-space: normal;
 }
@@ -27,6 +27,24 @@ h1 {
 	margin-top: 0.25em;
 	margin-bottom: 0.5em;
 	width: 100%;
+}
+
+#medical-categories div.vertical-split {
+	flex-wrap: nowrap;
+}
+
+#medical-categories div.vertical-split > div {
+	width: 100%;
+}
+
+@media (max-width: 40em) {
+	#medical-categories div.vertical-split {
+		flex-wrap: wrap;
+	}
+	
+	#medical-categories div.vertical-split > div {
+		margin-right: 0 !important;
+	}
 }
 
 #medical-categories input[type=text] {

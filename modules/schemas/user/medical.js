@@ -15,8 +15,14 @@ export default class {
 				type: String,
 				enum: medicalCategories.map(c => c.id)
 			}
-			symptoms = String
-			solutions = String
+			symptoms = {
+				type: String,
+				trim: true
+			}
+			solutions = {
+				type: String,
+				trim: true
+			}
 		}
 	]
 
@@ -45,8 +51,8 @@ export default class {
 
 		// Update existing entry
 		if(entry) {
-			entry.symptoms = symptoms
-			entry.solutions = solutions
+			if(symptoms) entry.symptoms = symptoms
+			if(solutions) entry.solutions = solutions
 
 		// Create new entry
 		} else {

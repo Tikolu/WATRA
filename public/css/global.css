@@ -473,6 +473,20 @@ div.vertical-split > *:not(:last-child) {
 	margin-right: 2em;
 }
 
+article {
+	padding: 1em;
+	background-color: var(--surface-2);
+	border-radius: var(--border-radius);
+}
+
+article :first-child {
+	margin-top: 0;
+}
+
+article :last-child {
+	margin-bottom: 0;
+}
+
 
 /* Popups and dialogs */
 

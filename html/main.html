@@ -7,6 +7,16 @@
 }) %>
 <h1>System Harcerski</h1>
 <p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
+<% 
+	// Load warnings if user can edit their details
+	const md = []
+	if($.user.hasPermission($.user.PERMISSIONS.EDIT)) {
+		md.push(...$.user.missingDetails)
+	}
+%>
+<% if(md.length > 0) { %>
+	<p>Aby rozpocząć korzystanie z systemu, uzupełnij brakujące dane na swoim profilu poniżej.</p>
+<% } %>
 <section>
 	<h2>
 		<i>person</i>
@@ -16,11 +26,6 @@
 		<%~ include("user/templates/userEntry", {
 			targetUser: $.user,
 			warnings: (() => {
-				// Only show warnings if user can edit their details
-				if(!$.user.hasPermission($.user.PERMISSIONS.EDIT)) return
-				
-				const md = $.user.missingDetails
-				
 				return Array.conditional(
 					md.includes("name"), "Brak imienia i nazwiska",
 					md.includes("contact"), "Brak danych kontaktowych",

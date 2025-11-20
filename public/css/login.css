@@ -53,7 +53,6 @@ main > h1 {
 /* transitions */
 main {
 	opacity: 1;
-	scale: 100%;
 	transition: 250ms opacity, 250ms scale;
 }
 

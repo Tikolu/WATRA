@@ -160,11 +160,11 @@ export class UserClass {
 			!this.name.first || !this.name.last, "name"
 		)
 
-		// Required for parent users
-		if(this.isParent) missingDetails.push(...Array.conditional(
+		// Required for adults or parents
+		if(this.isParent || this.age >= Config.adultAge) missingDetails.push(...Array.conditional(
 			!this.email || !this.phone, "contact"
 		))
-			
+
 		// Required for users with roles
 		if(this.roles.length > 0) missingDetails.push(...Array.conditional(
 			!this.dateOfBirth, "dob",

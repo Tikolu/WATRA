@@ -56,7 +56,6 @@ header > nav > a:not(:first-child) {
 /* transitions */
 main {
 	opacity: 1;
-	scale: 100%;
 	transition: 350ms opacity, 350ms scale;
 }
 

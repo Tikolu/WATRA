@@ -18,7 +18,7 @@
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
 		<p>Po wpisaniu wszystkich danych, <a href="#confirmation">zatwierdź</a> na końcu strony.</p>
 	<% } %>
-	<p>Jeżeli dolegliwości się zmienią, ważne jest aby zostały od razu zmienione w formularzu</p>
+	<p>Jeżeli dolegliwości się zmienią, ważne jest aby zostały od razu tutaj zaktualizowane.</p>
 <% } %>
 <div id="medical-categories">
 	<% for(const category of $.displayCategories) { %>
@@ -109,10 +109,10 @@
 		</dialog>
 	<% } %>
 </div>
-<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
-	<section id="confirmation">
+<section id="confirmation">
+	<h2>Zatwierdzenie</h2>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
 		<% if($.targetUser.medical.confirmed) { %>
-			<h2>Zatwierdzenie</h2>
 			<p>Dane medyczne są zatwierdzone. Cofnij zatwierdzenie aby móc je edytować</p>
 			<div class="button-row">
 				<button api="user/[userID]/medical/unconfirm" id="confirm-button">
@@ -121,8 +121,7 @@
 				</button>
 			</div>
 		<% } else { %>
-			<h2>Podsumowanie i zatwierdzenie</h2>
-			<p>
+			<article>
 				<% let confirmationAllowed = true %>
 				<% if($.targetUser.medical.entries.length == 0) { %>
 					<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
@@ -156,7 +155,7 @@
 						<% } %>
 					</ul>
 				<% } %>
-			</p>
+			</article>
 			<% if(!confirmationAllowed) { %>
 				<p class="warning">
 					<i>warning</i>
@@ -164,10 +163,6 @@
 				</p>
 			<% } else { %>
 				<p>Potwierdzam że wszystkie powyższe informacje są prawdziwe i kompletne.</p>
-				<form>
-					<input type="checkbox" id="signature" disabled>
-					<label for="signature">Podpis</label>
-				</form>
 				<div class="button-row">
 					<button api="user/[userID]/medical/confirm" id="confirm-button">
 						<i>check</i>
@@ -176,5 +171,11 @@
 				</div>
 			<% } %>
 		<% } %>
-	</section>
-<% } %>
+	<% } else if(!$.targetUser.medical.confirmed) { %>
+		<% if($.targetUser.age > Config.adultAge) { %>
+			<p>Dane medyczne oczekują zatwierdzenia przez użytkownika <%= $.targetUser.displayName %>.</p>
+		<% } else { %>
+			<p>Dane medyczne oczekują zatwierdzenia przez rodzica/opiekuna.</p>
+		<% } %>
+	<% } %>
+</section>
