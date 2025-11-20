@@ -235,7 +235,7 @@ async function refreshPageData() {
 	const parser = new DOMParser()
 	const newDocument = parser.parseFromString(body, "text/html")
 
-	const ignoreElements = "dialog.message, dialog.frame, link, script"
+	const ignoreElements = "dialog.message, dialog.frame, link, script, meta[static]"
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
@@ -1048,6 +1048,7 @@ const META = {}
 function processMetaTags() {
 	for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
 		let metaContent = metaTag.content
+		if(metaTag.hasAttribute("static")) continue
 		if(metaTag.hasAttribute("base64")) {
 			metaContent = Base64.decode(metaContent)
 			metaContent = JSON.parse(metaContent)
