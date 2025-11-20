@@ -12,36 +12,38 @@
 	<i>person</i>
 	<%= $.targetUnit.displayName %> - Lista użytkowników
 </h1>
-<% if($.members.length) { %>
-	<% function displayUnit(unit, org) { %>
-		<% org ||= unit.org %>
-		<% const memberCount = unit.countMembers(true) %>
-		<% if(memberCount == 0) return %>
-		<% if(unit.id != $.targetUnit.id) { %>
-			<h3>
-				<a href="/units/<%= unit.id %>">
-					<%= unit.displayName %>
-				</a>
-			</h3>
+<section>
+	<% if($.members.length) { %>
+		<% function displayUnit(unit, org) { %>
+			<% org ||= unit.org %>
+			<% const memberCount = unit.countMembers(true) %>
+			<% if(memberCount == 0) return %>
+			<% if(unit.id != $.targetUnit.id) { %>
+				<h3>
+					<a href="/units/<%= unit.id %>">
+						<%= unit.displayName %>
+					</a>
+				</h3>
+			<% } %>
+			<!-- <p>Ilość użytkowników: <%= memberCount %></p> -->
+			<% if(unit.roles.length > 0) { %>
+				<div class="entry-grid">
+					<% for(const {user} of unit.roles) { %>
+						<% if(org && user.org != org) continue %>
+						<%~ include("/user/templates/userEntry.html", {
+							targetUser: user
+						}) %>
+					<% } %>
+				</div>
+			<% } %>
+			<% for(const subUnit of unit.orgSubUnits(org)) { %>
+				<div class="sub-unit">
+					<% displayUnit(subUnit, org) %>
+				</div>
+			<% } %>
 		<% } %>
-		<!-- <p>Ilość użytkowników: <%= memberCount %></p> -->
-		<% if(unit.roles.length > 0) { %>
-			<div class="entry-grid">
-				<% for(const {user} of unit.roles) { %>
-					<% if(org && user.org != org) continue %>
-					<%~ include("/user/templates/userEntry.html", {
-						targetUser: user
-					}) %>
-				<% } %>
-			</div>
-		<% } %>
-		<% for(const subUnit of unit.orgSubUnits(org)) { %>
-			<div class="sub-unit">
-				<% displayUnit(subUnit, org) %>
-			</div>
-		<% } %>
+		<% displayUnit($.targetUnit, $.orgContext) %>
+	<% } else { %>
+		<p>Brak użytkowników w tej jednostce.</p>
 	<% } %>
-	<% displayUnit($.targetUnit, $.orgContext) %>
-<% } else { %>
-	<p>Brak użytkowników w tej jednostce.</p>
-<% } %>
+</section>

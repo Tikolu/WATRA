@@ -7,88 +7,95 @@
 }) %>
 <h1>System Harcerski</h1>
 <p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
-<hr>
-<h2>
-	<i>person</i>
-	Twój profil
-</h2>
-<div class="entry-grid">
-	<%~ include("user/templates/userEntry", {
-		targetUser: $.user,
-		warnings: (() => {
-			// Only show warnings if user can edit their details
-			if(!$.user.hasPermission($.user.PERMISSIONS.EDIT)) return
-			
-			const md = $.user.missingDetails
-			
-			return Array.conditional(
-				md.includes("name"), "Brak imienia i nazwiska",
-				md.includes("contact"), "Brak danych kontaktowych",
-				md.includes("dob"), "Brak daty urodzenia",
-				md.includes("medical"), "Nie zatwierdzone dane medyczne",
-			)
-		})() || []
-	}) %>
-</div>
-<% if($.user.roles.length > 0) { %>
-	<hr>
+<section>
 	<h2>
-		<i>groups</i>
-		Jednostki
+		<i>person</i>
+		Twój profil
 	</h2>
-	<div class="entry-grid">
-		<% for(const role of $.user.roles) { %>
-			<%~ include("unit/templates/unitEntry", {
-				targetUnit: role.unit,
-				warnings: Array.conditional(
-					!role.unit.name, "Ustaw nazwę jednostki"
-				)
-			}) %>
-		<% } %>
-	</div>
-<% } %>
-<% if($.user.children.length > 0) { %>
-	<hr>
-	<h2>
-		<i>supervisor_account</i>
-		Podopieczni
-	</h2>
-	<div class="entry-grid">
-		<% for(const child of $.user.children) { %>
-			<% const md = child.missingDetails %>
-			<%~ include("user/templates/userEntry", {
-				targetUser: child,
-				warnings: Array.conditional(
-					md.includes("names"), "Brak imienia i nazwiska",
+	<div class="entry-grid medium">
+		<%~ include("user/templates/userEntry", {
+			targetUser: $.user,
+			warnings: (() => {
+				// Only show warnings if user can edit their details
+				if(!$.user.hasPermission($.user.PERMISSIONS.EDIT)) return
+				
+				const md = $.user.missingDetails
+				
+				return Array.conditional(
+					md.includes("name"), "Brak imienia i nazwiska",
 					md.includes("contact"), "Brak danych kontaktowych",
 					md.includes("dob"), "Brak daty urodzenia",
-					md.includes("medical"), "Nie zatwierdzone dane medyczne"
+					md.includes("medical"), "Nie zatwierdzone dane medyczne",
 				)
-			}) %>
-		<% } %>
+			})() || []
+		}) %>
 	</div>
-<% } %>
-<% if($.events.length) { %>
-	<hr>
-	<h2>
-		<i>hiking</i>
-		Akcje
-	</h2>
-	<div class="entry-grid">
-		<% for(const event of $.events) { %>
-			<%
-				const inviteStates = [$.user, ...$.user.children].map(u => event.findUserInvite(u)?.state)
-				const approvalState = event.getApprover($.user)?.approved
+</section>
 
-				if(approvalState === true && !inviteStates.length) continue
-			%>
-			<%~ include("event/templates/eventEntry", {
-				targetEvent: event,
-				warnings: Array.conditional(
-					inviteStates.includes("pending"), "Oczekiwana odpowiedź",
-					approvalState === false, "Oczekiwane zatwierdzenie"
-				)
-			}) %>
-		<% } %>
-	</div>
+<% if($.user.roles.length > 0) { %>
+	<section>
+		<h2>
+			<i>groups</i>
+			Jednostki
+		</h2>
+		<div class="entry-grid">
+			<% for(const role of $.user.roles) { %>
+				<%~ include("unit/templates/unitEntry", {
+					targetUnit: role.unit,
+					warnings: Array.conditional(
+						!role.unit.name, "Ustaw nazwę jednostki"
+					)
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>
+
+<% if($.user.children.length > 0) { %>
+	<section>
+		<h2>
+			<i>supervisor_account</i>
+			Podopieczni
+		</h2>
+		<div class="entry-grid">
+			<% for(const child of $.user.children) { %>
+				<% const md = child.missingDetails %>
+				<%~ include("user/templates/userEntry", {
+					targetUser: child,
+					warnings: Array.conditional(
+						md.includes("names"), "Brak imienia i nazwiska",
+						md.includes("contact"), "Brak danych kontaktowych",
+						md.includes("dob"), "Brak daty urodzenia",
+						md.includes("medical"), "Nie zatwierdzone dane medyczne"
+					)
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>
+
+<% if($.events.length) { %>
+	<section>
+		<h2>
+			<i>hiking</i>
+			Akcje
+		</h2>
+		<div class="entry-grid">
+			<% for(const event of $.events) { %>
+				<%
+					const inviteStates = [$.user, ...$.user.children].map(u => event.findUserInvite(u)?.state)
+					const approvalState = event.getApprover($.user)?.approved
+
+					if(approvalState === true && !inviteStates.length) continue
+				%>
+				<%~ include("event/templates/eventEntry", {
+					targetEvent: event,
+					warnings: Array.conditional(
+						inviteStates.includes("pending"), "Oczekiwana odpowiedź",
+						approvalState === false, "Oczekiwane zatwierdzenie"
+					)
+				}) %>
+			<% } %>
+		</div>
+	</section>
 <% } %>

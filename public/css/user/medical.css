@@ -7,7 +7,7 @@ h1 {
 	width: 100%;
 }
 
-#medical-categories > form > label {
+#medical-categories form > label {
 	grid-column: 1 / -1;
 	white-space: normal;
 }
@@ -16,13 +16,13 @@ h1 {
 	grid-column: 2 / -1;
 }
 
-#medical-categories > form > div {
+#medical-categories form > div {
 	grid-column: 2 / -1;
 	margin-top: -0.5em;
 	margin-bottom: 0.5em;
 }
 
-#medical-categories > form > div > textarea {
+#medical-categories textarea {
 	display: block;
 	margin-top: 0.25em;
 	margin-bottom: 0.5em;
@@ -35,11 +35,4 @@ h1 {
 
 #medical-categories button {
 	max-width: 20em;
-}
-
-#save-section {
-	position: sticky;
-	background-color: var(--background);
-	top: 2em;
-	padding: 1em;
 }

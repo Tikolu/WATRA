@@ -10,8 +10,7 @@
 }
 
 .access-code {
-	background-color: var(--disabled-input-background);
-	color: var(--input-text);
+	background-color: var(--surface-2);
 	border-radius: var(--border-radius);
 
 	padding: 0.5em 0;

@@ -1,7 +1,3 @@
-:root {
-	--border-color: var(--secondary-border)
-}
-
 html {
 	height: 100%;
 }
@@ -11,6 +7,7 @@ body {
 	flex-direction: column;
 	background-color: transparent;
 	margin: 0;
+	padding: 0.5em;
 	overflow: hidden;
 }
 

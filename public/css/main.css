@@ -1,20 +1,19 @@
 header {
 	position: sticky;
 	top: 0;
-	margin: -8px;
 	z-index: 1;
 
 	padding: 0.5em;
 	display: flex;
 
 	box-shadow: 0 0 10px var(--shadow);
-	background-color: var(--background);
+	background-color: var(--surface-4);
 
 	white-space: nowrap;
 }
 
 header #user-profile-link {
-	border-left: 1px solid var(--border);
+	border-left: 1px solid var(--secondary-text);
 	padding-left: 0.5em;
 	margin-left: 0.5em;
 	text-decoration: none;

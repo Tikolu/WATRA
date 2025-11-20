@@ -4,5 +4,5 @@ h3 + p {
 
 .sub-unit {
 	padding-left: 1em;
-	border-left: 1px solid var(--border);
+	border-left: 1px solid var(--secondary-text);
 }

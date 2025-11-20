@@ -4,38 +4,39 @@
 }) %>
 <h1>System Harcerski</h1>
 
-<button id="login-button" api="login/getKeys">
+<button id="login-button" class="important" api="login/getKeys">
 	<i>passkey</i>
 	Zaloguj
 </button>
 
 <% if($.savedUsers && $.savedUsers.length > 0) { %>
-	<hr>
-	<h2>Ostatnie logowania</h2>
-	<div class="entry-grid">
-		<% for(const user of $.savedUsers) { %>
-			<div>
-				<div class="entry-header">
-					<div class="entry-image">
-						<i>person</i>
+	<section>
+		<h2>Ostatnie logowania</h2>
+		<div class="entry-grid">
+			<% for(const user of $.savedUsers) { %>
+				<div>
+					<div class="entry-header">
+						<div class="entry-image">
+							<i>person</i>
+						</div>
+						<div class="entry-title">
+							<h3><%= user.displayName %></h3>
+						</div>
 					</div>
-					<div class="entry-title">
-						<h3><%= user.displayName %></h3>
+					<div class="entry-content button-row">
+						<button api="login/getKeys?userID=<%= user.id %>" class="important">
+							<i>login</i>
+							<span>Zaloguj</span>
+						</button>
+						<button api="logout?remove=<%= user.id %>" class="dangerous"<% if(user.auth.keys.length == 0) { %> data-warning<% } %>>
+							<i>close</i>
+							<span>Usuń z listy</span>
+						</button>
 					</div>
 				</div>
-				<div class="entry-content button-row">
-					<button api="login/getKeys?userID=<%= user.id %>">
-						<i>login</i>
-						<span>Zaloguj</span>
-					</button>
-					<button api="logout?remove=<%= user.id %>" class="dangerous"<% if(user.auth.keys.length == 0) { %> data-warning<% } %>>
-						<i>close</i>
-						<span>Usuń z listy</span>
-					</button>
-				</div>
-			</div>
-		<% } %>
-	</div>
+			<% } %>
+		</div>
+	</section>
 	<% if($.savedUsers.some(user => user.auth.keys.length == 0)) { %>
 		<dialog id="full-logout-warning">
 			<h1>Usuwasz ostatnią metodę logowania</h1>
@@ -54,18 +55,19 @@
 	<% } %>
 <% } %>
 
-<hr>
-<h2>Nowy użytkownik</h2>
-<form>
-	<label for="access-code-input">Kod dostępu:</label>
-	<input
-		type="text"
-		id="access-code-input"
-		placeholder="0000 0000"
-		maxlength="9"
-		autocomplete="off"
-		inputmode="numeric"
-		api="login/accessCode"
-		name="accessCode"
-	>
-</form>	
+<section>
+	<h2>Nowy użytkownik</h2>
+	<form>
+		<label for="access-code-input">Kod dostępu:</label>
+		<input
+			type="text"
+			id="access-code-input"
+			placeholder="0000 0000"
+			maxlength="9"
+			autocomplete="off"
+			inputmode="numeric"
+			api="login/accessCode"
+			name="accessCode"
+		>
+	</form>	
+</section>

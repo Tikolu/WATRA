@@ -22,61 +22,66 @@
 <% } %>
 <div id="medical-categories">
 	<% for(const category of $.displayCategories) { %>
-		<hr>
-		<h2><%= category.title %></h2>
-		<form id="<%= category.id %>">
-			<% for(const element of category.elements) { %>
-				<% if($.editable) { %>
-					<input type="checkbox" id="<%= category.id %>-<%= element.id %>"
-						<% if(element.selected) { %>
-							api="user/[userID]/medical/remove?category=<%= category.id %>&element=<%= element.id %>"
-							checked
-						<% } else { %>
-							api="user/[userID]/medical/add?category=<%= category.id %>&element=<%= element.id %>"
-						<% } %>
-					>
-				<% } %>
-				<label for="<%= category.id %>-<%= element.id %>">
-					<h3><%= element.title %></h3>
-					<% if(element.description) { %>
-						<p><%= element.description %></p>
+		<section>
+			<h2><%= category.title %></h2>
+			<form id="<%= category.id %>">
+				<% for(const element of category.elements) { %>
+					<% if($.editable) { %>
+						<input type="checkbox" id="<%= category.id %>-<%= element.id %>"
+							<% if(element.selected) { %>
+								api="user/[userID]/medical/remove?category=<%= category.id %>&element=<%= element.id %>"
+								checked
+							<% } else { %>
+								api="user/[userID]/medical/add?category=<%= category.id %>&element=<%= element.id %>"
+							<% } %>
+						>
 					<% } %>
-				</label>
-				<% if(element.selected) { %>
-					<div id="<%= category.id %>-<%= element.id %>-details">
-						<label for="<%= category.id %>-<%= element.id %>-details-symptoms"><%= category.symptoms.heading %></label>
-						<textarea
-							id="<%= category.id %>-<%= element.id %>-details-symptoms"
-							placeholder="<%= category.symptoms.placeholder %>"
-							<% if($.editable) { %>
-								api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
-							<% } else { %>
-								disabled
-							<% } %>
-							name="symptoms"
-						><%= element.symptoms || "" %></textarea>
+					<label for="<%= category.id %>-<%= element.id %>">
+						<h3><%= element.title %></h3>
+						<% if(element.description) { %>
+							<p><%= element.description %></p>
+						<% } %>
+					</label>
+					<% if(element.selected) { %>
+						<div id="<%= category.id %>-<%= element.id %>-details" class="vertical-split">
+							<div>
+								<label for="<%= category.id %>-<%= element.id %>-details-symptoms"><%= category.symptoms.heading %></label>
+								<textarea
+									id="<%= category.id %>-<%= element.id %>-details-symptoms"
+									placeholder="<%= category.symptoms.placeholder %>"
+									<% if($.editable) { %>
+										api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
+									<% } else { %>
+										disabled
+									<% } %>
+									name="symptoms"
+								><%= element.symptoms || "" %></textarea>
+							</div>
 
-						<label for="<%= category.id %>-<%= element.id %>-details-solutions"><%= category.solutions.heading %></label>
-						<textarea
-							id="<%= category.id %>-<%= element.id %>-details-solutions"
-							placeholder="<%= category.solutions.placeholder %>"
-							<% if($.editable) { %>
-								api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
-							<% } else { %>
-								disabled
-							<% } %>
-							name="solutions"
-						><%= element.solutions || "" %></textarea>
-					</div>
+							<div>
+								<label for="<%= category.id %>-<%= element.id %>-details-solutions"><%= category.solutions.heading %></label>
+								<textarea
+									id="<%= category.id %>-<%= element.id %>-details-solutions"
+									placeholder="<%= category.solutions.placeholder %>"
+									<% if($.editable) { %>
+										api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
+									<% } else { %>
+										disabled
+									<% } %>
+									name="solutions"
+								><%= element.solutions || "" %></textarea>
+							</div>
+						</div>
+					<% } %>
 				<% } %>
+			</form>
+			<% if($.editable) { %>
+				<button id="<%= category.id %>-other-button" opens-dialog="add-other-<%= category.id %>">
+					<i>add</i>
+					<%= category.other %>
+				</button>
 			<% } %>
-		</form>
-		<% if($.editable) { %>
-			<button id="<%= category.id %>-other-button" opens-dialog="add-other-<%= category.id %>">
-				<i>add</i>
-				<%= category.other %>
-			</button>
-		<% } %>
+		</section>
 		<dialog id="add-other-<%= category.id %>">
 			<h1><%= category.other %></h1>
 			<form>
@@ -105,8 +110,7 @@
 	<% } %>
 </div>
 <% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
-	<div id="confirmation">
-		<hr>
+	<section id="confirmation">
 		<% if($.targetUser.medical.confirmed) { %>
 			<h2>Zatwierdzenie</h2>
 			<p>Dane medyczne są zatwierdzone. Cofnij zatwierdzenie aby móc je edytować</p>
@@ -128,30 +132,26 @@
 						<% for(const entry of $.targetUser.medical.entries) { %>
 							<li>
 								<p><b><%= entry.title %></b></p>
-								<table>
-									<tr>
-										<% if(entry.symptoms) { %>
-											<th>Objawy:</th>
-											<td>
-												<%= entry.symptoms %>
-											</td>
-										<% } else { %>
-											<% confirmationAllowed = false %>
-											<th colspan="2">Nie podano objawów!</th>
-										<% } %>
-									</tr>
-									<tr>
-										<% if(entry.solutions) { %>
-											<th>Zalecenia:</th>
-											<td>
-												<%= entry.solutions %>
-											</td>
-										<% } else { %>
-											<% confirmationAllowed = false %>
-											<th colspan="2">Nie podano zaleceń!</th>
-										<% } %>
-									</tr>
-								</table>
+								<dl>
+									<% if(entry.symptoms) { %>
+										<dt>Objawy:</dt>
+										<dd>
+											<%= entry.symptoms %>
+										</dd>
+									<% } else { %>
+										<% confirmationAllowed = false %>
+										<dt>Nie podano objawów!</dt>
+									<% } %>
+									<% if(entry.solutions) { %>
+										<dt>Zalecenia:</dt>
+										<dd>
+											<%= entry.solutions %>
+										</dd>
+									<% } else { %>
+										<% confirmationAllowed = false %>
+										<dt>Nie podano zaleceń!</dt>
+									<% } %>
+								</dl>
 							</li>
 						<% } %>
 					</ul>
@@ -176,5 +176,5 @@
 				</div>
 			<% } %>
 		<% } %>
-	</div>
+	</section>
 <% } %>

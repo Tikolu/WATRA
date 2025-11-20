@@ -3,9 +3,21 @@ main {
 	max-width: 80%;
 	margin: 5em auto;
 
-	border: 1px solid var(--border);
+	background-color: var(--surface-1);
 	border-radius: var(--border-radius);
 	padding: 1em;
+}
+
+main > section {
+	background-color: var(--surface-2);
+}
+
+main > section:last-child {
+	margin-bottom: 0;
+}
+
+.entry-grid > div {
+	background-color: var(--surface-3);
 }
 
 main > h1 {

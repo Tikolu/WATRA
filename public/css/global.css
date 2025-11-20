@@ -3,26 +3,29 @@
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20,700,1);
 
-@import url(/css/themes/light.css?v=1);
-@import url(/css/themes/dark.css?v=1) (prefers-color-scheme: dark);
+@import url(/css/themes/light.css?v=2);
+@import url(/css/themes/dark.css?v=2) (prefers-color-scheme: dark);
 
 /* Content layout */
 
 body {
 	font-family: Lato, sans-serif;
-	background-color: var(--background);
+	background-color: var(--surface-0);
 	color: var(--text);
+	margin: 0;
+	-webkit-tap-highlight-color: transparent;
 }
 
 main {
 	max-width: 60em;
+	padding: 0 0.5em;
 	margin: 0 auto;
 	overflow-x: auto;
 }
 
 ::selection {
-	background-color: var(--background);
-	color: var(--text);
+	background-color: var(--secondary-text);
+	color: var(--surface-1);
 }
 
 
@@ -74,7 +77,7 @@ form {
 	margin: 1em 0;
 }
 
-form button:last-child, form h1, form h2, form h3 {
+form > button:last-child, form > h1, form > h2, form > h3 {
 	margin-bottom: 0.5em;
 	white-space: nowrap;
 	grid-column: 1 / -1;
@@ -116,24 +119,25 @@ label > * {
 /* Input elements */
 
 input, select, textarea {
-	background-color: var(--input-background);
-	color: var(--input-text);
-	accent-color: var(--input-accent);
+	background-color: var(--surface-3);
+	color: var(--text);
+	accent-color: var(--surface-4);
 	outline: 1px solid transparent;
 	outline-offset: -1px;
 	transition: outline 250ms;
 }
 
 input:focus, select:focus, textarea:focus {
-	outline: 1px solid var(--input-text);
+	outline: 1px solid var(--text);
 }
 
 input:disabled, select:disabled, textarea:disabled {
-	background-color: var(--disabled-input-background);
+	background-color: var(--surface-2);
+	color: var(--secondary-text);
 }
 
 input.invalid, select.invalid {
-	background-color: var(--invalid-input-background);
+	background-color: var(--red-background);
 }
 
 input[type^=date]:disabled:not([value]) {
@@ -151,7 +155,7 @@ input[type=checkbox]:focus, input[type=radio]:focus {
 }
 
 input[type=checkbox]:focus-visible, input[type=radio]:focus-visible {
-	outline: 1px solid var(--input-text);
+	outline: 1px solid var(--text);
 }
 
 input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
@@ -169,7 +173,7 @@ h1 > input, h2 > input {
 }
 
 h1 > input:focus, h2 > input:focus {
-	background-color: var(--input-background);
+	background-color: var(--surface-2);
 	padding: 0.25em;
 }
 
@@ -177,21 +181,27 @@ h1 > input:focus, h2 > input:focus {
 
 button {
 	cursor: pointer;
-	color: var(--text);
-	background-color: var(--background);
+	background-color: var(--surface-4);
 	overflow: hidden;
 	white-space: nowrap;
+	transition: box-shadow 250ms;
+}
+
+button.dangerous {
+	background-color: var(--red-background);
+	color: var(--red-text);
 }
 
 button:disabled {
-	opacity: 0.5;
+	background-color: var(--surface-3);
+	color: var(--secondary-text);
 	cursor: not-allowed;
 }
 
 button:not(:disabled):hover,
 button:not(:disabled):focus-visible, 
 a:focus-visible > button:only-child {
-	background-color: var(--hover-background);
+	box-shadow: 0 0 0.5em var(--shadow);
 	outline: none;
 }
 
@@ -209,6 +219,10 @@ button.icon:hover, button.icon:focus-visible {
 
 /* Other elements */
 
+main > h1:first-child {
+	margin-top: 0.5em;
+}
+
 h1 + h2 {
 	margin-top: -0.5em;
 }
@@ -217,7 +231,7 @@ a {
 	color: var(--text);
 	outline: none;
 	cursor: pointer;
-	transition: opacity 250ms;
+	transition: color 250ms;
 }
 
 a:has(button) {
@@ -226,11 +240,11 @@ a:has(button) {
 
 a:not(:has(button)):hover,
 a:not(:has(button)):focus-visible {
-	opacity: 0.5;
+	color: var(--secondary-text);
 }
 
 hr {
-	border: solid 1px var(--border);
+	border: solid 1px var(--secondary-text);
 	border-bottom: 0;
 	width: 100%;
 	grid-column: 1 / -1;
@@ -262,27 +276,17 @@ dl {
 	& > dd {
 		margin-left: 1em;
 	}
+
+	& > dt + dt, & > dt:last-child {
+		grid-column: 1 / -1;
+	}
 }
 
 pre {
 	overflow-x: auto;
-	background-color: var(--secondary-background);
-	color: var(--secondary-text);
+	background-color: var(--surface-3);
 	border-radius: var(--border-radius);
 	padding: 1em;
-}
-
-article {
-	padding: 1em;
-	margin: 0.5em 0;
-	border-radius: var(--border-radius);
-	background-color: var(--secondary-background);
-	color: var(--secondary-text);
-}
-
-article > h1:first-child {
-	margin-top: 0;
-	font-size: 2em;
 }
 
 li {
@@ -295,7 +299,8 @@ li > * {
 }
 
 p.warning {
-	background-color: var(--background);
+	background-color: var(--red-background);
+	color: var(--red-text);
 	border-radius: var(--border-radius);
 	padding: 0.5em;
 	/* width: fit-content; */
@@ -316,21 +321,27 @@ p.warning + p.warning {
 .button-row {
 	display: flex;
 	flex-wrap: wrap;
-	margin-top: 0.5em;
+	margin: 0.5em 0;
 	gap: 0.5em;
+}
+
+.button-row:last-child {
+	margin-bottom: 0;
 }
 
 .button-row:not(:has(button)) {
 	display: none;
 }
 
-.entry-grid, .entry-list {
-	--entry-grid-columns: 3;
-	
+.entry-grid {	
 	margin: 0.5em 0;
 	display: grid;
 	grid-template-columns: repeat(var(--entry-grid-columns), 1fr);
 	gap: 0.5em;
+	
+	--entry-grid-columns: 3;
+	&.medium { --entry-grid-columns: 2; }
+	&.full { --entry-grid-columns: 1; }
 
 	& > div, & > a {
 		padding: 0.5em;
@@ -341,8 +352,12 @@ p.warning + p.warning {
 		text-decoration: none;
 
 		&.faded {
-			color: var(--border);
-			background-color: var(--disabled-input-background);
+			color: var(--secondary-text);
+			background-color: var(--surface-2);
+
+			&:hover, &:focus-visible {
+				color: var(--secondary-text);
+			}			
 		}
 
 		& > .entry-header {
@@ -390,26 +405,21 @@ p.warning + p.warning {
 		& > label {
 			margin-left: 0.5em;
 		}
-		
-		& > hr {
-			border-color: var(--secondary-border);
-		}
 	}
 
 	& > a {
-		background-color: var(--secondary-background);
-		color: var(--secondary-text);
-		transition: background-color 250ms;
+		background-color: var(--surface-4);
+		transition: box-shadow 250ms;
 		opacity: 1 !important;
 		
-		&:not(.faded):hover, &:not(.faded):focus-visible {
-			background-color: var(--secondary-hover-background);
-			opacity: 1 !important;
+		&:hover, &:focus-visible {
+			color: var(--text);
+			box-shadow: 0 0 0.5em var(--shadow);
 		}
 	}
 
 	& > div {
-		border: 1px solid var(--border)
+		background-color: var(--surface-2);
 	}
 
 	& > .grid-break {
@@ -425,27 +435,22 @@ p.warning + p.warning {
 	}
 }
 
-.entry-list {
-	--entry-grid-columns: 1;
+@media (max-width: 50em) {
+	.entry-grid { --entry-grid-columns: 2; }
+	.entry-grid.narrow { --entry-grid-columns: 3; }
+	.entry-grid.medium { --entry-grid-columns: 1; }
 }
 
-@media (max-width: 45em) {
-	.entry-grid {
-		--entry-grid-columns: 2;
-	}
+@media (max-width: 30em) {
+	.entry-grid.narrow { --entry-grid-columns: 2; }
+	.entry-grid { --entry-grid-columns: 1; }
 }
 
-@media (max-width: 25em) {
-	.entry-grid {
-		--entry-grid-columns: 1;
-	}
-}
-
-.section-unit {
+section {
 	padding: 1em;
 	margin: 1em 0;
-	border: solid 1px var(--border);
 	border-radius: var(--border-radius);
+	background-color: var(--surface-1);
 
 	& > :first-child {
 		margin-top: 0;
@@ -456,17 +461,17 @@ p.warning + p.warning {
 	}
 }
 
-section {
+div.vertical-split {
 	display: flex;
 	flex-wrap: wrap;
 }
 
-section > * {
+div.vertical-split > * {
 	height: fit-content;
 	margin-top: 0;
 }
 
-section > *:not(:last-child) {
+div.vertical-split > *:not(:last-child) {
 	margin-right: 2em;
 }
 
@@ -486,7 +491,7 @@ dialog {
 	max-height: 90vh;
 
 	color: var(--text);
-	background-color: var(--background);
+	background-color: var(--surface-0);
 	border-radius: var(--border-radius);
 	border: none;
 
@@ -519,6 +524,17 @@ dialog.message {
 	flex-direction: row;
 	align-items: center;
 	transition: bottom 250ms;
+
+	background-color: var(--surface-2);
+
+	&.success {
+		background-color: var(--surface-3);
+	}
+
+	&.error {
+		background-color: var(--red-background);
+		color: var(--red-text);
+	}
 }
 
 dialog.message > i, dialog.message button.icon {
@@ -566,6 +582,7 @@ dialog iframe {
 
 dialog.frame {
 	width: 30em;
+	padding: 0.5em;
 
 	& > i.spin {
 		margin: auto;

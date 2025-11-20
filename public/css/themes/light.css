@@ -1,60 +1,20 @@
 html {
 	color-scheme: light;
-}
 
-:root {
-	--background: #E4E0E0;
-	--text: #0d2225;
-
-	--secondary-background: #F6F4F4;
-	--secondary-hover-background: #FFFFFF;
-	--secondary-text: #0d2225;
-
-	--input-background: #F6F4F4;
-	--disabled-input-background: #DAD2D2;
-	--invalid-input-background: #fcc;
-	--input-text: #0d2225;
-
-	--shadow: #4449;
+	--hue: 100deg;
 	
-	--border: #888;
-	--secondary-border: #ccc;
+	--surface-0: hsl(var(--hue), 5%, 99%);
+	--surface-1: hsl(var(--hue), 10%, 95%);
+	--surface-2: hsl(var(--hue), 10%, 90%);
+	--surface-3: hsl(var(--hue), 20%, 85%);
+	--surface-4: hsl(var(--hue), 20%, 70%);
 
+	--red-background: hsl(0, 50%, 70%);
+	--red-text: hsl(0, 80%, 10%);
+
+	--text: hsl(var(--hue), 50%, 10%);
+	--secondary-text: hsl(var(--hue), 10%, 50%);
+	--shadow: hsla(var(--hue), 20%, 10%, 0.4);
+	
 	--border-radius: 5px;
-}
-
-header {
-	--background: #F6F4F4;
-}
-
-::selection {
-	--background: #888;
-	--text: #fff;
-}
-
-button {
-	--text: #fff;
-	--background: #896;
-	--hover-background: #9a7;
-}
-
-button.dangerous {
-	--background: #e44;
-	--hover-background: #e66;
-}
-
-dialog {
-	--background: #efefef;
-}
-
-dialog.message.success {
-	--background: #adc088;
-}
-
-dialog.message.error {
-	--background: #c87b7b;
-}
-
-p.warning {
-	--background: #c87b7b;
 }
