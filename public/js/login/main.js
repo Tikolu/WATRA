@@ -31,12 +31,3 @@ accessCodeInput.oninput = event => {
 	// Auto submit
 	if(newValue.replaceAll(" ", "").length == 8) API.executeHandler(accessCodeInput)
 }
-
-// Autofill access code from URL
-const urlHash = decodeURIComponent(window.location.hash)
-if(/^#[0-9 ]+$/.test(urlHash)) {
-	const accessCode = urlHash.substring(1)
-	accessCodeInput.value = accessCode
-	accessCodeInput.oninput()
-	accessCodeInput.focus()
-}

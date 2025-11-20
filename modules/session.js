@@ -1,4 +1,5 @@
 import randomID from "modules/randomID.js"
+import User from "modules/schemas/user"
 
 export default class {
 	constructor(token) {
@@ -17,6 +18,23 @@ export default class {
 		this.token.saved ||= []
 		if(!this.token.saved.includes(userID)) this.token.saved.push(userID)
 		this.token.modified = true
+	}
+
+	/** Login using an access code */
+	async codeLogin(accessCode) {
+		// Find user matching the access code
+		const user = await User.findByAccessCode(accessCode)
+		if(!user) return
+		
+		// Clear access code from user
+		user.auth.accessCode = undefined
+		// user.clients.register(this.session.clientID, this.request)
+		await user.save()
+
+		// Login
+		this.login(user.id)
+
+		return user
 	}
 
 	/** Logout the current user */

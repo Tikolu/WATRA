@@ -1,17 +1,12 @@
 import HTTPError from "modules/server/error.js"
-import User from "modules/schemas/user"
 
-export default async function({accessCode}) {
-	// Find user matching the access code
-	const user = await User.findByAccessCode(accessCode)
+export default async function({accessCode}) {	
+	// Check access code
+	if(!/^[0-9 ]+$/.test(accessCode)) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
+	accessCode = accessCode.replaceAll(" ", "")
+	
+	const user = await this.session.codeLogin(accessCode)
 	if(!user) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
-	
-	this.session.login(user.id)
-	
-	// Clear access code 
-	user.auth.accessCode = undefined
-	// user.clients.register(this.session.clientID, this.request)
-	await user.save()
 
 	// Add user to route data
 	this.addRouteData({user})

@@ -8,7 +8,7 @@
 <main>
 	<% function accessCodeContainer(code) { %>
 		<%~ include("/templates/qrCode", {
-			data: `https://${Config.host}#${code.replaceAll(" ", "%20")}`
+			data: `https://${Config.host}/login?code=${code.replaceAll(" ", "")}`
 		}) %>
 		<div class="access-code-container" onclick="copy(this.children[0])">
 			<p class="access-code"><%= code %></p>
@@ -17,18 +17,18 @@
 	<% } %>
 
 	<% if(!$.parentCode) { %>
-		<h2>Nowy użytkownik</h2>
+		<h2><%= $.targetUser.displayName %></h2>
 		<% if($.targetUser.id != $.user.id && !$.targetUser.isParent) { %>
 			<p class="warning">
 				<i>warning</i>
-				Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, nie konta rodzica/opiekuna!
+				Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, <b>nie konta rodzica/opiekuna</b>!
 			</p>
 		<% } %>
 		<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
 		<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
 	<% } else { %>
-		<!-- <hr> -->
-		<h2>Rodzic / opiekun</h2>
+		<% $.targetUser.defaultName = "Rodzic / opiekun" %>
+		<h2><%= $.targetUser.displayName %></h2>
 		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
 		<% accessCodeContainer($.targetUser.parents[0].auth.formattedAccessCode) %>
 	<% } %>

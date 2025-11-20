@@ -1,7 +1,19 @@
 import html from "modules/html.js"
+import HTTPError from "modules/server/error.js"
+import accessCode from "./api/login/accessCode.js";
 
-export default async function({user}) {
-	// Redirect if user already logged in
+export default async function({user, code: accessCode}) {
+	if(accessCode) {
+		// Check access code
+		if(!/^[0-9 ]+$/.test(accessCode)) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
+		accessCode = accessCode.replaceAll(" ", "")
+
+		user = await this.session.codeLogin(accessCode)
+		if(!user) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
+		this.addRouteData({user})
+	}
+	
+	// Redirect if user is logged in
 	if(user) {
 		this.response.redirect("/")
 		return
