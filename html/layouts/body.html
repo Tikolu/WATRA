@@ -5,7 +5,7 @@
 	<% $.scripts ||= [] %>
 	<% $.scripts.unshift("main") %>
 	<%~ include("/templates/head.html", $) %>
-	<body>
+	<body class="unload">
 		<%~ include("/templates/titleBar.html", $) %>
 		<main>
 			<%~ $.body %>

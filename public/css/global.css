@@ -18,6 +18,7 @@ main {
 	padding: 0 0.5em;
 	margin: 0 auto;
 	overflow-x: auto;
+	transform-origin: 50vw 50vh;
 }
 
 ::selection {

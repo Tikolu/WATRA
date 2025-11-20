@@ -49,3 +49,15 @@ main > h1 {
 		--entry-grid-columns: 1;
 	}
 }
+
+/* transitions */
+main {
+	opacity: 1;
+	scale: 100%;
+	transition: 250ms opacity, 250ms scale;
+}
+
+body.unload main {
+	opacity: 0;
+	scale: 99%;
+}

@@ -54,8 +54,17 @@ header > nav > a:not(:first-child) {
 }
 
 /* transitions */
-@view-transition {
-	navigation: auto;
+main {
+	opacity: 1;
+	scale: 100%;
+	transition: 350ms opacity, 350ms scale;
 }
 
-:root { view-transition-name: navigation }
+body.unload main {
+	opacity: 0;
+	scale: 99%;
+}
+
+body.unload dialog:not(.message) {
+	animation: popup-hide 250ms forwards;
+}

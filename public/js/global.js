@@ -71,8 +71,9 @@ async function copy(text) {
 // Channel for communicating with other tabs
 if(window == window.top) {
 	window.addEventListener("pageshow", () => {
+		document.body.classList.remove("unload")
 		window.unloading = false
-		
+
 		window.channel = new BroadcastChannel("channel")
 		window.channel.onmessage = message => {
 			const {event, type, id} = message.data
@@ -91,6 +92,7 @@ if(window == window.top) {
 
 	window.addEventListener("beforeunload", () => {
 		console.log("Unloading...")
+		document.body.classList.add("unload")
 		window.unloading = true
 		// Close broadcast channel
 		window.channel?.close()
@@ -237,6 +239,7 @@ async function refreshPageData() {
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
+		"body": ["class"]
 	}
 	const extraAttributes = {
 		"input[type=checkbox]": ["checked"]
@@ -264,8 +267,11 @@ async function refreshPageData() {
 
 		// console.log("Merging", oldDoc, newDoc)
 
+		const ignoreAttrs = ignoreAttributes[Object.keys(ignoreAttributes).find(q => oldDoc.matches && oldDoc.matches(q))] || []
+
 		// Update attributes
 		for(const attr of newDoc.attributes || []) {
+			if(ignoreAttrs.includes(attr.name)) continue
 			if(oldDoc.getAttribute(attr.name) === attr.value) continue
 			oldDoc.setAttribute(attr.name, attr.value)
 		}
@@ -279,10 +285,10 @@ async function refreshPageData() {
 		}
 		
 		// Remove old attributes
-		const ignoreAttrs = ignoreAttributes[Object.keys(ignoreAttributes).find(q => oldDoc.matches && oldDoc.matches(q))] || []
 		for(const attr of oldDoc.attributes || []) {
 			if(ignoreAttrs.includes(attr.name)) continue
 			if(!newDoc.hasAttribute(attr.name)) {
+				console.log("Removing attr", attr)
 				oldDoc.removeAttribute(attr.name)
 			}
 		}
