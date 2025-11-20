@@ -51,6 +51,8 @@ export default class {
 			excludeCredentials: this.keys.map(k => ({id: k.id})),
 			attestationType: "none",
 			authenticatorSelection: {
+				residentKey: "required",
+				requireResidentKey: true,
 				userVerification: "required"
 			}
 		})

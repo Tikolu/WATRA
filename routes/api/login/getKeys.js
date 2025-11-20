@@ -1,7 +1,6 @@
 import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
 import User from "modules/schemas/user"
-import Passkey from "modules/schemas/passkey.js"
 import * as webauthn from "jsr:@simplewebauthn/server"
 
 export default async function({userID}) {
@@ -23,11 +22,10 @@ export default async function({userID}) {
 
 	let keys = []
 	if(user) keys = user.auth.keys
-	else keys = await Passkey.find({}, "id").lean()
 
 	const options = await webauthn.generateAuthenticationOptions({
 		rpID: Config.host,
-		allowCredentials: keys.map(key => ({id: key._id || key.id})),
+		allowCredentials: keys,
 		userVerification: "required"
 	})
 
