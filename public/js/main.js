@@ -1,5 +1,29 @@
-// Shared worker for streaming updates
-const streamingWorker = "SharedWorker" in window ? new SharedWorker("/js/worker/streaming.js") : null
+// Connect to stream API to detect updates
+const eventSource = new EventSource("/api/stream")
+
+// Listen for update events
+eventSource.addEventListener("update", event => {
+	if(!event.data) return
+	const {type, id} = JSON.parse(event.data)
+	trackDataUpdate(type, id)
+	checkRefreshCondition(type, id)
+})
+
+// Listen for error events
+eventSource.addEventListener("error", event => {
+	if(!event.data) return
+	// Attempt parsing JSON, otherwise report plain text
+	try {
+		var error = JSON.parse(event.data)
+	} catch {
+		var error = event.data
+	}
+
+	// Shut down event source
+	eventSource.close()
+
+	throw error
+})
 
 // Refresh conditions system
 const pageRefreshConditions = []
@@ -52,31 +76,6 @@ window.initialLoadTime = Date.now()
 window.updatedTime = Date.now()
 window.onpageshow = event => {
 	window.unloading = false
-
-	if(streamingWorker) {
-		// Start worker port
-		streamingWorker.port.start()
-		
-		// Detect update events from worker
-		streamingWorker.port.onmessage = message => {
-			const {event, type, id} = message.data
-			
-			// Worker error event
-			if(event == "error") {
-				throw `StreamingWorkerError: ${message.data.error}`
-
-			// Data updated
-			} else if(event == "update") {
-				trackDataUpdate(type, id)
-				checkRefreshCondition(type, id)
-
-			// Unknown event
-			} else {
-				throw new Error(`Unknown worker event: ${event}`)
-			}
-		}
-	}
-	
 	
 	// Check if page restored from bfcache
 	if(!event.persisted) {
@@ -103,8 +102,6 @@ window.onpageshow = event => {
 window.onbeforeunload = () => {
 	console.log("Unloading...")
 	window.unloading = true
-	// Close the worker port
-	streamingWorker?.port.close()
 }
 
 document.onvisibilitychange = event => {

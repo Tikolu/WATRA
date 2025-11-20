@@ -15,10 +15,15 @@ eventEmitter.addListener("change", event => {
 	promiseSetup()
 })
 
+const connectedClients = {}
 
 export default async function * ({user}) {
 	if(!user) throw new HTTPError(403)
-	
+
+	// Kick other connection
+	connectedClients[this.token.client]?.()
+	connectedClients[this.token.client] = () => this.response.close()
+
 	while(true) {
 		const dbUpdate = await eventEmitter.promise
 		const data = {
