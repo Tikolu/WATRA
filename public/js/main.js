@@ -74,9 +74,7 @@ function checkDataUpdates() {
 // Page life-cycle events
 window.initialLoadTime = Date.now()
 window.updatedTime = Date.now()
-window.onpageshow = event => {
-	window.unloading = false
-	
+window.addEventListener("pageshow", event => {
 	// Check if page restored from bfcache
 	if(!event.persisted) {
 		window.pageShowCount = 0
@@ -97,14 +95,7 @@ window.onpageshow = event => {
 
 	// Check if any relevant updates occurred 
 	checkDataUpdates()
-}
-
-window.onbeforeunload = () => {
-	console.log("Unloading...")
-	window.unloading = true
-	// Close broadcast channel
-	window.channel.close()
-}
+})
 
 document.onvisibilitychange = event => {
 	if(document.visibilityState == "hidden") return

@@ -68,20 +68,34 @@ async function copy(text) {
 	Popup.success("Skopiowano", "content_copy")
 }
 
-// Create channel for communicating with other tabs
-window.channel = new BroadcastChannel("channel")
-window.channel.onmessage = message => {
-	const {event, type, id} = message.data
+// Channel for communicating with other tabs
+if(window == window.top) {
+	window.addEventListener("pageshow", () => {
+		window.unloading = false
+		
+		window.channel = new BroadcastChannel("channel")
+		window.channel.onmessage = message => {
+			const {event, type, id} = message.data
 
-	// Refresh the page
-	if(event == "refresh") {
-		document.location.reload()
+			// Refresh the page
+			if(event == "refresh") {
+				document.location.reload()
 
-	// Unknown event
-	} else {
-		throw new Error(`Unknown event: ${event}`)
+			// Unknown event
+			} else {
+				throw new Error(`Unknown event: ${event}`)
 
-	}
+			}
+		}
+	})
+
+	window.addEventListener("beforeunload", () => {
+		console.log("Unloading...")
+		window.unloading = true
+		// Close broadcast channel
+		window.channel?.close()
+		delete window.channel
+	})
 }
 
 // Popups and dialogs
