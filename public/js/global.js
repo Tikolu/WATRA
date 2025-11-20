@@ -68,6 +68,22 @@ async function copy(text) {
 	Popup.success("Skopiowano", "content_copy")
 }
 
+// Create channel for communicating with other tabs
+window.channel = new BroadcastChannel("channel")
+window.channel.onmessage = message => {
+	const {event, type, id} = message.data
+
+	// Refresh the page
+	if(event == "refresh") {
+		document.location.reload()
+
+	// Unknown event
+	} else {
+		throw new Error(`Unknown event: ${event}`)
+
+	}
+}
+
 // Popups and dialogs
 const Popup = window.top.Popup || {
 	create({message, type, icon, time=3500}) {
@@ -442,7 +458,7 @@ const API = {
 	 *  - before: Function to call before sending data, should return true to continue or false to cancel
 	 *  - after: Function to call after receiving response, should return a promise if async
 	 *  - valueKey: Key in response data to update element value, defaults to "value"
-	 *  - refresh: Whether to refresh page data after execution, defaults to true
+	 *  - refresh: Whether to refresh page data after execution, defaults to "true", set to "all" to refresh other tabs
 	 *  - successText: Text to show on success
 	 */
 	registerHandler(api, handler) {
@@ -665,9 +681,11 @@ const API = {
 			}
 
 			// Trigger data refresh
-			if(handler.refresh !== false) {
-				await window.top.refreshPageData()
+			if(handler.refresh === false) return	
+			if(handler.refresh == "all") {
+				window.top.channel?.postMessage({event: "refresh"})
 			}
+			await window.top.refreshPageData()
 		}
 
 		// Add request to queue
@@ -764,7 +782,7 @@ function createURLDialog(url, open=false) {
 		if(iframe.classList.contains("loaded")) return
 		if(!iframe.getAttribute("src")) return
 		
-		const errorElement = iframe.contentDocument.querySelector("main h2")
+		const errorElement = iframe.contentDocument?.querySelector("main h2")
 		let errorText = errorElement?.textContent || "Błąd ładowania strony"
 		Popup.error(errorText)
 		dialog.close()

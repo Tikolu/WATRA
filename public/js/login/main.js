@@ -1,5 +1,6 @@
 API.registerHandler("login/accessCode", {
 	progressText: "Logowanie...",
+	refresh: "all",
 	validate: data => {
 		data.accessCode = data.accessCode.replaceAll(" ", "")
 		return !!data.accessCode

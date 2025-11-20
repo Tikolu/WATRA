@@ -2,7 +2,8 @@ delete API.onRequestStart
 delete API.onRequestSuccess
 
 API.registerHandler("logout", {
-	progressText: "Wylogowywanie..."
+	progressText: "Wylogowywanie...",
+	refresh: "all"
 })
 
 themeChooser.value = Local.theme || "auto"

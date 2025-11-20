@@ -15,26 +15,32 @@ eventEmitter.addListener("change", event => {
 	promiseSetup()
 })
 
-const connectedClients = {}
-
 export default async function * ({user}) {
 	if(!user) throw new HTTPError(403)
 
-	// Kick other connection
-	connectedClients[this.token.client]?.()
-	connectedClients[this.token.client] = () => this.response.close()
+	// Send ping to ensure connection exists
+	const pingInterval = setInterval(() => {
+		if(this.response.open) this.response.write(":ping\n\n")
+		else clearInterval(pingInterval)
+	}, 5000)
 
-	while(true) {
-		const dbUpdate = await eventEmitter.promise
-		const data = {
-			type: dbUpdate.ns.coll,
-			id: dbUpdate.documentKey._id
-		}
+	try {
+		while(true) {
+			const dbUpdate = await eventEmitter.promise
+			const data = {
+				type: dbUpdate.ns.coll,
+				id: dbUpdate.documentKey._id
+			}
 
-		// console.log("Sending update event:", data)
-		yield {
-			event: "update",
-			data
+			// console.log("Sending update event:", data)
+			yield {
+				event: "update",
+				data
+			}
 		}
+		
+	} finally {
+		// Remove interval
+		clearInterval(pingInterval)
 	}
 }

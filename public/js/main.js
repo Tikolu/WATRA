@@ -102,6 +102,8 @@ window.onpageshow = event => {
 window.onbeforeunload = () => {
 	console.log("Unloading...")
 	window.unloading = true
+	// Close broadcast channel
+	window.channel.close()
 }
 
 document.onvisibilitychange = event => {

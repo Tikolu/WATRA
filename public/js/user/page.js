@@ -74,6 +74,7 @@ async function deleteCredential(id) {
 
 API.registerHandler("logout", {
 	progressText: "Wylogowywanie...",
+	refresh: "all",
 	data: {
 		userID: undefined
 	}

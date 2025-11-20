@@ -3,7 +3,8 @@ API.registerHandler("login/getKeys", {
 	after: async (response, data, element) => {
 		if(response.loggedIn) {
 			Popup.success("Zalogowano!")
-			top.refreshPageData()
+			window.top.channel?.postMessage({event: "refresh"})
+			window.top.refreshPageData()
 			window.dialog?.fullClose()
 			return
 		}
@@ -27,8 +28,8 @@ API.registerHandler("login/getKeys", {
 API.registerHandler("login/verify", {
 	progressText: "Logowanie...",
 	successText: "Zalogowano!",
+	refresh: "all",
 	after: () => {
-		top.refreshPageData()
 		window.dialog?.fullClose()
 	}
 })
