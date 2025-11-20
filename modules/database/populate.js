@@ -141,7 +141,7 @@ export function populate(graph, options={}) {
 	options.known = [...(options.known || [])]
 	options.known.push(this)
 
-	let parentDocument = this.parent?.(), populationContext
+	let parentDocument = this.parent?.(), populationContext = this.$locals?.populationContext
 	while(parentDocument && !options.known.includes(parentDocument)) {
 		options.known.push(parentDocument)
 		populationContext ||= parentDocument.$locals.populationContext

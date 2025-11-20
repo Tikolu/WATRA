@@ -17,11 +17,13 @@ function isValidCode(code) {
 
 function handleMongooseValidationError(error) {
 	for(const key in error.errors || {}) {
-		const err = error.errors[key]
-		if(err.kind == "user defined") return err.message
-		else return `Nieprawidłowa wartość: "${err.value}"`
+		const subError = error.errors[key]
+		if(subError.kind != "user defined") {
+			subError.message = `Nieprawidłowa wartość: "${subError.value}"`
+		}
+		subError.stack = `Path: "${subError.path}"`
+		return subError
 	}
-	// Fallback to error
 	return error
 }
 
