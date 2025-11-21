@@ -29,24 +29,6 @@ h1 {
 	width: 100%;
 }
 
-#medical-categories div.vertical-split {
-	flex-wrap: nowrap;
-}
-
-#medical-categories div.vertical-split > div {
-	width: 100%;
-}
-
-@media (max-width: 40em) {
-	#medical-categories div.vertical-split {
-		flex-wrap: wrap;
-	}
-	
-	#medical-categories div.vertical-split > div {
-		margin-right: 0 !important;
-	}
-}
-
 #medical-categories input[type=text] {
 	font-weight: bold;
 }

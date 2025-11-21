@@ -172,7 +172,9 @@
 			<% } %>
 		<% } %>
 	<% } else if(!$.targetUser.medical.confirmed) { %>
-		<% if($.targetUser.age > Config.adultAge) { %>
+		<% if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
+			<p>Ustaw datę urodzin aby zatwierdzić danę medyczne.</p>
+		<% } else if($.targetUser.age === null || $.targetUser.age > Config.adultAge) { %>
 			<p>Dane medyczne oczekują zatwierdzenia przez użytkownika <%= $.targetUser.displayName %>.</p>
 		<% } else { %>
 			<p>Dane medyczne oczekują zatwierdzenia przez rodzica/opiekuna.</p>

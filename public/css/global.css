@@ -66,8 +66,7 @@ i.spin {
 
 form {
 	display: grid;
-	width: min-content;
-	max-width: 100%;
+	width: 100%;
 	grid-template-columns: auto 1fr;
 	column-gap: 0.5em;
 	row-gap: 0.5em;
@@ -82,8 +81,14 @@ form > button:last-child, form > h1, form > h2, form > h3 {
 }
 
 form input, form select {
-	width: 15em;
+	width: 100%;
+	max-width: 20em;
 }
+
+form input:only-child, form select:only-child {
+	grid-column: 1 / -1;
+}
+
 
 
 /* Form elements */
@@ -106,6 +111,7 @@ textarea {
 }
 
 label {
+	overflow: hidden;
 	vertical-align: middle;
 	white-space: nowrap;
 }
@@ -146,6 +152,13 @@ input[type=checkbox], input[type=radio] {
 	vertical-align: middle;
 	height: 1.5em;
 	width: 1.5em;
+	margin-top: 0;
+	flex-shrink: 0;
+}
+
+input[type=checkbox] + label, input[type=radio] + label {
+	margin-left: 0.5em;
+	flex-grow: 1;
 }
 
 input[type=checkbox]:focus, input[type=radio]:focus {
@@ -157,7 +170,7 @@ input[type=checkbox]:focus-visible, input[type=radio]:focus-visible {
 }
 
 input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
-	opacity: 0.5;
+	color: var(--secondary-text);
 }
 
 h1 > input, h2 > input {
@@ -207,12 +220,12 @@ button.icon {
 	background-color: transparent;
 	padding: 0;
 	margin: 0;
-	transition: opacity 250ms;
+	transition: color 250ms;
 }
 
 button.icon:hover, button.icon:focus-visible {
 	background-color: transparent;
-	opacity: 0.5;
+	color: var(--secondary-text);
 }
 
 /* Other elements */
@@ -252,11 +265,11 @@ hr {
 details > summary {
 	cursor: pointer;
 	text-decoration: underline;
-	transition: opacity 250ms;
+	transition: color 250ms;
 }
 
 details > summary:hover {
-	opacity: 0.5;
+	color: var(--secondary-text);
 }
 
 details > summary > * {
@@ -360,10 +373,11 @@ p.warning + p.warning {
 
 		& > .entry-header {
 			display: flex;
+			align-items: center;
 		}
 
-		& > h3 {
-			margin: 0;
+		& > .entry-header:only-child {
+			height: 100%;
 		}
 
 		& .entry-image {
@@ -384,14 +398,15 @@ p.warning + p.warning {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
+		}
 
-			& > * {
-				margin: 0;
-				
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			}
+		& .entry-title > *, & h3 {
+			margin-top: 0;
+			margin-bottom: 0;
+			
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		& > .entry-content {
@@ -408,7 +423,6 @@ p.warning + p.warning {
 	& > a {
 		background-color: var(--surface-4);
 		transition: box-shadow 250ms;
-		opacity: 1 !important;
 		
 		&:hover, &:focus-visible {
 			color: var(--text);
@@ -444,6 +458,20 @@ p.warning + p.warning {
 	.entry-grid { --entry-grid-columns: 1; }
 }
 
+@media (min-width: 40em) {
+	div.vertical-split {
+		display: flex;
+		align-items: flex-start;
+		gap: 2em;
+	}
+
+	div.vertical-split > * {
+		height: fit-content;
+		margin-top: 0;
+		flex: 1;
+	}
+}
+
 section {
 	padding: 1em;
 	margin: 1em 0;
@@ -457,20 +485,6 @@ section {
 	& > :last-child {
 		margin-bottom: 0;
 	}
-}
-
-div.vertical-split {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-div.vertical-split > * {
-	height: fit-content;
-	margin-top: 0;
-}
-
-div.vertical-split > *:not(:last-child) {
-	margin-right: 2em;
 }
 
 article {
@@ -593,7 +607,7 @@ dialog iframe {
 }
 
 dialog.frame {
-	width: 30em;
+	width: 35em;
 	padding: 0.5em;
 
 	& > i.spin {
@@ -683,4 +697,16 @@ dialog.frame:has(> iframe.loaded) i.spin {
 	to {
 		rotate: 1turn;
 	}
+}
+
+body.unload::after {
+	position: fixed;
+	top: 45%;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font-family: "Material Symbols Sharp", blank;
+	content: "progress_activity";
+	font-size: 2em;
+	animation: spin 1s infinite linear, fade-in 1s 1s backwards;
 }

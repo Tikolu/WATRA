@@ -1,7 +1,9 @@
 img {
+	background-color: var(--surface-3);
 	display: block;
 	margin: 1em auto;
 	border-radius: var(--border-radius);
+	width: 10em;
 	height: 10em;
 	pointer-events: none;
 }

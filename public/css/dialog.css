@@ -9,6 +9,7 @@ body {
 	margin: 0;
 	padding: 0.5em;
 	overflow: hidden;
+	box-sizing: border-box;
 }
 
 body h1 {

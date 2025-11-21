@@ -16,5 +16,5 @@ html {
 	--secondary-text: hsl(var(--hue), 10%, 50%);
 	--shadow: hsl(var(--hue), 5%, 5%);
 	
-	--border-radius: 5px;
+	--border-radius: 0.5em;
 }
