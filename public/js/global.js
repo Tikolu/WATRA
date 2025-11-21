@@ -107,6 +107,8 @@ const Popup = window.top.Popup || {
 		dialog.classList.add("message")
 		if(type) dialog.classList.add(type)
 
+		if(typeof message != "string") message = message?.message || JSON.stringify(message)
+
 		if(icon) dialog.innerHTML = `<i>${icon}</i>`
 		dialog.innerHTML += `
 			<p>${message?.replaceAll("\n", "<br>")}</p>
@@ -707,7 +709,11 @@ const API = {
 			if(handler.refresh == "all") {
 				window.top.channel?.postMessage({event: "refresh"})
 			}
-			await window.top.refreshPageData()
+			if(window.top.unloading) {
+				window.top.refreshDataOnShow = true
+			} else {
+				await window.top.refreshPageData()
+			}
 		}
 
 		// Add request to queue

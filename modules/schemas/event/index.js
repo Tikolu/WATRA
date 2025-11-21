@@ -25,25 +25,33 @@ export class EventClass extends UnitClass {
 	dates = {
 		start: {
 			type: Date,
-			min: MIN_DATE,
+			min: [
+				() => new Date().setHours(0, 0, 0, 0),
+				"Data rozpoczęcia nie może być w przeszłości"
+			],
 			max: MAX_DATE,
-			validate: {
-				validator: function(value) {
+			validate: [
+				function(value) {
 					return value <= this.dates.end
 				},
-				message: "Data rozpoczęcia musi być przed datą zakończenia"
-			}
+				"Data rozpoczęcia musi być przed datą zakończenia"
+			],
+			required: true
 		},
 		end: {
 			type: Date,
-			min: MIN_DATE,
+			min: [
+				() => new Date().setHours(0, 0, 0, 0),
+				"Data zakończenia nie może być w przeszłości"
+			],
 			max: MAX_DATE,
-			validate: {
-				validator: function(value) {
+			validate: [
+				function(value) {
 					return this.dates.start <= value
 				},
-				message: "Data rozpoczęcia musi być przed datą zakończenia"
-			}
+				"Data rozpoczęcia musi być przed datą zakończenia"
+			],
+			required: true
 		}
 	}
 

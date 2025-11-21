@@ -18,10 +18,13 @@ function isValidCode(code) {
 function handleMongooseValidationError(error) {
 	for(const key in error.errors || {}) {
 		const subError = error.errors[key]
-		if(subError.kind != "user defined") {
-			subError.message = `Nieprawidłowa wartość: "${subError.value}"`
+		subError.stack = subError.message
+		if(subError.kind == "required") {
+			subError.message = "Wartość jest wymagana"
+		} else if(subError.message.startsWith("Path")) {
+			subError.message = `Nieprawidłowa wartość: ${JSON.stringify(subError.value)}`
 		}
-		subError.stack = `Path: "${subError.path}"`
+		// console.log(JSON.parse(JSON.stringify(subError)))
 		return subError
 	}
 	return error
