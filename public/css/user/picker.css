@@ -1,0 +1,9 @@
+.user-picker {
+	overflow: auto;
+	margin-top: 0.5em;
+}
+
+.user-picker > p {
+	text-align: center;
+	margin: 2em 0;
+}

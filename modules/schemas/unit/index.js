@@ -124,7 +124,8 @@ export class UnitClass {
 		if("limit" in role.config) {
 			const otherRolesOfType = this.roles.filter(f => f.type == role.type)
 			if(otherRolesOfType.length >= role.config.limit) {
-				throw Error(`Przekroczono limit (${role.config.limit}) funkcji typu "${role.config.name}"`)
+				if(role.config.limit == 1) throw Error(`W jednostce jest już ${role.displayName.toLowerCase()}`)
+				throw Error(`Przekroczono limit (${role.config.limit}) funkcji typu "${role.displayName}"`)
 			}
 		}
 
@@ -323,14 +324,14 @@ export class UnitClass {
 		exclude = [...exclude]
 		// Yield all members of this unit
 		for(const member of await this.getMembers(exclude)) {
-			// exclude.push(member.id)
+			exclude.push(member.id)
 			yield member
 		}
 		// Yield all members of the all subUnits
 		for await(const subUnit of await this.getSubUnitsTree()) {
 			for(const member of await subUnit.getMembers(exclude)) {
 				if(exclude.hasID(member.id)) continue
-				// exclude.push(member.id)
+				exclude.push(member.id)
 				yield member
 			}
 		}

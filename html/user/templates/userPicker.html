@@ -1,0 +1,39 @@
+<% if(Array.isArray($.users)) $.users = {"": $.users} %>
+<input type="search" placeholder="Wyszukaj..." class="user-picker-search">
+<div class="user-picker">
+	<% for(const category in $.users) { %>
+		<% if(category) { %>
+			<details open>
+				<summary>
+					<h3><%= category %></h3>
+				</summary>
+		<% } %>
+		<div class="entry-grid">
+			<% for(const user of $.users[category]) { %>
+				<% if($.filter && !$.filter(user)) continue %>
+				<div>
+					<div class="entry-header">
+						<input
+							type="<%= $.multiple ? "checkbox" : "radio" %>"
+							id="user-<%= user.id %>"
+							name="userID"
+							value="<%= user.id %>"
+							data-org="<%= user.org %>"
+						>
+						<label for="user-<%= user.id %>">
+							<h3><%= user.displayName || "(użytkownik)" %></h3>
+						</label>
+					</div>
+				</div>
+			<% } %>
+		</div>
+		<% if(category) { %>
+			</details>
+		<% } %>
+	<% } %>
+	<% if($.users.length == 0) { %>
+		<p class="user-picker-error">Brak użytkowników</p>
+	<% } else { %>
+		<p class="user-picker-error" hidden>Brak wyników</p>
+	<% } %>
+</div>

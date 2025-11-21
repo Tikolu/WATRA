@@ -1,5 +1,6 @@
 <% layout("/layouts/dialog", {
-	scripts: ["unit/setRole"],
+	scripts: ["unit/setRole", "user/picker"],
+	styles: ["unit/setRole", "user/picker"],
 	meta: {
 		unitID: $.targetUnit.id
 	}
@@ -9,37 +10,36 @@
 	Mianowanie na funkcję
 </h1>
 <main>
-	<% if($.usersForAssignment.length) { %>
-		<h2>Wybierz funkcję</h2>
-		<form id="role-select">
-			<% for(const roleID of $.targetUnit.config.roles || []) { %>
-				<% const role = Config.roles[roleID] %>
-				<input
-					type="radio"
-					name="roleType"
-					value="<%= roleID %>"
-					id="role-<%= roleID %>"
-					data-name-variants="<%= JSON.stringify(role.name) %>"
-				>
-				<label for="role-<%= roleID %>"><%= role.name[$.orgContext] || role.name[$.targetUnit.org] || role.name["default"] %></label>
-			<% } %>
-			<input type="radio" name="roleType" value="remove" id="role-remove">
-			<label for="role-remove">Usuń z jednostki</label>
-		</form>
+	<% if(Object.keys($.usersForAssignment).length) { %>
+		<section>
+			<h2>Wybierz funkcję</h2>
+			<form>
+				<label for="role-select">Funkcja:</label>
+				<select id="role-select" name="roleType">
+					<% for(const roleID of $.targetUnit.config.roles || []) { %>
+						<% const role = Config.roles[roleID] %>
+						<option
+							value="<%= roleID %>"
+							data-name-variants="<%= JSON.stringify(role.name) %>"
+						>
+							<%= role.name[$.orgContext] || role.name[$.targetUnit.org] || role.name["default"] %>
+						</option>
+					<% } %>
+					<option value="remove">
+						(usuń użytkownika z jednostki)
+					</option>
+				</select>
+			</form>
+		</section>
 			
-		<h2>Wybierz użytkownika</h2>
-		<form id="user-select">
-			<% function listUsers(users) { %>
-				<% for(const member of users) { %>
-					<input type="radio" name="memberID" value="<%= member.id %>" id="user-<%= member.id %>" data-org="<%= member.org %>">
-					<label for="user-<%= member.id %>"><%= member.displayName %></label>
-				<% } %>
-			<% } %>
-			<%
-				if($.orgContext) listUsers($.usersForAssignment.filter(u => u.org == $.orgContext))
-				else listUsers($.usersForAssignment)
-			%>
-		</form>
+		<section>
+			<h2>Wybierz użytkownika</h2>
+			<% const requiredOrg = $.orgContext || $.targetUnit.org %>
+			<%~ include("/user/templates/userPicker", {
+				users: $.usersForAssignment,
+				filter: user => !requiredOrg || user.org == requiredOrg
+			}) %>
+		</section>
 	<% } else { %>
 		<p>Brak użytkowników do mianowania</p>
 	<% } %>
@@ -50,8 +50,8 @@
 		<i>arrow_back</i>
 		Anuluj
 	</button>
-	<% if($.usersForAssignment.length) { %>
-		<button id="set-role-button" api="unit/[unitID]/member/[memberID]/setRole">
+	<% if(Object.keys($.usersForAssignment).length) { %>
+		<button id="set-role-button" api="unit/[unitID]/member/[userID]/setRole">
 			<i>check</i>
 			<span>Potwierdź mianowanie</span>
 		</button>

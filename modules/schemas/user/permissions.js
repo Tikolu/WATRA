@@ -66,8 +66,8 @@ export async function EDIT(user) {
 
 /** Creating parent users or adding existing users as parents to the user */
 export async function ADD_PARENT(user) {
-	// Lack of EDIT permission denies ADD_PARENT
-	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+	// Lack of ACCESS permission denies ADD_PARENT
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// Cannot add parents to user with existing, incomplete parent profiles
 	await this.populate("parents")
@@ -87,10 +87,21 @@ export async function ADD_PARENT(user) {
 	return false
 }
 
+/** Setting user's roles in a unit */
+export async function SET_ROLE(user) {
+	// Lack of ACCESS permission denies SET_ROLE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "manageUser" roles in user's unit or upper units can set its role in a unit
+	if(await user.hasRoleInUnits("manageUser", this, this.getUnitsTree())) return true
+
+	return false
+}
+
 /** Deleting the user */
 export async function DELETE(user) {
-	// Lack of EDIT permission denies DELETE
-	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+	// Lack of ACCESS permission denies DELETE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// User can never delete themselves
 	if(user.id == this.id) return false

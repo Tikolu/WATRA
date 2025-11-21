@@ -1,18 +1,16 @@
-API.registerHandler("unit/[unitID]/member/[memberID]/setRole", {
+API.registerHandler("unit/[unitID]/member/[userID]/setRole", {
 	form: main,
 	progressText: "Mianowanie na funkcję...",
 	successText: "Zapisano",
 	validate: data => {		
-		console.log(data)
-		
-		if(!data.memberID) {
+		if(!data.userID) {
 			throw new Error("Nie wybrano użytkownika")
 		}
 		if(!data.roleType) {
 			throw new Error("Nie wybrano funkcji")
 		}
 		if(data.roleType == "remove") return {
-			api: `unit/[unitID]/member/[memberID]/remove`,
+			api: `unit/[unitID]/member/[userID]/remove`,
 			progressText: "Usuwanie użytkownika...",
 			successText: "Usunięto"
 		}
@@ -21,12 +19,12 @@ API.registerHandler("unit/[unitID]/member/[memberID]/setRole", {
 	}
 })
 
-userSelect.onchange = () => {
-	const org = userSelect.querySelector("input:checked")?.dataset.org
-	for(const input of roleSelect.querySelectorAll("input")) {
-		let nameVariants = input.dataset.nameVariants
+main.onchange = () => {
+	const org = main.querySelector(".user-picker input:checked")?.dataset.org
+	for(const option of roleSelect.options) {
+		let nameVariants = option.dataset.nameVariants
 		if(!nameVariants) continue
 		nameVariants = JSON.parse(nameVariants)
-		input.labels[0].textContent = nameVariants[org] || nameVariants["default"]
+		option.textContent = nameVariants[org] || nameVariants["default"]
 	}
 }
