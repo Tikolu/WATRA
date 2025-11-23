@@ -87,17 +87,6 @@ export async function ADD_PARENT(user) {
 	return false
 }
 
-/** Setting user's roles in a unit */
-export async function SET_ROLE(user) {
-	// Lack of ACCESS permission denies SET_ROLE
-	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
-
-	// "manageUser" roles in user's unit or upper units can set its role in a unit
-	if(await user.hasRoleInUnits("manageUser", this, this.getUnitsTree())) return true
-
-	return false
-}
-
 /** Deleting the user */
 export async function DELETE(user) {
 	// Lack of ACCESS permission denies DELETE

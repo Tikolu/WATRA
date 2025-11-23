@@ -49,8 +49,8 @@ export class UserClass {
 			}
 
 			// Enforce role age restrictions
-			await this.populate("roles")
-			for(const role of this.roles) {
+			await this.populate(["roles", "eventRoles"])
+			for(const role of [...this.roles, ...this.eventRoles]) {
 				if(this.age < (role.config.minAge || 0) || this.age > (role.config.maxAge || Infinity)) {
 					throw Error(`Data urodzin nie jest kompatybilna z grupą wiekową "${role.config.name.default}"`)
 				}

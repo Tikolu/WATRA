@@ -5,9 +5,6 @@ export default async function({user, targetUnit, orgContext}) {
 	// Check for permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.SET_ROLE)
 	
-	// Sort roles
-	await targetUnit.sortRoles(false)
-	
 	// Get all direct members
 	const usersForAssignment = {}
 	const directMembers = await targetUnit.getMembers()
@@ -18,10 +15,14 @@ export default async function({user, targetUnit, orgContext}) {
 		const subMembers = await Array.fromAsync(unit.getSubMembers())
 		usersForAssignment[unit.displayName] = subMembers
 	}
+
+	// Get user's role in unit
+	const userRole = await user.getRoleInUnit(targetUnit)
 	
 	return html("unit/setRole", {
 		user,
 		targetUnit,
+		userRole,
 		usersForAssignment,
 		orgContext
 	})

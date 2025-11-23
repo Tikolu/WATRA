@@ -104,11 +104,6 @@ export class EventClass extends UnitClass {
 		await super.setRole(user, role)
 	}
 
-	/** Finds the user invite for a user */
-	findUserInvite(user) {
-		return this.participants.id(user.id)
-	}
-
 	/** Invite unit to event */
 	async inviteUnit(unit, state="pending") {
 		// Remove existing invites

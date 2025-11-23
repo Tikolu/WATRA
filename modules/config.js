@@ -59,7 +59,12 @@ for(const orgID in config.orgs) {
 for(const roleID in config.roles) {
 	const role = config.roles[roleID]
 	
-	// Deafult values
+	// Prevent invalid role nname
+	if(roleID == "remove") {
+		throw new ConfigError("Invalid role ID \"remove\"")
+	}
+	
+	// Default values
 	role.id = roleID
 	role.tags ||= []
 	role.rank ||= 0
@@ -133,6 +138,13 @@ if(!config.event) {
 }
 config.event.roles ||= []
 config.event.topUnitTypes ||= Object.keys(config.units)[0]
+
+// Ensure roles exist
+for(const roleName of config.event.roles || []) {
+	if(!config.roles[roleName]) {
+		throw new ConfigError(`Event config references unknown role "${roleName}"`)
+	}
+}
 
 
 // console.log(config)

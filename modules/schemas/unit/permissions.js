@@ -86,6 +86,9 @@ export async function SET_ROLE(user) {
 	// Lack of ACCESS permission denies SET_ROLE
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// Cannot set role if unit has no configured roles
+	if(!this.config.roles?.length) return false
+
 	// "setRole" roles in this unit or upper units can set roles
 	if(await user.hasRoleInUnits("setRole", this, this.getUpperUnitsTree())) return true
 

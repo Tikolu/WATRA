@@ -2,21 +2,45 @@ import html from "modules/html.js"
 
 export default async function({user, targetEvent}) {
 	// Check for permissions
-	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
+	await user.requirePermission(targetEvent.PERMISSIONS.SET_ROLE)
 	
-	// Get list of possible users which can have a role assigned
-	const usersForAssignment = []
-	for await(const userForMianowanie of targetEvent.usersForAssignment()) {
-		// User cannot set their own role
-		if(userForMianowanie.id == user.id) continue
-		// Skip duplicates
-		if(usersForAssignment.find(u => u.id == userForMianowanie.id)) continue
-		
-		usersForAssignment.push(userForMianowanie)
+	await user.checkPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
+	
+	const usersForAssignment = {}
+	// Get all participants
+	await targetEvent.populate({"participants": "user"})
+	const participants = []
+	for(const participant of targetEvent.participants) {
+		// If user cannot access participants, only add users with public roles
+		if(!await user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) {
+			if(!await participant.user.hasRoleInUnits("public", targetEvent)) continue
+		}
+		participants.push(participant.user)
 	}
+	if(participants.length) usersForAssignment[""] = participants
+
+	// If user has "manageUser" role in upperUnit, add all subMembers of unit
+	await targetEvent.populate("upperUnits")
+	for(const unit of targetEvent.upperUnits) {
+		if(!await user.hasRoleInUnits("manageUser", unit, unit.getUpperUnitsTree())) continue
+
+		// Add all direct members
+		usersForAssignment[unit.displayName] = await unit.getMembers()
+
+		// Add all members of subUnits
+		await unit.populate("subUnits")
+		for(const subUnit of unit.subUnits) {
+			const subMembers = await Array.fromAsync(subUnit.getSubMembers())
+			usersForAssignment[subUnit.displayName] = subMembers
+		}
+	}
+
+	// Get user's role in event
+	const userRole = await user.getRoleInUnit(targetEvent)
 	
 	return html("event/setRole", {
 		user,
+		userRole,
 		targetEvent,
 		usersForAssignment
 	})

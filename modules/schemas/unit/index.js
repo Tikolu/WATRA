@@ -56,7 +56,7 @@ export class UnitClass {
 	]
 
 
-	/* * Getters * */
+	/** * Getters * */
 
 	/** Returns the unit type object from config */
 	get config() {
@@ -77,7 +77,7 @@ export class UnitClass {
 	}
 
 
-	/* Methods */
+	/** Methods */
 	
 	/** Add user to unit with a role, any existing role in the unit gets overwritten */
 	async setRole(user, roleType=this.config.defaultRole) {
@@ -131,12 +131,12 @@ export class UnitClass {
 
 		// Enforce role age limits
 		const userAge = user.age
-		if(userAge !== null) {
-			if(userAge < role.config.minAge || 0) {
-				throw Error(`Użytkownik nie spełnia wymaganego wieku (${role.config.minAge}) dla funkcji typu "${role.config.name}"`)
+		if(userAge !== null && !role.eventType) {
+			if(userAge < (role.config.minAge || 0)) {
+				throw Error(`Użytkownik nie spełnia wymaganego wieku dla funkcji typu "${role.displayName}"`)
 			}
-			if(userAge > role.config.maxAge || Infinity) {
-				throw Error(`Użytkownik przekracza maksymalny wiek (${role.config.maxAge}) dla funkcji typu "${role.config.name}"`)
+			if(userAge > (role.config.maxAge || Infinity)) {
+				throw Error(`Użytkownik przekracza maksymalny wiek dla funkcji typu "${role.displayName}"`)
 			}
 		}
 
@@ -154,15 +154,6 @@ export class UnitClass {
 		await role.save()
 		await this.save()
 		await user.save()
-
-		// Delete any "membershipOnly" roles in upper units
-		// for await(const upperUnit of this.getUpperUnitsTree()) {
-		// 	const existingRole = await user.getRoleInUnit(upperUnit)
-		// 	if(existingRole.hasTag("membershipOnly")) {
-		// 		await existingRole.delete()
-		// 	}
-		// }
-		
 
 		return role
 	}
@@ -288,24 +279,6 @@ export class UnitClass {
 		}
 	}
 
-	/* Recursive list of all units (sub and upper) */
-	async * getUnitsTree(exclude=[], condition) {
-		exclude = [...exclude]
-		// exclude.push(subUnit.id)
-		yield this
-		for(const subUnit of this.getSubUnitsTree(exclude, condition)) {
-			if(exclude.hasID(subUnit.id)) continue
-			// exclude.push(subUnit.id)
-			yield subUnit
-		}
-		for(const upperUnit of this.getUpperUnitsTree(exclude, condition)) {
-			if(exclude.hasID(upperUnit.id)) continue
-			// exclude.push(upperUnit.id)
-			yield upperUnit
-			yield * upperUnit.getUnitsTree(exclude, condition)
-		}
-	}
-
 	/** List of all direct members */
 	async getMembers(exclude=[]) {
 		exclude = [...exclude]
@@ -319,7 +292,7 @@ export class UnitClass {
 		return users
 	}
 
-	/* Recursive list of all members (including members of subUnits) */
+	/** Recursive list of all members (including members of subUnits) */
 	async * getSubMembers(exclude=[]) {
 		exclude = [...exclude]
 		// Yield all members of this unit
@@ -337,7 +310,7 @@ export class UnitClass {
 		}
 	}
 
-	/* Counts the amount of members */
+	/** Counts the amount of members */
 	countMembers(recursive=false) {
 		let count = this.roles.length
 		if(recursive) {

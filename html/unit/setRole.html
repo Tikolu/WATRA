@@ -18,6 +18,7 @@
 				<select id="role-select" name="roleType">
 					<% for(const roleID of $.targetUnit.config.roles || []) { %>
 						<% const role = Config.roles[roleID] %>
+						<% if($.userRole && $.userRole.config.rank < role.rank) continue %>
 						<option
 							value="<%= roleID %>"
 							data-name-variants="<%= JSON.stringify(role.name) %>"
