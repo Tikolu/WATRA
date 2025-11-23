@@ -54,14 +54,20 @@ header > nav > a:not(:first-child) {
 }
 
 /* transitions */
-main {
+main > * {
 	opacity: 1;
 	transition: 350ms opacity, 350ms scale;
 }
 
-body.unload main {
+body.unload main > * {
 	opacity: 0;
 	scale: 99%;
+	cursor: wait;
+}
+
+body.refresh main > * {
+	scale: 99%;
+	cursor: wait;
 }
 
 body.unload dialog:not(.message) {

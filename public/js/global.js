@@ -224,6 +224,11 @@ HTMLDialogElement.prototype.result = function(modal=true) {
 // Custom refresh functionality
 async function refreshPageData() {
 	await sleep(50)
+
+	if(document.body.classList.contains("refresh")) {
+		sleep(250).then(() => document.body.classList.remove("refresh"))
+	}
+
 	if(window.refreshing || window.unloading) return
 	window.refreshing = true
 	debug("Refreshing page data...")

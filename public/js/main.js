@@ -147,6 +147,19 @@ constructNavPath()
 document.querySelector("nav a:last-child").scrollIntoViewIfNeeded?.()
 window.afterDataRefresh.push(constructNavPath)
 
+// Custom refreshing
+window.addEventListener("keydown", event => {
+	if(event.key == "F5") {
+		if(event.ctrlKey || event.metaKey) return
+	} else if(event.key == "r") {
+		if(!event.ctrlKey && !event.metaKey) return
+	} else return
+
+	event.preventDefault()
+	document.body.classList.add("refresh")
+	refreshPageData()
+})
+
 if(!META.error) {
 	// Track visited pages
 	Session.history.push({
