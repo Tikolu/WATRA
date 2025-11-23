@@ -8,10 +8,6 @@
 <h1 id="event-title">Zapraszanie jednostek na <%= $.targetEvent.displayName %></h1>
 
 <main>
-	<!-- <input type="search" placeholder="Wyszukiwanie..." disabled>
-	<select disabled>
-		<option>Rodzaj jednostki...</option>
-	</select> -->
 	<% function displayUnit(unit, inviteOverride=undefined) { %>
 		<% if(!unit) return %>
 		<% if(!unit.config.eventRules.invite && !unit.subUnits.length) return %>
@@ -65,9 +61,11 @@
 		</details>
 	<% } %>
 
-	<% for(const unit of $.topUnits) { %>
-		<% displayUnit(unit) %>
-	<% } %>
+	<section>
+		<% for(const unit of $.topUnits) { %>
+			<% displayUnit(unit) %>
+		<% } %>
+	</section>
 </main>
 <div class="button-row">
 	<button onclick="dialog.close()" class="confirm">

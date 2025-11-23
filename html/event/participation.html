@@ -14,11 +14,11 @@
 	<% let canParticipate = true %>
 	<% if(!$.targetInvitation.user.profileComplete) { %>
 		<% canParticipate = false %>
-		<p class="warning"><i>warning</i> Uzupełnij dane na profilu uczestnika, aby móc potwierdzić udział w akcji.</p>
+		<p class="warning"><i>warning</i> Uzupełnij wszystkie brakujące dane na profilu uczestnika, aby potwierdzić udział w akcji.</p>
 	<% } %>
 	<% if($.targetInvitation.user.parents.length > 0 && $.targetInvitation.user.parents.every(p => !p.profileComplete)) { %>
 		<% canParticipate = false %>
-		<p class="warning"><i>warning</i> Uzupełnij dane na profilu rodzica uczestnika, aby móc potwierdzić udział w akcji.</p>
+		<p class="warning"><i>warning</i> Uzupełnij wszystkie brakujące dane na profilu rodzica uczestnika, aby potwierdzić udział w akcji.</p>
 	<% } %>
 	<% if(canParticipate) { %>
 		<form id="event-participation">

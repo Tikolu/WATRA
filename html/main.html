@@ -88,7 +88,7 @@
 		<div class="entry-grid">
 			<% for(const event of $.events) { %>
 				<%
-					const inviteStates = [$.user, ...$.user.children].map(u => event.findUserInvite(u)?.state)
+					const inviteStates = [$.user, ...$.user.children].map(u => event.participants.id(u.id)?.state)
 					const approvalState = event.getApprover($.user)?.approved
 
 					if(approvalState === true && !inviteStates.length) continue

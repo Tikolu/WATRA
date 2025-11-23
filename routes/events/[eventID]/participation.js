@@ -12,7 +12,7 @@ export default async function({user, targetEvent, participant: targetUserID}) {
 	await user.requirePermission(targetUser.PERMISSIONS.APPROVE, "Brak dostępu do użytkownika")
 
 	// Check if target user is a participant
-	const targetInvitation = targetEvent.findUserInvite(targetUser)
+	const targetInvitation = targetEvent.participants.id(targetUser.id)
 	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
 
 	await targetInvitation.populate(

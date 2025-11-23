@@ -61,18 +61,19 @@ export default class {
 		}
 
 		// Remove participants not on list
+		const participantsToRemove = []
 		for(const participant of targetEvent.participants) {
 			if(participant.originUnit != this.unit.id) continue
 			if(participantIDs.includes(participant.user.id)) continue
 		
+			participantsToRemove.push(participant)
+
 			await participant.populate("user")
 
 			// Remove invite from user
 			participant.user.eventInvites = participant.user.eventInvites.filter(i => i != targetEvent.id)
 			await participant.user.save()
-			
-			await participant.delete()
-			
+
 			// Remove user's role
 			const existingRole = await participant.user.getRoleInUnit(targetEvent)
 			if(existingRole) {
@@ -84,6 +85,8 @@ export default class {
 			}
 		}
 
+		targetEvent.participants = targetEvent.participants.filter(p => !participantsToRemove.includes(p))
+
 		await targetEvent.save()
 	}
 
@@ -92,7 +95,7 @@ export default class {
 		const targetEvent = this.parent()
 		
 		// Uninvite users
-		if(this.invitedParticipants > 0) {
+		if(this.invitedParticipants.length > 0) {
 			await this.setParticipants([])
 		}
 

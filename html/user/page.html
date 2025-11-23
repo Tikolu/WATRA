@@ -295,7 +295,7 @@
 		</h2>
 		<div class="entry-grid">
 			<% for(const event of $.targetUser.eventInvites) { %>
-				<% const inviteState = event.findUserInvite($.targetUser)?.state %>
+				<% const inviteState = event.participants.id($.targetUser.id)?.state %>
 				<%~ include("/event/templates/eventEntry.html", {
 					targetEvent: event,
 					content: ({

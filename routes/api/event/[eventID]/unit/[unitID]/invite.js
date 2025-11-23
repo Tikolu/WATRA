@@ -7,9 +7,9 @@ export default async function({user, targetEvent, targetUnit}) {
 		throw new HTTPError(400, "Jednostka została już zaproszona na akcję")
 	}
 	
-	// Automatically accept invite if user has permission
+	// Automatically accept invite if user has permission, and is a direct unit member
 	let state = "pending"
-	if(await user.checkPermission(targetUnit.PERMISSIONS.MANAGE_INVITES)) {
+	if(await user.checkPermission(targetUnit.PERMISSIONS.MANAGE_INVITES) && await user.getRoleInUnit(targetUnit)) {
 		state = "accepted"
 	}
 	

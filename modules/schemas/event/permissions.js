@@ -1,15 +1,15 @@
 /** Accessing the event's page */
 export async function ACCESS(user) {
 	// Invited users can access
-	if(this.findUserInvite(user)) return true
+	if(this.participants.hasID(user.id)) return true
 
 	// Parents of invited users can access
 	await user.populate("children")
 	for(const child of user.children) {
-		if(this.findUserInvite(child)) return true
+		if(this.participants.hasID(child)) return true
 	}
 
-	// "manageEvent" roles in any upperUnit can access
+	// "manageEvent" roles in event and upperUnit can access
 	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnitsTree())) return true
 
 	// "manageEventInvite" roles in any invited unit can access
@@ -21,22 +21,77 @@ export async function ACCESS(user) {
 	return false
 }
 
-export async function PARTICIPANT_ACCESS(user) {
-	if(await user.hasRoleInUnits("accessParticipant")) return true
+/** Accessing the event's participants' profiles */
+export async function ACCESS_PARTICIPANTS(user) {
+	// Lack of ACCESS permission denies ACCESS_PARTICIPANTS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "accessUser" roles in event can access participants
+	if(await user.hasRoleInUnits("accessUser", this)) return true
 
 	return false
 }
 
-export async function APPROVE(user) {
-	// "approveEvent" roles in any upperUnit can access
-	if(await user.hasRoleInUnits("approveEvent", this.getUpperUnitsTree())) return true
-
-	return false
-}
-
+/** Modifying the event's details */
 export async function EDIT(user) {
-	// "modifyEvent" roles in event and upperUnits
+	// Lack of ACCESS permission denies EDIT
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "manageEvent" roles in event and upperUnits can edit
 	if(await user.hasRoleInUnits("manageEvent", this, this.getUpperUnitsTree())) return true
 
+	return false
+}
+
+/** Deleting the event details */
+export async function DELETE(user) {
+	// Lack of EDIT permission denies DELETE
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+
+	// Cannot delete event with accepted participants
+	if(this.participants.some(p => p.state == "accepted")) return false
+	
+	// "manageEvent" roles in upperUnits can delete
+	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnitsTree())) return true
+
+	return false
+}
+
+/** Setting roles of users within the event */
+export async function SET_ROLE(user) {
+	// Lack of ACCESS permission denies SET_ROLE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// Cannot set role if event has no configured roles
+	if(!this.config.roles?.length) return false
+
+	// "setRole" roles in this event can set roles
+	if(await user.hasRoleInUnits("setRole", this)) return true
+
+	// "manageEvent" roles in upperUnits can set roles
+	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnitsTree())) return true
+
+	return false
+}
+
+/** Inviting units to the event */
+export async function INVITE_UNIT(user) {
+	// Lack of EDIT permission denies INVITE_UNIT
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+
+	// "manageEvent" roles in event and direct upper unit can invite units
+	await this.populate("upperUnits")
+	if(await user.hasRoleInUnits("manageEvent", this, this.upperUnits)) return true
+
+	return false
+}
+
+/** Approving the event */
+export function APPROVE(user) {
+	// Users with roles on the approvers list can approve the event
+	for(const approver of this.approvers) {
+		if(user.roles.hasID(approver.role.id)) return true
+	}
+	
 	return false
 }

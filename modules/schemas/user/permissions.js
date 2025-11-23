@@ -25,7 +25,7 @@ export async function ACCESS(user) {
 	// Users with "accessUser" role in events in which user is a participant can access
 	await this.populate("eventInvites")
 	for(const event of this.eventInvites) {
-		const invite = event.findUserInvite(this)
+		const invite = event.participants.id(this.id)
 		if(invite?.state != "accepted") continue
 		if(user.hasRoleInUnits("accessUser", event)) return true
 	}

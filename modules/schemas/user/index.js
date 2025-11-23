@@ -68,6 +68,8 @@ export class UserClass {
 		trim: true,
 		match: /^\+\d{1,3}\d{9}$/,
 		set: phone => {
+			if(!phone) return undefined
+			
 			phone = phone.replaceAll(" ", "")
 			phone = phone.replace(/^00/, "+")
 			if(!phone.startsWith("+") && phone.length > 10) phone = `+${phone}`
@@ -337,7 +339,7 @@ schema.beforeDelete = async function() {
 	await this.populate("eventInvites")
 	
 	for(const event of this.eventInvites) {
-		const invite = event.findUserInvite(this)
+		const invite = event.participants.id(this.id)
 		if(!invite) continue
 		await invite.delete()
 		await event.save()

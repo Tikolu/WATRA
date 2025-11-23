@@ -6,16 +6,16 @@ export default async function({user, targetEvent}) {
 		"upperUnits": {},
 		"invitedUnits": {
 			"unit": {},
-		}
+		},
+		"roles": "user"
 	})
 
 	// Check all permissions
 	await user.checkPermission(targetEvent.PERMISSIONS)
 
-	if(user.hasPermission(targetEvent.PERMISSIONS.PARTICIPANT_ACCESS)) {
-		// Populate event roles, users and units of roles, and participants
+	if(user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) {
+		// Populate event participants
 		await targetEvent.populate({
-			"roles": ["user", "unit"],
 			"participants": {
 				"user": {}
 			}
@@ -44,18 +44,17 @@ export default async function({user, targetEvent}) {
 		}
 	}
 	
-	// Get participants for approval
-	await user.populate("children")
+	// Get participants for approving
 	const approvalParticipants = []
 	for(const participant of [user, ...user.children]) {
 		// Check if user is invited to event
-		const userInvite = targetEvent.findUserInvite(participant)
+		const userInvite = targetEvent.participants.id(participant.id)
 		if(!userInvite) continue
 
 		await userInvite.populate("user")
 
-		// Check for approval permission
-		if(!await user.checkPermission(participant.PERMISSIONS.APPROVE)) continue
+		// Check for approval permission on participant
+		await user.checkPermission(userInvite.user.PERMISSIONS.APPROVE)
 
 		approvalParticipants.push(userInvite)
 	}

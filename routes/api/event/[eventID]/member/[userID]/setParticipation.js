@@ -5,7 +5,7 @@ export default async function({user, targetEvent, targetUser, participation}) {
 	await user.requirePermission(targetUser.PERMISSIONS.APPROVE, "Brak dostępu do użytkownika")
 
 	// Check if target user is a participant
-	const targetInvitation = targetEvent.findUserInvite(targetUser)
+	const targetInvitation = targetEvent.participants.id(targetUser.id)
 	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
 
 	if(typeof participation != "boolean") throw new HTTPError(400)

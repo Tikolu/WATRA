@@ -116,7 +116,7 @@
 		<% } %>
 	</div>
 
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.DELETE)) { %>
 		<br>
 		<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
 			<i>delete</i>
@@ -139,7 +139,29 @@
 	<% } %>
 </section>
 
-<% if($.targetEvent.roles?.length > 0 || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+<% function displayUser(user, description) { %>
+	<%
+		const userInvite = $.targetEvent.participants.id(user.id)
+		let state = ""
+		if(userInvite.state == "declined") {
+			state = "Odrzucono"
+		} else if(userInvite.state == "pending") {
+			state = "Oczekiwana odpowiedź..."
+		}
+	%>
+	<%~ include("/user/templates/userEntry", {
+		targetUser: user,
+		description: description || state,
+		content: description ? state : null
+	}) %>
+<% } %>
+
+
+<% if(
+	($.targetEvent.roles.length > 0 && $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) ||
+	$.targetEvent.roles.some(role => role.hasTag("public")) ||
+	$.user.hasPermission($.targetEvent.PERMISSIONS.SET_ROLE)
+) { %>
 	<section>
 		<h2>
 			<i>article_person</i>
@@ -148,20 +170,9 @@
 		<% if($.targetEvent.roles?.length > 0) { %>
 			<div id="event-member-list" class="entry-grid">
 				<% for(const role of $.targetEvent.roles || []) { %>
-					<%
-						if(role.config.rank <= 0 && $.targetEvent.findUserInvite(role.user)) continue
-						const md = role.user.missingDetails
-					%>
-					<%~ include("/user/templates/userEntry", {
-						targetUser: role.user,
-						description: Text.capitalise(role.displayName),
-						warnings: Array.conditional(
-							md.includes("names"), "Brak imienia i nazwiska",
-							md.includes("contact"), "Brak danych kontaktowych",
-							md.includes("dob"), "Brak daty urodzenia",
-							md.includes("medical"), "Nie zatwierdzone dane medyczne"
-						)
-					}) %>
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || role.hasTag("public")) { %>
+						<% displayUser(role.user, role.displayName) %>
+					<% } %>
 				<% } %>
 			</div>
 		<% } %>
@@ -176,39 +187,45 @@
 
 <% if(
 	$.targetEvent.invitedUnits.length > 0 ||
-	$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
+	$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_UNIT) ||
 	$.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MANAGE_INVITES))
 ) { %>
 	<section>
 		<h2>
-			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_UNIT)) { %>
 				<i>person</i>
 				Uczestnicy
 			<% } else { %>
 				<i>groups</i>
-				Zaproszone jednostki
+				Uczestniczące jednostki
 			<% } %>
 		</h2>
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteUnits">
-				<i>person_add</i>
-				<span>Zaproś jednostki</span>
-			</button>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_UNIT)) { %>
+			<div class="button-row">
+				<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteUnits">
+					<i>group_add</i>
+					Zaproś jednostki
+				</button>
+				<button disabled>
+					<i>person_add</i>
+					Dodaj uczestników
+				</button>
+			</div>
 		<% } %>
 		<% if($.targetEvent.invitedUnits.length > 0) { %>
 			<div class="entry-grid full">
 				<% for(const unitInvite of $.targetEvent.invitedUnits || []) { %>
 					<%
-						if(unitInvite.state == "declined" && !$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) continue
+						if(unitInvite.state == "declined" && !$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_UNIT)) continue
 						if(
 							unitInvite.state == "pending" &&
 							!$.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES) &&
-							!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)
+							!$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_UNIT)
 						) continue
 					%>
 					<div>
 						<h3><%= unitInvite.unit.displayName %></h3>
-						<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+						<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_UNIT)) { %>
 							<p>
 								<% if(unitInvite.state == "accepted") { %>
 									Zaakceptowano zaproszenie <i>check</i>
@@ -228,13 +245,14 @@
 								<hr>
 							<% } %>
 						<% } %>
+						<% const invitedParticipants = unitInvite.invitedParticipants.filter(p => $.targetEvent.roles.every(r => r.user.id != p.user.id)) %>
 						<% if($.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
 							<% if(unitInvite.state == "accepted") { %>
-								<p>Dodani uczestnicy: <%= unitInvite.invitedParticipants.length %></p>
+								<p>Dodani uczestnicy: <%= invitedParticipants.length %></p>
 								<div class="button-row">
 									<button opens-dialog="/events/<%= $.targetEvent.id %>/chooseParticipants?unit=<%= unitInvite.unit.id %>">
 										<i>group_add</i>
-										<% if(unitInvite.invitedParticipants.length > 0) { %>
+										<% if(invitedParticipants.length > 0) { %>
 											<span>Edytuj uczestników</span>
 										<% } else { %>
 											<span>Dodaj uczestników</span>
@@ -256,67 +274,93 @@
 							<% } %>
 						<% } %>
 						<% if(
-							unitInvite.invitedParticipants.length &&
+							invitedParticipants.length &&
 							(
 								$.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES) || 
-								$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)
+								$.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
 							)
 						) { %>
 							<div class="entry-grid">
-								<% for(const userInvite of unitInvite.invitedParticipants) { %>
-									<%
-										let content = ""
-										if(userInvite.state == "accepted") {
-											content = "Zaakceptowano"
-										} else if(userInvite.state == "declined") {
-											content = "Odrzucono"
-										} else if(userInvite.state == "pending") {
-											content = "Oczekiwana odpowiedź..."
-										}
-									%>
-									<%~ include("/user/templates/userEntry", {
-										targetUser: userInvite.user,
-										content
-									}) %>
-								<% } %>
+								<% invitedParticipants.filter(i => i.state == "accepted").forEach(i => displayUser(i.user)) %>
+								<hr class="grid-break">
+								<% invitedParticipants.filter(i => i.state == "pending").forEach(i => displayUser(i.user)) %>
+								<hr class="grid-break">
+								<% invitedParticipants.filter(i => i.state == "declined").forEach(i => displayUser(i.user)) %>
 							</div>
 						<% } %>
 					</div>
 				<% } %>
 			</div>
 		<% } %>
+		
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) { %>
+			<% const directParticipants = $.targetEvent.participants.filter(p => !p.originUnit && !$.targetEvent.roles.some(r => r.user.id == p.user.id)) %>
+			<% if(directParticipants.length > 0) { %>
+				<div class="entry-grid full">
+					<div>
+						<h3>Inni uczestnicy</h3>
+						<div class="entry-grid">
+							<% for(const participant of directParticipants) { %>
+								<% displayUser(participant.user) %>
+							<% } %>
+						</div>
+					</div>
+				</div>
+			<% } %>
+		<% } %>
 	</section>
 <% } %>
 
 <% if($.approvalParticipants?.length) { %>
-	<hr>
-	<h2>Uczestnictwo</h2>
-	<div class="entry-grid">
-		<% for(const userInvite of $.approvalParticipants) { %>
-			<div>
-				<h3><%= userInvite.user.displayName %></h3>
-				<p>
-					<% if(userInvite.state == "pending") { %>
-						<i>help</i>
-						Oczekiwana odpowiedź...
-					<% } else if(userInvite.state == "accepted") { %>
-						<i>check_circle</i>
-						Zgłoszony
-					<% } else if(userInvite.state == "declined") { %>
-						<i>cancel</i>
-						Odrzucono
-					<% } %>
-				</p>
-				<button opens-dialog="/events/<%= $.targetEvent.id %>/participation?participant=<%= userInvite.user.id %>">
-					<% if(userInvite.state == "pending") { %>
-						Odpowiedz
-					<% } else { %>
-						Zmień odpowiedź
-					<% } %>
-				</button>
-			</div>
-		<% } %>
-	</div>
+	<section>
+		<h2>
+			<i>mark_email_read</i>
+			Uczestnictwo
+		</h2>
+		<div class="entry-grid">
+			<% for(const userInvite of $.approvalParticipants) { %>
+				<div>
+					<div class="entry-title">
+						<h3><%= userInvite.user.displayName %></h3>
+						<p>
+							<% if(userInvite.state == "pending") { %>
+								<i>help</i>
+								Oczekiwana odpowiedź...
+							<% } else if(userInvite.state == "accepted") { %>
+								<i>check_circle</i>
+								Zaakceptowano
+							<% } else if(userInvite.state == "declined") { %>
+								<i>cancel</i>
+								Odrzucono
+							<% } %>
+						</p>
+					</div>
+					<div class="entry-content">
+						<% if($.user.hasPermission(userInvite.user.PERMISSIONS.APPROVE)) { %>
+							<div class="button-row">
+								<button opens-dialog="/events/<%= $.targetEvent.id %>/participation?participant=<%= userInvite.user.id %>">
+									<% if(userInvite.state == "pending") { %>
+										Odpowiedz
+									<% } else { %>
+										Zmień odpowiedź
+									<% } %>
+								</button>
+							</div>
+						<% } else if(userInvite.user.id == $.user.id && userInvite.user.age === null) { %>
+							<p class="warning">
+								<i>warning</i>
+								Ustaw datę urodzin aby kontynuować
+							</p>
+						<% } else if(userInvite.user.age === null || userInvite.user.age > Config.adultAge) { %>
+							<p>Odzpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
+						<% } else { %>
+							<p>Odzpowiedź oczekiwana od rodzica/opiekuna</p>
+						<% } %>
+					</div>
+				</div>
+			<% } %>
+		</div>
+	</section>
 <% } %>
 
 <% if(
@@ -328,52 +372,55 @@
 			<i>gavel</i>
 			Zatwierdzenie
 		</h2>
+
 		<% if($.targetEvent.approvalState) { %>
 			<p><i>check_circle</i> Akcja zatwierdzona</p>
 		<% } else { %>
 			<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
 		<% } %>
+
 		<% if($.targetEvent.approvers.length == 0) { %>
 			<p class="warning">
 				<i>warning</i>
-				Brak kandydatów na zatwierdzających
+				Brak zatwierdzających
 			</p>
+		<% } else { %>
+			<div class="entry-grid medium">
+				<% for(const approver of $.targetEvent.approvers || []) { %>
+					<div>
+						<div class="entry-title">
+							<h3><%= approver.role.user.displayName %></h3>
+							<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
+						</div>
+						<div class="entry-content">
+							<% if(approver.approved) { %>
+								<p>
+									Zatwierdzono <i>check</i><br>
+									<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
+								</p>
+							<% } else if(approver.role.user.id != $.user.id) { %>
+								<p>Oczekiwane zatwierdzenie... <i class="spin">progress_activity</i></p>
+							<% } %>
+						
+							<% if(approver.role.user.id == $.user.id) { %>
+								<div class="button-row">
+									<% if(approver.approved) { %>
+										<button api="event/[eventID]/approval/unapprove" class="dangerous">
+											<i>undo</i>
+											<span>Cofnij zatwierdzenie</span>
+										</button>
+									<% } else { %>
+										<button opens-dialog="/events/<%= $.targetEvent.id %>/approve">
+											<i>check</i>
+											<span>Zatwierdź</span>
+										</button>
+									<% } %>
+								</div>
+							<% } %>
+						</div>
+					</div>
+				<% } %>
+			</div>
 		<% } %>
-		<div class="entry-grid medium">
-			<% for(const approver of $.targetEvent.approvers || []) { %>
-				<div>
-					<div class="entry-title">
-						<h3><%= approver.role.user.displayName %></h3>
-						<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
-					</div>
-					<div class="entry-content">
-						<% if(approver.approved) { %>
-							<p>
-								Zatwierdzono <i>check</i><br>
-								<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
-							</p>
-						<% } else if(approver.role.user.id != $.user.id) { %>
-							<p>Oczekiwane zatwierdzenie... <i class="spin">progress_activity</i></p>
-						<% } %>
-					
-						<% if(approver.role.user.id == $.user.id) { %>
-							<div class="button-row">
-								<% if(approver.approved) { %>
-									<button api="event/[eventID]/approval/unapprove" class="dangerous">
-										<i>undo</i>
-										<span>Cofnij zatwierdzenie</span>
-									</button>
-								<% } else { %>
-									<button opens-dialog="/events/<%= $.targetEvent.id %>/approve">
-										<i>check</i>
-										<span>Zatwierdź</span>
-									</button>
-								<% } %>
-							</div>
-						<% } %>
-					</div>
-				</div>
-			<% } %>
-		</div>
 	</section>
 <% } %>

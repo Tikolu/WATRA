@@ -86,6 +86,7 @@
 			"department": "zuchy",
 			"rank": 1,
 			"roles": [
+				"opiekun",
 				"drużynowy",
 				"przyboczny",
 				"kadra",
@@ -101,6 +102,7 @@
 			"department": "harc",
 			"rank": 1,
 			"roles": [
+				"opiekun",
 				"drużynowy",
 				"przyboczny",
 				"kadra",
@@ -116,6 +118,7 @@
 			"department": "wędro",
 			"rank": 1,
 			"roles": [
+				"opiekun",
 				"drużynowy",
 				"przyboczny",
 				"szeregowy"
@@ -126,8 +129,10 @@
 			"department": "skrzaty",
 			"rank": 0,
 			"roles": [
+				"opiekun",
 				"drużynowy",
 				"przyboczny",
+				"kadra",
 				"skrzat"
 			]
 		},
@@ -173,7 +178,8 @@
 		"roles": [
 			"komendant",
 			"opiekunAkcji",
-			"uczestnik"
+			"oboźny",
+			"kadraProgramowa"
 		],
 		"topUnitTypes": [
 			"ośrodek"
@@ -275,6 +281,24 @@
 			]
 		},
 
+		"opiekun": {
+			"name": "Opiekun",
+			"rank": 3,
+			"limit": 1,
+			"minAge": 18,
+			"tags": [
+				"public",
+				
+				"manageSubUnit",
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"manageEvent",
+				"manageEventInvite",
+				"accessActivity"
+			]
+		},
+
 		"drużynowy": {
 			"name": {
 				"orgHarcerzy": "Drużynowy",
@@ -363,11 +387,23 @@
 			"rank": 0
 		},
 
+		"opiekunAkcji": {
+			"name": "Opiekun",
+			"minAge": 18,
+			"rank": 3,
+			"limit": 1,
+			"tags": [
+				"public",
+				
+				"accessUser"
+			]
+		},
 		"komendant": {
 			"name": {
 				"orgHarcerzy": "Komendant",
 				"orgHarcerek": "Komendantka"
 			},
+			"limit": 1,
 			"rank": 2,
 			"tags": [
 				"public",
@@ -377,15 +413,13 @@
 				"accessUser"
 			]
 		},
-		"opiekunAkcji": {
-			"name": "Opiekun",
-			"minAge": 18,
-			"rank": 1,
-			"tags": [
-				"public",
-				
-				"accessUser"
-			]
+		"oboźny": {
+			"name": "Oboźny",
+			"rank": 1
+		},
+		"kadraProgramowa": {
+			"name": "Kadra",
+			"rank": 0
 		}
 	}
 }
