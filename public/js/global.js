@@ -103,21 +103,22 @@ if(window == window.top) {
 // Popups and dialogs
 const Popup = window.top.Popup || {
 	create({message, type, icon, time=3500}) {
-		const dialog = document.createElement("dialog")
-		dialog.classList.add("message")
-		if(type) dialog.classList.add(type)
+		const popup = document.createElement("div")
+		popup.classList.add("popup")
+		popup.popover = "manual"
+		if(type) popup.classList.add(type)
 
 		if(typeof message != "string") message = message?.message || JSON.stringify(message)
 
-		if(icon) dialog.innerHTML = `<i>${icon}</i>`
-		dialog.innerHTML += `
+		if(icon) popup.innerHTML = `<i>${icon}</i>`
+		popup.innerHTML += `
 			<p>${message?.replaceAll("\n", "<br>")}</p>
 			<button class="icon" onclick="this.parentElement.close()">close</button>
 		`
 
 		// Get focused element
 		const focusElement = document.activeElement
-		// If focus is in an input, prevent dialog from stealing focus
+		// If focus is in an input, prevent popup from stealing focus
 		if(focusElement.matches("input, textarea")) {
 			focusElement.preventAPIRequest = true
 			sleep(10).then(() => {
@@ -128,37 +129,38 @@ const Popup = window.top.Popup || {
 
 		time ||= Infinity
 
-		// Find potential existing dialog
-		const existingDialog = document.querySelector("body > dialog.message[open]")
+		// Find potential existing popup
+		const existingDialog = document.querySelector("body > popup.message:popover-open")
 		if(existingDialog) {
-			existingDialog.insertAdjacentElement("beforebegin", dialog)
-			// If contents differ, calculate how much time is left on previous dialog
-			if(existingDialog.innerText != dialog.innerText) {
+			existingDialog.insertAdjacentElement("beforebegin", popup)
+			// If contents differ, calculate how much time is left on previous popup
+			if(existingDialog.innerText != popup.innerText) {
 				time += existingDialog.timings.show + existingDialog.timings.delay - Date.now()
 			}
-		} else document.body.append(dialog)
+		} else document.body.append(popup)
 
-		dialog.timings = {
+		popup.timings = {
 			show: Date.now(),
 			delay: time
 		}
-		dialog.show()
+		popup.showPopover()
 
-		dialog.closePromise = new Promise(resolve => {
+		popup.closePromise = new Promise(resolve => {
 			// Wait for animation to finish before removing
-			dialog.onclose = async () => {
+			popup.close = async () => {
+				popup.classList.add("closing")
 				await sleep(250)
-				dialog.remove()
+				popup.remove()
 				resolve(true)
 			}
 		})
 
 		sleep(time).then(() => {
-			dialog.timings.hide = Date.now()
-			dialog.close()
+			popup.timings.hide = Date.now()
+			popup.close()
 		})
 
-		return dialog
+		return popup
 	},
 
 	info(message, icon="") {

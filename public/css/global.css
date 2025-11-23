@@ -231,6 +231,7 @@ button.icon {
 
 button.icon:hover, button.icon:focus-visible {
 	background-color: transparent;
+	box-shadow: none;
 	color: var(--secondary-text);
 }
 
@@ -515,9 +516,9 @@ article :last-child {
 }
 
 
-/* Popups and dialogs */
+/* Dialogs and popups */
 
-dialog {
+dialog, .popup {
 	position: fixed;
 	inset: 0;
 	margin: auto !important;
@@ -555,14 +556,14 @@ dialog .button-row button:first-child:not(:only-child) {
 	margin-right: auto;
 }
 
-dialog.message {
+.popup {
 	min-width: 10em;
 	min-height: 1em;
 	top: unset;
 	bottom: 2em;
 	flex-direction: row;
 	align-items: center;
-	transition: bottom 250ms;
+	transition: bottom 100ms;
 
 	background-color: var(--surface-2);
 
@@ -576,11 +577,11 @@ dialog.message {
 	}
 }
 
-dialog.message > i, dialog.message button.icon {
+.popup > i, .popup button.icon {
 	margin-right: 1em;
 }
 
-dialog.message > p {
+.popup > p {
 	flex: 1;
 	margin: 0;
 	padding-right: 1em;
@@ -588,26 +589,34 @@ dialog.message > p {
 	text-overflow: ellipsis;
 }
 
-dialog.message > button.icon {
+.popup > button.icon {
 	margin-left: auto;
 	margin-right: 0;
 }
 
-dialog[open] {
+dialog[open], .popup:popover-open  {
 	animation: popup-show 250ms forwards;
 }
 
-dialog:not([open]) {
+dialog:not([open]), .popup.closing {
 	animation: popup-hide 250ms forwards;
 }
 
-dialog.message:nth-of-type(1) { bottom: 2.5em }
-dialog.message:nth-of-type(2) { bottom: 3.0em }
-dialog.message:nth-of-type(3) { bottom: 3.5em }
-dialog.message:nth-of-type(4) { bottom: 4.0em }
-dialog.message:nth-of-type(n+5) { bottom: 4.5em }
+.popup::backdrop {
+	display: none;
+}
 
-dialog.message.progress > i {
+body:has(dialog[open]) .popup button {
+	display: none;
+}
+
+.popup:nth-of-type(1) { bottom: 2.5em }
+.popup:nth-of-type(2) { bottom: 3.0em }
+.popup:nth-of-type(3) { bottom: 3.5em }
+.popup:nth-of-type(4) { bottom: 4.0em }
+.popup:nth-of-type(n+5) { bottom: 4.5em }
+
+.popup.progress > i {
 	animation: spin 1s infinite linear;
 }
 
