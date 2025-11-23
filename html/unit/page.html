@@ -59,25 +59,20 @@
 		<% if($.targetUnit.roles?.length > 0) { %>
 			<div id="unit-member-list" class="entry-grid">
 				<% function displayUsers(roles) { %>
-					<% let displayed = false %>
 					<% for(const role of roles) { %>
 						<% if(role.user.id != $.user.id && !$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.hasTag("public")) return %>
-						<% displayed = true %>
 						<%~ include("/user/templates/userEntry.html", {
 							targetUser: role.user,
 							description: role.displayName,
 							classList: $.orgContext && role.org != $.orgContext ? "faded" : null
 						}) %>
 					<% } %>
-					<% return displayed %>
 				<% } %>
-				<% if(displayUsers($.targetUnit.roles.filter(r => r.config.rank > 0))) { %>
-					<hr class="grid-break">
-				<% } %>
+				<% displayUsers($.targetUnit.roles.filter(r => r.config.rank > 0)) %>
+				<hr class="grid-break">
 				<% if($.orgContext) { %>
-					<% if(displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org == $.orgContext))) { %>
-						<hr class="grid-break">
-					<% } %>
+					<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org == $.orgContext)) %>
+					<hr class="grid-break">
 					<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0 && r.org != $.orgContext)) %>
 				<% } else { %>
 					<% displayUsers($.targetUnit.roles.filter(r => r.config.rank <= 0)) %>

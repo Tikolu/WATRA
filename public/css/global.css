@@ -15,7 +15,7 @@ body {
 
 main {
 	max-width: 60em;
-	padding: 0 0.5em;
+	padding: 0 1em;
 	margin: 0 auto;
 	overflow-x: auto;
 	transform-origin: 50vw 50vh;
@@ -89,6 +89,13 @@ form input:only-child, form select:only-child {
 	grid-column: 1 / -1;
 }
 
+div.vertical-split > form {
+	margin-top: 0;
+}
+
+div.vertical-split:last-child form {
+	margin-bottom: 0;
+}
 
 
 /* Form elements */
@@ -152,7 +159,7 @@ input[type=checkbox], input[type=radio] {
 	vertical-align: middle;
 	height: 1.5em;
 	width: 1.5em;
-	margin-top: 0;
+	margin: 0;
 	flex-shrink: 0;
 }
 
@@ -353,6 +360,10 @@ p.warning + p.warning {
 	&.medium { --entry-grid-columns: 2; }
 	&.full { --entry-grid-columns: 1; }
 
+	&:last-child {
+		margin-bottom: 0;
+	}
+
 	& > div, & > a {
 		padding: 0.5em;
 
@@ -466,7 +477,6 @@ p.warning + p.warning {
 
 	div.vertical-split > * {
 		height: fit-content;
-		margin-top: 0;
 		flex: 1;
 	}
 }

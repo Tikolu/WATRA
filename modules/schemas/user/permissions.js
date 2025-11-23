@@ -132,11 +132,25 @@ export async function ACCESS_ACTIVITY(user) {
 
 /** Generating access code for the user */
 export async function GENERATE_ACCESS_CODE(user) {
+	// Lack of ACCESS permission denies GENERATE_ACCESS_CODE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+	
+	// User cannot generate an access code for themselves
+	if(user.id == this.id) return false
+	
 	// Cannot generate for user with access keys
 	if(this.auth.keys.length > 0) return false
 
-	// EDIT permission allows GENERATE_ACCESS_CODE
-	if(await user.checkPermission(this.PERMISSIONS.EDIT)) return true
+	// Users with "manageUser" role in any unit/upperUnit of user can generate
+	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
 
+	// Users with "manageUser" role in any unit/upperUnit of any child can generate code for parent
+	if(this.parent) {
+		await this.populate("children")
+		for(const child of this.children) {
+			if(await user.hasRoleInUnits("manageUser", child.getUnitsTree())) return true
+		}
+	}
+	
 	return false
 }
