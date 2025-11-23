@@ -192,4 +192,4 @@ export async function clear() {
 	await mongoose.connection.dropDatabase()
 }
 
-export const setup = await import("./setup.js")
+export const {setup} = await import("./setup.js")

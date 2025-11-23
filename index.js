@@ -10,10 +10,18 @@ import * as cli from "cli"
 import "modules/util.js"
 import { Logger } from "modules/logger.js"
 
+// Handle errors in async functions used without await
+const logger = new Logger("Critical", 91)
+globalThis.addEventListener("unhandledrejection", event => {
+	event.preventDefault()
+	logger.log("UNHANDLED REJECTION!")
+	console.error(event.reason)
+})
+
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
 	boolean: ["clear-database", "development"],
-	string: ["host", "port", "db"]
+	string: ["import", "host", "port", "db", "run-script"]
 })
 
 if(!args.db) {
@@ -35,8 +43,8 @@ const databaseSetupPromise = (async () => {
 	}
 
 	// Data import functionality
-	if(args["import-data"]) {
-		await data.setup(args["import-data"])
+	if(args.import) {
+		await database.setup(args.import)
 		Deno.exit(1)
 	}
 })()
@@ -51,10 +59,7 @@ server.start({
 	}
 })
 
-// Handle errors in async functions used without await
-const logger = new Logger("Critical", 91)
-globalThis.addEventListener("unhandledrejection", event => {
-	event.preventDefault()
-	logger.log("UNHANDLED REJECTION!")
-	console.error(event.reason)
-})
+// Run script
+if(args["run-script"]) {
+	import(args["run-script"])
+}

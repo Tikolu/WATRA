@@ -1,27 +1,46 @@
-import Defaults from "../../defaults.json" with {type: "json"}
-	
+import * as CSV from "csv"
+
 import User from "modules/schemas/user"
 import Unit from "modules/schemas/unit"
 import { Logger } from "modules/logger.js"
 
-const logger = new Logger("Setup", 36)
+const logger = new Logger("Import", 36)
 
-async function generateUsers(unit, count, role) {
-	logger.log(`Generating ${count} users for ${unit.typeName} - ${unit.displayName}`)
-	for(let i = 0; i < count; i++) {
-		const newUser = new User({
-			name: {
-				first: Defaults.names.first.random(),
-				last: Defaults.names.last.random()
-			}
-		})
-
-		const f = newUser.name.first.endsWith("a")
-		newUser.org = f ? "orgHarcerek" : "orgHarcerzy"
-		if(unit.org && newUser.org != unit.org) continue
-		
-		await unit.setRole(newUser, role)
+async function createUser(user) {
+	if(Array.isArray(user.name)) {
+		user.firstName = user.name[0]
+		user.lastName = user.name[1]
+	} else if(user.name) {
+		user.firstName = user.name
 	}
+	
+	const newUser = new User({
+		_id: user.id,
+		org: user.org,
+		name: {
+			first: user.firstName || "",
+			last: user.lastName || ""
+		},
+		phone: user.phone,
+		email: user.email
+	})
+	logger.log(`Creating ${newUser.displayName}`)
+	await newUser.save()
+
+	for(const role of user.roles || []) {
+		const unit = await Unit.findOne({ name: role.unit })
+		if(!unit) {
+			throw new Error(`Unit not found for role assignment: ${role.unit}`)
+		}
+		logger.log(`Adding ${newUser.displayName} to ${unit.displayName} as ${role.role}`)
+		await unit.setRole(newUser, role.role)
+	}
+	
+	if(user.generateAccessCode) {
+		const accessCode = await newUser.auth.generateAccessCode()
+		logger.log(`${newUser.displayName}'s access code:`, accessCode)
+	}
+	return newUser
 }
 
 async function createUnit(unit) {
@@ -58,27 +77,11 @@ async function createUnit(unit) {
 			if(!newUser) {
 				throw new Error(`Linked user not found: ${user.name.join(" ")}`)
 			}
-		} else if(user.generate) {
-			await generateUsers(newUnit, user.generate, user.role)
 		} else {
-			newUser = new User({
-				org: user.org
-			})
-			if(Array.isArray(user.name)) {
-				newUser.name.first = user.name[0]
-				newUser.name.last = user.name[1]
-			} else if(user.name) {
-				newUser.name.first = user.name
-			}
+			newUser = await createUser(user)
 		}
+		logger.log(`Adding ${newUser.displayName} to ${newUnit.displayName} as ${user.role}`)
 		await newUnit.setRole(newUser, user.role)
-		if(user.generateAccessCode) {
-			const accessCode = await newUser.auth.generateAccessCode()
-			logger.log(`${newUser.displayName}'s access code:`, accessCode)
-		}
-	}
-	if(Defaults.generateUsers[newUnit.type]) {
-		await generateUsers(newUnit, Defaults.generateUsers[newUnit.type])
 	}
 	for(const subUnit of unit.subUnits || []) {
 		const newSubUnit = await createUnit(subUnit)
@@ -88,21 +91,37 @@ async function createUnit(unit) {
 	return newUnit
 }
 
-// Checks if database setup is required
-export async function required() {
-	const unit = await Unit.findOne()
-	return !unit
-}
-
-// Sets up database with default values defined in defaults.json
-export async function start() {
+export async function setup(file) {
+	const importData = {}
 	logger.log("Starting...")
-	try {
-		await createUnit(Defaults.unit)
-		logger.log("Complete!")
-	} catch(error) {
-		logger.log("Error!\n", error)
-		const database = await import("modules/database")
-		await database.clear()
+	
+	const text = await Deno.readTextFile(file)
+	if(file.endsWith(".csv")) {
+		const data = CSV.parse(text, {
+			skipFirstRow: true
+		})
+		for(const user of data) {
+			let roleIndex = 1
+			user.roles = []
+			while(user[`unit${roleIndex}`]) {
+				user.roles.push({
+					unit: user[`unit${roleIndex}`],
+					role: user[`role${roleIndex}`]
+				})
+				roleIndex += 1
+			}
+			const newUser = await createUser(user)
+		}
+
+	} else if(file.endsWith(".json")) {
+		const data = JSON.parse(text)
+		
+		for(const unit of data.units || []) await createUnit(unit)
+		for(const user of data.users || []) await createUser(user)
+
+	} else {
+		throw new Error("Unsupported import file: " + file)
 	}
+	
+	logger.log("Complete!")
 }
