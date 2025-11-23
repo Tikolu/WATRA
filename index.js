@@ -6,7 +6,7 @@ globalThis.MIN_DATE = "1800-01-01"
 globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
 
 import * as server from "modules/server"
-import * as cli from "jsr:@std/cli"
+import * as cli from "cli"
 import "modules/util.js"
 import { Logger } from "modules/logger.js"
 
@@ -15,6 +15,11 @@ const args = cli.parseArgs(Deno.args, {
 	boolean: ["clear-database", "development"],
 	string: ["host", "port", "db"]
 })
+
+if(!args.db) {
+	console.log("Database name is required (--db)")
+	Deno.exit(1)
+}
 
 // Setup database ()
 const databaseSetupPromise = (async () => {
@@ -26,14 +31,15 @@ const databaseSetupPromise = (async () => {
 	// Clear database functionality
 	if(args["clear-database"]) {
 		await database.clear()
-		Deno.exit()
+		Deno.exit(1)
 	}
 
-	if(await database.setup.required()) {
-		await database.setup.start()
+	// Data import functionality
+	if(args["import-data"]) {
+		await data.setup(args["import-data"])
+		Deno.exit(1)
 	}
 })()
-
 
 // Start server
 server.start({

@@ -1,7 +1,10 @@
 import * as Base64 from "modules/base64.js";
 import sha256 from "modules/sha256.js";
 
-const SERVER_PRIVATE_KEY = "secret"
+const SERVER_PRIVATE_KEY = Deno.env.get("SERVER_PRIVATE_KEY") 
+if(!SERVER_PRIVATE_KEY) {
+	throw new Error("SERVER_PRIVATE_KEY is not set in .env file")
+}
 
 export default class {
 	/** Parses and verifies a token from a cookie string */

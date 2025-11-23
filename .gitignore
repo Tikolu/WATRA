@@ -1,4 +1,5 @@
 *.lock
 .vscode
+.env
 scrap
 defaults.json

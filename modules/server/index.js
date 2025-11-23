@@ -1,4 +1,4 @@
-import mime from "npm:mime"
+import mime from "mime"
 import { join as joinPath } from "node:path"
 
 import Token from "./token.js"
@@ -72,11 +72,11 @@ export function start({host, port, dev=false, beforeRequest}) {
 	developmentMode = dev
 
 	server = Deno.serve({
-		host,
+		hostname: host,
 		port,
 		signal: controller.signal,
 		onListen({port}) {
-			logger.log(` Started on port ${port}`)
+			logger.log(` Started on ${host}:${port}`)
 		},
 	}, beforeRequest ?
 		async req => {
