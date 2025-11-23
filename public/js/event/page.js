@@ -5,8 +5,7 @@ API.registerHandler("event/[eventID]/delete", {
 })
 
 API.registerHandler("event/[eventID]/update/name", {
-	successText: "Zapisano nazwę",
-	after: response => eventTitle.innerText = response.displayName
+	successText: "Zapisano nazwę"
 })
 
 API.registerHandler("event/[eventID]/update/description", {

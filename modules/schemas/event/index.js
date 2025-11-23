@@ -92,6 +92,16 @@ export class EventClass extends UnitClass {
 		return true
 	}
 
+	/** List of required missing details */
+	get missingDetails() {
+		return Array.conditional(
+			!this.name, "name",
+			!this.description, "description",
+			!this.location, "location",
+			!this.dates.start || !this.dates.end, "dates"
+		)
+	}
+
 	/* * Methods * */
 
 	/** Sets a role for a event */

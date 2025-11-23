@@ -315,7 +315,7 @@ li > * {
 	margin-bottom: 0;
 }
 
-p.warning {
+.warning {
 	background-color: var(--red-background);
 	color: var(--red-text);
 	border-radius: var(--border-radius);
@@ -323,7 +323,11 @@ p.warning {
 	/* width: fit-content; */
 }
 
-p.warning + p.warning {
+.warning > * {
+	margin: 0;
+}
+
+.warning + .warning {
 	margin-top: -0.5em;
 }
 

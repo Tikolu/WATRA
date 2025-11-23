@@ -379,11 +379,33 @@
 			<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
 		<% } %>
 
-		<% if($.targetEvent.approvers.length == 0) { %>
+		<% const md = $.targetEvent.missingDetails %>
+		<% const warnings = Array.conditional(
+			md.includes("name"), "Brak nazwy akcji",
+			md.includes("description"), "Brak opisu akcji",
+			md.includes("location"), "Brak lokalizacji akcji",
+			md.includes("dates"), "Brak daty akcji",
+		) %>
+
+		<% if(warnings.length) { %>
+			<div class="warning">
+				<p>
+					<i>warning</i>
+					Nie można zatwierdzić akcji z brakującymi szczegółami:
+				</p>
+				<ul class="warning-list">
+					<% for(const warning of warnings) { %>
+						<li><%= warning %></li>
+					<% } %>
+				</ul>
+			</div>
+
+		<% } else if($.targetEvent.approvers.length == 0) { %>
 			<p class="warning">
 				<i>warning</i>
 				Brak zatwierdzających
 			</p>
+			
 		<% } else { %>
 			<div class="entry-grid medium">
 				<% for(const approver of $.targetEvent.approvers || []) { %>

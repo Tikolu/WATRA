@@ -18,6 +18,10 @@ export default class {
 
 	/** Approves the event */
 	async approve() {
+		if(this.missingDetails.length > 0) {
+			throw new HTTPError(400, "Nie można zatwierdzić akcji z brakującymi szczegółami")
+		}
+		
 		if(this.approved) {
 			throw new HTTPError(400, "Akcja już została zatwierdzona")
 		}

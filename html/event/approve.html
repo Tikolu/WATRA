@@ -6,7 +6,12 @@
 }) %>
 <h1>Zatwierdź akcję</h1>
 <main>
-	<p>Potwierdzam że zapoznałem się z planem i analizą ryzyka akcji i że dostałem wszystkie dokumenty niezbędne do ocenienia ryzyka. Zatwierdzam tą akcję wraz z ustaloną komendą, i wyrażam zgodę aby się odbył.</p>
+	<% const md = $.targetEvent.missingDetails %>
+	<% if(md.length) { %>
+		<p class="warning">Nie można zatwierdzić akcji z brakującymi szczegółami</p>
+	<% } else { %>
+		<p>Potwierdzam że zapoznałem się z planem i analizą ryzyka akcji i że dostałem wszystkie dokumenty niezbędne do ocenienia ryzyka. Zatwierdzam tą akcję wraz z ustaloną komendą, i wyrażam zgodę aby się odbył.</p>
+	<% } %>
 </main>
 <hr>
 <div class="button-row">
@@ -14,8 +19,10 @@
 		<i>arrow_back</i>
 		Anuluj
 	</button>
-	<button api="event/[eventID]/approval/approve">
-		<i>check</i>
-		<span>Zatwierdź</span>
-	</button>
+	<% if(!md.length) { %>
+		<button api="event/[eventID]/approval/approve">
+			<i>check</i>
+			<span>Zatwierdź</span>
+		</button>
+	<% } %>
 </div>
