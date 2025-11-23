@@ -1,6 +1,6 @@
 <% layout("/layouts/dialog", {
-	scripts: ["event/setParticipants"],
-	styles: ["event/setParticipants"],
+	scripts: ["event/setParticipants", "user/picker"],
+	styles: ["event/setParticipants", "user/picker"],
 	meta: {
 		unitID: $.targetUnit.id,
 		eventID: $.targetEvent.id
@@ -8,44 +8,20 @@
 }) %>
 <h1><%= $.targetUnit.displayName %></h1>
 <main>
-	<form>
-		<input type="checkbox" id="choose-all">
-		<label for="choose-all">Wybierz wszystkich</label>
-	</form>
-	<hr>
-	<% function displayUnit(unit) { %>
-		<% if(unit.id != $.targetUnit.id) { %>
-			<h3><%= unit.displayName %></h3>
-		<% } %>
-		<form>
-			<% for(const {user: member} of unit.roles) { %>
-				<% const eventParticipant = $.targetEvent.findUserInvite(member) %>
-				<input
-					type="checkbox"
-					id="member-<%= member.id %>"
-					name="participants"
-					value="<%= member.id %>"
-					<% if(eventParticipant && eventParticipant.originUnit == $.targetUnit.id) { %>
-						checked
-					<% } else if(eventParticipant) { %>
-						disabled
-					<% } %>
-				>
-				<label for="member-<%= member.id %>">
-					<%= member.displayName %>
-				</label>
-			<% } %>
-			<% for(const subUnit of unit.subUnits) { %>
-				<% displayUnit(subUnit) %>
-			<% } %>
-		</form>
-	<% } %>
-	<% displayUnit($.targetUnit) %>
+	<%~ include("/user/templates/userPicker", {
+		users: $.members,
+		selected: user => $.targetEvent.participants.hasID(user.id),
+		// Cannot invite user added to event from other unit
+		disabled: user => {
+			const participant = $.targetEvent.participants.id(user.id)
+			if(!participant) return
+			if(participant.originUnit?.id != $.targetUnit.id) return true
+		},
+		multiple: true
+	}) %>
 </main>
 <hr>
-<div class="warning">
-	<p>Uczestnicy zostaną dodani po potwierdzeniu uczestnictwa. Profile uczestników będą widoczne dla kadry akcji.</p>
-</div>
+<p>Ilość wybranych uczestników: <span id="user-count">0</span></p>
 <div class="button-row">
 	<button onclick="dialog.close()">
 		<i>arrow_back</i>

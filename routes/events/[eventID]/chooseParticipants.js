@@ -18,13 +18,22 @@ export default async function({user, targetEvent, unit: unitID}) {
 
 	this.addRouteData({targetUnit, targetInvitation})
 	
-	const availableMembers = await Array.fromAsync(targetUnit.getSubMembers())
+	// Get all direct members
+	const members = {}
+	const directMembers = await targetUnit.getMembers()
+	if(directMembers.length) members[""] = directMembers
+	// Get all subMembers of subUnits
+	await targetUnit.populate("subUnits")
+	for(const unit of targetUnit.subUnits) {
+		const subMembers = await Array.fromAsync(unit.getSubMembers())
+		members[unit.displayName] = subMembers
+	}
 
 	return html("event/setParticipants", {
 		user,
 		targetUnit,
 		targetEvent,
 		targetInvitation,
-		availableMembers
+		members
 	})
 }

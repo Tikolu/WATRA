@@ -913,18 +913,23 @@ function processCustomInputElements() {
 
 		// Custom checkbox
 		else if(input.matches("input[type=checkbox]")) {
-			input.globalCheckbox = checkboxes => {
-				if(checkboxes instanceof HTMLElement) {
-					checkboxes = checkboxes.querySelectorAll("input[type=checkbox]")
-				}
+			input.globalCheckbox = element => {
+				let checkboxes = (element instanceof HTMLElement) ?
+					element.querySelectorAll("input[type=checkbox]") :
+					element
 				// Remove self from list
 				checkboxes = Array.from(checkboxes).filter(c => c != input)
 				
 				input.onchange = async () => {
 					for(const checkbox of checkboxes) {
 						if(checkbox.disabled) continue
+						if(!checkbox.checkVisibility()) continue
 						// await sleep(150 / checkboxes.length)
 						checkbox.checked = input.checked
+					}
+					// Trigger change event 
+					if(element instanceof HTMLElement) {
+						element.dispatchEvent(new Event("change"))
 					}
 				}
 
@@ -934,6 +939,7 @@ function processCustomInputElements() {
 					let allChecked = true
 					for(const checkbox of checkboxes) {
 						if(checkbox.disabled) continue
+						if(!checkbox.checkVisibility()) continue
 						if(checkbox.checked) {
 							input.indeterminate = true
 						} else {

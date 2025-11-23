@@ -158,7 +158,6 @@ input[type=checkbox], input[type=radio] {
 
 input[type=checkbox] + label, input[type=radio] + label {
 	margin-left: 0.5em;
-	flex-grow: 1;
 }
 
 input[type=checkbox]:focus, input[type=radio]:focus {

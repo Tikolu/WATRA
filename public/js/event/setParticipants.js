@@ -3,9 +3,13 @@ API.registerHandler("unit/[unitID]/event/[eventID]/setParticipants", {
 	progressText: "Ustawianie uczestników...",
 	successText: "Ustawiono uczestników akcji",
 	validate: data => {
-		data.participants = Array.create(data.participants)
+		data.participants = Array.create(data.userID)
 		return true
 	}
 })
 
-chooseAll.globalCheckbox(main)
+userPicker.onchange = () => {
+	const checked = main.querySelectorAll(".user-picker input:checked:not(:disabled)")
+	userCount.innerText = checked.length
+}
+userPicker.onchange()

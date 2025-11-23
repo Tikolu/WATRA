@@ -1,6 +1,25 @@
-<% if(Array.isArray($.users)) $.users = {"": $.users} %>
-<input type="search" placeholder="Wyszukaj..." class="user-picker-search">
-<div class="user-picker">
+<%
+	$.id ||= "user-picker"
+	if(Array.isArray($.users)) $.users = {"": $.users}
+	if(Array.isArray($.disabled)) $.disabled = user => [...$.disabled].hasID(user.id)
+	if(Array.isArray($.selected)) $.selected = user => [...$.selected].hasID(user.id)
+%>
+<div class="user-picker-options" id="<%= $.id %>-options">
+	<input
+		type="search"
+		class="user-picker-search"
+		id="<%= $.id %>-search"
+		placeholder="Wyszukaj..."
+		autocomplete="off"
+	>
+	<% if($.multiple) { %>
+		<div>
+			<input type="checkbox" id="<%= $.id %>-choose-all">
+			<label for="<%= $.id %>-choose-all">Wybierz wszystkich</label>
+		</div>
+	<% } %>
+</div>
+<div class="user-picker" id="<%= $.id %>">
 	<% for(const category in $.users) { %>
 		<% if(category) { %>
 			<details open>
@@ -19,6 +38,12 @@
 							name="userID"
 							value="<%= user.id %>"
 							data-org="<%= user.org %>"
+							<% if($.disabled && $.disabled(user)) { %>
+								disabled
+							<% } %>
+							<% if($.selected && $.selected(user)) { %>
+								checked
+							<% } %>
 						>
 						<label for="user-<%= user.id %>">
 							<h3><%= user.displayName || "(użytkownik)" %></h3>
