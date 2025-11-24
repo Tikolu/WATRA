@@ -62,6 +62,10 @@ class PopulationContext {
 				
 		for(const key in graph) {
 			if(typeof key != "string") throw Error("Invalid populate path")
+			const selectedFields = document[key]?.$locals?.selectedFields
+			if(selectedFields && selectedFields != options.select) {
+				document[key] = document[key].id
+			}
 			if(document.populated(key)) {
 				const subGraph = graph[key]
 				const subDocument = document[key]
@@ -128,6 +132,12 @@ class PopulationContext {
 		const entry = this.entries[model]
 		for(const callback of entry.callbacks) {
 			callback(entry.results)
+		}
+		for(const id in entry.results) {
+			const document = entry.results[id]
+			if(document.$locals?.selectedFields) {
+				delete entry.results[id]
+			}
 		}
 		entry.required = []
 		entry.callbacks = []
@@ -224,6 +234,7 @@ export function populate(graph, options={}) {
 						}
 					}
 					for(const doc of queryResults) {
+						if(options.select) doc.$locals.selectedFields = options.select
 						populationContext.entries[ref].results[doc.id] = doc
 					}
 					populationContext.finalise(ref)
