@@ -47,8 +47,8 @@ export async function EDIT(user) {
 	// Parent can edit their children
 	} else if(user.children.hasID(this.id)) return true
 
-	// Cannot edit a user who has finished setup
-	else if(user.profileComplete) return false
+	// Cannot edit a user who has previously logged in
+	else if(this.auth.lastLogin) return false
 
 	// Users with "manageUser" role in any unit/upperUnit of user can edit
 	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true

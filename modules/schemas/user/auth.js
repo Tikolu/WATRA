@@ -10,6 +10,7 @@ import { verify } from "node:crypto";
 export default class {
 	_id = false
 	accessCode = String
+	lastLogin = Date
 
 	keys = [
 		{

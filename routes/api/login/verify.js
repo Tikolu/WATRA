@@ -43,7 +43,7 @@ export default async function({credential, userID}) {
 	passkey.lastUsed = new Date()
 	await passkey.save()
 
-	this.session.login(passkey.user.id)
+	await this.session.login(passkey.user)
 		
 	return {
 		userID: passkey.user.id

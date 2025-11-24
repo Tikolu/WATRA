@@ -246,7 +246,7 @@ async function refreshPageData() {
 	const parser = new DOMParser()
 	const newDocument = parser.parseFromString(body, "text/html")
 
-	const ignoreElements = "dialog.message, dialog.frame, link, script, meta[static]"
+	const ignoreElements = ".popup, dialog.frame, link, script, meta[static]"
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
@@ -782,7 +782,7 @@ processAPIAttributes()
 window.afterDataRefresh.push(processAPIAttributes)
 
 let urlDialogs = []
-function createURLDialog(url, open=false) {
+function createURLDialog(url, open=false, closeOnRefresh=false) {
 	let iframe, dialog = document.querySelector(`dialog.frame[data-url="${url}"]`)
 
 	// Get existing dialog
@@ -812,6 +812,8 @@ function createURLDialog(url, open=false) {
 		urlDialogs.push(dialog)
 	}
 
+	dialog.closeOnRefresh = closeOnRefresh
+
 	iframe.onload = async () => {
 		await sleep(250)
 		if(iframe.classList.contains("loaded")) return
@@ -835,8 +837,13 @@ function createURLDialog(url, open=false) {
 function processDialogOpeners() {
 	// Remove all URL dialogs
 	urlDialogs = urlDialogs.filter(dialog => {
-		if(dialog.open) return true
-		dialog.remove()
+		if(dialog.open && !dialog.closeOnRefresh) return true
+		if(dialog.closeOnRefresh) {
+			dialog.close()
+			sleep(250).then(() => dialog.remove())
+		} else {
+			dialog.remove()
+		}
 		return false
 	})
 	
@@ -1066,6 +1073,7 @@ function trackDataUpdate(type, id) {
 
 // META tag system
 const META = {}
+window.META = META
 function processMetaTags() {
 	for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
 		let metaContent = metaTag.content

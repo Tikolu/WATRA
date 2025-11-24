@@ -7,17 +7,21 @@ export default class {
 	}
 
 	/** Login a user */
-	login(userID) {
+	async login(user) {
 		// Set active user
-		this.token.active = userID
+		this.token.active = user.id
 
 		// Generate client ID
 		this.token.client ||= randomID()
 
 		// Update saved users	
 		this.token.saved ||= []
-		if(!this.token.saved.includes(userID)) this.token.saved.push(userID)
+		if(!this.token.saved.includes(user.id)) this.token.saved.push(user.id)
 		this.token.modified = true
+
+		// Update user
+		user.auth.lastLogin = Date.now()
+		await user.save()
 	}
 
 	/** Login using an access code */
@@ -28,11 +32,10 @@ export default class {
 		
 		// Clear access code from user
 		user.auth.accessCode = undefined
-		// user.clients.register(this.session.clientID, this.request)
 		await user.save()
 
 		// Login
-		this.login(user.id)
+		await this.login(user)
 
 		return user
 	}

@@ -2,7 +2,8 @@
 	title: $.targetUser.displayName,
 	scripts: ["user/page"],
 	meta: {
-		userID: $.targetUser.id
+		userID: $.targetUser.id,
+		lastLogin: $.targetUser.auth.lastLogin
 	}
 }) %>
 <h1 id="user-title">

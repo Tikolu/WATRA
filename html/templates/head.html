@@ -22,7 +22,8 @@
 			let metaContent = $.meta[metaName]
 			let metaBase64 = false
 			if(typeof metaContent != "string") {
-				metaContent = JSON.stringify($.meta[metaName])
+				if(!metaContent) continue
+				metaContent = JSON.stringify(metaContent)
 				metaContent = Base64.encode(metaContent)
 				metaBase64 = true
 			}

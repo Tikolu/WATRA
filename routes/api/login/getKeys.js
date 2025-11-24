@@ -14,7 +14,7 @@ export default async function({userID}) {
 	
 	// Bypass verification if user has no keys
 	if(user && user.auth.keys.length == 0) {
-		this.session.login(user.id)
+		await this.session.login(user)
 		return {
 			loggedIn: true
 		}
