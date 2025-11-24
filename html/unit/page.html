@@ -81,9 +81,9 @@
 		<% } %>
 		<div class="button-row">
 			<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER)) { %>
-				<button id="create-user-button" opens-dialog="/units/<%= $.targetUnit.id %>/createUser<%= orgParam %>">
+				<button opens-dialog="/units/<%= $.targetUnit.id %>/addUser<%= orgParam %>">
 					<i>person_add</i>
-					<span>Utwórz użytkownika</span>
+					<span>Dodaj użytkownika</span>
 				</button>
 			<% } %>
 			<% if($.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>

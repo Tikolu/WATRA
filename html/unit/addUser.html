@@ -1,0 +1,94 @@
+<% layout("/layouts/dialog", {
+	scripts: ["unit/addUser", "user/picker"],
+	styles: ["unit/addUser", "user/picker"],
+	meta: {
+		unitID: $.units[0].id
+	}
+}) %>
+<h1>
+	<i>person_add</i>
+	Dodawanie użytkownika
+</h1>
+<main>
+	<section id="create-user">
+		<h3>Utwórz nowego użytkownika</h3>
+		<form>
+			<label for="first-name-input">Imię:</label>
+			<input type="text" id="first-name-input" name="firstName" autocomplete="off">
+
+			<label for="last-name-input">Nazwisko:</label>
+			<input type="text" id="last-name-input" name="lastName" autocomplete="off">
+			
+			<label for="unit-select"<%= $.units.length == 1 ? "hidden" : "" %>>Jednostka:</label>
+			<select id="unit-select" name="unitID" <%= $.units.length == 1 ? "hidden" : "" %>>
+				<% for(const unit of $.units) { %>
+					<option
+						value="<%= unit.id %>"
+						<% if(unit.org) { %>
+							data-org="<%= unit.org %>"
+						<% } %>
+					><%= unit.displayName %></option>
+				<% } %>
+			</select>
+
+			<label for="org-select">Organizacja:</label>
+			<select
+				id="org-select"
+				name="org"
+				<% if($.units.length == 1 && $.units[0].org) { %>
+					disabled
+				<% } %>
+			>
+				<% for(const org in Config.orgs) { %>
+					<option
+						value="<%= org || "" %>"
+						<% if(($.units.length == 1 && $.units[0].org == org) || $.orgContext == org) { %>
+							selected
+						<% } %>
+					><%= Config.orgs[org].name %></option>
+				<% } %>
+			</select>
+		</form>
+		<% if ($.units.length == 1) { %>
+			<p>Użytkownik zostanie dodany do <%= $.units[0].displayName %>.</p>
+		<% } %>
+		
+		<h2>Dodatkowe konta</h2>
+		<form>
+			<input type="checkbox" id="parent-create" name="createParent"
+				<% if($.units[0].defaultRole?.minAge < Config.adultAge) { %>
+					checked
+				<% } %>
+			>
+			<label for="parent-create">Utwórz również konto dla rodzica / opiekuna</label>
+		</form>
+		<button api="unit/[unitID]/member/create" class="confirm">
+			<i>person_add</i>
+			<span>Utwórz użytkownika</span>
+		</button>
+	</section>
+
+	<% if(true) { %>
+		<section id="link-user">
+			<h3>Dodaj istniejącego użytkownika</h3>
+			<%~ include("/user/templates/userPicker", {
+				users: $.usersForAdding
+			}) %>
+			<form>
+				<input type="checkbox" id="move-user" name="moveUser">
+				<label for="move-user">Przenieś użytkownika (usuń z obecnej jednostki)</label>
+			</form>
+			<button id="link-user-button" api="unit/[unitID]/member/[userID]/add" class="confirm">
+				<i>person_add</i>
+				<span>Dodaj użytkownika</span>
+			</button>
+		</section>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+</div>

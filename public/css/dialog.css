@@ -26,13 +26,14 @@ body > .button-row:last-child button:first-child:not(.confirm) {
 }
 
 main {
+	padding: 0;
 	overflow: auto;
 	max-height: 100%;
 	max-width: none;
 	margin: 0;
 }
 
-main > :first-child {
+body > main > :first-child {
 	margin-top: 0;
 }
 

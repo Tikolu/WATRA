@@ -23,5 +23,5 @@ export default async function({user, targetUnit, targetUser}) {
 	// Ensure user has at least one other role
 	if(!targetUser.isParent && targetUser.roles.length <= 1) throw Error("Użytkownik nie może zostać bez funkcji")
 
-	await targetRole.delete()
+	await targetUserRole.delete()
 }

@@ -40,6 +40,8 @@ async function resizeContainer() {
 	document.body.style.maxHeight = maxHeight
 
 	frameElement.style.height = `${document.documentElement.scrollHeight}px`;
+
+	main.style.height = `${main.clientHeight}px`
 }
 
 window.onresize = () => resizeContainer()

@@ -11,9 +11,10 @@ export default async function({user, targetUnit, orgContext}) {
 	if(directMembers.length) usersForAssignment[""] = directMembers
 	// Get all subMembers of subUnits
 	await targetUnit.populate("subUnits")
+	const requiredOrg = orgContext || targetUnit.org
 	for(const unit of targetUnit.subUnits) {
 		const subMembers = await Array.fromAsync(unit.getSubMembers())
-		usersForAssignment[unit.displayName] = subMembers
+		usersForAssignment[unit.displayName] = subMembers.filter(u => !requiredOrg || u.org == requiredOrg)
 	}
 
 	// Get user's role in unit

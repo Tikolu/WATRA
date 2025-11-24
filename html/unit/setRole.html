@@ -35,10 +35,8 @@
 			
 		<section>
 			<h2>Wybierz użytkownika</h2>
-			<% const requiredOrg = $.orgContext || $.targetUnit.org %>
 			<%~ include("/user/templates/userPicker", {
-				users: $.usersForAssignment,
-				filter: user => !requiredOrg || user.org == requiredOrg
+				users: $.usersForAssignment
 			}) %>
 		</section>
 	<% } else { %>

@@ -1,5 +1,5 @@
 .user-picker {
-	overflow: auto;
+	overflow-y: scroll;
 	margin-top: 0.5em;
 }
 
@@ -24,4 +24,8 @@
 
 .user-picker details:not(:first-child) {
 	margin-top: 1em
+}
+
+.user-picker + button {
+	margin-top: 0.5em;
 }
