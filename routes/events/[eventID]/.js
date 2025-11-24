@@ -43,7 +43,7 @@ export default async function({user, targetEvent}) {
 			)
 		}
 	}
-	
+
 	// Get participants for approving
 	const approvalParticipants = []
 	for(const participant of [user, ...user.children]) {
@@ -51,7 +51,7 @@ export default async function({user, targetEvent}) {
 		const userInvite = targetEvent.participants.id(participant.id)
 		if(!userInvite) continue
 
-		await userInvite.populate("user")
+		await userInvite.populate("user", {log:true})
 
 		// Check for approval permission on participant
 		await user.checkPermission(userInvite.user.PERMISSIONS.APPROVE)

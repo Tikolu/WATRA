@@ -18,7 +18,9 @@ export default class {
 
 	/** Approves the event */
 	async approve() {
-		if(this.missingDetails.length > 0) {
+		const targetEvent = this.parent()
+		
+		if(targetEvent.missingDetails.length > 0) {
 			throw new HTTPError(400, "Nie można zatwierdzić akcji z brakującymi szczegółami")
 		}
 		
@@ -27,7 +29,7 @@ export default class {
 		}
 
 		this.approvedAt = new Date()
-		await this.parent().save()
+		await targetEvent.save()
 	}
 
 	/** Unapproves the event */
