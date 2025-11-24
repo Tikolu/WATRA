@@ -97,6 +97,7 @@ for(const unitID in config.units) {
 	// Default values
 	unit.id = unitID
 	unit.rank ||= 0
+	unit.maxUpperUnits ||= 1
 	
 	processName(unit)
 

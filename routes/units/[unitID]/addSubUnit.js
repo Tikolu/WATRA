@@ -14,9 +14,11 @@ export default async function({user, targetUnit, orgContext}) {
 	const unitsForLinking = []
 	await user.populate("roles")
 	for(const role of user.roles) {
+		if(!role.hasTag("manageSubUnit")) continue
 		await role.populate("unit")
-		if(!await user.checkPermission(role.unit.PERMISSIONS.EDIT)) continue
 		for await(const unit of role.unit.getSubUnitsTree()) {
+			// Skip units at their upperUnit limit
+			if(unit.upperUnits.length >= unit.config.maxUpperUnits) continue
 			// Skip units of higher or equal rank
 			if(unit.config.rank >= targetUnit.config.rank) continue
 			// Skip units which already are subUnits

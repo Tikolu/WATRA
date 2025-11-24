@@ -6,92 +6,95 @@
 }) %>
 <h1>Dodawanie jednostki</h1>
 <main>
-	<h3>Utwórz nową jednostkę</h3>
-	<form id="create-unit">
-		<label for="unit-name-input">Nazwa:</label>
-		<input
-			type="text"
-			id="unit-name-input"
-			name="name"
-			autocomplete="off"
-			value=""
-		>
+	<section>
+		<h3>Utwórz nową jednostkę</h3>
+		<form id="create-unit">
+			<label for="unit-name-input">Nazwa:</label>
+			<input
+				type="text"
+				id="unit-name-input"
+				name="name"
+				autocomplete="off"
+				value=""
+			>
 
-		<label for="unit-org-select">Organizacja:</label>
-		<select id="unit-org-select" name="org">
-			<% for(const org of $.orgs) { %>
-				<option
-					value="<%= org.value || "" %>"
-					<% if($.orgContext == org.value) { %>
-						selected
-					<% } %>
-				><%= org.name || "(brak)" %></option>
-			<% } %>
-		</select>
+			<label for="unit-org-select">Organizacja:</label>
+			<select id="unit-org-select" name="org">
+				<% for(const org of $.orgs) { %>
+					<option
+						value="<%= org.value || "" %>"
+						<% if($.orgContext == org.value) { %>
+							selected
+						<% } %>
+					><%= org.name || "(brak)" %></option>
+				<% } %>
+			</select>
 
-		<label for="unit-department-select">Pion:</label>
-		<select id="unit-department-select" name="department">
-			<% for(const department of $.departmentOptions) { %>
-				<option
-					value="<%= department.value || "" %>"
-					<% if($.targetUnit.config.department == department.value) { %>
-						selected
-					<% } %>
-					<% if(department.name && Object.keys(department.name).length > 1) { %>
-						data-name-variants="<%= JSON.stringify(department.name) %>"
-					<% } %>
-				>
-					<%= department.name?.[$.orgContext] || department.name?.default || "(brak)" %>
-				</option>
-			<% } %>
-		</select>
-		
-		<label for="unit-type-select">Rodzaj:</label>
-		<select id="unit-type-select" name="type">
-			<% for(const type of $.subUnitTypes) { %>
-				<option
-					value="<%= type.id %>"
-					data-department="<%= type.department || "" %>"
-					<% if($.targetUnit.config.department != type.department) { %>
-						hidden
-					<% } %>
-					<% if(Object.keys(type.name).length > 1) { %>
-						data-name-variants="<%= JSON.stringify(type.name) %>"
-					<% } %>
-				>
-					<%= type.name[$.orgContext] || type.name.default %>
-				</option>
-			<% } %>
-		</select>
-	</form>
-	<button api="unit/[unitID]/subUnit/create" class="confirm">
-		<i>add</i>
-		Utwórz jednostkę
-	</button>
-	<% if($.unitsForLinking.length) { %>
-		<hr>
-		<h3>Dodaj istniejącą jednostkę</h3>
-		<form id="link-unit">
-			<% for(const unit of $.unitsForLinking) { %>
-				<input
-					type="radio"
-					name="subUnitID"
-					value="<%= unit.id %>"
-					id="unit-<%= unit.id %>"
-				>
-				<label for="unit-<%= unit.id %>">
-					<h4><%= unit.displayName %></h4>
-					<p>
-						<%= unit.typeName %>
-						(<%= unit.upperUnits.map(j => j.displayName).join(", ") %>)
-					</p>
-				</label>
-			<% } %>
+			<label for="unit-department-select">Pion:</label>
+			<select id="unit-department-select" name="department">
+				<% for(const department of $.departmentOptions) { %>
+					<option
+						value="<%= department.value || "" %>"
+						<% if($.targetUnit.config.department == department.value) { %>
+							selected
+						<% } %>
+						<% if(department.name && Object.keys(department.name).length > 1) { %>
+							data-name-variants="<%= JSON.stringify(department.name) %>"
+						<% } %>
+					>
+						<%= department.name?.[$.orgContext] || department.name?.default || "(brak)" %>
+					</option>
+				<% } %>
+			</select>
+			
+			<label for="unit-type-select">Rodzaj:</label>
+			<select id="unit-type-select" name="type">
+				<% for(const type of $.subUnitTypes) { %>
+					<option
+						value="<%= type.id %>"
+						data-department="<%= type.department || "" %>"
+						<% if($.targetUnit.config.department != type.department) { %>
+							hidden
+						<% } %>
+						<% if(Object.keys(type.name).length > 1) { %>
+							data-name-variants="<%= JSON.stringify(type.name) %>"
+						<% } %>
+					>
+						<%= type.name[$.orgContext] || type.name.default %>
+					</option>
+				<% } %>
+			</select>
 		</form>
-		<button api="unit/[unitID]/subUnit/link" class="confirm">
+		<button api="unit/[unitID]/subUnit/create" class="confirm">
 			<i>add</i>
-			Dodaj jednostkę
+			Utwórz jednostkę
 		</button>
+	</section>
+	<% if($.unitsForLinking.length) { %>
+		<section>
+			<h3>Dodaj istniejącą jednostkę</h3>
+			<form id="link-unit">
+				<% for(const unit of $.unitsForLinking) { %>
+					<input
+						type="radio"
+						name="subUnitID"
+						value="<%= unit.id %>"
+						id="unit-<%= unit.id %>"
+					>
+					<label for="unit-<%= unit.id %>">
+						<h4><%= unit.displayName %></h4>
+						<p>
+							<%= unit.typeName %>
+							(<%= unit.upperUnits.map(j => j.displayName).join(", ") %>)
+						</p>
+					</label>
+				<% } %>
+			</form>
+			<button api="unit/[unitID]/subUnit/link" class="confirm">
+				<i>add</i>
+				Dodaj jednostkę
+			</button>
+		</section>
 	<% } %>
 </main>
 <hr>

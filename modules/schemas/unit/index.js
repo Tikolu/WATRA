@@ -174,6 +174,11 @@ export class UnitClass {
 		// Check unit type compatibility
 		if(subUnit.config.rank >= this.config.rank) throw Error("Nie można dodać jednostki o wyższym lub równym typie")
 		
+		// Check subUnit max units
+		if(subUnit.upperUnits.length >= subUnit.config.maxUpperUnits) {
+			throw Error(`Przekroczono limit jednostek nadrzędnych dla ${subUnit.displayName}`)
+		}
+		
 		// Add subUnit to subUnits, unless already added
 		if(!this.subUnits.hasID(subUnit.id)) {
 			this.subUnits.push(subUnit.id)
@@ -331,15 +336,16 @@ schema.beforeDelete = async function() {
 		"roles": "user"
 	})
 	
-	// Chose primary upper unit
-	const primaryUpperUnit = this.upperUnits[0]
-	if(!primaryUpperUnit) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
+	if(this.upperUnits.length == 0) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
 
-	// Add all members to primary upper unit
+	// Add all members to upper unit
 	for(const role of this.roles) {
-		// Skip adding if user already has a role in the primary upper unit
-		if(await primaryUpperUnit.hasMember(role.user)) continue
-		await primaryUpperUnit.addMember(role.user)
+		// Determine upper unit
+		let upperUnit = this.upperUnits.find(u => u.org == this.org)
+		upperUnit ||= this.upperUnits[0]
+		// Skip adding if user already has a role in upper unit
+		if(await upperUnit.hasMember(role.user)) continue
+		await upperUnit.addMember(role.user)
 	}
 	
 	// Delete roles
@@ -351,16 +357,21 @@ schema.beforeDelete = async function() {
 		await upperUnit.save()
 	}
 
-	// Remove self from all subUnits and transfer subUnits to primary upper unit
+	// Remove self from all subUnits and transfer subUnits to upper unit
 	for(const subUnit of this.subUnits) {
 		subUnit.upperUnits = subUnit.upperUnits.filter(j => j.id != this.id)
-		// Skip transfer if subUnit has other upperUnits or if primary upper unit already has subUnit
-		if(subUnit.upperUnits.length || primaryUpperUnit.subUnits.hasID(subUnit.id)) {
+
+		// Determine upper unit
+		let upperUnit = this.upperUnits.find(u => u.org == subUnit.org)
+		upperUnit ||= this.upperUnits[0]
+		
+		// Skip transfer if subUnit has other upperUnits or if upper unit already has the subUnit
+		if(subUnit.upperUnits.length || upperUnit.subUnits.hasID(subUnit.id)) {
 			await subUnit.save()
 			continue
 		}
 
-		await primaryUpperUnit.addSubUnit(subUnit)
+		await upperUnit.addSubUnit(subUnit)
 	}
 }
 
