@@ -14,3 +14,9 @@ themeChooser.onchange = () => {
 	setTheme(themeChooser.value)
 	top.setTheme(themeChooser.value)
 }
+
+feedbackButton.onclick = () => {
+	const reportDialog = window.top.createURLDialog("/report/submit", true)
+
+	dialog.fullClose()
+}

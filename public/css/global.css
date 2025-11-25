@@ -117,7 +117,7 @@ input, button, select, textarea {
 
 textarea {
 	min-width: 20em;
-	max-width: 100%;
+	width: 100%;
 	min-height: 5em;
 	field-sizing: content;
 	resize: none;
@@ -126,7 +126,7 @@ textarea {
 label {
 	overflow: hidden;
 	vertical-align: middle;
-	white-space: nowrap;
+	/* white-space: nowrap; */
 }
 
 label > * {
@@ -138,7 +138,7 @@ label > * {
 input, select, textarea {
 	background-color: var(--surface-3);
 	color: var(--text);
-	accent-color: var(--surface-4);
+	accent-color: var(--secondary-text);
 	outline: 1px solid transparent;
 	outline-offset: -1px;
 	transition: outline 250ms;
@@ -183,6 +183,23 @@ input[type=checkbox]:focus-visible, input[type=radio]:focus-visible {
 
 input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
 	color: var(--secondary-text);
+}
+
+input[type=file] {
+	display: block;
+	margin-top: 0.5em;
+    padding: 0.5em;
+	background-color: var(--surface-3);
+}
+
+input[type=file]::file-selector-button {
+	display: none;
+}
+
+input[type=file]::before {
+	content: "upload_file";
+	margin-right: 0.5em;
+	font-family: "Material Symbols Sharp", blank;
 }
 
 h1 > input, h2 > input {

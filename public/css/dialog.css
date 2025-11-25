@@ -42,3 +42,7 @@ button.confirm {
 	margin-left: auto;
 	margin-right: 0;
 }
+
+textarea {
+	field-sizing: fixed;
+}

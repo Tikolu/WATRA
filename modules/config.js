@@ -17,7 +17,7 @@ config.tags = {
 	"manageEventInvite": {},
 	"approveEvent": {},
 
-	"cannotApproveEvent": {}
+	"listReports": {}
 }
 
 class ConfigError extends Error {

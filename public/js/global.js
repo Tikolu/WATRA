@@ -74,6 +74,16 @@ async function copy(text) {
 	Popup.success("Skopiowano", "content_copy")
 }
 
+// File to base64
+function fileToBase64(file) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader()
+		reader.onload = () => resolve(reader.result)
+		reader.onerror = () => reject(reader.error)
+		reader.readAsDataURL(file)
+	})
+}
+
 // Channel for communicating with other tabs
 if(window == window.top) {
 	window.addEventListener("pageshow", () => {
@@ -604,6 +614,30 @@ const API = {
 					}
 				}
 
+				else if(formElement.matches("[type=file]")) {
+					const files = formElement.files
+					if(files.length == 0) {
+						if(formElement.required) {
+							formElement.classList.add("invalid")
+							return
+						} else {
+							continue
+						}
+					}
+					elementValue = []
+					for(const file of files) {
+						if(file.size > 8 * 1024 * 1024) {
+							formElement.classList.add("invalid")
+							return
+						}
+						elementValue.push({
+							name: file.name,
+							data: await fileToBase64(file)
+						})
+					}
+				}
+
+
 				if(
 					// Ensure required fields are filled
 					(formElement.required && !elementValue) ||
@@ -975,6 +1009,19 @@ function processCustomInputElements() {
 					checkbox.addEventListener("change", input.calculateState)
 				}
 			}
+		}
+
+		// Custom file input
+		else if(input.matches("input[type=file]")) {
+			input.addEventListener("change", () => {
+				for(const file of input.files) {
+					if(file.size > 8 * 1024 * 1024) {
+						Popup.error(`Plik ${file.name} jest zbyt duży (maks. 8 MB)`)
+						input.value = ""
+						break
+					}
+				}
+			})
 		}
 	}
 }
