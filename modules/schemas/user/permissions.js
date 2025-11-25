@@ -135,11 +135,10 @@ export async function GENERATE_ACCESS_CODE(user) {
 	// Lack of ACCESS permission denies GENERATE_ACCESS_CODE
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 	
-	// User cannot generate an access code for themselves
-	if(user.id == this.id) return false
-	
 	// Cannot generate for user with access keys
 	if(this.auth.keys.length > 0) return false
+
+	else if(user.id == this.id) return true
 
 	// Users with "manageUser" role in any unit/upperUnit of user can generate
 	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true

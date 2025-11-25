@@ -19,13 +19,15 @@
 
 	<% if(!$.parentCode) { %>
 		<h2><%= $.targetUser.displayName %></h2>
-		<% if($.targetUser.id != $.user.id && !$.targetUser.isParent) { %>
-			<p class="warning">
-				<i>warning</i>
-				Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, <b>nie konta rodzica/opiekuna</b>!
-			</p>
+		<% if($.targetUser.id != $.user.id) { %>
+			<% if(!$.targetUser.isParent) { %>
+				<p class="warning">
+					<i>warning</i>
+					Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, <b>nie konta rodzica/opiekuna</b>!
+				</p>
+			<% } %>
+			<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
 		<% } %>
-		<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
 		<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
 	<% } else { %>
 		<% $.targetUser.defaultName = "Rodzic / opiekun" %>

@@ -6,17 +6,15 @@ export default async function({user, code: accessCode}) {
 	if(accessCode) {
 		// Check access code
 		if(!/^[0-9 ]+$/.test(accessCode)) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
-		accessCode = accessCode.replaceAll(" ", "")
-
-		user = await this.session.codeLogin(accessCode)
-		if(!user) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
-		this.addRouteData({user})
 	}
 	
-	// Redirect if user is logged in
+	// If user is logged in, redirect or logout
 	if(user) {
-		this.response.redirect("/")
-		return
+		if(accessCode) this.session.logout()
+		else {
+			this.response.redirect("/")
+			return
+		}
 	}
 	
 	const savedUsers = [...this.token.saved || []]
@@ -30,6 +28,7 @@ export default async function({user, code: accessCode}) {
 	
 	// Render login page
 	return html("login/main", {
-		savedUsers
+		savedUsers,
+		accessCode
 	})
 }

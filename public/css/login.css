@@ -6,6 +6,15 @@ main {
 	background-color: var(--surface-1);
 	border-radius: var(--border-radius);
 	padding: 1em;
+
+	display: none;
+}
+
+/* test for CSS nesting support */
+body {
+	& main {
+		display: block;
+	}
 }
 
 main > section {

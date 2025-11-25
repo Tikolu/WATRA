@@ -31,3 +31,24 @@ accessCodeInput.oninput = event => {
 	// Auto submit
 	if(newValue.replaceAll(" ", "").length == 8) API.executeHandler(accessCodeInput)
 }
+
+function unsupportedBrowser() {
+	if(!document.contains(main)) return
+	main.remove()
+	const error = "Twoja przeglądarka nie jest obsługiwana!\n\nUżyj nowszej wersji Chrome, Edge, Safari lub Firefox"
+	Popup.error(error)
+	sleep(1000).then(() => alert(error))
+}
+
+// Check for CSS compatability
+sleep(1000).then(() => {
+	const style = window.getComputedStyle(main)
+	if(style.display != "block") return unsupportedBrowser()
+
+	accessCodeInput.oninput()
+})
+
+// Check for passkey support
+if(!window.PublicKeyCredential) {
+	unsupportedBrowser()
+}
