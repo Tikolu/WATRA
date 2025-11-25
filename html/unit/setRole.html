@@ -16,9 +16,8 @@
 			<form>
 				<label for="role-select">Funkcja:</label>
 				<select id="role-select" name="roleType">
-					<% for(const roleID of $.targetUnit.config.roles || []) { %>
+					<% for(const roleID of $.roleOptions || []) { %>
 						<% const role = Config.roles[roleID] %>
-						<% if($.userRole && $.userRole.config.rank < role.rank) continue %>
 						<option
 							value="<%= roleID %>"
 							data-name-variants="<%= JSON.stringify(role.name) %>"

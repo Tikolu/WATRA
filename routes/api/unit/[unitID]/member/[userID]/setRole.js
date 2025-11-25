@@ -5,20 +5,27 @@ export default async function({user, targetUnit, targetUser, roleType}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.SET_ROLE)
 
-	// Get user's role
-	const userRole = await user.getRoleInUnit(targetUnit)
-
 	// Get role config
 	const roleConfig = Config.roles[roleType]
 	if(!roleConfig) throw new HTTPError(400, "Nieznana funkcja")
 
+	// Get user's role in unit, unless user has SET_ROLE permission in an upperUnit
+	let userRole = await user.getRoleInUnit(targetUnit)
+	await targetUnit.populate("upperUnits")
+	for(const upperUnit of targetUnit.upperUnits) {
+		if(await user.checkPermission(upperUnit.PERMISSIONS.SET_ROLE)) {
+			userRole = null
+			break
+		}
+	}
+
 	// Ensure current or new role is not higher in rank than user's role
 	const targetUserRole = await targetUser.getRoleInUnit(targetUnit)
-	if(
-		(userRole && roleConfig.rank > userRole.config.rank) ||
-		(targetUserRole && userRole && targetUserRole.config.rank > userRole.config.rank)
-	) {
+	if(userRole && roleConfig.rank > userRole.config.rank) {
 		throw new HTTPError(400, "Nie można zmieniać funkcji wyższej niż własna")
+	}
+	if(targetUserRole && userRole && targetUserRole.config.rank > userRole.config.rank) {
+		throw new HTTPError(400, "Nie można zdjąć użytkownika z funkcji wyższej niż własna")
 	}
 
 	// User can only set their own role if they have a "setRole" role in an upper unit
