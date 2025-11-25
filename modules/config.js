@@ -1,7 +1,10 @@
-import config from "../config.json" with { type: "json" }
+import { Logger } from "./logger.js"
+
+// Global config object
+const Config = {}
 
 // Tag types
-config.tags = {
+Config.tags = {
 	"public": {},			
 
 	"editUnit": {},
@@ -19,6 +22,8 @@ config.tags = {
 
 	"listReports": {}
 }
+
+const logger = new Logger("Config", 33)
 
 class ConfigError extends Error {
 	constructor(message) {
@@ -40,10 +45,32 @@ function processName(entity) {
 	entity.name.default ||= entity.name[Object.keys(entity.name)[0]]
 }
 
+for await(const file of Deno.readDir("config")) {
+	const {default: json} = await import(`../config/${file.name}`, {with: {type: "json"}})
+
+	logger.log(`Loaded config "${json.configName}" from ${file.name}`)
+	delete json.configName
+
+	for(const key in json) {
+		if(key in Config) {
+			// Merge duplicate keys
+			if(typeof Config[key] == "object" && typeof json[key] == "object") {
+				Config[key] = {...Config[key], ...json[key]}
+			} else {
+				throw new ConfigError(`Duplicate config key "${key}" in file "${file.name}"`)
+			}
+
+		} else {
+			Config[key] = json[key]
+		}
+	}
+}
+
+
 // Process orgs
-config.orgs ||= {}
-for(const orgID in config.orgs) {
-	const org = config.orgs[orgID]
+Config.orgs ||= {}
+for(const orgID in Config.orgs) {
+	const org = Config.orgs[orgID]
 
 	// Prevent invalid org name
 	if(orgID == "default") {
@@ -56,8 +83,8 @@ for(const orgID in config.orgs) {
 }
 
 // Process roles
-for(const roleID in config.roles) {
-	const role = config.roles[roleID]
+for(const roleID in Config.roles) {
+	const role = Config.roles[roleID]
 	
 	// Prevent invalid role nname
 	if(roleID == "remove") {
@@ -73,16 +100,16 @@ for(const roleID in config.roles) {
 
 	// Ensure tags exist
 	for(const tag of role.tags) {
-		if(!(tag in config.tags)) {
+		if(!(tag in Config.tags)) {
 			throw new ConfigError(`Role "${roleID}" has unknown tag "${tag}"`)
 		}
 	}	
 }
 
 // Process departments
-config.departments ||= {}
-for(const departmentID in config.departments) {
-	const department = config.departments[departmentID]
+Config.departments ||= {}
+for(const departmentID in Config.departments) {
+	const department = Config.departments[departmentID]
 
 	// Default values
 	department.id = departmentID
@@ -91,8 +118,8 @@ for(const departmentID in config.departments) {
 }
 
 // Process units
-for(const unitID in config.units) {
-	const unit = config.units[unitID]
+for(const unitID in Config.units) {
+	const unit = Config.units[unitID]
 
 	// Default values
 	unit.id = unitID
@@ -103,7 +130,7 @@ for(const unitID in config.units) {
 
 	// Ensure roles exist
 	for(const roleName of unit.roles || []) {
-		if(!config.roles[roleName]) {
+		if(!Config.roles[roleName]) {
 			throw new ConfigError(`Unit "${unitID}" references unknown role "${roleName}"`)
 		}
 	}
@@ -112,7 +139,7 @@ for(const unitID in config.units) {
 	if(!unit.defaultRole && unit.roles?.length) {
 		let defaultRole = ["", Infinity]
 		for(const roleName of unit.roles) {
-			const roleType = config.roles[roleName]
+			const roleType = Config.roles[roleName]
 			if(roleType[1] > defaultRole[1]) continue
 			defaultRole = [roleName, roleType.rank]
 		}
@@ -134,28 +161,27 @@ for(const unitID in config.units) {
 
 
 // Process event config
-if(!config.event) {
+if(!Config.event) {
 	throw new ConfigError("Missing event config")
 }
-config.event.roles ||= []
-config.event.topUnitTypes ||= Object.keys(config.units)[0]
+Config.event.roles ||= []
+Config.event.topUnitTypes ||= Object.keys(Config.units)[0]
 
 // Ensure roles exist
-for(const roleName of config.event.roles || []) {
-	if(!config.roles[roleName]) {
+for(const roleName of Config.event.roles || []) {
+	if(!Config.roles[roleName]) {
 		throw new ConfigError(`Event config references unknown role "${roleName}"`)
 	}
 }
 
 
 // Check for custom html files
-config.customHTML = []
+Config.customHTML = []
 if(Deno.statSync("html/custom").isDirectory) {
 	for await(const file of Deno.readDir("html/custom")) {
-		config.customHTML.push(file.name)
+		Config.customHTML.push(file.name)
 	}
 }
-config.customHTML = config.customHTML.sort()
+Config.customHTML = Config.customHTML.sort()
 
-// console.log(config)
-export default config
+export default Config

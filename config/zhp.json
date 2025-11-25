@@ -1,6 +1,6 @@
 {
-	"name": "Związek Harcerstwa Polskiego",
-	"host": "dev.system-harcerski.tikolu.net",
+	"configName": "Związek Harcerstwa Polskiego",
+	
 	"orgs": {
 		"orgHarcerzy": {
 			"name": "Organizacja harcerzy"
@@ -75,6 +75,7 @@
 		"ośrodek": {
 			"name": "Ośrodek",
 			"rank": 2,
+			"maxUpperUnits": 2,
 			"eventRules": {
 				"create": false,
 				"invite": false,
@@ -214,6 +215,7 @@
 			"tags": [
 				"public",
 
+				"manageSubUnit",
 				"accessUser",
 				"manageUser",
 				"manageEvent",
