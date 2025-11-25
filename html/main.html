@@ -10,7 +10,29 @@
 	<img src="/watra.svg">
 	<span>WATRA<span>
 </h1>
-<p>Wersja beta 2.1.0</p>
+<% if(globalThis.VERSION) { %>
+	<p>Wersja beta <%= globalThis.VERSION %>
+<% } %>
+
+<% if(Config.customHTML.length > 0) { %>
+	<section>
+		<h2>
+			<i>news</i>
+			Ogłoszenia
+		</h2>
+		<details<%= Date.now() - $.user.auth.lastLogin < 8000 ? " open" : "" %>>
+			<summary>
+				<span class="open-text">Otwórz</span>
+				<span class="close-text">Zamknij</span>
+			</summary>
+			<% for(const path of Config.customHTML) { %>
+				<article>
+					<%~ include(`/custom/${path}`, {user: $.user}) %>
+				</article>
+			<% } %>
+		</details>
+	</section>
+<% } %>
 <% 
 	// Load warnings if user can edit their details
 	const md = []
@@ -19,7 +41,9 @@
 	}
 %>
 <% if(md.length > 0) { %>
-	<p>Aby rozpocząć korzystanie z systemu, uzupełnij brakujące dane na swoim profilu poniżej.</p>
+	<article>
+		<p><i>info</i> Aby rozpocząć korzystanie z systemu, uzupełnij brakujące dane na swoim profilu poniżej.</p>
+	</article>
 <% } %>
 <section>
 	<h2>

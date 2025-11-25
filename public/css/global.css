@@ -295,6 +295,9 @@ details > summary > * {
 	display: inline;
 }
 
+details:not([open]) > summary > .close-text { display: none }
+details[open] > summary > .open-text { display: none }
+
 dl {
 	display: grid;
 	grid-template-columns: max-content 1fr;
@@ -515,15 +518,20 @@ section {
 
 article {
 	padding: 1em;
+	margin: 1em 0;
 	background-color: var(--surface-2);
 	border-radius: var(--border-radius);
+}
+
+article > h3 {
+	margin-bottom: -0.5em;
 }
 
 article :first-child {
 	margin-top: 0;
 }
 
-article :last-child {
+article :last-child, article:last-child {
 	margin-bottom: 0;
 }
 

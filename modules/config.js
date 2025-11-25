@@ -148,5 +148,14 @@ for(const roleName of config.event.roles || []) {
 }
 
 
+// Check for custom html files
+config.customHTML = []
+if(Deno.statSync("html/custom").isDirectory) {
+	for await(const file of Deno.readDir("html/custom")) {
+		config.customHTML.push(file.name)
+	}
+}
+config.customHTML = config.customHTML.sort()
+
 // console.log(config)
 export default config
