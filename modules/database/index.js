@@ -2,9 +2,9 @@ import mongoose from "mongoose"
 
 import shortID from "modules/database/shortID.js"
 import { populate, isPopulated } from "modules/database/populate.js"
-import { Logger } from "modules/logger.js";
+import { Logger } from "modules/logger.js"
 
-const MONGO_URI = "mongodb://localhost:27017"
+const MONGO_URI = Deno.env.get("MONGO_URI") || "mongodb://localhost:27017"
 
 const logger = new Logger("MongoDB", 32)
 
@@ -172,6 +172,11 @@ mongoose.plugin(schema => schema.methods.delete = async function() {
 	await this.deleteOne()
 })
 
+let readyCallbacks
+export const ready = new Promise((resolve, reject) => {
+	readyCallbacks = {resolve, reject}
+})
+
 // Establish connection to database
 export async function connect(dbName="main") {
 	logger.log("Connecting...")
@@ -179,10 +184,12 @@ export async function connect(dbName="main") {
 		await mongoose.connect(MONGO_URI, { dbName })
 		
 		logger.log("Connected!")
+		readyCallbacks.resolve(true)
 		return true
 		
 	} catch(error) {
 		logger.log("Error:", error.message)
+		readyCallbacks.reject(error)
 		throw error
 	}
 }
@@ -190,6 +197,7 @@ export async function connect(dbName="main") {
 export async function clear() {
 	logger.log("Clearing database...")
 	await mongoose.connection.dropDatabase()
+	logger.log("Database cleared")
 }
 
 export const {setup} = await import("./setup.js")

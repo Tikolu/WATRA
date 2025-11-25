@@ -1,3 +1,8 @@
+/** Global date limits */
+globalThis.MIN_DATE = "1800-01-01"
+globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
+
+
 /** Function for checking if an object is empty */
 Object.isEmpty = object => {
 	if(object instanceof Array) {

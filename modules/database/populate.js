@@ -188,6 +188,7 @@ export function populate(graph, options={}) {
 							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id)
 							results[subDocument.id] = newDocument
 						}
+						newDocument.$locals.populationContext = populationContext
 						newArray.push(newDocument)
 					}
 					this.length = 0
