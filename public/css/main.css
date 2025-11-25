@@ -10,47 +10,61 @@ header {
 	background-color: var(--surface-4);
 
 	white-space: nowrap;
-}
 
-header #user-profile-link {
-	border-left: 1px solid var(--secondary-text);
-	padding-left: 0.5em;
-	margin-left: 0.5em;
-	text-decoration: none;
-}
 
-/* navigation path */
-header nav {
-	display: flex;
-	overflow: auto hidden;
-	scrollbar-width: none;
-	
-	min-width: 0;
-	width: 100%;
-}
+	& #user-profile-link {
+		border-left: 1px solid var(--secondary-text);
+		padding-left: 0.5em;
+		margin-left: 0.5em;
+		text-decoration: none;
+	}
 
-/* home icon */
-header > nav > a:first-child {
-	flex-shrink: 0;
-}
+	/* navigation path */
+	& nav {
+		display: flex;
+		overflow: auto hidden;
+		scrollbar-width: none;
+		
+		min-width: 0;
+		width: 100%;
 
-header > nav > a > i {
-	margin: 0;
-}
+		/* home icon */
+		& > a:first-child {
+			flex-shrink: 0;
+		}
 
-/* arrow icons */
-header > nav > i  {
-	opacity: 0.5;
-	margin: 0 0.2em;
-	flex-shrink: 0;
-}
+		& a {
+			&#title {
+				text-decoration: none;
+				margin-left: 0.25em;
+			}
+			
+			& > img {
+				height: 1em;
+				scale: 1.25;
+				translate: 0 0.1em;
+			}
+			
+			& > i {
+				margin: 0;
+			}
+		}
 
-/* path link elements */
-header > nav > a:not(:first-child) {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	flex-shrink: 0;
-	/* max-width: 6em; */
+		/* arrow icons */
+		& i  {
+			opacity: 0.5;
+			margin: 0 0.2em;
+			flex-shrink: 0;
+		}
+
+		/* path link elements */
+		& a:not(:first-child) {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			flex-shrink: 0;
+			/* max-width: 6em; */
+		}
+	}
 }
 
 /* transitions */

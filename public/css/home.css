@@ -1,3 +1,4 @@
-#greeting > a {
-	text-decoration: none;
+h1 + p {
+	margin-top: -1em;
+	margin-bottom: 2em;
 }

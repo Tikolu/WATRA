@@ -1,6 +1,8 @@
 <header>
 	<nav>
-		<a href="/"><i>home</i></a>
+		<a href="/" title="Strona główna">
+			<img src="/watra.svg">
+		</a>
 		<%
 			$.navPath ??= {}
 			
@@ -19,6 +21,9 @@
 				<%
 			}
 		%>
+		<% if(Object.keys($.navPath).length == 0) { %>
+			<a href="/" id="title">WATRA</a>
+		<% } %>
 	</nav>
 	<a
 		<% if($.user) { %>

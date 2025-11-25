@@ -10,7 +10,6 @@ body {
 	background-color: var(--surface-0);
 	color: var(--text);
 	margin: 0;
-	-webkit-tap-highlight-color: transparent;
 }
 
 main {
@@ -18,7 +17,14 @@ main {
 	padding: 0 1em;
 	margin: 0 auto;
 	overflow-x: auto;
-	transform-origin: 50vw 50vh;
+}
+
+
+/* Browser customisation */
+
+html {
+	scrollbar-color: var(--secondary-text) var(--surface-2);
+	-webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
@@ -183,6 +189,7 @@ h1 > input, h2 > input {
 	background-color: transparent;
 	padding: 0;
 	width: unset;
+	height: unset;
 	field-sizing: content;
 	font-size: inherit;
 	font-weight: inherit;
@@ -192,6 +199,11 @@ h1 > input, h2 > input {
 h1 > input:focus, h2 > input:focus {
 	background-color: var(--surface-2);
 	padding: 0.25em;
+}
+
+h1 > * {
+	height: 1em;
+	vertical-align: middle;
 }
 
 /* Buttons */

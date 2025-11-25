@@ -1,8 +1,15 @@
 <% layout("/layouts/login", {
-	title: "System Harcerski",
+	title: "Logowanie",
 	scripts: ["login/common", "login/main"]
 }) %>
-<h1>System Harcerski</h1>
+<h1>
+	<img src="watra.svg">
+	<span>W</span>
+	<span>A</span>
+	<span>T</span>
+	<span>R</span>
+	<span>A</span>
+</h1>
 
 <button id="login-button" class="important" api="login/getKeys">
 	<i>passkey</i>
@@ -71,3 +78,8 @@
 		>
 	</form>	
 </section>
+
+<% if(Config.contactEmail) { %>
+	<hr>
+	<p>Problemy z logowaniem? Skontaktuj się <b><%= Config.contactEmail %></b></p>
+<% } %>

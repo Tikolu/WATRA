@@ -13,7 +13,7 @@ html {
 	--red-text: hsl(0, 95%, 95%);
 
 	--text: hsl(var(--hue), 30%, 90%);
-	--secondary-text: hsl(var(--hue), 10%, 50%);
+	--secondary-text: hsl(var(--hue), 10%, 65%);
 	--shadow: hsl(var(--hue), 5%, 5%);
 	
 	--border-radius: 0.5em;

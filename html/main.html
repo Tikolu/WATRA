@@ -5,8 +5,12 @@
 	navPath: false,
 	user: $.user
 }) %>
-<h1>System Harcerski</h1>
-<p id="greeting">Czuwaj<% if($.user.name.first) { %>, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a><% } %>! 👋</p>
+
+<h1>
+	<img src="/watra.svg">
+	<span>WATRA<span>
+</h1>
+<p>Wersja beta 2.1.0</p>
 <% 
 	// Load warnings if user can edit their details
 	const md = []
