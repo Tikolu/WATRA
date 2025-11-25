@@ -1,15 +1,9 @@
 API.registerHandler("unit/[unitID]/member/create", {
-	form: createUser,
+	form: main,
 	progressText: "Tworzenie użytkownika...",
 	after: (response, data) => {
 		window.top.createURLDialog(`/users/${response.userID}/accessCode?parent=${data.createParent || ""}`, true)
 	}
-})
-
-API.registerHandler("unit/[unitID]/member/[userID]/add", {
-	form: linkUser,
-	progressText: "Dodawanie użytkownika...",
-	successText: "Dodano użytkownika"
 })
 
 unitSelect.onchange = () => {
@@ -20,6 +14,3 @@ unitSelect.onchange = () => {
 		orgSelect.disabled = true
 	}
 }
-
-userPicker.onchange = () => linkUserButton.scrollIntoView({behavior: "smooth"})
-userPickerSearch.onclick = () => linkUserButton.scrollIntoView({behavior: "smooth"})

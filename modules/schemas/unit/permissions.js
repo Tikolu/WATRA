@@ -89,8 +89,14 @@ export async function SET_ROLE(user) {
 	// Cannot set role if unit has no configured roles
 	if(!this.config.roles?.length) return false
 
+	// Cannot set role if unit has no members and no subUnits
+	if(this.roles.length == 0 && this.subUnits.length == 0) return false
+
 	// "setRole" roles in this unit or upper units can set roles
 	if(await user.hasRoleInUnits("setRole", this, this.getUpperUnitsTree())) return true
+
+	// "manageSubUnit" roles upper units can set roles
+	if(await user.hasRoleInUnits("manageSubUnit", this.getUpperUnitsTree())) return true
 
 	return false
 }

@@ -80,7 +80,7 @@ export class UnitClass {
 	/** Methods */
 	
 	/** Add user to unit with a role, any existing role in the unit gets overwritten */
-	async setRole(user, roleType=this.config.defaultRole) {
+	async setRole(user, roleType=this.config.defaultRole, save=true) {
 		// Populate roles
 		await this.populate("roles")
 
@@ -103,7 +103,7 @@ export class UnitClass {
 		const existingRole = this.roles.find(f => f.user.id == user.id)
 		if(existingRole) {
 			// Check if existing role is the same
-			if(existingRole.type === role.type) throw Error(`Użytkownik już ma tą funkcję`)
+			if(existingRole.type === role.type) throw Error(`Użytkownik ${user.displayName} już ma tą funkcję`)
 			
 			role = new Role({
 				...role.toObject(),
@@ -133,10 +133,10 @@ export class UnitClass {
 		const userAge = user.age
 		if(userAge !== null && !role.eventType) {
 			if(userAge < (role.config.minAge || 0)) {
-				throw Error(`Użytkownik nie spełnia wymaganego wieku dla funkcji typu "${role.displayName}"`)
+				throw Error(`Użytkownik ${user.displayName} nie spełnia wymaganego wieku dla "${role.displayName}"`)
 			}
 			if(userAge > (role.config.maxAge || Infinity)) {
-				throw Error(`Użytkownik przekracza maksymalny wiek dla funkcji typu "${role.displayName}"`)
+				throw Error(`Użytkownik ${user.displayName} przekracza maksymalny wiek dla "${role.displayName}"`)
 			}
 		}
 
@@ -151,9 +151,11 @@ export class UnitClass {
 			user[userRolesKey].push(role.id)
 		}
 
-		await role.save()
-		await this.save()
-		await user.save()
+		if(save) {
+			await role.save()
+			await this.save()
+			await user.save()
+		}
 
 		return role
 	}

@@ -1,17 +1,15 @@
 <% layout("/layouts/dialog", {
-	scripts: ["unit/addUser", "user/picker"],
-	styles: ["unit/addUser", "user/picker"],
+	scripts: ["unit/member/create"],
 	meta: {
 		unitID: $.units[0].id
 	}
 }) %>
 <h1>
 	<i>person_add</i>
-	Dodawanie użytkownika
+	Tworzenie nowego użytkownika
 </h1>
 <main>
-	<section id="create-user">
-		<h3>Utwórz nowego użytkownika</h3>
+	<section>
 		<form>
 			<label for="first-name-input">Imię:</label>
 			<input type="text" id="first-name-input" name="firstName" autocomplete="off">
@@ -67,23 +65,6 @@
 			<span>Utwórz użytkownika</span>
 		</button>
 	</section>
-
-	<% if(true) { %>
-		<section id="link-user">
-			<h3>Dodaj istniejącego użytkownika</h3>
-			<%~ include("/user/templates/userPicker", {
-				users: $.usersForAdding
-			}) %>
-			<form>
-				<input type="checkbox" id="move-user" name="moveUser">
-				<label for="move-user">Przenieś użytkownika (usuń z obecnej jednostki)</label>
-			</form>
-			<button id="link-user-button" api="unit/[unitID]/member/[userID]/add" class="confirm">
-				<i>person_add</i>
-				<span>Dodaj użytkownika</span>
-			</button>
-		</section>
-	<% } %>
 </main>
 <hr>
 <div class="button-row">

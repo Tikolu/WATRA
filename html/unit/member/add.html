@@ -1,0 +1,34 @@
+<% layout("/layouts/dialog", {
+	scripts: ["unit/member/add", "user/picker"],
+	styles: ["unit/addUser", "user/picker"],
+	meta: {
+		unitID: $.targetUnit.id
+	}
+}) %>
+<h1>
+	<i>person_search</i>
+	Dodawanie istniejących użytkowników
+</h1>
+<main>
+	<section>
+		<%~ include("/user/templates/userPicker", {
+			users: $.usersForAdding,
+			multiple: true
+		}) %>
+		<form>
+			<input type="checkbox" id="move-user" name="moveUser">
+			<label for="move-user">Przenieś użytkowników (usuń z obecnej jednostki)</label>
+		</form>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="unit/[unitID]/member/add" class="confirm">
+		<i>person_add</i>
+		<span>Dodaj użytkowników</span>
+	</button>
+</div>

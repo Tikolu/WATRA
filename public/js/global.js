@@ -1,6 +1,12 @@
 // Global error handlers
-window.onerror = message => Popup.error(message)
-window.onunhandledrejection = event => Popup.error(event.reason)
+window.onerror = message => {
+	console.error(message)
+	Popup.error(message)
+}
+window.onunhandledrejection = event => {
+	console.error(event.reason)
+	Popup.error(event.reason)
+}
 
 // Debug function
 function debug() {
@@ -676,9 +682,7 @@ const API = {
 				if(progressMessage) progressMessage.close()
 				elements.forEach(e => e.classList.add("invalid"))
 				await handler.error?.(response, data, element)
-				console.error(error)
-				Popup.error(error)
-				return
+				throw error
 			} finally {
 				if(progressMessage && !handler.persistProgress) progressMessage.close()
 				// Re-enable elements

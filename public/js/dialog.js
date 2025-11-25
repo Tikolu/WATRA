@@ -4,7 +4,7 @@ window.dialog = frameElement.parentElement
 API.onRequestStart = async () => {
 	dialog.close()
 	await sleep(250)
-	frameElement.classList.remove("loaded")
+	frameElement?.classList.remove("loaded")
 }
 // After a successful API request, reset the frame
 API.onRequestSuccess = () => {
@@ -12,7 +12,7 @@ API.onRequestSuccess = () => {
 }
 // After a failed API request, re-open the dialog
 API.onRequestError = () => {
-	frameElement.classList.add("loaded")
+	frameElement?.classList.add("loaded")
 	if(dialog.open) return
 	dialog.showModal()
 }
@@ -20,6 +20,7 @@ API.onRequestError = () => {
 dialog.fullClose = async () => {
 	dialog.close()
 	await sleep(250)
+	if(!frameElement) return
 	frameElement.style.height = null
 	frameElement.src = ""
 }
@@ -40,8 +41,6 @@ async function resizeContainer() {
 	document.body.style.maxHeight = maxHeight
 
 	frameElement.style.height = `${document.documentElement.scrollHeight}px`;
-
-	main.style.height = `${main.clientHeight}px`
 }
 
 window.onresize = () => resizeContainer()

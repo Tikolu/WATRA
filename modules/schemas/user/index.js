@@ -294,6 +294,7 @@ export class UserClass {
 	async * getUnitsTree() {
 		await this.populate("roles")
 		for(const role of this.roles) {
+			if(!role.unit) continue
 			await role.populate("unit")
 			yield role.unit
 			yield * role.unit.getUpperUnitsTree()
