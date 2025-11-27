@@ -266,7 +266,8 @@ async function refreshPageData() {
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
-		"body": ["class"]
+		"body": ["class"],
+		"html": ["theme"]
 	}
 	const extraAttributes = {
 		"input[type=checkbox]": ["checked"]

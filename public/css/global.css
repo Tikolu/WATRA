@@ -1,7 +1,53 @@
-/* Imports and themes */
+/* Font imports */
 
 @import url(https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=block);
 @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20,700,1);
+
+
+/* Themes */
+
+html[theme=light] {
+	color-scheme: light;
+
+	--hue: 100deg;
+	
+	--surface-0: hsl(var(--hue), 5%, 99%);
+	--surface-1: hsl(var(--hue), 10%, 95%);
+	--surface-2: hsl(var(--hue), 10%, 90%);
+	--surface-3: hsl(var(--hue), 20%, 85%);
+	--surface-4: hsl(var(--hue), 20%, 70%);
+
+	--red-background: hsl(0, 50%, 70%);
+	--red-text: hsl(0, 80%, 10%);
+
+	--text: hsl(var(--hue), 50%, 10%);
+	--secondary-text: hsl(var(--hue), 10%, 30%);
+	--shadow: hsla(var(--hue), 20%, 10%, 0.4);
+	
+	--border-radius: 0.5em;
+}
+
+html[theme=dark] {
+	color-scheme: dark;
+
+	--hue: 100deg;
+	
+	--surface-0: hsl(var(--hue), 5%, 1%);
+	--surface-1: hsl(var(--hue), 5%, 10%);
+	--surface-2: hsl(var(--hue), 5%, 15%);
+	--surface-3: hsl(var(--hue), 10%, 17.5%);
+	--surface-4: hsl(var(--hue), 12.5%, 20%);
+
+	--red-background: hsl(0, 40%, 30%);
+	--red-text: hsl(0, 95%, 95%);
+
+	--text: hsl(var(--hue), 30%, 90%);
+	--secondary-text: hsl(var(--hue), 10%, 65%);
+	--shadow: hsl(var(--hue), 5%, 5%);
+	
+	--border-radius: 0.5em;
+}
+
 
 /* Content layout */
 
@@ -10,6 +56,7 @@ body {
 	background-color: var(--surface-0);
 	color: var(--text);
 	margin: 0;
+	transition: background-color 250ms, color 250ms;
 }
 
 main {
@@ -116,7 +163,6 @@ input, button, select, textarea {
 }
 
 textarea {
-	min-width: 20em;
 	width: 100%;
 	min-height: 5em;
 	field-sizing: content;
@@ -187,6 +233,7 @@ input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
 
 input[type=file] {
 	display: block;
+	max-width: 100%;
 	margin-top: 0.5em;
     padding: 0.5em;
 	background-color: var(--surface-3);
@@ -226,6 +273,10 @@ h1 > input:disabled, h2 > input:disabled {
 h1 > img {
 	height: 1em;
 	vertical-align: middle;
+}
+
+select option {
+	background-color: var(--surface-1);
 }
 
 /* Buttons */
