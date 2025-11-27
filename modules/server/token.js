@@ -1,10 +1,5 @@
 import * as Base64 from "modules/base64.js";
-import sha256 from "modules/sha256.js";
-
-const SERVER_PRIVATE_KEY = Deno.env.get("SERVER_PRIVATE_KEY") 
-if(!SERVER_PRIVATE_KEY) {
-	throw new Error("SERVER_PRIVATE_KEY is not set in .env file")
-}
+import * as Crypto from "modules/crypto.js";
 
 export default class {
 	/** Parses and verifies a token from a cookie string */
@@ -16,8 +11,7 @@ export default class {
 		if(tokenData.length != 2) return
 
 		// Verify token signature
-		const tokenHash = await sha256(tokenData[0] + SERVER_PRIVATE_KEY)
-		if(tokenHash !== tokenData[1]) return
+		if(!await Crypto.verify(...tokenData)) return
 		
 		try {
 			const token = Base64.decode(tokenData[0])
@@ -73,7 +67,7 @@ export default class {
 
 		if(token) {
 			// Sign token
-			const hash = await sha256(token + SERVER_PRIVATE_KEY)
+			const hash = await Crypto.sign(token)
 			return `token=${token}.${hash}; Max-Age=34560000; Path=/; Secure; HttpOnly`
 		} else {
 			// Clear token cookie if token is empty
