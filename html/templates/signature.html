@@ -8,14 +8,20 @@
 				<i>check</i>
 				Podpisano
 			</h3>
-			<p><%= $.signature.name %> - <%= datetime.format($.signature.time, "dd/MM/yyyy HH:mm") %></p>
+			<p><%= $.signature.name %><br><%= datetime.format($.signature.time, "dd/MM/yyyy HH:mm") %></p>
 		</div>
 	<% } else { %>
-		<div class="signature-slider">
-			<i></i>
+		<h3>
+			<i>stylus</i>
+			Podpis
+		</h3>
+		<div class="signature-slider-container">
+			<div class="signature-slider">
+				<i></i>
+			</div>
+			<p>Przesuń aby podpisać</p>
+			<p class="loading-text">Podpisywanie...</p>
 		</div>
-		<p>Przesuń aby podpisać</p>
-		<p class="loading-text">Podpisywanie...</p>
 	<% } %>
 </div>
 <% if(!$.signature && $.user.auth.keys.length == 0) { %>

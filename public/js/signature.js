@@ -43,7 +43,7 @@ function processSignatureElements() {
 						<i>check</i>
 						Podpisano
 					</h3>
-					<p>${verificationResponse.signature.name} - ${verificationResponse.displayTime}</p>
+					<p>${verificationResponse.signature.name}<br>${verificationResponse.displayTime}</p>
 				</div>
 			`)
 
@@ -67,8 +67,8 @@ function processSignatureElements() {
 				signature.classList.remove("dragging")
 				slider.style.setProperty("--x", "0px")
 
-				// Cancel signature if dragged less than 80%
-				if(!slider.x || slider.x < signature.bounds.width * 0.8) return
+				// Cancel signature if dragged less than 90%
+				if(!slider.x || slider.x < signature.bounds.width * 0.9) return
 				
 				signature.classList.add("loading")
 				navigator.vibrate?.(150)

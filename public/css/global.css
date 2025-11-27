@@ -153,7 +153,7 @@ input:disabled, select:disabled, textarea:disabled {
 	color: var(--secondary-text);
 }
 
-input.invalid, select.invalid, .input.invalid {
+input.invalid, select.invalid {
 	background-color: var(--red-background);
 }
 
