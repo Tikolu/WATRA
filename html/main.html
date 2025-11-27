@@ -45,25 +45,27 @@
 		<p><i>info</i> Aby rozpocząć korzystanie z systemu, uzupełnij brakujące dane na swoim profilu poniżej.</p>
 	</article>
 <% } %>
-<section>
-	<h2>
-		<i>person</i>
-		Twój profil
-	</h2>
-	<div class="entry-grid medium">
-		<%~ include("user/templates/userEntry", {
-			targetUser: $.user,
-			warnings: (() => {
-				return Array.conditional(
-					md.includes("name"), "Brak imienia i nazwiska",
-					md.includes("contact"), "Brak danych kontaktowych",
-					md.includes("dob"), "Brak daty urodzenia",
-					md.includes("medical"), "Nie zatwierdzone dane medyczne",
-				)
-			})() || []
-		}) %>
-	</div>
-</section>
+<% if(md.length > 0) { %>
+	<section>
+		<h2>
+			<i>person</i>
+			Twój profil
+		</h2>
+		<div class="entry-grid medium">
+			<%~ include("user/templates/userEntry", {
+				targetUser: $.user,
+				warnings: (() => {
+					return Array.conditional(
+						md.includes("name"), "Brak imienia i nazwiska",
+						md.includes("contact"), "Brak danych kontaktowych",
+						md.includes("dob"), "Brak daty urodzenia",
+						md.includes("medical"), "Nie zatwierdzone dane medyczne",
+					)
+				})() || []
+			}) %>
+		</div>
+	</section>
+<% } %>
 
 <% if($.user.roles.length > 0) { %>
 	<section>

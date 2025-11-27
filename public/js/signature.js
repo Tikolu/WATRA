@@ -1,7 +1,7 @@
 function processSignatureElements() {
 	for(const signature of document.querySelectorAll(".signature-container")) {
 		const slider = signature.querySelector(".signature-slider")
-		if(!slider) {
+		if(!slider || signature.classList.contains("complete")) {
 			clearTimeout(signature.resetTimeout)
 			continue
 		}
@@ -37,7 +37,7 @@ function processSignatureElements() {
 			signature.classList.remove("loading")
 			signature.classList.add("complete")
 
-			signature.insertAdjacentHTML("beforeend", `
+			signature.insertAdjacentHTML("afterbegin", `
 				<div class="signature-info">
 					<h3>
 						<i>check</i>

@@ -6,6 +6,6 @@ export default async function({targetUser, phone}) {
 	await targetUser.save()
 
 	return {
-		phone: Text.formatPhone(targetUser.phone, targetUser.phone.startsWith("+353"))
+		phone: Text.formatPhone(targetUser.phone, targetUser.phone?.startsWith("+353"))
 	}
 }

@@ -50,36 +50,31 @@
 
 <%
 	const md = $.targetUser.missingDetails
-	const userWarnings = Array.conditional(
-		md.includes("name"), "Brak imienia i nazwiska",
-		md.includes("contact"), "Brak danych kontaktowych",
-		md.includes("dob"), "Brak daty urodzenia",
-		md.includes("medical"), "Nie zatwierdzone dane medyczne",
-	)
-	if($.user.id == $.targetUser.id && $.targetUser.auth.keys.length == 0) {
-		userWarnings.unshift("Dodaj klucz dostępu do konta")
-	}
 %>
-<% if(userWarnings.length > 0) { %>
-	<section>
-		<h2>
-			<i>warning</i>
-			Uwagi
-		</h2>
-		<% for(const warning of userWarnings) { %>
-			<p class="warning">
-				<i>warning</i>
-				<%= warning %>
-			</p>
-		<% } %>
-	</section>
-<% } %>
 
 <section>
 	<h2>
 		<i>assignment</i>
 		Dane
 	</h2>
+	<% if(md.includes("name")) { %>
+		<p class="warning">
+			<i>warning</i>
+			Ustaw imię i nazwisko
+		</p>
+	<% } %>
+	<% if(md.includes("contact")) { %>
+		<p class="warning">
+			<i>warning</i>
+			Dodaj dane kontaktowe
+		</p>
+	<% } %>
+	<% if(md.includes("dob")) { %>
+		<p class="warning">
+			<i>warning</i>
+			Brak daty urodzenia
+		</p>
+	<% } %>
 	<div class="vertical-split">
 		<form>
 			<label for="first-name-input">Imię:</label>
@@ -206,7 +201,13 @@
 			<i>key</i>
 			Klucze dostępu
 		</h2>
-		<p>Klucze dostępu są używane do logowania w systemie i potwierdzania tożsamości.</p>
+		<% if($.user.id == $.targetUser.id && $.targetUser.auth.keys.length == 0) { %>
+			<p class="warning">
+				<i>warning</i>
+				Dodaj klucz dostępu do konta
+			</p>
+		<% } %>
+		<p>Klucze dostępu są używane do logowania w systemie i do podpisywania ważnych informacji.</p>
 		<div class="entry-grid medium">
 			<% for(const key of $.targetUser.auth.keys) { %>
 				<% const provider = key.provider %>
@@ -343,27 +344,6 @@
 						"accepted": "Zaakceptowane zaproszenie",
 						"declined": "Odrzucone zaproszenie"
 					})[inviteState]
-				}) %>
-			<% } %>
-		</div>
-	</section>
-<% } %>
-
-<% if($.targetUser.eventApprovalRequests.length) { %>
-	<section>
-		<h2>
-			<i>gavel</i>
-			Zatwierdzenia akcji
-		</h2>
-		<div class="entry-grid">
-			<% for(const event of $.targetUser.eventApprovalRequests) { %>
-				<%
-					const approvalState = event.getApprover($.targetUser)?.approved
-					if(approvalState === undefined) continue
-				%>
-				<%~ include("/event/templates/eventEntry.html", {
-					targetEvent: event,
-					content: approvalState ? "Zatwierdzony" : "Oczekiwane zatwierdzenie",
 				}) %>
 			<% } %>
 		</div>
