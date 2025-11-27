@@ -1,19 +1,19 @@
-import { medicalCategories } from "modules/medical.js"
+import Config from "modules/config.js"
 import * as Text from "modules/text.js"
 
 export default class {
 	_id = false
 
-	confirmed = {
-		type: Boolean,
-		default: false
+	signature = {
+		name: String,
+		time: Date
 	}
 	entries = [
 		class {
 			title = String
 			category = {
 				type: String,
-				enum: medicalCategories.map(c => c.id)
+				enum: Config.medicalCategories.map(c => c.id)
 			}
 			symptoms = {
 				type: String,
@@ -57,7 +57,7 @@ export default class {
 		// Create new entry
 		} else {
 			// Attempt to find title from medical data
-			const categoryData = medicalCategories.find(c => c.id == category)
+			const categoryData = Config.medicalCategories.find(c => c.id == category)
 			if(!categoryData) throw Error("Nieznana kategoria")
 
 			const entryID = Text.id(title)
@@ -88,13 +88,13 @@ export default class {
 	}
 
 	/** Confirms and locks medical info */
-	async confirm() {
+	async confirm(signature) {
 		if(this.confirmed) return
 		for(const entry of this.entries) {
-			if(!entry.symptoms) throw Error(`Brak opisu objawów dla "${entry.title}"`)
-			if(!entry.solutions) throw Error(`Brak opisu zaleceń dla "${entry.title}"`)
+			if(!entry.symptoms) throw Error(`Brak opisu dla "${entry.title}"`)
+			if(!entry.solutions) throw Error(`Brak zaleceń dla "${entry.title}"`)
 		}
-		this.confirmed = true
+		this.signature = signature
 		
 		// Save user
 		await this.parent().save()
@@ -103,9 +103,63 @@ export default class {
 	/** Removes confirmation and unlocks medical info */
 	async unconfirm() {
 		if(!this.confirmed) return
-		this.confirmed = false
+		this.signature = undefined
 
 		// Save user
 		await this.parent().save()
+	}
+
+	/** Generates categories for displaying */
+	displayCategories(editable) {
+		const displayCategories = []
+		
+		for(const category of Config.medicalCategories) {
+			const categoryElements = []
+			for(const element of category.elements) {
+				// Get user entry for this element
+				const userEntry = this.findEntry(category.id, element.title)
+				// Skip if no entry and not editable
+				if(!userEntry && !editable) continue
+				categoryElements.push({
+					id: Text.id(element.title),
+					title: element.title,
+					description: element.description,
+					selected: !!userEntry,
+					symptoms: userEntry?.symptoms,
+					solutions: userEntry?.solutions
+				})
+			}
+			// Look for "other" elements in this category
+			for(const userEntry of this.entries) {
+				if(userEntry.category != category.id) continue
+				const id = Text.id(userEntry.title)
+				if(categoryElements.some(e => e.id == id)) continue
+				categoryElements.push({
+					id,
+					title: userEntry.title,
+					description: "",
+					selected: true,
+					symptoms: userEntry.symptoms,
+					solutions: userEntry.solutions
+				})
+			}
+			// If not editable, skip empty category
+			if(!categoryElements.length && !editable) continue
+			displayCategories.push({
+				id: category.id,
+				title: category.title,
+				other: category.other,
+				symptoms: category.symptoms,
+				solutions: category.solutions,
+				elements: categoryElements
+			})
+		}
+
+		return displayCategories
+	}
+
+	/** Checks if medical info has a signature */
+	get confirmed() {
+		return this.signature?.name && this.signature?.time
 	}
 }

@@ -1,7 +1,7 @@
 <% layout("/layouts/body", {
 	title: "Dane medyczne",
-	scripts: ["user/medical"],
-	styles: ["user/medical"],
+	scripts: ["user/medical", "signature"],
+	styles: ["user/medical", "signature"],
 	meta: {
 		userID: $.targetUser.id
 	},
@@ -14,166 +14,201 @@
 	<%= $.targetUser.displayName %> - dane medyczne
 </h1>
 <% if($.editable) { %>
-	<p>Przeczytaj i dokładnie uzupełnij dane medyczne i dietetyczne poniżej. Konieczne jest aby kadra rozumiała wymagania każdego uczestnika aby móc zapewnić odpowiednie wyżywienie i bezpieczeństwo.</p>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
-		<p>Po wpisaniu wszystkich danych, <a href="#confirmation">zatwierdź</a> na końcu strony.</p>
-	<% } %>
-	<p>Jeżeli dolegliwości się zmienią, ważne jest aby zostały od razu tutaj zaktualizowane.</p>
+	<section>
+		<p>Przeczytaj i dokładnie uzupełnij dane medyczne i dietetyczne poniżej. Konieczne jest aby kadra rozumiała wymagania każdego uczestnika aby móc zapewnić odpowiednie wyżywienie i bezpieczeństwo.</p>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+			<p>Po wpisaniu wszystkich danych, <a href="#confirmation">zatwierdź</a> na końcu strony.</p>
+		<% } %>
+		<p>Jeżeli dolegliwości się zmienią, ważne jest aby zostały od razu tutaj zaktualizowane.</p>
+	</section>
 <% } %>
-<div id="medical-categories">
-	<% for(const category of $.displayCategories) { %>
-		<section>
-			<h2><%= category.title %></h2>
-			<form id="<%= category.id %>">
-				<% for(const element of category.elements) { %>
-					<% if($.editable) { %>
-						<input type="checkbox" id="<%= category.id %>-<%= element.id %>"
-							<% if(element.selected) { %>
-								api="user/[userID]/medical/remove?category=<%= category.id %>&element=<%= element.id %>"
-								checked
-							<% } else { %>
-								api="user/[userID]/medical/add?category=<%= category.id %>&element=<%= element.id %>"
-							<% } %>
-						>
-					<% } %>
-					<label for="<%= category.id %>-<%= element.id %>">
-						<h3><%= element.title %></h3>
-						<% if(element.description) { %>
-							<p><%= element.description %></p>
-						<% } %>
-					</label>
-					<% if(element.selected) { %>
-						<div id="<%= category.id %>-<%= element.id %>-details" class="vertical-split">
-							<div>
-								<label for="<%= category.id %>-<%= element.id %>-details-symptoms"><%= category.symptoms.heading %></label>
-								<textarea
-									id="<%= category.id %>-<%= element.id %>-details-symptoms"
-									placeholder="<%= category.symptoms.placeholder %>"
-									<% if($.editable) { %>
-										api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
-									<% } else { %>
-										disabled
-									<% } %>
-									name="symptoms"
-								><%= element.symptoms || "" %></textarea>
-							</div>
 
-							<div>
-								<label for="<%= category.id %>-<%= element.id %>-details-solutions"><%= category.solutions.heading %></label>
-								<textarea
-									id="<%= category.id %>-<%= element.id %>-details-solutions"
-									placeholder="<%= category.solutions.placeholder %>"
-									<% if($.editable) { %>
-										api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
-									<% } else { %>
-										disabled
-									<% } %>
-									name="solutions"
-								><%= element.solutions || "" %></textarea>
+<%
+	const displayCategories = $.targetUser.medical.displayCategories($.editable)
+%>
+
+<% if(displayCategories.length > 0) { %>
+	<div id="medical-categories">
+		<% for(const category of displayCategories) { %>
+			<section>
+				<h2><%= category.title %></h2>
+				<form id="<%= category.id %>">
+					<% for(const element of category.elements) { %>
+						<% if($.editable) { %>
+							<input type="checkbox" id="<%= category.id %>-<%= element.id %>"
+								<% if(element.selected) { %>
+									api="user/[userID]/medical/remove?category=<%= category.id %>&element=<%= element.id %>"
+									checked
+								<% } else { %>
+									api="user/[userID]/medical/add?category=<%= category.id %>&element=<%= element.id %>"
+								<% } %>
+							>
+						<% } %>
+						<label for="<%= category.id %>-<%= element.id %>">
+							<h3><%= element.title %></h3>
+							<% if(element.description) { %>
+								<p><%= element.description %></p>
+							<% } %>
+						</label>
+						<% if(element.selected) { %>
+							<div id="<%= category.id %>-<%= element.id %>-details" class="vertical-split">
+								<div>
+									<label for="<%= category.id %>-<%= element.id %>-details-symptoms"><%= category.symptoms.heading %></label>
+									<textarea
+										id="<%= category.id %>-<%= element.id %>-details-symptoms"
+										placeholder="<%= category.symptoms.placeholder %>"
+										<% if($.editable) { %>
+											api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
+										<% } else { %>
+											disabled
+										<% } %>
+										name="symptoms"
+									><%= element.symptoms || "" %></textarea>
+								</div>
+
+								<div>
+									<label for="<%= category.id %>-<%= element.id %>-details-solutions"><%= category.solutions.heading %></label>
+									<textarea
+										id="<%= category.id %>-<%= element.id %>-details-solutions"
+										placeholder="<%= category.solutions.placeholder %>"
+										<% if($.editable) { %>
+											api="user/[userID]/medical/update?category=<%= category.id %>&element=<%= element.id %>"
+										<% } else { %>
+											disabled
+										<% } %>
+										name="solutions"
+									><%= element.solutions || "" %></textarea>
+								</div>
 							</div>
-						</div>
+						<% } %>
 					<% } %>
+				</form>
+				<% if($.editable) { %>
+					<button id="<%= category.id %>-other-button" opens-dialog="add-other-<%= category.id %>">
+						<i>add</i>
+						<%= category.other %>
+					</button>
 				<% } %>
-			</form>
-			<% if($.editable) { %>
-				<button id="<%= category.id %>-other-button" opens-dialog="add-other-<%= category.id %>">
-					<i>add</i>
-					<%= category.other %>
-				</button>
-			<% } %>
-		</section>
-		<dialog id="add-other-<%= category.id %>">
-			<h1><%= category.other %></h1>
-			<form>
-				<label for="<%= category.id %>-other-name">Nazwa:</label>
-				<input
-					type="text"
-					id="<%= category.id %>-other-name"
-					name="element"
-					autocomplete="off"
-					maxlength="30"
-					required>
-			</form>
-			<p>Szczegóły będzie można dodać w następnym kroku.</p>
-			<hr>
-			<div class="button-row">
-				<button>
-					<i>arrow_back</i>
-					Anuluj
-				</button>
-				<button api="user/[userID]/medical/add?category=<%= category.id %>" form="add-other-<%= category.id %>">
-					<i>add</i>
-					Dodaj
-				</button>
-			</div>
-		</dialog>
-	<% } %>
-</div>
+			</section>
+			<dialog id="add-other-<%= category.id %>">
+				<h1><%= category.other %></h1>
+				<form>
+					<label for="<%= category.id %>-other-name">Nazwa:</label>
+					<input
+						type="text"
+						id="<%= category.id %>-other-name"
+						name="element"
+						autocomplete="off"
+						maxlength="30"
+						required>
+					<label for="<%= category.id %>-other-symptoms"><%= category.symptoms.heading %>:</label>
+					<textarea id="<%= category.id %>-other-symptoms" name="symptoms" placeholder="<%= category.symptoms.placeholder %>"></textarea>
+					<label for="<%= category.id %>-other-solutions"><%= category.solutions.heading %>:</label>
+					<textarea id="<%= category.id %>-other-solutions" name="solutions" placeholder="<%= category.solutions.placeholder %>"></textarea>
+				</form>
+				<hr>
+				<div class="button-row">
+					<button>
+						<i>arrow_back</i>
+						Anuluj
+					</button>
+					<button api="user/[userID]/medical/add?category=<%= category.id %>" form="add-other-<%= category.id %>">
+						<i>add</i>
+						Dodaj
+					</button>
+				</div>
+			</dialog>
+		<% } %>
+	</div>
+<% } else { %>
+	<section>
+		<h2>Brak wymagań</h2>
+		<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+	</section>
+<% } %>
+	
 <section id="confirmation">
 	<h2>Zatwierdzenie</h2>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
-		<% if($.targetUser.medical.confirmed) { %>
-			<p>Dane medyczne są zatwierdzone. Cofnij zatwierdzenie aby móc je edytować</p>
+	<% if($.targetUser.medical.confirmed) { %>
+		<p>Dane są zatwierdzone</p>
+		<%~ include("/templates/signature", {
+			signature: $.targetUser.medical.signature
+		}) %>
+
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetUser.PERMISSIONS.MANAGE)) { %>
+			<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+				<p>Cofnij zatwierdzenie aby edytować</p>
+			<% } else { %>
+				<p>Cofnij zatwierdzenie aby odrzucić podane wymagania.<br>Użytkownik będzie musiał ponownie je  zatwierdzić.</p>
+			<% } %>
 			<div class="button-row">
 				<button api="user/[userID]/medical/unconfirm" id="confirm-button">
 					<i>close</i>
 					Cofnij zatwierdzenie
 				</button>
 			</div>
-		<% } else { %>
-			<article>
-				<% let confirmationAllowed = true %>
-				<% if($.targetUser.medical.entries.length == 0) { %>
-					<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
-				<% } else { %>
-					<p><%= $.targetUser.displayName %> ma następujące wymagania:</p>
-					<ul>
-						<% for(const entry of $.targetUser.medical.entries) { %>
-							<li>
-								<p><b><%= entry.title %></b></p>
-								<dl>
-									<% if(entry.symptoms) { %>
-										<dt>Objawy:</dt>
-										<dd>
-											<%= entry.symptoms %>
-										</dd>
-									<% } else { %>
-										<% confirmationAllowed = false %>
-										<dt>Nie podano objawów!</dt>
-									<% } %>
-									<% if(entry.solutions) { %>
-										<dt>Zalecenia:</dt>
-										<dd>
-											<%= entry.solutions %>
-										</dd>
-									<% } else { %>
-										<% confirmationAllowed = false %>
-										<dt>Nie podano zaleceń!</dt>
-									<% } %>
-								</dl>
-							</li>
-						<% } %>
-					</ul>
-				<% } %>
-			</article>
-			<% if(!confirmationAllowed) { %>
-				<p class="warning">
-					<i>warning</i>
-					Uzupełnij wszystkie pola aby kontynuować
-				</p>
-			<% } else { %>
-				<p>Potwierdzam że wszystkie powyższe informacje są prawdziwe i kompletne.</p>
-				<div class="button-row">
-					<button api="user/[userID]/medical/confirm" id="confirm-button">
-						<i>check</i>
-						Zatwierdź dane
-					</button>
-				</div>
-			<% } %>
 		<% } %>
-	<% } else if(!$.targetUser.medical.confirmed) { %>
+		
+	<% } else if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+		<article>
+			<% let confirmationAllowed = true %>
+			<% if($.targetUser.medical.entries.length == 0) { %>
+				<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+			<% } else { %>
+				<p><%= $.targetUser.displayName %> ma następujące wymagania:</p>
+				<ul>
+					<% for(const entry of $.targetUser.medical.entries) { %>
+						<li>
+							<p><b><%= entry.title %></b></p>
+							<dl>
+								<% if(entry.symptoms) { %>
+									<dt>Opis:</dt>
+									<dd>
+										<%= entry.symptoms %>
+									</dd>
+								<% } else { %>
+									<% confirmationAllowed = false %>
+									<dt>Nie podano opisu!</dt>
+								<% } %>
+								<% if(entry.solutions) { %>
+									<dt>Zalecenia:</dt>
+									<dd>
+										<%= entry.solutions %>
+									</dd>
+								<% } else { %>
+									<% confirmationAllowed = false %>
+									<dt>Nie podano zaleceń!</dt>
+								<% } %>
+							</dl>
+						</li>
+					<% } %>
+				</ul>
+			<% } %>
+		</article>
+		<% if(!confirmationAllowed) { %>
+			<p class="warning">
+				<i>warning</i>
+				Uzupełnij wszystkie pola aby kontynuować
+			</p>
+		<% } else { %>
+			<p>Podpisując, potwierdzasz że wszystkie powyższe informacje są prawdziwe i kompletne.</p>
+			<%~ include("/templates/signature", {
+				user: $.user
+			}) %>
+			<div class="button-row">
+				<button api="user/[userID]/medical/confirm" id="confirm-button">
+					<i>check</i>
+					Zatwierdź dane
+				</button>
+			</div>
+		<% } %>
+
+	<% } else { %>
 		<% if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
-			<p>Ustaw datę urodzin aby zatwierdzić danę medyczne.</p>
+			<p class="warning">
+				<i>warning</i>
+				Ustaw datę urodzin aby zatwierdzić danę medyczne.
+			</p>
 		<% } else if($.targetUser.age === null || $.targetUser.age > Config.adultAge) { %>
 			<p>Dane medyczne oczekują zatwierdzenia przez użytkownika <%= $.targetUser.displayName %>.</p>
 		<% } else { %>

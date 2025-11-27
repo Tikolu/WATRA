@@ -33,6 +33,13 @@ export async function ACCESS(user) {
 	return false
 }
 
+export async function MANAGE(user) {
+	// Users with "manageUser" role in any unit/upperUnit of user can manage
+	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+	
+	return false
+}
+
 /** Editing user details, such as name, contact details, medical */
 export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
@@ -50,14 +57,14 @@ export async function EDIT(user) {
 	// Cannot edit a user who has previously logged in
 	else if(this.auth.lastLogin) return false
 
-	// Users with "manageUser" role in any unit/upperUnit of user can edit
-	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+	// MANAGE permission grants EDIT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
-	// Users with "manageUser" role in any unit/upperUnit of any child can edit parent
+	// MANAGE permission of any child can edit parent
 	if(this.parent) {
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasRoleInUnits("manageUser", child.getUnitsTree())) return true
+			if(await user.checkPermission(child.PERMISSIONS.MANAGE)) return true
 		}
 	}
 
@@ -78,8 +85,8 @@ export async function ADD_PARENT(user) {
 	// Cannot add parent to adult
 	if(this.age !== null && this.age >= Config.adultAge) return false
 
-	// "manageUser" roles in user's unit or upper units can add parents
-	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+	// MANAGE permission grants EDIT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	// Parents can add other parents
 	if(this.parents.hasID(user.id)) return true

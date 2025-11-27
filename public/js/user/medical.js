@@ -4,7 +4,16 @@ API.registerHandler("user/[userID]/medical/update", {
 })
 
 API.registerHandler("user/[userID]/medical/add", {
-	progressText: "Dodawanie..."
+	progressText: "Dodawanie...",
+	after: (response, data, element) => {
+		// Clear dialog form
+		const dialog = element.parentElement.parentElement
+		console.log(dialog)
+		for(const input of dialog.querySelectorAll("input, textarea")) {
+			console.log(input)
+			input.value = ""
+		}
+	}
 })
 
 API.registerHandler("user/[userID]/medical/remove", {
@@ -12,8 +21,12 @@ API.registerHandler("user/[userID]/medical/remove", {
 })
 
 API.registerHandler("user/[userID]/medical/confirm", {
+	form: confirmation,
 	progressText: "Zatwierdzanie...",
-	successText: "Zatwierdzono"
+	successText: "Zatwierdzono",
+	error: () => {
+		signature.reset()
+	}
 })
 
 API.registerHandler("user/[userID]/medical/unconfirm", {

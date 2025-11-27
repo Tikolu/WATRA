@@ -1051,7 +1051,11 @@ function linkButton(button) {
 	button.tabIndex = -1
 	a.append(button)
 }
-document.querySelectorAll("button[href]").forEach(linkButton)
+function processLinkButtons() {
+	document.querySelectorAll("button[href]").forEach(linkButton)
+}
+processLinkButtons()
+window.afterDataRefresh.push(processLinkButtons)
 
 // Make all element IDs globally accessible
 function processCustomIDs() {

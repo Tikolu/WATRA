@@ -16,23 +16,28 @@ h1 {
 	grid-column: 2 / -1;
 }
 
-#medical-categories form > div {
+#medical-categories input[type=checkbox]:checked + label {
+	pointer-events: none;
+}
+
+#medical-categories section > form > div {
 	grid-column: 2 / -1;
 	margin-top: -0.5em;
 	margin-bottom: 0.5em;
 }
 
-#medical-categories textarea {
+#medical-categories section > form > textarea {
 	display: block;
 	margin-top: 0.25em;
 	margin-bottom: 0.5em;
 	width: 100%;
 }
 
-#medical-categories input[type=text] {
-	font-weight: bold;
-}
-
 #medical-categories button {
 	max-width: 20em;
+}
+
+#medical-categories dialog form {
+	row-gap: 0.25em;
+	grid-template-columns: 1fr;
 }

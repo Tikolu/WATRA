@@ -146,18 +146,55 @@
 		<% } %>
 	</div>
 	<div class="button-row">
-		<% if($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length) { %>
-			<button href="/users/<%= $.targetUser.id %>/medical">
-				<i>medical_information</i>
-				Dane medyczne
-			</button>
-		<% } %>
 		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
 			<button href="/users/<%= $.targetUser.id %>/log">
 				<i>history</i>
 				Log aktywności
 			</button>
 		<% } %>
+	</div>
+</section>
+
+<section>
+	<h2>
+		<i>medical_information</i>
+		Dane medyczne
+	</h2>
+	<% if(!$.targetUser.medical.confirmed) { %>
+		<p class="warning">
+			<i>warning</i>
+			Dane medyczne nie są zatwierdzone
+		</p>
+	<% } else if($.targetUser.medical.entries.length == 0) { %>
+		<article>
+			<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+		</article>
+	<% } else { %>
+		<div class="entry-grid">
+			<% for(const category of $.targetUser.medical.displayCategories()) { %>
+				<!-- <h3><%= category.title %></h3> -->
+				<% for(const element of category.elements) { %>
+					<div>
+						<h3><%= element.title %></h3>
+						<div class="entry-content">
+							<p><%= element.symptoms %></p>
+							<p><%= element.solutions %></p>
+						</div>
+					</div>
+				<% } %>
+			<% } %>
+		</div>
+	<% } %>
+
+	<div class="button-row">
+		<button href="/users/<%= $.targetUser.id %>/medical">
+			<i>medical_information</i>
+			<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+				Edytuj dane medyczne
+			<% } else { %>
+				Szczegóły
+			<% } %>
+		</button>
 	</div>
 </section>
 
