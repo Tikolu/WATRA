@@ -1,0 +1,129 @@
+.signature-container {
+	width: 15em;
+	height: 2em;
+	margin: 1em 0;
+	border-radius: var(--border-radius);
+	background-color: var(--surface-2);
+	display: flex;
+	align-items: center;
+	position: relative;
+	touch-action: none;
+	interpolate-size: allow-keywords;
+	transition: background-color 250ms, width 250ms, height 250ms;
+
+	.signature-slider {
+		width: 2em;
+		height: 2em;
+		border-radius: var(--border-radius);
+		background-color: var(--surface-4);
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: grab;
+		transition: scale 250ms, left 500ms;
+		left: clamp(0px, calc(var(--x) - 1em), 13em);
+		z-index: 1;
+
+		&:hover {
+			scale: 1.05;
+		}
+
+		i {
+			margin: 0;
+			pointer-events: none;
+		}
+
+		i::after {
+			display: block;	
+			content: "stylus";
+		}
+	}
+
+	p {
+		margin: 0;
+		overflow: hidden;
+		box-sizing: border-box;
+		position: absolute;
+		text-align: center;
+		width: 100%;
+		padding-left: 2em;
+		user-select: none;
+		white-space: nowrap;
+		transition: opacity 500ms;
+	}
+
+	p.loading-text {
+		padding-left: 0;
+		padding-right: 2em;
+		opacity: 0;
+	}
+}
+
+.signature-container.dragging {
+	.signature-slider {
+		scale: 0.95;
+		cursor: grabbing;
+		transition: scale 250ms;
+	}
+
+	p {
+		opacity: 0;
+	}
+}
+
+.signature-container.loading {
+	cursor: progress;
+	
+	.signature-slider {
+		left: 13em;
+		pointer-events: none;
+
+		i::after {
+			content: "progress_activity";
+			animation: spin 1s infinite linear;
+		}
+	}
+
+	p {
+		opacity: 0;
+	}
+
+	p.loading-text {
+		opacity: 1;
+	}
+}
+
+.signature-container.complete {
+	display: block;
+	padding: 0.5em;
+	
+	height: auto;
+	width: fit-content;
+	padding: 1em;
+
+	background-color: var(--surface-3);
+
+	.signature-slider {
+		display: none;
+	}
+
+	h3 {
+		margin-top: 0;
+		margin-bottom: 0.5em;
+	}
+
+	p {
+		text-align: left;
+		padding: 0;
+		position: static
+	}
+
+	.signature-slider, & > p {
+		display: none;
+	}
+}
+
+html:has(.signature-container.dragging) {
+	user-select: none;
+}

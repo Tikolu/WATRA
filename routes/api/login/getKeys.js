@@ -29,7 +29,7 @@ export default async function({userID}) {
 		userVerification: "required"
 	})
 
-	this.token.chall = [options.challenge, Date.now() + options.timeout]
+	this.session.setChallenge(options.challenge, options.timeout)
 
 	return {
 		options,

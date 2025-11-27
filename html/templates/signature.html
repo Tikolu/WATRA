@@ -1,0 +1,25 @@
+<%
+	$.id ||= "signature"
+%>
+<div class="signature-container input<% if($.signature) { %> complete<% } %>" name="signature" id="<%= $.id %>">
+	<% if($.signature) { %>
+		<div class="signature-info">
+			<h3>
+				<i>check</i>
+				Podpisano
+			</h3>
+			<p><%= $.signature.name %> - <%= datetime.format($.signature.time, "dd/MM/yyyy HH:mm") %></p>
+		</div>
+	<% } else { %>
+		<div class="signature-slider">
+			<i></i>
+		</div>
+		<p>Przesuń aby podpisać</p>
+		<p class="loading-text">Podpisywanie...</p>
+	<% } %>
+</div>
+<% if(!$.signature && $.user.auth.keys.length == 0) { %>
+	<article>
+		<p><i>info</i> Możliwość podpisywania bez klucza dostępu jest włączona tylko tymczasowo, aby ułatwić testowanie. Wkrótce każdy podpis będzie wymagał weryfikacji używajać klucza dostępu.</p>
+	</article>
+<% } %>

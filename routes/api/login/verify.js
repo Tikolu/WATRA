@@ -9,12 +9,8 @@ export default async function({credential, userID}) {
 	// Validate user ID
 	if(userID && !/^[a-f0-9]{8}$/.test(userID)) throw new HTTPError(400)
 
-	// Validate challenge expiry
-	const [expectedChallenge, expiry] = this.token.chall || []
-	if(!expiry || Date.now() > expiry) {
-		delete this.token.chall
-		throw new HTTPError(400, "Minął termin ważności weryfikacji, spróbuj ponownie")
-	}
+	// Get expected challenge
+	const expectedChallenge = this.session.getChallenge()
 
 	// Load passkey from database
 	const passkey = await Passkey.findById(credential.id)
@@ -29,7 +25,6 @@ export default async function({credential, userID}) {
 		expectedChallenge
 	})
 	
-	delete this.token.chall
 	if(!verification.verified) throw Error("Błąd weryfikowania klucza dostępu")
 
 	// Find user

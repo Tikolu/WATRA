@@ -11,6 +11,7 @@ import HTTPError from "modules/server/error.js"
 
 import userMedical from "./medical.js"
 import userAuth from "./auth.js"
+import * as Crypto from "modules/crypto.js"
 
 export class UserClass {
 	/* * Static functions * */
@@ -313,6 +314,31 @@ export class UserClass {
 			data
 		})
 		await logEntry.save()
+	}
+
+	/** Verifies a signature */
+	async verifySignature(signature) {
+		if(!signature) throw Error("Podpis jest wymagany")
+		
+		// Verify server signature
+		const serverSignature = signature.sign
+		delete signature.sign
+		if(!await Crypto.verify(JSON.stringify(signature), serverSignature)) {
+			throw Error("Błąd weryfikacji podpisu")
+		}
+
+		// Check signature time
+		const expiryTime = signature.time + 60000
+		if(!expiryTime || expiryTime < Date.now()) {
+			throw Error("Ważność podpisu wygasła. Spróbuj ponownie")
+		}
+
+		// Check signature name
+		if(signature.name !== this.displayName) {
+			throw Error("Nieprawidłowe imię na podpisie")
+		}
+
+		return true
 	}
 }
 

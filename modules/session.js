@@ -1,4 +1,6 @@
 import randomID from "modules/randomID.js"
+import HTTPError from "modules/server/error.js"
+
 import User from "modules/schemas/user"
 
 export default class {
@@ -52,5 +54,23 @@ export default class {
 			this.token.saved = this.token.saved.filter(id => id != userID)
 			if(!this.token.saved.length) delete this.token.saved
 		}
+	}
+
+	/** Set a passkey challenge and timeout */
+	setChallenge(challenge, timeout) {
+		const expiryTime = Date.now() + timeout
+		this.token.chall = [challenge, expiryTime]
+	}
+
+	/** Get a passkey challenge, after verifying timeout */
+	getChallenge() {
+		const [challenge, expiry] = this.token.chall || []
+		delete this.token.chall
+		
+		if(!expiry || Date.now() > expiry) {
+			throw new HTTPError(400, "Minął termin ważności weryfikacji, spróbuj ponownie")
+		}
+
+		return challenge
 	}
 }

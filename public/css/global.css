@@ -141,7 +141,7 @@ input, select, textarea {
 	accent-color: var(--secondary-text);
 	outline: 1px solid transparent;
 	outline-offset: -1px;
-	transition: outline 250ms;
+	transition: outline 250ms, background-color 250ms;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -153,7 +153,7 @@ input:disabled, select:disabled, textarea:disabled {
 	color: var(--secondary-text);
 }
 
-input.invalid, select.invalid {
+input.invalid, select.invalid, .input.invalid {
 	background-color: var(--red-background);
 }
 

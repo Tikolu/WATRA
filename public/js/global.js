@@ -648,7 +648,7 @@ const API = {
 					return
 				}
 
-				const valueKey = formElement.name || handler.valueKey || "value"
+				const valueKey = formElement.getAttribute("name") || handler.valueKey || "value"
 				// If an element with this name was already encountered, turn value into an array
 				if(formData[valueKey]) {
 					if(!Array.isArray(formData[valueKey])) {
@@ -728,7 +728,7 @@ const API = {
 
 			// Update element modified state
 			for(const formElement of elements) {
-				const valueKey = formElement.name || handler.valueKey || "data"
+				const valueKey = formElement.getAttribute("name") || handler.valueKey || "data"
 				if(response[valueKey] !== undefined) {
 					formElement.value = response[valueKey]
 				}
@@ -930,7 +930,7 @@ function processCustomInputElements() {
 	for(const input of document.querySelectorAll("input")) {
 		// Skip if input has already been modified
 		if(input.customised) continue
-		input.customised = true 
+		input.customised = true
 		
 		input.initialValue = input.value
 		input.modified = false
@@ -942,7 +942,10 @@ function processCustomInputElements() {
 			input.blur()
 		})
 		input.addEventListener("blur", event => {
-			if(!input.modified) return
+			if(!input.modified) {
+				input.classList.remove("invalid")
+				return
+			}
 			input.dispatchEvent(new Event("submit"))
 		})
 		

@@ -1,6 +1,8 @@
 import HTTPError from "modules/server/error.js"
 
 export default async function({user, passkeyID}) {
+	if(!user) throw new HTTPError(403)
+	
 	await user.auth.populate("keys")
 	
 	const passkey = user.auth.keys.id(passkeyID)
