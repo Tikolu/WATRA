@@ -30,6 +30,11 @@ export async function ACCESS(user) {
 		if(user.hasRoleInUnits("accessUser", event)) return true
 	}
 
+	// Parent can access other parents of their children
+	for(const child of this.children) {
+		if(user.children.hasID(child.id)) return true
+	}
+
 	return false
 }
 
@@ -56,6 +61,11 @@ export async function EDIT(user) {
 
 	// Cannot edit a user who has previously logged in
 	else if(this.auth.lastLogin) return false
+
+	// Parent can edit other parents of their children
+	for(const child of this.children) {
+		if(user.children.hasID(child.id)) return true
+	}
 
 	// MANAGE permission grants EDIT
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
@@ -101,6 +111,13 @@ export async function DELETE(user) {
 
 	// User can never delete themselves
 	if(user.id == this.id) return false
+
+	// Parent can delete other parents of their children, unless they have previously signed in, or have roles
+	if(!this.auth.lastLogin && this.roles.length == 0) {
+		for(const child of this.children) {
+			if(user.children.hasID(child.id)) return true
+		}
+	}
 
 	// "deleteUser" roles in user's unit or upper units can add parents
 	if(await user.hasRoleInUnits("deleteUser", this.getUnitsTree())) return true

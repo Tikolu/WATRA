@@ -155,48 +155,50 @@
 	</div>
 </section>
 
-<section>
-	<h2>
-		<i>medical_information</i>
-		Dane medyczne
-	</h2>
-	<% if(!$.targetUser.medical.confirmed) { %>
-		<p class="warning">
-			<i>warning</i>
-			Dane medyczne nie są zatwierdzone
-		</p>
-	<% } else if($.targetUser.medical.entries.length == 0) { %>
-		<article>
-			<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
-		</article>
-	<% } else { %>
-		<div class="entry-grid">
-			<% for(const category of $.targetUser.medical.displayCategories()) { %>
-				<!-- <h3><%= category.title %></h3> -->
-				<% for(const element of category.elements) { %>
-					<div>
-						<h3><%= element.title %></h3>
-						<div class="entry-content">
-							<p><%= element.symptoms %></p>
-							<p><%= element.solutions %></p>
-						</div>
-					</div>
-				<% } %>
-			<% } %>
-		</div>
-	<% } %>
-
-	<div class="button-row">
-		<button href="/users/<%= $.targetUser.id %>/medical">
+<% if($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length > 0) { %>
+	<section>
+		<h2>
 			<i>medical_information</i>
-			<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
-				Edytuj dane medyczne
-			<% } else { %>
-				Szczegóły
-			<% } %>
-		</button>
-	</div>
-</section>
+			Dane medyczne
+		</h2>
+		<% if(!$.targetUser.medical.confirmed) { %>
+			<p class="warning">
+				<i>warning</i>
+				Dane medyczne nie są zatwierdzone
+			</p>
+		<% } else if($.targetUser.medical.entries.length == 0) { %>
+			<article>
+				<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+			</article>
+		<% } else { %>
+			<div class="entry-grid">
+				<% for(const category of $.targetUser.medical.displayCategories()) { %>
+					<!-- <h3><%= category.title %></h3> -->
+					<% for(const element of category.elements) { %>
+						<div>
+							<h3><%= element.title %></h3>
+							<div class="entry-content">
+								<p><%= element.symptoms %></p>
+								<p><%= element.solutions %></p>
+							</div>
+						</div>
+					<% } %>
+				<% } %>
+			</div>
+		<% } %>
+
+		<div class="button-row">
+			<button href="/users/<%= $.targetUser.id %>/medical">
+				<i>medical_information</i>
+				<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+					Edytuj dane medyczne
+				<% } else { %>
+					Szczegóły
+				<% } %>
+			</button>
+		</div>
+	</section>
+<% } %>
 
 <% if($.targetUser.id == $.user.id) { %>
 	<section>
