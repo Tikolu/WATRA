@@ -16,6 +16,10 @@
 			api="event/[eventID]/update/name"
 			value="<%= $.targetEvent.name || "" %>"
 			title="Zmień nazwę"
+			id="event-title-input"
+			<% if($.targetEvent.approvalState) { %>
+				disabled
+			<% } %>
 		>
 	<% } else { %>
 		<%= $.targetEvent.displayName %>
@@ -37,7 +41,7 @@
 		api="event/[eventID]/update/description"
 		name="description"
 		placeholder="(brak opisu)"
-		<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
 			disabled
 		<% } %>
 	><%= $.targetEvent.description || "" %></textarea>
@@ -67,7 +71,7 @@
 						<% } %>
 						api="event/[eventID]/update/dates"
 						name="startDate"
-						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
 							disabled
 						<%- } %>
 					>
@@ -84,7 +88,7 @@
 							<% } %>
 							api="event/[eventID]/update/dates"
 							name="endDate"
-							<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+							<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
 								disabled
 							<%- } %>
 						>
@@ -107,7 +111,7 @@
 						api="event/[eventID]/update/location"
 						name="location"
 						placeholder="(brak lokalizacji)"
-						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
 							disabled
 						<% } %>
 					>
@@ -116,27 +120,50 @@
 		<% } %>
 	</div>
 
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.DELETE)) { %>
-		<br>
-		<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
-			<i>delete</i>
-			<span>Usuń akcję</span>
-		</button>
-		<dialog id="delete-event-dialog">
-			<h1>Trwale usunąć <%= $.targetEvent.displayName %>?</h1>
-			<p>Akcja i wszystkie związane z nią dane zostaną trwale usunięte.</p>
-			<div class="button-row">
-				<button>
-					<i>arrow_back</i>
-					<span>Anuluj</span>
-				</button>
-				<button class="dangerous" command>
-					<i>delete</i>
-					<span>Usuń</span>
-				</button>
-			</div>
-		</dialog>
-	<% } %>
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.approvalState) { %>
+			<button id="unlock-editing-button" opens-dialog="edit-event-dialog">
+				<i>edit</i>
+				Edytuj szczegóły
+			</button>
+			<dialog id="edit-event-dialog">
+				<h1>
+					<i>edit</i>
+					Edytowanie szczegółów
+				</h1>
+				<p>Akcja jest zatwierdzona.<br><br>Jakakolwiek zmiana do szczegółów sprawi że akcja będzie wymagała ponownego zatwierdzenia.</p>
+				<div class="button-row">
+					<button>
+						<i>arrow_back</i>
+						Anuluj
+					</button>
+					<button onclick="unlockEditing()">
+						<i>edit</i>
+						Edytuj
+					</button>
+				</div>
+			</dialog>
+		<% } %>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.DELETE)) { %>
+			<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
+				<i>delete</i>
+				Usuń akcję
+			</button>
+			<dialog id="delete-event-dialog">
+				<h1>Trwale usunąć <%= $.targetEvent.displayName %>?</h1>
+				<p>Akcja i wszystkie związane z nią dane zostaną trwale usunięte.</p>
+				<div class="button-row">
+					<button>
+						<i>arrow_back</i>
+						Anuluj
+					</button>
+					<button class="dangerous" command>
+						<i>delete</i>
+						Usuń
+					</button>
+				</div>
+			</dialog>
+		<% } %>
 </section>
 
 <% function displayUser(user, description) { %>

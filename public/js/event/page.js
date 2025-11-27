@@ -39,3 +39,12 @@ API.registerHandler("event/[eventID]/approval/unapprove", {
 	progressText: "Cofanie zatwierdzenia...",
 	successText: "Cofnięto zatwierdzenie"
 })
+
+function unlockEditing() {
+	unlockEditingButton.remove()
+	eventTitleInput.disabled = false
+	eventDescriptionInput.disabled = false
+	eventStartDateInput.disabled = false
+	eventEndDateInput.disabled = false
+	eventLocationInput.disabled = false
+}

@@ -230,11 +230,11 @@ HTMLDialogElement.prototype.result = function(modal=true) {
 	return new Promise((resolve, reject) => {
 		this.onclose = () => resolve(false)
 		for(const button of this.querySelectorAll("button")) {
-			button.onclick = () => {
+			button.addEventListener("click", () => {
 				const command = button.getAttribute("command")
 				resolve(command === "" ? true : command)
 				this.close()
-			}
+			}, {once: true})
 		}
 	})
 }
