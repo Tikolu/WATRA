@@ -36,6 +36,10 @@ main > h1 {
 	user-select: none;
 }
 
+main > h1 > span {
+	margin-bottom: 0.25em;
+}
+
 main > h1 > * {
 	display: inline-block;
 	animation: title-glide-in 500ms backwards ease-out;

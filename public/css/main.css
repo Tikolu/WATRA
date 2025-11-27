@@ -81,7 +81,7 @@ body.unload main > * {
 
 body.refresh main > * {
 	scale: 99%;
-	cursor: wait;
+	cursor: progress;
 }
 
 body.unload dialog:not(.message) {
