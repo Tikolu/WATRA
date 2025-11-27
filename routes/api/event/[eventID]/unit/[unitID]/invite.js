@@ -2,6 +2,11 @@ import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
 
 export default async function({user, targetEvent, targetUnit}) {
+	// Check event details
+	if(targetEvent.missingDetails.length > 0) {
+		throw new HTTPError(400, "Uzupełnij szczegóły akcji, aby zaprosić jednostki")
+	}
+	
 	// Check if unit already invited
 	if(targetEvent.invitedUnits.some(invite => invite.unit == targetUnit.id && (invite.state == "pending" || invite.state == "accepted"))) {
 		throw new HTTPError(400, "Jednostka została już zaproszona na akcję")

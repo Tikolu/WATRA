@@ -11,3 +11,7 @@ API.registerHandler("event/[eventID]/member/[memberID]/setParticipation", {
 		return true
 	}
 })
+
+main.onchange = () => {
+	signature.reset()
+}

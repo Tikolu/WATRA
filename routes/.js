@@ -10,8 +10,7 @@ export default async function({user}) {
 		},
 		"roles": "unit",
 		"eventRoles": "unit",
-		"eventInvites": {},
-		"eventApprovalRequests": {}
+		"eventInvites": {}
 	})
 
 	// Check permissions
@@ -20,7 +19,6 @@ export default async function({user}) {
 
 	const events = [
 		...user.eventInvites,
-		...user.eventApprovalRequests,
 		...user.eventRoles.map(f => f.unit),
 		...user.children.flatMap(c => c.eventInvites)
 	].unique("id")

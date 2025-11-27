@@ -144,7 +144,12 @@
 			"roles": [
 				"szóstkowy",
 				"zuch"
-			]
+			],
+			"eventRules": {
+				"create": false,
+				"invite": true,
+				"link": false
+			}
 		},
 		"zastęp": {
 			"name": {
@@ -158,7 +163,12 @@
 				"zastępowy",
 				"podzastępowy",
 				"szeregowy"
-			]
+			],
+			"eventRules": {
+				"create": false,
+				"invite": true,
+				"link": false
+			}
 		},
 		"patrol": {
 			"name": {

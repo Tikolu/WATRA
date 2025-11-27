@@ -195,6 +195,19 @@ export class UnitClass {
 		await subUnit.save()
 	}
 
+	/** Gets all events in all subUnits */
+	async * getSubUnitEvents() {
+		const exclude = []
+		for await(const subUnit of this.getSubUnitsTree()) {
+			await subUnit.populate("events")
+			for(const event of subUnit.events) {
+				if(exclude.hasID(event.id)) continue
+				exclude.push(event.id)
+				yield event
+			}
+		}
+	}
+
 	/** Removes a subUnit */
 	async removeSubUnit(subUnit) {
 		// Ensure subUnit has other upperUnits

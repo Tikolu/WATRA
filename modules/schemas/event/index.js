@@ -157,8 +157,25 @@ export class EventClass extends UnitClass {
 		let approverCandidates = []
 		const alternativeCandidates = []
 		
+		// Calculate org requirement for approvers
+		await this.populate("upperUnits")
+		let eventOrg
+		for(const upperUnit of this.upperUnits) {
+			// Skip units without org
+			if(!upperUnit.org) continue
+			// Clear event org if unit with other org is encountered
+			if(eventOrg && upperUnit.org != eventOrg) {
+				eventOrg = undefined
+				break
+			}
+			eventOrg = upperUnit.org
+		}
+		
 		// Loop through all upper units
 		for await(const unit of this.getUpperUnitsTree()) {
+			// Skip units in different org
+			if(eventOrg && unit.org != eventOrg) continue
+			
 			// Loop through roles of each unit
 			await unit.populate("roles")
 			for(const role of unit.roles) {

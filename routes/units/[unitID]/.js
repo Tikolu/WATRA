@@ -25,10 +25,23 @@ export default async function({user, targetUnit, orgContext}) {
 	if(user.hasPermission(targetUnit.PERMISSIONS.MANAGE_INVITES)) {
 		await targetUnit.populate("eventInvites")
 	}
+
+	// Load subUnit events
+	const subUnitEvents = []
+	if(await user.hasRoleInUnits("manageEvent", targetUnit)) {
+		subUnitEvents.push(...await Array.fromAsync(targetUnit.getSubUnitEvents()))
+		// Sort by date
+		subUnitEvents.sort((a, b) => {
+			const aDate = a.dates.start || 0
+			const bDate = b.dates.start || 0
+			return aDate - bDate
+		})
+	}
 	
 	return html("unit/page", {
 		user,
 		targetUnit,
-		orgContext
+		orgContext,
+		subUnitEvents
 	})
 }

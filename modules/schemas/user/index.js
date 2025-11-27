@@ -124,12 +124,6 @@ export class UserClass {
 			ref: "Event"
 		}
 	]
-	eventApprovalRequests = [
-		{
-			type: String,
-			ref: "Event"
-		}
-	]
 
 	medical = userMedical
 	auth = userAuth
