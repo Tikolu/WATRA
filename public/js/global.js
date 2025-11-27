@@ -459,7 +459,6 @@ const API = {
 	executionQueue: [],
 
 	async request(get="", post=undefined) {
-		if(this.onRequestStart) await this.onRequestStart()
 		let options = {
 			credentials: "same-origin",
 			headers: {}
@@ -475,22 +474,18 @@ const API = {
 		} catch {
 			text = "Connection failed"
 		}
-		if(this.onRequestEnd) await this.onRequestEnd()
 		text ||= await response?.text()
 		try {
 			json = JSON.parse(text)
 		} catch {
 			text ||= "Error parsing API response"
 			if(text.includes("\n")) text = text.split("\n")[0]
-			if(this.onRequestError) await this.onRequestError(text)
 			throw text
 		}
 		if(json.error) {
 			const text = json.error.message.replace(/^Error: /, "")
-			if(this.onRequestError) await this.onRequestError(text)
 			throw text
 		}
-		if(this.onRequestSuccess) await this.onRequestSuccess(json)
 		return json
 	},
 
@@ -708,16 +703,20 @@ const API = {
 
 			if(Object.isEmpty(data)) data = undefined
 			try {
+				await API.onRequestStart?.()
 				var response = await API.request(handler.api, data)
 
 				// Trigger "after" callback
 				await handler.after?.(response, data, element)
+				await API.onRequestSuccess?.()
 			} catch(error) {
 				if(progressMessage) progressMessage.close()
 				elements.forEach(e => e.classList.add("invalid"))
 				await handler.error?.(response, data, element)
+				await API.onRequestError?.(error)
 				throw error
 			} finally {
+				await API.onRequestEnd?.()
 				if(progressMessage && !handler.persistProgress) progressMessage.close()
 				// Re-enable elements
 				for(const element of elements) {

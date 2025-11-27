@@ -6,7 +6,7 @@ export async function ACCESS(user) {
 	// Parents of invited users can access
 	await user.populate("children")
 	for(const child of user.children) {
-		if(this.participants.hasID(child)) return true
+		if(this.participants.hasID(child.id)) return true
 	}
 
 	// "manageEvent" roles in event and upperUnit can access

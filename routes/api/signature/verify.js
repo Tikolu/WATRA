@@ -2,7 +2,7 @@ import * as webauthn from "jsr:@simplewebauthn/server"
 import * as datetime from "jsr:@std/datetime"
 
 import HTTPError from "modules/server/error.js"
-import * as Config from "modules/config.js"
+import Config from "modules/config.js"
 import * as Crypto from "modules/crypto.js"
 
 import Passkey from "modules/schemas/passkey.js"

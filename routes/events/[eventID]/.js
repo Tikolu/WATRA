@@ -51,7 +51,7 @@ export default async function({user, targetEvent}) {
 		const userInvite = targetEvent.participants.id(participant.id)
 		if(!userInvite) continue
 
-		await userInvite.populate("user", {log:true})
+		await userInvite.populate("user")
 
 		// Check for approval permission on participant
 		await user.checkPermission(userInvite.user.PERMISSIONS.APPROVE)

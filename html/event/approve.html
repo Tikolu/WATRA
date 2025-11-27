@@ -1,5 +1,6 @@
 <% layout("/layouts/dialog", {
-	scripts: ["event/approve"],
+	scripts: ["event/approve", "signature"],
+	styles: ["signature"],
 	meta: {
 		eventID: $.targetEvent.id
 	}
@@ -10,8 +11,13 @@
 	<% if(md.length) { %>
 		<p class="warning">Nie można zatwierdzić akcji z brakującymi szczegółami</p>
 	<% } else { %>
-		<p>Potwierdzam że zapoznałem się z planem i analizą ryzyka akcji i że dostałem wszystkie dokumenty niezbędne do ocenienia ryzyka. Zatwierdzam tą akcję wraz z ustaloną komendą, i wyrażam zgodę aby się odbył.</p>
+		<article>
+			<p>Potwierdzam że zapoznałem się z planem i analizą ryzyka akcji i że dostałem wszystkie dokumenty niezbędne do ocenienia ryzyka. Zatwierdzam tą akcję wraz z ustaloną komendą, i wyrażam zgodę aby się odbył.</p>
+		</article>
 	<% } %>
+	<%~ include("/templates/signature", {
+		user: $.user
+	}) %>
 </main>
 <hr>
 <div class="button-row">

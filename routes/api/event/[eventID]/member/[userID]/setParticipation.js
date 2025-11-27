@@ -1,6 +1,6 @@
 import HTTPError from "modules/server/error.js"
 
-export default async function({user, targetEvent, targetUser, participation}) {
+export default async function({user, targetEvent, targetUser, participation, signature}) {
 	// Check permissions
 	await user.requirePermission(targetUser.PERMISSIONS.APPROVE, "Brak dostępu do użytkownika")
 
@@ -9,6 +9,9 @@ export default async function({user, targetEvent, targetUser, participation}) {
 	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
 
 	if(typeof participation != "boolean") throw new HTTPError(400)
+
+	// Verify signature
+	await user.verifySignature(signature)
 
 	// Set participation state
 	await targetInvitation.setState(participation ? "accepted" : "declined")
