@@ -5,6 +5,7 @@ import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
 
 import Role from "modules/schemas/role.js"
+import File from "modules/schemas/file.js"
 import unitInvite from "./unitInvite.js"
 import participant from "./participant.js"
 import approver from "./approver.js"
@@ -27,14 +28,14 @@ export class EventClass extends UnitClass {
 			type: Date,
 			min: [
 				() => new Date().setHours(0, 0, 0, 0),
-				"Data rozpoczęcia nie może być w przeszłości"
+				"Data rozpoczęcia akcji nie może być w przeszłości"
 			],
 			max: MAX_DATE,
 			validate: [
 				function(value) {
 					return value <= this.dates.end
 				},
-				"Data rozpoczęcia musi być przed datą zakończenia"
+				"Data rozpoczęcia akcji musi być przed datą zakończenia"
 			],
 			required: true
 		},
@@ -42,14 +43,14 @@ export class EventClass extends UnitClass {
 			type: Date,
 			min: [
 				() => new Date().setHours(0, 0, 0, 0),
-				"Data zakończenia nie może być w przeszłości"
+				"Data zakończenia akcji nie może być w przeszłości"
 			],
 			max: MAX_DATE,
 			validate: [
 				function(value) {
 					return this.dates.start <= value
 				},
-				"Data rozpoczęcia musi być przed datą zakończenia"
+				"Data rozpoczęcia akcji musi być przed datą zakończenia"
 			],
 			required: true
 		}
@@ -66,6 +67,20 @@ export class EventClass extends UnitClass {
 		trim: true,
 		default: ""
 	}
+
+	files = [
+		{
+			file: {
+				type: String,
+				deriveID: true,
+				ref: "File"
+			},
+			access: {
+				type: String,
+				enum: ["owner", "role", "participant"]
+			}
+		}
+	]
 
 	invitedUnits = [unitInvite]
 	participants = [participant]

@@ -28,11 +28,15 @@ export class FileClass {
 			throw new Error("Invalid file type")
 		}
 
-		return new this({
+		// Instantiate and validate
+		const file = new this({
 			data: Buffer.from(buffer),
 			type,
 			name
 		})
+		await file.validate()
+
+		return file
 	}
 	
 	/* * Properties * */
@@ -60,6 +64,19 @@ export class FileClass {
 		type: String,
 		required: true
 	}
+
+	/* * Getters * */
+
+	/** Returns the URL for downloading the file */
+	get url() {
+		return `/files/${this.id}/${this.name}`
+	}
+
+	/** Returns the MIME type for the file */
+	get mimeType() {
+		return mime.getType(this.name)
+	}
+	
 }
 
 const schema = mongoose.Schema.fromClass(FileClass)

@@ -1046,7 +1046,11 @@ window.afterDataRefresh.push(disableForms)
 function linkButton(button) {
 	const a = document.createElement("a")
 	a.href = button.getAttribute("href")
+	if(button.hasAttribute("target")) {
+		a.target = button.getAttribute("target")
+	}
 	button.removeAttribute("href")
+	button.removeAttribute("target")
 	button.insertAdjacentElement("beforebegin", a)
 	button.tabIndex = -1
 	a.append(button)

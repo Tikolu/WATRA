@@ -59,9 +59,22 @@ export default async function({user, targetEvent}) {
 		approvalParticipants.push(userInvite)
 	}
 
+	// Get event files
+	const files = []
+	const userRoleInEvent = await user.getRoleInUnit(targetEvent)
+	for(const file of targetEvent.files) {
+		if(!user.hasPermission(targetEvent.PERMISSIONS.EDIT) && !user.hasPermission(targetEvent.PERMISSIONS.APPROVE)) {
+			if(file.access == "owner") continue
+			else if(file.access == "role" && !userRoleInEvent) continue
+		}
+		files.push(file)
+	}
+	await files.populate("file", {ref: "File", select: "name"})
+
 	return html("event/page", {
 		user,
 		targetEvent,
-		approvalParticipants
+		approvalParticipants,
+		files
 	})
 }

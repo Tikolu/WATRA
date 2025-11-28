@@ -40,11 +40,22 @@ API.registerHandler("event/[eventID]/approval/unapprove", {
 	successText: "Cofnięto zatwierdzenie"
 })
 
+API.registerHandler("event/[eventID]/file/[fileID]/delete", {
+	progressText: "Usuwanie pliku...",
+	successText: "Usunięto"
+})
+
 function unlockEditing() {
 	unlockEditingButton.remove()
-	eventTitleInput.disabled = false
-	eventDescriptionInput.disabled = false
-	eventStartDateInput.disabled = false
-	eventEndDateInput.disabled = false
-	eventLocationInput.disabled = false
+	
+	const disabledElements = [
+		eventTitleInput,
+		eventDescriptionInput,
+		eventStartDateInput,
+		eventEndDateInput,
+		eventLocationInput,
+		...eventDocuments.querySelectorAll("button[disabled]")
+	]
+
+	disabledElements.forEach(e => e.disabled = false)
 }

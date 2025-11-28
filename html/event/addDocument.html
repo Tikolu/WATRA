@@ -1,0 +1,37 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/addDocument"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1>Dodawanie dokumentu</h1>
+<main>
+	<section>
+		<h2>Wybierz dokument</h2>
+		<input type="file" name="files" id="document-input" accept="application/pdf" required>
+	</section>
+	<section>
+		<h2>Dostęp do dokumentu</h2>
+		<form>
+			<input type="checkbox" id="owner-access" name="access" value="owner" checked disabled>
+			<label for="owner-access">Komenda akcji i zatwierdzający</label>
+
+			<input type="checkbox" id="role-access" name="access" value="role" checked>
+			<label for="role-access">Kadra akcji</label>
+
+			<input type="checkbox" id="participant-access" name="access" value="participant">
+			<label for="participant-access">Uczestnicy akcji</label>
+		</form>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="event/[eventID]/file/add">
+		<i>note_add</i>
+		<span>Dodaj</span>
+	</button>
+</div>

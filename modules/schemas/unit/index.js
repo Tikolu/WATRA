@@ -271,12 +271,17 @@ export class UnitClass {
 		return subUnits
 	}
 
+	/** List of the unit's upper units */
+	async getUpperUnits() {
+		await this.populate("upperUnits")
+		return this.upperUnits
+	}
+
 	/** Recursive generator of all upperUnits */
 	async * getUpperUnitsTree(exclude=[], condition) {
 		exclude = [...exclude]
-		await this.populate("upperUnits", {exclude})
 
-		for(const upperUnit of this.upperUnits) {
+		for(const upperUnit of await this.getUpperUnits()) {
 			if(exclude.hasID(upperUnit.id)) continue
 			// exclude.push(upperUnit.id)
 			if(condition && !await condition(upperUnit)) continue

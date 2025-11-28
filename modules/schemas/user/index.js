@@ -201,7 +201,8 @@ export class UserClass {
 
 	/** Checks if the user has a role with the given tag in any of the given units */
 	async hasRoleInUnits(requiredRole, ...units) {
-		for(const unit of units) {
+		for(let unit of units) {
+			if(unit instanceof Promise) unit = await unit
 			if(unit instanceof Array || Symbol.asyncIterator in unit) {
 				for await(const asyncUnit of unit) {
 					if(await this.hasRoleInUnits(requiredRole, asyncUnit)) return true

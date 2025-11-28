@@ -200,7 +200,7 @@ input:disabled, select:disabled, textarea:disabled {
 }
 
 input.invalid, select.invalid {
-	background-color: var(--red-background);
+	background-color: var(--red-background) !important;
 }
 
 input[type^=date]:disabled:not([value]) {
@@ -234,7 +234,7 @@ input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
 input[type=file] {
 	display: block;
 	max-width: 100%;
-	margin-top: 0.5em;
+	margin: 0.5em 0;
     padding: 0.5em;
 	background-color: var(--surface-3);
 }

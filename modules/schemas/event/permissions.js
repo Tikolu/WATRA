@@ -37,8 +37,8 @@ export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// "manageEvent" roles in event and upperUnits can edit
-	if(await user.hasRoleInUnits("manageEvent", this, this.getUpperUnitsTree())) return true
+	// "manageEvent" roles in event and direct upperUnits can edit
+	if(await user.hasRoleInUnits("manageEvent", this, this.getUpperUnits())) return true
 
 	return false
 }
@@ -51,8 +51,8 @@ export async function DELETE(user) {
 	// Cannot delete event with accepted participants
 	if(this.participants.some(p => p.state == "accepted")) return false
 	
-	// "manageEvent" roles in upperUnits can delete
-	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnitsTree())) return true
+	// "manageEvent" roles in direct upperUnits can delete
+	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnits())) return true
 
 	return false
 }
@@ -68,8 +68,8 @@ export async function SET_ROLE(user) {
 	// "setRole" roles in this event can set roles
 	if(await user.hasRoleInUnits("setRole", this)) return true
 
-	// "manageEvent" roles in upperUnits can set roles
-	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnitsTree())) return true
+	// "manageEvent" roles in direct upperUnits can set roles
+	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnits())) return true
 
 	return false
 }
