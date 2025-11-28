@@ -2,6 +2,8 @@ import mime from "mime"
 import { join as joinPath } from "node:path"
 
 import Token from "./token.js"
+import * as rateLimit from "./rateLimiting.js"
+
 import ServerRequest from "modules/server/request.js"
 import ServerResponse from "modules/server/response.js"
 import findRoute from "modules/server/route.js"
@@ -32,6 +34,12 @@ async function handlePublicFile(url, response) {
 }
 
 async function handler(req) {
+	// Check rate limits
+	const ip = req.headers.get("x-forwarded-for")
+	if(rateLimit.exceeded(ip)) {
+		return new Response("Too many requests\nPlease slow down!", {status: 429})
+	}
+
 	// Initialize request object from request and blank response object
 	const request = new ServerRequest(req)
 	const response = new ServerResponse(developmentMode)
@@ -61,7 +69,14 @@ async function handler(req) {
 	if(tokenCookie) response.headers.set("Set-Cookie", tokenCookie)
 	
 	response.registerTiming("server", "close response")
-	return response.toResponse()
+	const res = response.toResponse()
+
+	// Check rate limits for error responses
+	if(!res.ok) {
+		rateLimit.recordRequest(ip)
+	}
+	
+	return res
 }
 
 let server;
