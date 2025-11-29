@@ -29,28 +29,36 @@ main > section:last-child {
 	background-color: var(--surface-3);
 }
 
-main > h1 {
-	margin-top: 2rem;
-	font-size: min(4em, 10vw);
-	text-align: center;
-	user-select: none;
+/* Title animation */
+body main {
+	& > h1 {
+		& > * {
+			display: inline-block;
+		}
+		
+		margin-top: 2rem;
+		font-size: min(4em, 10vw);
+		text-align: center;
+		user-select: none;
+
+		& > span {
+			margin-bottom: 0.25em;
+		}
+	}
 }
 
-main > h1 > span {
-	margin-bottom: 0.25em;
-}
+body:not(.unload) main h1 {
+	& > * {
+		animation: title-glide-in 500ms backwards ease-out;
+	}
 
-main > h1 > * {
-	display: inline-block;
-	animation: title-glide-in 500ms backwards ease-out;
+	& > :nth-child(1) { animation-delay: 150ms}
+	& > :nth-child(2) { animation-delay: 200ms}
+	& > :nth-child(3) { animation-delay: 250ms}
+	& > :nth-child(4) { animation-delay: 300ms}
+	& > :nth-child(5) { animation-delay: 350ms}
+	& > :nth-child(6) { animation-delay: 400ms}
 }
-
-main > h1 > :nth-child(1) { animation-delay: 150ms}
-main > h1 > :nth-child(2) { animation-delay: 200ms}
-main > h1 > :nth-child(3) { animation-delay: 250ms}
-main > h1 > :nth-child(4) { animation-delay: 300ms}
-main > h1 > :nth-child(5) { animation-delay: 350ms}
-main > h1 > :nth-child(6) { animation-delay: 400ms}
 
 @keyframes title-glide-in {
 	from {

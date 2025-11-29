@@ -3,6 +3,9 @@ import HTTPError from "modules/server/error.js"
 
 import User from "modules/schemas/user"
 
+// Logout after 60 minutes
+const LOGIN_TIMEOUT = 1000 * 60 * 60
+
 export default class {
 	constructor(token) {
 		this.token = token
@@ -12,6 +15,7 @@ export default class {
 	async login(user) {
 		// Set active user
 		this.token.active = user.id
+		this.resetTimeout()
 
 		// Generate client ID
 		this.token.client ||= randomID()
@@ -24,6 +28,11 @@ export default class {
 		// Update user
 		user.auth.lastLogin = Date.now()
 		await user.save()
+	}
+
+	/** Reset session timeout */
+	resetTimeout() {
+		this.token.loginTime = Date.now()
 	}
 
 	/** Login using an access code */
@@ -48,12 +57,40 @@ export default class {
 
 		// Remove active user
 		delete this.token.active
+		delete this.token.loginTime
 
 		if(full) {
 			// Remove user from saved users
 			this.token.saved = this.token.saved.filter(id => id != userID)
 			if(!this.token.saved.length) delete this.token.saved
 		}
+	}
+
+	/** Get currently logged in user */
+	async getActiveUser() {
+		if(!this.token.active) return
+
+		// If timed out, logout
+		if(this.timedOut) {
+			this.logout()
+			return
+		}
+
+		// Get user from database
+		const user = await User.findById(this.token.active)
+
+		// If user does not exist, logout fully
+		if(!user) {
+			this.logout(true)
+			return
+		}
+
+		// Reset timeout if less than half time remaining
+		if(this.remainingTime < LOGIN_TIMEOUT / 2) {
+			this.resetTimeout()
+		}
+
+		return user
 	}
 
 	/** Set a passkey challenge and timeout */
@@ -72,5 +109,19 @@ export default class {
 		}
 
 		return challenge
+	}
+
+	/** Retruns the remaingin amount of time */
+	get remainingTime() {
+		this.token.loginTime ||= 0
+
+		const time = LOGIN_TIMEOUT - (Date.now() - this.token.loginTime)
+		if(time < 0) return 0
+		else return time
+	}
+
+	/** Returns true if the session has timed out */
+	get timedOut() {
+		return this.remainingTime <= 0
 	}
 }

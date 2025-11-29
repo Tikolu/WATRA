@@ -13,16 +13,23 @@ eventSource.addEventListener("update", event => {
 eventSource.addEventListener("error", event => {
 	if(!event.data) return
 	// Attempt parsing JSON, otherwise report plain text
+	let error
 	try {
-		var error = JSON.parse(event.data)
+		error = JSON.parse(event.data)
 	} catch {
-		var error = event.data
+		error = event.data
 	}
 
 	// Shut down event source
 	eventSource.close()
 
-	throw error
+	if(error.code == 403) {
+		window.channel?.postMessage({event: "refresh"})
+		document.location.reload()
+
+	} else {
+		throw error.message || error
+	}
 })
 
 // Refresh conditions system

@@ -1,4 +1,4 @@
-import HTTPError from "modules/server/error.js";
+import HTTPError from "modules/server/error.js"
 
 const REQUIRE_PATH = "../../"
 const ILLEGAL_PATTERNS = [/^\.\.$/, /^\.|\.$/]
@@ -25,7 +25,7 @@ export default async function(request, response) {
 		console.error(error)
 		// If in streaming mode, output error to stream
 		if(response.streaming) {
-			const {message, code, stack} = error
+			const {message, httpCode: code, stack} = error
 			return response.sendStreamEvent("error", {message, code, stack})
 		}
 		// If an error is already present, just print plain error message and send response

@@ -102,6 +102,11 @@ export default class {
 		if(!this.streaming) throw new Error("Not in streaming mode")
 
 		data = JSON.stringify(data)
-		await this.write(`event: ${event}\ndata: ${data}\n\n`)
+
+		let response = `event: ${event}\n`
+		if(data) response += `data: ${data}\n`
+		response += "\n"
+		
+		await this.write(response)
 	}
 }

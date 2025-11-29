@@ -250,9 +250,12 @@ async function refreshPageData() {
 	if(window.refreshing || window.unloading) return
 	window.refreshing = true
 	debug("Refreshing page data...")
-	
-	const response = await fetch(document.location, {redirect: "manual"})
-	if(!response.ok) {
+
+	let response
+	try {
+		response = await fetch(document.location, {redirect: "manual"})
+		if(!response.ok) throw new Error()
+	} catch(error) {
 		// Reload on error
 		document.location.reload()
 		return

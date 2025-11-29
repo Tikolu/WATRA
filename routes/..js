@@ -28,15 +28,9 @@ export async function open() {
 	this.token = this.request.token
 	this.session = new Session(this.token)
 	
-	// If user ID is set, lookup and validate the user
-	if(this.token.active) {
-		const user = await User.findById(this.token.active)
-
-		// If user does not exist, logout fully
-		if(!user) {
-			this.session.logout(true)
-			return
-		}
+	// Get active user from session
+	const user = await this.session.getActiveUser()
+	if(user) {
 		this.addRouteData({user})
 	}
 }

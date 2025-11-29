@@ -1,4 +1,5 @@
 import HTTPError from "modules/server/error.js"
+import sleep from "modules/sleep.js"
 
 import mongoose from "mongoose"
 
@@ -18,29 +19,34 @@ eventEmitter.addListener("change", event => {
 export default async function * ({user}) {
 	if(!user) throw new HTTPError(403)
 
-	// Send ping to ensure connection exists
-	const pingInterval = setInterval(() => {
-		if(this.response.open) this.response.write(":ping\n\n")
-		else clearInterval(pingInterval)
-	}, 5000)
+	while(true) {
+		// Wait for database update, or 10 seconds
+		const result = await Promise.any([
+			eventEmitter.promise,
+			sleep(10000)
+		])
 
-	try {
-		while(true) {
-			const dbUpdate = await eventEmitter.promise
-			const data = {
-				type: dbUpdate.ns.coll,
-				id: dbUpdate.documentKey._id
-			}
+		// Check if session has timed out
+		if(this.session.timedOut) {
+			throw new HTTPError(403)
+		}
 
-			// console.log("Sending update event:", data)
+		// Send update event
+		if(result) {
 			yield {
 				event: "update",
-				data
+				data: {
+					type: result.ns.coll,
+					id: result.documentKey._id
+				}
+			}
+			continue
+
+		// Otherwise send ping
+		} else {
+			yield {
+				event: "ping"
 			}
 		}
-		
-	} finally {
-		// Remove interval
-		clearInterval(pingInterval)
 	}
 }
