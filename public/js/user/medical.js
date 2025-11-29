@@ -8,9 +8,8 @@ API.registerHandler("user/[userID]/medical/add", {
 	after: (response, data, element) => {
 		// Clear dialog form
 		const dialog = element.parentElement.parentElement
-		console.log(dialog)
+		if(!dialog.matches("dialog")) return
 		for(const input of dialog.querySelectorAll("input, textarea")) {
-			console.log(input)
 			input.value = ""
 		}
 	}
