@@ -1,6 +1,4 @@
 {
-	"configName": "Związek Harcerstwa Polskiego",
-	
 	"orgs": {
 		"orgHarcerzy": {
 			"name": "Organizacja harcerzy"
@@ -369,6 +367,13 @@
 				"orgHarcerzy": "Patrolowy",
 				"orgHarcerek": "Patrolowa"
 			},
+			"tags": [
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"manageEvent",
+				"manageEventInvite"
+			],
 			"rank": 2
 		},
 		"szóstkowy": {

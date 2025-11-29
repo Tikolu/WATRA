@@ -45,6 +45,15 @@ body main {
 			margin-bottom: 0.25em;
 		}
 	}
+
+	& > h2 {
+		font-size: min(2em, 5vw);
+		margin-top: -2em;
+		margin-bottom: 0;
+		margin-right: 1.8em;
+		text-align: right;
+		animation: title-glide-in 500ms 550ms backwards;
+	}
 }
 
 body:not(.unload) main h1 {

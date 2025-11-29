@@ -10,6 +10,9 @@
 	<span>R</span>
 	<span>A</span>
 </h1>
+<% if(Config.systemTitle) { %>
+	<h2><%= Config.systemTitle %></h2>
+<% } %>
 
 <button id="login-button" class="important" api="login/getKeys">
 	<i>passkey</i>

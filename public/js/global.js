@@ -465,7 +465,8 @@ const API = {
 	async request(get="", post=undefined) {
 		let options = {
 			credentials: "same-origin",
-			headers: {}
+			headers: {},
+			redirect: "manual"
 		}
 		if(post) {
 			options.method = "POST"

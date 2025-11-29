@@ -10,27 +10,34 @@
 	<img src="/watra.svg">
 	<span>WATRA<span>
 </h1>
-<% if(globalThis.VERSION) { %>
-	<p>Wersja beta <%= globalThis.VERSION %>
-<% } %>
+<p>
+	Wersja beta <%= globalThis.VERSION %>
+	<% if(Config.systemTitle) { %>
+		- <%= Config.systemTitle %>
+	<% } %>
+</p>
 
-<% if(Config.customHTML.length > 0) { %>
+<% if(Config.news.length > 0) { %>
 	<section>
 		<h2>
 			<i>news</i>
 			Ogłoszenia
 		</h2>
-		<details<%= Date.now() - $.user.auth.lastLogin < 8000 ? " open" : "" %>>
-			<summary>
-				<span class="open-text">Otwórz</span>
-				<span class="close-text">Zamknij</span>
-			</summary>
-			<% for(const path of Config.customHTML) { %>
-				<article>
-					<%~ include(`/custom/${path}`, {user: $.user}) %>
-				</article>
+		<div class="entry-grid" id="news-list">
+			<% for(const newsEntry of Config.news) { %>
+				<a opens-dialog="/news/<%= newsEntry.id %>" data-auto-open="<%= newsEntry.autoOpen || "never" %>" data-id="<%= newsEntry.id %>">
+					<div class="entry-header">
+						<div class="entry-image">
+							<i>news</i>
+						</div>
+						<div class="entry-title">
+							<h3><%= newsEntry.title %></h3>
+							<p><%= newsEntry.description || "" %></p>
+						</div>
+					</div>
+				</a>
 			<% } %>
-		</details>
+		</div>
 	</section>
 <% } %>
 <% 

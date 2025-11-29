@@ -492,6 +492,7 @@ li > * {
 
 		& .entry-image > i, & .entry-image > img {
 			margin: auto;
+			margin-top: -0.1em;
 			font-size: 2em;
 			width: 100%;
 		}

@@ -48,8 +48,7 @@ function processName(entity) {
 for await(const file of Deno.readDir("config")) {
 	const {default: json} = await import(`../config/${file.name}`, {with: {type: "json"}})
 
-	logger.log(`Loaded config "${json.configName}" from ${file.name}`)
-	delete json.configName
+	logger.log(`Loaded config ${file.name}`)
 
 	for(const key in json) {
 		if(key in Config) {
@@ -173,15 +172,5 @@ for(const roleName of Config.event.roles || []) {
 		throw new ConfigError(`Event config references unknown role "${roleName}"`)
 	}
 }
-
-
-// Check for custom html files
-Config.customHTML = []
-if(Deno.statSync("html/custom").isDirectory) {
-	for await(const file of Deno.readDir("html/custom")) {
-		Config.customHTML.push(file.name)
-	}
-}
-Config.customHTML = Config.customHTML.sort()
 
 export default Config
