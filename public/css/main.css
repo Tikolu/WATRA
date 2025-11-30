@@ -75,12 +75,12 @@ main > * {
 
 body.unload main > * {
 	opacity: 0;
-	scale: 99%;
+	scale: 99% 100%;
 	cursor: wait;
 }
 
 body.refresh main > * {
-	scale: 99%;
+	scale: 99% 100%;
 	cursor: progress;
 }
 

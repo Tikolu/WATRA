@@ -48,6 +48,10 @@ html[theme=dark] {
 	--border-radius: 0.5em;
 }
 
+.watra-logo {
+	filter: hue-rotate(calc(var(--hue) - 100deg));
+}
+
 
 /* Content layout */
 

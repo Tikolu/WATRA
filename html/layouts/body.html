@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl"
+	<%_ if(Config.themeHue) { -%>
+ style="--hue:<%=Config.themeHue%>deg"
+	<%_ } _%>
+>
 	<%~ include("/templates/head", $) %>
-	<body<%~ include("/templates/classList", $) %>>
+	<body
+		<%_~ include("/templates/classList", $) _%>
+	>
 		<%~ $.body %>
 	</body>
 </html>
