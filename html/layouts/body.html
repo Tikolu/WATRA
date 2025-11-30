@@ -1,14 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
-	<% $.styles ||= [] %>
-	<% $.styles.unshift("main") %>
-	<% $.scripts ||= [] %>
-	<% $.scripts.unshift("main") %>
-	<%~ include("/templates/head.html", $) %>
-	<body class="unload">
-		<%~ include("/templates/titleBar.html", $) %>
-		<main>
-			<%~ $.body %>
-		</main>
+	<%~ include("/templates/head", $) %>
+	<body<%~ include("/templates/classList", $) %>>
+		<%~ $.body %>
 	</body>
 </html>

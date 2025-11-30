@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="pl">
-	<% $.styles ||= [] %>
-	<% $.styles.unshift("login") %>
-	<%~ include("/templates/head.html", $) %>
-	<body class="unload">
-		<main>
-			<%~ $.body %>
-		</main>
-	</body>
-</html>
+<%
+	$.styles ||= []
+	$.styles.unshift("login")
+	$.class = ["unload"]
+%>
+<% layout("/layouts/body") %>
+<main>
+	<%~ $.body %>
+</main>

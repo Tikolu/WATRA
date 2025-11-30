@@ -1,0 +1,10 @@
+<% if($.content || $.warnings?.length > 0) { %>
+	<div class="entry-content">
+		<% if($.content) { %>
+			<p><%= $.content %></p>
+		<% } %>
+		<% for(const warning of $.warnings || []) { %>
+			<p class="warning"><i>warning</i> <%= warning %></p>
+		<% } %>
+	</div>
+<% } %>

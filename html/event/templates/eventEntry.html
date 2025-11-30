@@ -18,12 +18,8 @@
 			</p>
 		</div>
 	</div>
-	<div class="entry-content">
-		<% if($.content) { %>
-			<p><%= $.content %></p>
-		<% } %>
-		<% for(const warning of $.warnings || []) { %>
-			<p class="warning"><i>warning</i> <%= warning %></p>
-		<% } %>
-	</div>
+	<%~ include("/templates/entryContent", {
+		content: $.content,
+		warnings: $.warnings
+	}) %>
 </a>

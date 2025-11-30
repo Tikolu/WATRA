@@ -1,0 +1,2 @@
+<% if($.class &&!Array.isArray($.class)) $.class = [$.class] %>
+<%_ if($.class?.length > 0) { %> class="<%= $.class.join(" ") %>"<% } %>

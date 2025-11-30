@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="pl">
-	<% $.styles ||= [] %>
-	<% $.styles.unshift("dialog") %>
-	<% $.scripts ||= [] %>
-	<% $.scripts.unshift("dialog") %>
-	<%~ include("/templates/head.html", $) %>
-	<base target="_parent">
-	<body class="allow-frames">
-		<%~ $.body %>
-	</body>
-</html>
+<%
+	$.styles ||= []
+	$.styles.unshift("dialog")
+	$.scripts ||= []
+	$.scripts.unshift("dialog")
+	$.class = ["allow-frames"]
+	$.baseTarget = "_parent"
+%>
+<% layout("/layouts/body") %>
+<%~ $.body %>

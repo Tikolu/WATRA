@@ -1,0 +1,12 @@
+<%
+	$.styles ||= []
+	$.styles.unshift("main")
+	$.scripts ||= []
+	$.scripts.unshift("main")
+	$.class = ["unload"]
+%>
+<% layout("/layouts/body") %>
+<%~ include("/templates/titleBar", $) %>
+<main>
+	<%~ $.body %>
+</main>

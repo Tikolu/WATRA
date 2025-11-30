@@ -1,4 +1,4 @@
-<% layout("/layouts/body", {
+<% layout("/layouts/main", {
 	title: "Strona główna",
 	scripts: ["home"],
 	styles: ["home"],
@@ -11,7 +11,7 @@
 	<span>WATRA<span>
 </h1>
 <p>
-	Wersja beta <%= globalThis.VERSION %>
+	Wersja beta <%= VERSION %>
 	<% if(Config.systemTitle) { %>
 		- <%= Config.systemTitle %>
 	<% } %>

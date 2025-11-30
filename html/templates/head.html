@@ -3,20 +3,21 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><%= $.title || "" %></title>
 	<link rel="icon" href="/watra.svg">
+	<% if($.baseTarget) { %>
+		<base target="<%= $.baseTarget %>">
+	<% } %>
 	<%
 		$.scripts ||= []
 		$.scripts.unshift("global")
 		$.scripts.unshift("theme")
 		$.styles ||= []
 		$.styles.unshift("global")
-
-		const assetVersion = Number(SERVER_TIME).toString(36).substring(3)
 	%>
 	<% for (const script of $.scripts) { %>
-		<script src="/js/<%= script %>.js?v=<%= assetVersion %>" defer></script>
+		<script src="/js/<%= script %>.js?v=<%= VERSION %>" defer></script>
 	<% } %>
 	<% for (const style of $.styles) { %>
-		<link rel="stylesheet" href="/css/<%= style %>.css?v=<%= assetVersion %>">
+		<link rel="stylesheet" href="/css/<%= style %>.css?v=<%= VERSION %>">
 	<% } %>
 	<% for (const metaName in $.meta || {}) { %>
 		<%
