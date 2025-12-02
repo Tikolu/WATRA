@@ -15,7 +15,9 @@ API.registerHandler("login/getKeys", {
 			})
 		} catch(error) {
 			console.error(error)
-			throw "Anulowano logowanie"
+			logError(error)
+			Popup.error("Anulowano logowanie")
+			return
 		}
 
 		API.executeHandler(element, "login/verify", {

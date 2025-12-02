@@ -39,7 +39,9 @@ API.registerHandler("passkey/create", {
 			var credential = await navigator.credentials.create({publicKey})
 		} catch(error) {
 			console.error(error)
-			throw "Anulowano tworzenie klucza"
+			logError(error)
+			Popup.error("Anulowano tworzenie klucza")
+			return
 		}
 
 		API.executeHandler(element, "passkey/save", {

@@ -1,11 +1,26 @@
 // Global error handlers
-window.onerror = message => {
-	console.error(message)
-	Popup.error(message)
+window.onerror = (m, s, l, c, error) => {
+	console.error(error)
+	Popup.error(error)
+	logError(error)
 }
 window.onunhandledrejection = event => {
 	console.error(event.reason)
 	Popup.error(event.reason)
+	logError(event.reason)
+}
+
+// Log front-end errors on server
+const loggedErrors = []
+function logError(error) {
+	const message = error.message || error
+	if(loggedErrors.includes(message)) return
+	loggedErrors.push(message)
+	API.request("logError", {
+		message,
+		stack: error.stack,
+		url: document.location.href
+	}).catch(() => {})
 }
 
 // Debug function
@@ -489,6 +504,8 @@ const API = {
 		}
 		if(json.error) {
 			const text = json.error.message.replace(/^Error: /, "")
+			// Prevent logging error on server
+			loggedErrors.push(text)
 			throw text
 		}
 		return json
@@ -1023,7 +1040,7 @@ function processCustomInputElements() {
 			input.addEventListener("change", () => {
 				for(const file of input.files) {
 					if(file.size > 8 * 1024 * 1024) {
-						Popup.error(`Plik ${file.name} jest zbyt duży (maks. 8 MB)`)
+						throw `Plik ${file.name} jest zbyt duży (maks. 8 MB)`
 						input.value = ""
 						break
 					}

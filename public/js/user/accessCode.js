@@ -1,7 +1,7 @@
-const currentLoginTime = window.top.META.lastLogin
+const currentLoginTime = window.top?.META.lastLogin
 
 function callback() {
-	const newLoginTime = window.top.META.lastLogin
+	const newLoginTime = window.top?.META.lastLogin
 	if(currentLoginTime == newLoginTime) return
 
 	// Remove callback

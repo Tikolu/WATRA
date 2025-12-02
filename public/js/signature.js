@@ -26,7 +26,9 @@ function processSignatureElements() {
 					})
 				} catch(error) {
 					console.error(error)
-					throw "Anulowano podpisywanie"
+					logError(error)
+					Popup.error("Anulowano podpisywanie")
+					return
 				}
 			}
 
