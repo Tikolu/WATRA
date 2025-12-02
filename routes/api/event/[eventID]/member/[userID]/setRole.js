@@ -62,14 +62,10 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 		})
 	}
 
-	// Remove role
+	// Remove user
 	if(roleType == "remove") {
-		const targetRole = await targetUser.getRoleInUnit(targetEvent)
-		if(!targetRole) {
-			throw new HTTPError(400, "Użytkownik nie ma funkcji w tej akcji")
-		}
-		await targetRole.populate(["unit", "user"], {known: [targetEvent, targetUser]})
-		await targetRole.delete()
+		const participant = targetEvent.participants.id(targetUser.id)
+		await participant.uninvite()
 		
 	// Set role
 	} else {

@@ -122,7 +122,7 @@ export class EventClass extends UnitClass {
 	/** Sets a role for a event */
 	async setRole(user, roleType) {
 		const role = new Role({
-			type: roleType,
+			type: roleType || this.config.defaultRole,
 			eventRole: true
 		})
 		
@@ -157,6 +157,30 @@ export class EventClass extends UnitClass {
 		}
 
 		await targetInvitation.uninvite()
+	}
+
+	/** Invites a participant to the event */
+	async inviteParticipant(targetUser, unit, saveEvent=true) {
+		// Check if user already added
+		if(this.participants.some(p => p.user.id == targetUser.id)) return
+		
+		// Add user to invited
+		this.participants.push({
+			user: targetUser,
+			state: "pending",
+			originUnit: unit
+		})
+		
+		// Remove any existing invite
+		targetUser.eventInvites = targetUser.eventInvites.filter(i => i != this.id)
+		
+		// Add event invite to user
+		targetUser.eventInvites.push(this.id)
+
+		// Save user
+		await targetUser.save()
+
+		if(saveEvent) await this.save()
 	}
 
 	/** Get an approver of a user */

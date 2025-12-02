@@ -155,6 +155,18 @@
 	}
 }
 
+.signature-container.disabled {
+	.signature-slider-container {
+		color: var(--secondary-text);
+		cursor: not-allowed;
+
+		.signature-slider {
+			pointer-events: none;
+		}
+	}
+}
+
+
 html:has(.signature-container.dragging) {
 	user-select: none;
 }

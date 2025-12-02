@@ -45,6 +45,31 @@ function processName(entity) {
 	entity.name.default ||= entity.name[Object.keys(entity.name)[0]]
 }
 
+function processDefaultRole(unit) {
+	// Ensure roles exist
+	for(const roleName of unit.roles || []) {
+		if(!Config.roles[roleName]) {
+			throw new ConfigError(`Unit "${unit.id}" references unknown role "${roleName}"`)
+		}
+	}
+	
+	// Default defaultRole is role with lowest rank
+	if(!unit.defaultRole && unit.roles?.length) {
+		let defaultRole = ["", Infinity]
+		for(const roleName of unit.roles) {
+			const roleType = Config.roles[roleName]
+			if(roleType[1] > defaultRole[1]) continue
+			defaultRole = [roleName, roleType.rank]
+		}
+		unit.defaultRole = defaultRole[0]
+	}
+
+	// Ensure defaultRole exists in unit roles
+	if(unit.defaultRole && !unit.roles.includes(unit.defaultRole)) {
+		throw new ConfigError(`Unit "${unit.id}" has invalid defaultRole "${unit.defaultRole}"`)
+	}
+}
+
 for await(const file of Deno.readDir("config")) {
 	const {default: json} = await import(`../config/${file.name}`, {with: {type: "json"}})
 
@@ -127,28 +152,7 @@ for(const unitID in Config.units) {
 	
 	processName(unit)
 
-	// Ensure roles exist
-	for(const roleName of unit.roles || []) {
-		if(!Config.roles[roleName]) {
-			throw new ConfigError(`Unit "${unitID}" references unknown role "${roleName}"`)
-		}
-	}
-	
-	// Default defaultRole is role with lowest rank
-	if(!unit.defaultRole && unit.roles?.length) {
-		let defaultRole = ["", Infinity]
-		for(const roleName of unit.roles) {
-			const roleType = Config.roles[roleName]
-			if(roleType[1] > defaultRole[1]) continue
-			defaultRole = [roleName, roleType.rank]
-		}
-		unit.defaultRole = defaultRole[0]
-	}
-
-	// Ensure defaultRole exists in unit roles
-	if(unit.defaultRole && !unit.roles.includes(unit.defaultRole)) {
-		throw new ConfigError(`Unit "${unitID}" has invalid defaultRole "${unit.defaultRole}"`)
-	}
+	processDefaultRole(unit)
 
 	// Default eventRules
 	unit.eventRules ||= {
@@ -172,5 +176,7 @@ for(const roleName of Config.event.roles || []) {
 		throw new ConfigError(`Event config references unknown role "${roleName}"`)
 	}
 }
+
+processDefaultRole(Config.event)
 
 export default Config

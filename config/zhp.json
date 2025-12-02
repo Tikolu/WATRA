@@ -344,6 +344,8 @@
 			"name": "Kadra",
 			"rank": 1,
 			"tags": [
+				"public",
+
 				"accessUser"
 			]
 		},
@@ -368,6 +370,8 @@
 				"orgHarcerek": "Patrolowa"
 			},
 			"tags": [
+				"public",
+				
 				"setRole",
 				"accessUser",
 				"manageUser",
@@ -395,12 +399,10 @@
 		"zuch": {
 			"name": "Zuch",
 			"minAge": 6,
-			"maxAge": 11,
 			"rank": 0
 		},
 		"skrzat": {
 			"name": "Skrzat",
-			"maxAge": 6,
 			"rank": 0
 		},
 
@@ -431,7 +433,10 @@
 			]
 		},
 		"oboźny": {
-			"name": "Oboźny",
+			"name": {
+				"orgHarcerzy": "Oboźny",
+				"orgHarcerek": "Oboźna"
+			},
 			"rank": 1
 		},
 		"kadraProgramowa": {

@@ -144,7 +144,7 @@
 <% if(
 	$.targetUnit.events.length > 0 ||
 	$.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT) ||
-	$.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES) ||
+	($.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES) && $.targetUnit.eventInvites.length > 0) ||
 	$.subUnitEvents.length > 0
 ) { %>
 	<section>

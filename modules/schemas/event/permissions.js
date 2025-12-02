@@ -29,6 +29,9 @@ export async function ACCESS_PARTICIPANTS(user) {
 	// "accessUser" roles in event can access participants
 	if(await user.hasRoleInUnits("accessUser", this)) return true
 
+	// Approvers can access participants
+	if(await user.checkPermission(this.PERMISSIONS.APPROVE)) return true
+
 	return false
 }
 
@@ -75,8 +78,8 @@ export async function SET_ROLE(user) {
 }
 
 /** Inviting units to the event */
-export async function INVITE_UNIT(user) {
-	// Lack of EDIT permission denies INVITE_UNIT
+export async function INVITE_PARTICIPANT(user) {
+	// Lack of EDIT permission denies INVITE_PARTICIPANT
 	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
 
 	// "manageEvent" roles in event and direct upper unit can invite units

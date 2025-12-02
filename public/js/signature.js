@@ -57,6 +57,7 @@ function processSignatureElements() {
 		slider.onpointerdown = () => {
 			if(signature.classList.contains("loading")) return
 			if(signature.classList.contains("complete")) return
+			if(signature.classList.contains("disabled")) return
 			signature.bounds = signature.getBoundingClientRect()
 			signature.classList.add("dragging")
 			signature.classList.remove("invalid")

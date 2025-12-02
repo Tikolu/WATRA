@@ -13,5 +13,7 @@ API.registerHandler("event/[eventID]/member/[memberID]/setParticipation", {
 })
 
 main.onchange = () => {
+	signature.classList.remove("disabled")
 	signature.reset()
 }
+if(window.signature) signature.classList.add("disabled")

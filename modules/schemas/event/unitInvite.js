@@ -36,56 +36,16 @@ export default class {
 
 		// Add new participants
 		for(const participant of participants) {
-			// Check if user already added
-			if(targetEvent.participants.some(i => i.user.id == participant.id)) continue
-
-			// Check if user has a role
-			const existingRole = await participant.getRoleInUnit(targetEvent)
-			if(existingRole) continue
-			
-			// Add user to invited
-			targetEvent.participants.push({
-				user: participant.id,
-				state: "pending",
-				originUnit: this.unit.id
-			})
-			
-			// Remove any existing invite
-			participant.eventInvites = participant.eventInvites.filter(i => i != targetEvent.id)
-			
-			// Add event invite to user
-			participant.eventInvites.push(targetEvent.id)
-
-			// Save user
-			await participant.save()
+			await targetEvent.inviteParticipant(participant, this.unit, false)
 		}
 
 		// Remove participants not on list
-		const participantsToRemove = []
-		for(const participant of targetEvent.participants) {
+		for(const participant of [...targetEvent.participants]) {
 			if(participant.originUnit != this.unit.id) continue
 			if(participantIDs.includes(participant.user.id)) continue
-		
-			participantsToRemove.push(participant)
 
-			await participant.populate("user")
-
-			// Remove invite from user
-			participant.user.eventInvites = participant.user.eventInvites.filter(i => i != targetEvent.id)
-			await participant.user.save()
-
-			// Remove user's role
-			const existingRole = await participant.user.getRoleInUnit(targetEvent)
-			if(existingRole) {
-				await existingRole.populate(
-					["unit", "user"],
-					{known: [targetEvent, participant.user]}
-				)
-				await existingRole.delete()
-			}
+			await participant.uninvite()
 		}
-
-		targetEvent.participants = targetEvent.participants.filter(p => !participantsToRemove.includes(p))
 
 		await targetEvent.save()
 	}

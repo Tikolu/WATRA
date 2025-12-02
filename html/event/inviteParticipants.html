@@ -1,0 +1,24 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/inviteParticipants", "user/picker"],
+	styles: ["event/inviteParticipants", "user/picker"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1>Zapraszanie kadry na <%= $.targetEvent.displayName %></h1>
+<main>
+	<%~ include("/user/templates/userPicker", {
+		users: $.users
+	}) %>
+</main>
+<hr>
+<div class="button-row">
+	<button onclick="dialog.close()">
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="event/[eventID]/member/[userID]/invite">
+		<i>check</i>
+		Zaproś
+	</button>
+</div>
