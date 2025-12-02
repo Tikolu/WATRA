@@ -55,7 +55,8 @@ export default class {
 				residentKey: "required",
 				requireResidentKey: true,
 				userVerification: "required"
-			}
+			},
+			timeout: (10 * 60 * 1000) // 10 minutes
 		})
 
 		return options

@@ -10,7 +10,8 @@ export default async function({user}) {
 	const options = await webauthn.generateAuthenticationOptions({
 		rpID: Config.host,
 		allowCredentials: user.auth.keys,
-		userVerification: "required"
+		userVerification: "required",
+		timeout: (10 * 60 * 1000) // 10 minutes
 	})
 
 	this.session.setChallenge(options.challenge, options.timeout)
