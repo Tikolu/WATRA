@@ -40,9 +40,15 @@ export default class {
 		// Find user matching the access code
 		const user = await User.findByAccessCode(accessCode)
 		if(!user) return
+
+		// Ensure access code is not expired
+		if(user.auth.accessCodeExpiry < Date.now()) {
+			throw new HTTPError(400, "Ważność kodu dostępu wygasła")
+		}
 		
 		// Clear access code from user
 		user.auth.accessCode = undefined
+		user.auth.accessCodeExpiry = undefined
 		await user.save()
 
 		// Login

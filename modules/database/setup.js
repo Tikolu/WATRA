@@ -6,6 +6,8 @@ import { Logger } from "modules/logger.js"
 
 const logger = new Logger("Import", 36)
 
+const accessCodeExpiry = 1000 * 60 * 60 * 48
+
 async function createUser(user) {
 	if(Array.isArray(user.name)) {
 		user.firstName = user.name[0]
@@ -37,8 +39,8 @@ async function createUser(user) {
 	}
 	
 	if(user.generateAccessCode) {
-		const accessCode = await newUser.auth.generateAccessCode()
-		logger.log(`${newUser.displayName}'s access code:`, accessCode)
+		const accessCode = await newUser.auth.generateAccessCode(accessCodeExpiry)
+		logger.log(`${newUser.displayName}'s access code:`, accessCode, `(expires in ${accessCodeExpiry / 1000} seconds)`)
 	}
 	return newUser
 }

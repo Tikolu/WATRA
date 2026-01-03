@@ -10,6 +10,7 @@ import { verify } from "node:crypto";
 export default class {
 	_id = false
 	accessCode = String
+	accessCodeExpiry = Date
 	lastLogin = Date
 
 	keys = [
@@ -20,7 +21,11 @@ export default class {
 	]
 
 	/** Generates, saves and returns an access code for the user */
-	async generateAccessCode() {
+	async generateAccessCode(expiry) {
+		if(!expiry) {
+			throw Error("No expiry time provided")
+		}
+		
 		const targetUser = this.parent()
 		
 		// Generate access code
@@ -32,6 +37,7 @@ export default class {
 			throw Error("Błąd generowania kodu dostępu, spróbuj ponownie")
 		}
 		
+		this.accessCodeExpiry = Date.now() + expiry
 		await targetUser.save()
 		return this.formattedAccessCode
 	}

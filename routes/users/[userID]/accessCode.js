@@ -12,11 +12,11 @@ export default async function({user, targetUser, parent: parentCode}) {
 			throw new HTTPError(400, "Użytkownik nie ma rodziców")
 		}
 		await targetUser.populate("parents")
-		await targetUser.parents[0].auth.generateAccessCode()
+		await targetUser.parents[0].auth.generateAccessCode(1000 * 60 * 5)
 
 	// Generate access code for user
 	} else {
-		await targetUser.auth.generateAccessCode()
+		await targetUser.auth.generateAccessCode(1000 * 60 * 5)
 	}
 	
 	return html("user/accessCode", {

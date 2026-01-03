@@ -5,9 +5,12 @@ function callback() {
 	if(currentLoginTime == newLoginTime) return
 
 	// Remove callback
-	window.top.afterDataRefresh = window.top.afterDataRefresh.filter(c => c != callback)
+	window.top.afterDataRefresh = window.top?.afterDataRefresh.filter(c => c != callback)
 	// Close dialog
 	dialog.fullClose()
 }
+
+const expiryTime = 1000 * 60 * 5
+sleep(expiryTime).then(() => dialog.fullClose())
 
 window.top.afterDataRefresh.push(callback)
