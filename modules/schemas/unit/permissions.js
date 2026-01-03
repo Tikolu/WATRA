@@ -1,10 +1,18 @@
+import Config from "modules/config.js"
+
 /** Accessing the unit's page and any unit details */
 export function ACCESS(user) {
+	// Block access if user has no passkeys
+	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
+
 	return true
 }
 
 /** Accessing the unit's members */
 export async function ACCESS_MEMBERS(user) {
+	// Lack of ACCESS permission denies EDIT
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
 	// "accessUser" roles in this unit or upper units can access members
 	if(await user.hasRoleInUnits("accessUser", this, this.getUpperUnitsTree())) return true
 
@@ -47,7 +55,7 @@ export async function MANAGE_INVITES(user) {
 	// Cannot manage invites in unit without "invite" eventRule
 	if(!this.config.eventRules.invite) return false
 
-	// "manageEventInvite" roles in this unit or upper units can create new users
+	// "manageEventInvite" roles in this unit or upper units can manage invites
 	if(await user.hasRoleInUnits("manageEventInvite", this, this.getUpperUnitsTree())) return true
 
 	return false
@@ -61,8 +69,8 @@ export async function CREATE_EVENT(user) {
 	// Cannot create event in unit without "create" eventRule
 	if(!this.config.eventRules.create) return false
 
-	// "createEvent" roles in this unit or upper units can create new users
-	if(await user.hasRoleInUnits("manageEvent", this, this.getUpperUnitsTree())) return true
+	// "createEvent" roles in this unit can create events
+	if(await user.hasRoleInUnits("manageEvent", this)) return true
 
 	return false
 }

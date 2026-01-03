@@ -1,7 +1,15 @@
+<% let signatureEnabled = true %> 
+<% if(Config.passkeyRequired && $.user.auth.keys.length == 0) { %>
+	<% signatureEnabled = false %>
+	<p class="warning">
+		<i>warning</i>
+		Dodaj klucz dostępu do swojego profilu, aby umożliwić podpisywanie.
+	</p>
+<% } %>
 <%
 	$.id ||= "signature"
 %>
-<div class="signature-container input<% if($.signature) { %> complete<% } %>" name="signature" id="<%= $.id %>">
+<div class="signature-container input<% if($.signature) { %> complete<% } else if(!signatureEnabled) { %> disabled<% } %>" name="signature" id="<%= $.id %>">
 	<% if($.signature) { %>
 		<div class="signature-info">
 			<h3>
@@ -24,8 +32,3 @@
 		</div>
 	<% } %>
 </div>
-<% if(!$.signature && $.user.auth.keys.length == 0) { %>
-	<article>
-		<p><i>info</i> Możliwość podpisywania bez klucza dostępu jest włączona tylko tymczasowo, aby ułatwić testowanie. Wkrótce każdy podpis będzie wymagał weryfikacji używajać klucza dostępu.</p>
-	</article>
-<% } %>

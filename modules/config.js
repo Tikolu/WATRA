@@ -179,4 +179,10 @@ for(const roleName of Config.event.roles || []) {
 
 processDefaultRole(Config.event)
 
+
+// Other defaults
+Config.news ||= []
+Config.passkeyRequired ??= true
+
+
 export default Config

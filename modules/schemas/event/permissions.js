@@ -1,5 +1,10 @@
+import Config from "modules/config.js"
+
 /** Accessing the event's page */
 export async function ACCESS(user) {
+	// Block access if user has no passkeys
+	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
+	
 	// Invited users can access
 	if(this.participants.hasID(user.id)) return true
 

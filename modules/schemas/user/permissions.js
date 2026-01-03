@@ -4,6 +4,9 @@ import Config from "modules/config.js"
 export async function ACCESS(user) {
 	// User can access themselves
 	if(user.id == this.id) return true
+	
+	// Block access if user has no passkeys
+	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
 	// Parent can access their children
 	if(user.children.hasID(this.id)) return true
