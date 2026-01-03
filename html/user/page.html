@@ -63,10 +63,16 @@
 			Ustaw imię i nazwisko
 		</p>
 	<% } %>
-	<% if(md.includes("contact")) { %>
+	<% if(md.includes("email")) { %>
 		<p class="warning">
 			<i>warning</i>
-			Dodaj dane kontaktowe
+			Ustaw adres e-mail
+		</p>
+	<% } %>
+	<% if(md.includes("phone")) { %>
+		<p class="warning">
+			<i>warning</i>
+			Ustaw numer telefonu
 		</p>
 	<% } %>
 	<% if(md.includes("dob")) { %>

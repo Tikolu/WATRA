@@ -157,16 +157,26 @@ export class UserClass {
 			!this.name.first || !this.name.last, "name"
 		)
 
-		// Required for adults or parents
-		if(this.isParent || this.age >= Config.adultAge) missingDetails.push(...Array.conditional(
-			!this.email || !this.phone, "contact"
+		// Required for parents
+		if(this.isParent) missingDetails.push(...Array.conditional(
+			!this.email, "email",
+			!this.phone, "phone"
 		))
 
 		// Required for users with roles
-		if(this.roles.length > 0) missingDetails.push(...Array.conditional(
-			!this.dateOfBirth, "dob",
-			!this.medical.confirmed, "medical"
-		))
+		if(this.roles.length > 0) {
+			missingDetails.push(...Array.conditional(
+				!this.dateOfBirth, "dob",
+				!this.medical.confirmed, "medical"
+			))
+			// Required for adults
+			if(this.age >= Config.adultAge) {
+				missingDetails.push(...Array.conditional(
+					!this.email, "email",
+					!this.phone, "phone"
+				))
+			}
+		}
 
 		return missingDetails
 	}

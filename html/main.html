@@ -64,7 +64,8 @@
 				warnings: (() => {
 					return Array.conditional(
 						md.includes("name"), "Brak imienia i nazwiska",
-						md.includes("contact"), "Brak danych kontaktowych",
+						md.includes("email"), "Brak adresu e-mail",
+						md.includes("phone"), "Brak numeru telefonu",
 						md.includes("dob"), "Brak daty urodzenia",
 						md.includes("medical"), "Nie zatwierdzone dane medyczne",
 					)
@@ -106,7 +107,8 @@
 					targetUser: child,
 					warnings: Array.conditional(
 						md.includes("names"), "Brak imienia i nazwiska",
-						md.includes("contact"), "Brak danych kontaktowych",
+						md.includes("email"), "Brak adresu e-mail",
+						md.includes("phone"), "Brak numeru telefonu",
 						md.includes("dob"), "Brak daty urodzenia",
 						md.includes("medical"), "Nie zatwierdzone dane medyczne"
 					)
