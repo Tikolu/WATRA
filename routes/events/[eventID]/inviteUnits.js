@@ -6,16 +6,12 @@ export default async function({user, targetEvent}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
 	
-	const topUnits = await Unit.find({"type": Config.event.topUnitTypes})
+	let topUnits = await Unit.find({"type": Config.event.topUnitTypes})
 	const units = {}
 
-	function saveUnit(unit) {
-		// Find units of highest type
-		if(topUnits && topUnits[0].type === unit.type) {
-			topUnits.push(unit)
-		} else if(!topUnits || topUnits[0].type < unit.type) {
-			topUnits = [unit]
-		}
+	if(!topUnits.length) {
+		await targetEvent.populate("upperUnits")
+		topUnits = targetEvent.upperUnits
 	}
 
 	for(const topUnit of topUnits) {	
