@@ -1,7 +1,7 @@
 import HTTPError from "modules/server/error.js"
 import Event from "modules/schemas/event";
 
-export async function open({user, eventID}) {
+export async function _open({user, eventID}) {
 	// Get event from DB, and check if exists
 	const targetEvent = await Event.findById(eventID)
 	if(!targetEvent) throw new HTTPError(404, "Akcja nie istnieje")

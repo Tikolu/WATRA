@@ -1,7 +1,19 @@
 import HTTPError from "modules/server/error.js"
+import Unit from "modules/schemas/unit"
 import Config from "modules/config.js"
 
-export default async function({user, targetEvent, targetUnit}) {
+export async function _open({user, targetEvent, unitID}) {
+	// Check permissions
+	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
+	
+	// Get unit from DB, and check if exists
+	const targetUnit = await Unit.findById(unitID)
+	if(!targetUnit) throw new HTTPError(404, "Jednostka nie istnieje")
+
+	this.addRouteData({targetUnit})
+}
+
+export async function invite({user, targetEvent, targetUnit}) {
 	// Check event details
 	if(targetEvent.missingDetails.length > 0) {
 		throw new HTTPError(400, "Uzupełnij szczegóły akcji, aby zaprosić jednostki")
@@ -23,4 +35,8 @@ export default async function({user, targetEvent, targetUnit}) {
 	return {
 		invitationState: state
 	}
+}
+
+export async function uninvite({user, targetEvent, targetUnit}) {
+	await targetEvent.uninviteUnit(targetUnit)
 }

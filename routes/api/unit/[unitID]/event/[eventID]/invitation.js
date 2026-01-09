@@ -1,6 +1,17 @@
 import HTTPError from "modules/server/error.js"
 
-export default async function({targetUnit, targetEvent, targetInvitation}) {
+export async function accept({targetEvent, targetInvitation}) {
+	// Accept invite
+	targetInvitation.state = "accepted"
+
+	await targetEvent.save()
+
+	return {
+		invitationState: targetInvitation.state
+	}
+}
+
+export async function decline({targetUnit, targetEvent, targetInvitation}) {
 	// Cannot decline if participants
 	if(targetInvitation.invitedParticipants.filter(p => p.state == "accepted").length > 0) {
 		throw new HTTPError(400, "Nie można odrzucić zaproszenia z uczestnikami")

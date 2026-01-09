@@ -6,7 +6,7 @@ const allowedFileTypes = [
 	"image/jpeg"
 ]
 
-export default async function({message, attachments=[]}) {
+export async function submit({message, attachments=[]}) {
 	if(attachments.length > 4) {
 		throw new Error("Limit 4 załączników")
 	}

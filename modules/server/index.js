@@ -1,5 +1,5 @@
 import mime from "mime"
-import { join as joinPath } from "node:path"
+import * as Path from "node:path"
 
 import Token from "./token.js"
 import * as rateLimit from "./rateLimiting.js"
@@ -12,7 +12,8 @@ import { Logger } from "modules/logger.js"
 const logger = new Logger("Server", 34)
 
 async function handlePublicFile(url, response) {
-	url = joinPath("public", url)
+	url = Path.join("public", url)
+	if(!url.startsWith("public/")) return
 
 	// Check if path is a file
 	try {
@@ -58,7 +59,7 @@ async function handler(req) {
 	// If URL ends with a file extension, check if a matching file exists
 	if(/.\.[a-z]{2,4}$/.test(request.address.pathname)) await handlePublicFile(request.address.pathname, response)
 
-	// Use the routing system to find the appropriate route file
+	// Use the routing system to find the appropriate route function
 	if(response.open) await findRoute(request, response)
 
 	// Final fallback, if reponse has not been closed, close it
@@ -79,7 +80,7 @@ async function handler(req) {
 	return res
 }
 
-let server;
+let server
 const controller = new AbortController()
 let developmentMode = false
 
@@ -93,12 +94,10 @@ export function start({host, port, dev=false, beforeRequest}) {
 		onListen({port}) {
 			logger.log(` Started on ${host}:${port}`)
 		},
-	}, beforeRequest ?
-		async req => {
-			await beforeRequest()
-			return await handler(req)
-		}
-	: handler)
+	}, async req => {
+		await beforeRequest?.()
+		return await handler(req)
+	})
 }
 
 export async function stop() {

@@ -1,4 +1,4 @@
-globalThis.VERSION = "2.1.1"
+globalThis.VERSION = "2.2.0"
 
 // Set up globals for root directory and startup time
 globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")

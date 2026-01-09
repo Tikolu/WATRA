@@ -17,7 +17,7 @@ const errorMessages = {
 // 	500: ["Internal server error 💀", "Something went wrong on the server"]
 // }
 
-export async function open() {
+export async function _open() {
 	// Set content type to text/html
 	this.response.headers.set("Content-Type", "text/html; charset=utf-8")
 
@@ -35,7 +35,7 @@ export async function open() {
 	}
 }
 
-export function exit({user}) {
+export function _exit({user}) {
 	if(!this.response.open) return
 	
 	if(this.lastError) {
@@ -71,4 +71,34 @@ export function exit({user}) {
 	// Write to response and close it
 	this.response.write(this.lastOutput)
 	this.response.close()
+}
+
+
+export default async function({user}) {
+	if(!user) return this.response.redirect("/login")
+
+	await user.populate({
+		"children": {
+			"eventInvites": {},
+			"roles": "unit"
+		},
+		"roles": "unit",
+		"eventRoles": "unit",
+		"eventInvites": {}
+	})
+
+	// Check permissions
+	await user.checkPermission(user.PERMISSIONS.EDIT)
+	await user.checkPermission(user.PERMISSIONS.APPROVE)
+
+	const events = [
+		...user.eventInvites,
+		...user.eventRoles.map(f => f.unit),
+		...user.children.flatMap(c => c.eventInvites)
+	].unique("id")
+	
+	return html("main", {
+		user,
+		events
+	})
 }

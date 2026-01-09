@@ -1,7 +1,7 @@
 import HTTPError from "modules/server/error.js"
 import Event from "modules/schemas/event";
 
-export async function open({user, targetUnit, eventID}) {
+export async function _open({user, targetUnit, eventID}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.MANAGE_INVITES)
 	

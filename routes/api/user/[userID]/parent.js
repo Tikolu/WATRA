@@ -1,6 +1,6 @@
 import User from "modules/schemas/user"
 
-export default async function({user, targetUser}) {
+export async function create({user, targetUser}) {
 	// Check permissions
 	await user.requirePermission(targetUser.PERMISSIONS.ADD_PARENT)
 	

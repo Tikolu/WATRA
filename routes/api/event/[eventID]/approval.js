@@ -1,6 +1,6 @@
 import HTTPError from "modules/server/error.js"
 
-export async function open({user, targetEvent}) {
+export async function _open({user, targetEvent}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.APPROVE)
 
@@ -11,4 +11,15 @@ export async function open({user, targetEvent}) {
 	}
 
 	this.addRouteData({targetApprover})
+}
+
+export async function approve({user, targetApprover, signature}) {
+	// Verify signature
+	await user.verifySignature(signature)
+	
+	await targetApprover.approve()
+}
+
+export async function unapprove({targetApprover}) {
+	await targetApprover.unapprove()
 }

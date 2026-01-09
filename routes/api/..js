@@ -1,6 +1,6 @@
 import HTTPError from "modules/server/error.js"
 
-export async function open() {
+export async function _open() {
 	this.response.headers.set("Content-Type", "application/json")
 
 	this.logging = {}
@@ -24,7 +24,7 @@ function removeANSI(text) {
 	return text.replaceAll(/\u001b\[[0-9]+m/g, "")
 }
 
-export async function exit({user}) {
+export async function _exit({user}) {
 	
 	if(this.lastError) {
 		if(this.lastError.defaultMessage) {
@@ -74,4 +74,8 @@ export async function exit({user}) {
 	}
 
 	return output
+}
+
+export default function() {
+	throw new HTTPError(404, "No API endpoint specified")
 }

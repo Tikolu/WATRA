@@ -7,7 +7,30 @@ import * as Crypto from "modules/crypto.js"
 
 import Passkey from "modules/schemas/passkey.js"
 
-export default async function({user, credential}) {
+export function _open({user}) {
+	if(!user) throw new HTTPError(403)
+}
+
+export async function start({user}) {
+	// if(user.auth.keys.length == 0) {
+	// 	throw new HTTPError(400, "Dodaj klucz dostępu do profilu aby umożliwić podpisywanie")
+	// }
+
+	const options = await webauthn.generateAuthenticationOptions({
+		rpID: Config.host,
+		allowCredentials: user.auth.keys,
+		userVerification: "required",
+		timeout: (10 * 60 * 1000) // 10 minutes
+	})
+
+	this.session.setChallenge(options.challenge, options.timeout)
+
+	return {
+		options
+	}
+}
+
+export async function verify({user, credential}) {
 	// Get expected challenge
 	const expectedChallenge = this.session.getChallenge()
 

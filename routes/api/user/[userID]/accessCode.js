@@ -1,4 +1,4 @@
-export default async function({user, targetUser}) {
+export async function generate({user, targetUser}) {
 	// Check permissions
 	await user.requirePermission(targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)
 	
