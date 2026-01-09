@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { Logger } from "modules/logger.js";
+import { Logger } from "modules/logger.js"
 
 const logger = new Logger("Populate", 32)
 

@@ -1,5 +1,5 @@
-import * as Base64 from "modules/base64.js";
-import * as Crypto from "modules/crypto.js";
+import * as Base64 from "modules/base64.js"
+import * as Crypto from "modules/crypto.js"
 
 export default class {
 	/** Parses and verifies a token from a cookie string */

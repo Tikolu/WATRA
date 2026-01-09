@@ -1,4 +1,4 @@
-import { Buffer } from "node:buffer";
+import { Buffer } from "node:buffer"
 
 /**
  * Decodes a base64 encoded string

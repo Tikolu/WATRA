@@ -1,5 +1,5 @@
 import HTTPError from "modules/server/error.js"
-import Config from "modules/config.js";
+import Config from "modules/config.js"
 
 export default async function({user, targetEvent, targetUser, roleType}) {
 	// Check permissions

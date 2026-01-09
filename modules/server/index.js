@@ -63,7 +63,7 @@ async function handler(req) {
 	if(response.open) await findRoute(request, response)
 
 	// Final fallback, if reponse has not been closed, close it
-	if(response.open && !response.streaming) response.close();
+	if(response.open && !response.streaming) response.close()
 
 	// Send the token
 	const tokenCookie = await request.token.toCookie()

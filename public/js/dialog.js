@@ -40,7 +40,7 @@ async function resizeContainer() {
 	const maxHeight = window.top.getComputedStyle(frameElement).maxHeight
 	document.body.style.maxHeight = maxHeight
 
-	frameElement.style.height = `${document.documentElement.scrollHeight}px`;
+	frameElement.style.height = `${document.documentElement.scrollHeight}px`
 }
 
 window.onresize = () => resizeContainer()

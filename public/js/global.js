@@ -237,9 +237,9 @@ HTMLDialogElement.prototype.result = function(modal=true) {
 	this.dispatchEvent(new Event("open"))
 
 	if(modal && !this.onclick) this.onclick = event => {
-		let rect = this.getBoundingClientRect();
-		if(event.clientY < rect.top || event.clientY > rect.bottom) return this.close();
-		if(event.clientX < rect.left || event.clientX > rect.right) return this.close();
+		let rect = this.getBoundingClientRect()
+		if(event.clientY < rect.top || event.clientY > rect.bottom) return this.close()
+		if(event.clientX < rect.left || event.clientX > rect.right) return this.close()
 	}
 	
 	return new Promise((resolve, reject) => {

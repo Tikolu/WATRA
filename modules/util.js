@@ -49,9 +49,9 @@ Object.defineProperty(Array.prototype, "unique", {
 /** Function for getting random items from an array */
 Object.defineProperty(Array.prototype, "random", {
 	value: function(n = 1) {
-		const output = [];
-		while(output.length < n) output.push(this[Math.floor(Math.random() * this.length)]);
-		return n == 1 ? output[0] : output;
+		const output = []
+		while(output.length < n) output.push(this[Math.floor(Math.random() * this.length)])
+		return n == 1 ? output[0] : output
 	}
 })
 

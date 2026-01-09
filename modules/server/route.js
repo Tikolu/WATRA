@@ -91,7 +91,7 @@ class Route {
 			try {
 				segment = decodeURIComponent(segment || "")
 			} catch {
-				this.handleError(new HTTPError(400))
+				routingContext.handleError(new HTTPError(400))
 				return
 			}
 		}

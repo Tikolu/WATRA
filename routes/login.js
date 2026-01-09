@@ -1,6 +1,6 @@
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
-import accessCode from "./api/login/accessCode.js";
+import accessCode from "./api/login/accessCode.js"
 
 export default async function({user, code: accessCode}) {
 	if(accessCode) {

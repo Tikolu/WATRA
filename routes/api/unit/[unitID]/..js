@@ -1,5 +1,5 @@
 import HTTPError from "modules/server/error.js"
-import Unit from "modules/schemas/unit";
+import Unit from "modules/schemas/unit"
 
 export async function _open({user, unitID}) {
 	// Get unit from DB, and check if exists

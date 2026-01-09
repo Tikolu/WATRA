@@ -1,4 +1,4 @@
-import { Buffer } from "node:buffer";
+import { Buffer } from "node:buffer"
 
 const SERVER_PRIVATE_KEY = Deno.env.get("SERVER_PRIVATE_KEY") 
 if(!SERVER_PRIVATE_KEY) {

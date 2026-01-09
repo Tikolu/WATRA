@@ -5,7 +5,7 @@ import randomID from "modules/randomID.js"
 import Config from "modules/config.js"
 import User from "modules/schemas/user"
 import Passkey from "modules/schemas/passkey.js"
-import { verify } from "node:crypto";
+import { verify } from "node:crypto"
 
 export default class {
 	_id = false

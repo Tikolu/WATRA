@@ -1,5 +1,5 @@
-import HTTPError from "modules/server/error.js";
-import Unit from "modules/schemas/unit";
+import HTTPError from "modules/server/error.js"
+import Unit from "modules/schemas/unit"
 
 export default async function({user, targetUnit, type, name="", org}) {
 	// Check permissions
