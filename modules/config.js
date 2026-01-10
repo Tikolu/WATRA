@@ -80,7 +80,7 @@ for await(const file of Deno.readDir("config")) {
 			// Merge duplicate keys
 			if(typeof Config[key] == "object" && typeof json[key] == "object") {
 				Config[key] = {...Config[key], ...json[key]}
-			} else {
+			} else if(Config[key] != json[key]) {
 				throw new ConfigError(`Duplicate config key "${key}" in file "${file.name}"`)
 			}
 
