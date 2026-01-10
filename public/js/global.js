@@ -141,11 +141,24 @@ const Popup = window.top.Popup || {
 
 		if(typeof message != "string") message = message?.message || JSON.stringify(message)
 
-		if(icon) popup.innerHTML = `<i>${icon}</i>`
-		popup.innerHTML += `
-			<p>${message?.replaceAll("\n", "<br>")}</p>
-			<button class="icon" onclick="this.parentElement.close()">close</button>
-		`
+		// Add icon to start of popup
+		if(icon) {
+			const iconElement = document.createElement("i")
+			iconElement.innerText = icon
+			popup.append(iconElement)
+		}
+		
+		// Add message content
+		const content = document.createElement("p")
+		content.innerText = message
+
+		// Add close button
+		const closeButton = document.createElement("button")
+		closeButton.classList.add("icon")
+		closeButton.innerText = "close"
+		closeButton.onclick = () => popup.close()
+
+		popup.append(content, closeButton)
 
 		// Get focused element
 		const focusElement = document.activeElement

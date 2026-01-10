@@ -126,7 +126,7 @@ function constructNavPath() {
 
 	const existingLinks = [...nav.querySelectorAll("a[href]")].map(a => a.href)
 
-	let pathHTML = ""
+	const path = document.createDocumentFragment()
 	for(const index in Session.history) {
 		const entry = Session.history[index]
 
@@ -142,12 +142,18 @@ function constructNavPath() {
 		// Skip if link already exists
 		if(existingLinks.some(link => link.endsWith(entry.path))) continue
 
-		pathHTML += `
-			<i>arrow_right</i>
-			<a href="${entry.path}">${entry.title}</a>
-		`
+		// Add arrow icon
+		const icon = document.createElement("i")
+		icon.innerText = "arrow_right"
+
+		// Add link
+		const link = document.createElement("a")
+		link.href = entry.path
+		link.innerText = entry.title
+
+		path.append(icon, link)
 	}
-	homeLink.insertAdjacentHTML("afterend", pathHTML)
+	homeLink.after(path)
 }
 constructNavPath()
 // Scroll to end of nav
