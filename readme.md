@@ -31,8 +31,12 @@
 
 ## Configuration
 ### .env file
-- Enter a secure private key for the WATRA server. Highly recommended to generate one [here](https://calebj0seph.github.io/password-generator)
-- Optionally, set the `MONGO_URI` here if your MongoDB server is not running on the default (`localhost:27017`)
+- Set `SERVER_PRIVATE_KEY` to a long, secure private key. It is highly recommended to generate one [here](https://calebj0seph.github.io/password-generator)
+  > [!WARNING]
+  > It is crucial that this key remains secret. Anyone with access to it can sign authentication tokens and login as any user in the system.
+- If MongoDB is running on a different server, set the `MONGO_URI` here
+- If you want to enable HTTPS, set the paths to your certificate and key files here (`HTTPS_CERT_PATH` and `HTTPS_KEY_PATH`).
+
 ### Config files
 Any JSON files in the `config` directory will be loaded by the server on startup. You can customise unit types, role types and permissions here.
 
@@ -59,4 +63,24 @@ Add the `import` attribute to the command above to import units and users from a
 You may also want to generate or process data. This can be done by writing a custom JavaScript file and then running it using the `script` attribute:
 ```
 --script <script_path>    Path to the custom script file
+```
+
+For example, here is a script which create a unit and a user:
+```js
+// Import schemas
+import Unit from "modules/schemas/unit"
+import User from "modules/schemas/user"
+
+// Create unit of type "troop"
+const newUnit = await Unit.create({
+	type: "troop"
+})
+
+// Create new user and assign role "leader" in new unit
+const newUser = new User()
+await newUnit.setRole(newUser, "leader")
+
+// Generate access code valid for 5 minutes
+const accessCode = await newUser.auth.generateAccessCode(1000*60*5)
+console.log("New user access code:", accessCode)
 ```

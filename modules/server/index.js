@@ -84,6 +84,21 @@ let server
 const controller = new AbortController()
 let developmentMode = false
 
+// Attempt to load certificate
+async function loadCert() {
+	const certPath = Deno.env.get("HTTPS_CERT_PATH")
+	const keyPath = Deno.env.get("HTTPS_KEY_PATH")
+	if(certPath || keyPath) {
+		return [
+			await Deno.readTextFile(certPath),
+			await Deno.readTextFile(keyPath)
+		]
+	} else {
+		return [undefined, undefined]
+	}
+}
+const [cert, key] = await loadCert()
+
 export function start({host, port, dev=false, beforeRequest}) {
 	developmentMode = dev
 
@@ -91,6 +106,8 @@ export function start({host, port, dev=false, beforeRequest}) {
 		hostname: host,
 		port,
 		signal: controller.signal,
+		cert,
+		key,
 		onListen({port}) {
 			logger.log(` Started on ${host}:${port}`)
 		},
