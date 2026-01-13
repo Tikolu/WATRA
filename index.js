@@ -29,9 +29,26 @@ if(!args.db) {
 	Deno.exit(1)
 }
 
-database.connect(args.db)
+// Start server
+if(args.host && args.port) {
+	server.start({
+		host: args.host,
+		port: args.port,
+		dev: args["development"],
+		async beforeRequest() {
+			// Ensure database connected before request
+			await database.ready
+		}
+	})
+}
 
+// Connect to database
+database.connect(args.db)
 database.ready.then(async () => {
+	// Revoke setup-only permissions
+	Deno.permissions.revoke({name: "env"})
+	Deno.permissions.revoke({name: "sys"})
+
 	// Clear database functionality
 	if(args["clear-database"]) {
 		await database.clear()
@@ -55,14 +72,6 @@ database.ready.then(async () => {
 	}
 })
 
-// Start server
-if(args.host && args.port) {
-	server.start({
-		host: args.host,
-		port: args.port,
-		dev: args["development"],
-		async beforeRequest() {
-			await database.ready
-		}
-	})
-}
+database.ready.catch(() => {
+	Deno.exit(1)
+})

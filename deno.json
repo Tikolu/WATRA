@@ -1,4 +1,16 @@
 {
+	"permissions": {
+		"default": {
+			"net": ["localhost:27017", "localhost:8080"],
+			"read": ["config", "html", "modules", "public", "routes"],
+			"sys": ["osRelease"],
+			"env": true
+		}
+	},
+	"tasks": {
+		"watra": "deno --permission-set=default --env-file --no-prompt index.js",
+		"watra-dev": "deno --inspect --watch --permission-set=default --env-file --no-prompt index.js --development"
+	},
 	"imports": {
 		"modules/": "./modules/",
 		"modules/database": "./modules/database/index.js",
@@ -17,17 +29,5 @@
 		"rules": {
 			"exclude": ["no-unused-vars", "no-control-regex"]
 		}
-	},
-	"permissions": {
-		"default": {
-			"env": true,
-			"net": ["localhost", "localhost:27017"],
-			"sys": ["osRelease"],
-			"read": ["."]
-		}
-	},
-	"tasks": {
-		"start": "deno -P --env-file --no-prompt index.js",
-		"start-dev": "deno --inspect --watch -P --env-file --no-prompt index.js --development"
 	}
 }

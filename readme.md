@@ -31,41 +31,44 @@
 
 ## Configuration
 ### .env file
-- Set `SERVER_PRIVATE_KEY` to a long, secure private key. It is highly recommended to generate one [here](https://calebj0seph.github.io/password-generator)
-  > [!WARNING]
-  > It is crucial that this key remains secret. Anyone with access to it can sign authentication tokens and login as any user in the system.
-- If MongoDB is running on a different server, set the `MONGO_URI` here
+Create a `.env` file in the project root directory with the following variables:
+- Set `SERVER_PRIVATE_KEY` to a long, randomly generated string. This key is used by the server to sign authentication token cookies.
+- If MongoDB is running on a different server, set the `MONGO_URI` here. The default value is `mongodb://localhost:27017`.
 - If you want to enable HTTPS, set the paths to your certificate and key files here (`HTTPS_CERT_PATH` and `HTTPS_KEY_PATH`).
+> [!WARNING]
+> It is crucial that the `.env` file and its contents are kept secret. Exposing these values will compromise the security of WATRA.
+
+### deno.json file
+By default, Deno permissions are configured to only allow connections to `localhost` (ports `8080` and `27017`). If you want to host WATRA on a different host/port, or connect to a remote MongoDB server, update these values accordingly in the `deno.json` file.
 
 ### Config files
 Any JSON files in the `config` directory will be loaded by the server on startup. You can customise unit types, role types and permissions here.
 
 ## Starting the server
-To start WATRA, run `deno task start` in the project directory. The following attributes are required:
+To start WATRA, run `deno task watra` in the project directory. The following attributes are required:
 ```
---db <database_name>      Name of the MongoDB database to use
---host <host_address>     Host address for the web server
---port <port_number>      Port number for the web server
+--db=<database_name>      Name of the MongoDB database to use
+--host=<host_address>     Host address for the web server
+--port=<port_number>      Port number for the web server
 ```
 
-Example:
+For example, to use database `watra-test` and start the server on `localhost:8080`, run:
 ```
-deno task start --db watra-test --host localhost --port 80
+deno task watra --db=watra-test --host=localhost --port=8080
 ```
-Then, WATRA will be available at the specified host and port.
 
 ## Data import
 Add the `import` attribute to the command above to import units and users from a JSON or CSV file:
 ```
---import <file_path>      Path to the import file (JSON or CSV)
+--import=<file_path>      Path to the import file (JSON or CSV)
 ```
 
 You may also want to generate or process data. This can be done by writing a custom JavaScript file and then running it using the `script` attribute:
 ```
---script <script_path>    Path to the custom script file
+--script=<script_path>    Path to the custom script file
 ```
 
-For example, here is a script which create a unit and a user:
+For example, here is a script which creates a unit and a user:
 ```js
 // Import schemas
 import Unit from "modules/schemas/unit"
