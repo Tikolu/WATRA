@@ -34,15 +34,24 @@ async function handlePublicFile(url, response) {
 	return true
 }
 
-async function handler(req) {
+async function handler(req, ip) {
+	// Get IP from header is in proxy mode
+	const forwardedFor = req.headers.get("x-forwarded-for")
+	if(forwardedFor) {
+		if(ip) return new Response("Header \"X-Forwarded-For\" not allowed", {status: 400})
+		ip = forwardedFor
+	} else if(!ip) {
+		return new Response("Header \"X-Forwarded-For\" required", {status: 400})
+	}
+
 	// Check rate limits
-	const ip = req.headers.get("x-forwarded-for")
 	if(rateLimit.exceeded(ip)) {
 		return new Response("Too many requests\nPlease slow down!", {status: 429})
 	}
 
 	// Initialize request object from request and blank response object
 	const request = new ServerRequest(req)
+	request.sourceIP = ip
 	const response = new ServerResponse(developmentMode)
 
 	// If a cookie header is present, parse cookies
@@ -99,7 +108,7 @@ async function loadCert() {
 }
 const [cert, key] = await loadCert()
 
-export function start({host, port, dev=false, beforeRequest}) {
+export function start({host, port, dev=false, proxy=false, beforeRequest}) {
 	developmentMode = dev
 
 	server = Deno.serve({
@@ -109,11 +118,11 @@ export function start({host, port, dev=false, beforeRequest}) {
 		cert,
 		key,
 		onListen({port}) {
-			logger.log(` Started on ${host}:${port}`)
+			logger.log(` Started on ${host}:${port}${proxy ? " (proxy mode)" : ""}`)
 		},
-	}, async req => {
+	}, async (req, conn) => {
 		await beforeRequest?.()
-		return await handler(req)
+		return await handler(req, !proxy ? conn.remoteAddr.hostname : null)
 	})
 }
 

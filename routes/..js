@@ -57,7 +57,7 @@ export function _exit({user}) {
 				message,
 				stack: this.lastError.stack
 			},
-			ip: this.request.headers.get("x-forwarded-for"),
+			ip: this.request.sourceIP,
 			path: this.request.address.pathname,
 			client: this.token.client,
 			userAgent: this.request.headers.get("user-agent"),

@@ -36,10 +36,11 @@ Create a `.env` file in the project root directory with the following variables:
 - If MongoDB is running on a different server, set the `MONGO_URI` here. The default value is `mongodb://localhost:27017`.
 - If you want to enable HTTPS, set the paths to your certificate and key files here (`HTTPS_CERT_PATH` and `HTTPS_KEY_PATH`).
 > [!WARNING]
-> It is crucial that the `.env` file and its contents are kept secret. Exposing these values will compromise the security of WATRA.
+> It is crucial that the `.env` file and its contents are kept secret. Exposing these values will immediately compromise the security of WATRA and place all data at risk.
 
 ### deno.json file
 By default, Deno permissions are configured to only allow connections to `localhost` (ports `8080` and `27017`). If you want to host WATRA on a different host/port, or connect to a remote MongoDB server, update these values accordingly in the `deno.json` file.
+Similarly, if using HTTPS, add read permissions for the certificate and key files here.
 
 ### Config files
 Any JSON files in the `config` directory will be loaded by the server on startup. You can customise unit types, role types and permissions here.
@@ -57,13 +58,23 @@ For example, to use database `watra-test` and start the server on `localhost:808
 deno task watra --db=watra-test --host=localhost --port=8080
 ```
 
+If running WATRA behind a proxy, use the `proxy` attribute. The `X-Forwarded-For` header will then be used to determine IP addresses of incoming requests:
+```
+--proxy                   Enable proxy mode
+```
+
 ## Data import
 Add the `import` attribute to the command above to import units and users from a JSON or CSV file:
 ```
 --import=<file_path>      Path to the import file (JSON or CSV)
 ```
 
-You may also want to generate or process data. This can be done by writing a custom JavaScript file and then running it using the `script` attribute:
+If you want to clear the database before importing, add the `clear-database` attribute. Use with caution, as this will delete *all* existing data in the database specified by the `--db` attribute:
+```
+--clear-database         Clear the database before importing
+```
+
+You may also want to generate your own or process the newly imported data. This can be done by writing a custom JavaScript file and then running it using the `script` attribute:
 ```
 --script=<script_path>    Path to the custom script file
 ```

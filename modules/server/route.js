@@ -138,8 +138,8 @@ class Route {
 			await this.loadSubRoutes()
 			await this.subRoutes._open?.execute(routingContext)
 
-			// Stop processing if error occurred
-			if(routingContext.lastError) {
+			// Stop processing if error occurred or response is closed
+			if(routingContext.lastError || !routingContext.response.open) {
 				// //
 
 			// If this is the last segment, run "_default" route, otherwise 404
@@ -167,8 +167,8 @@ class Route {
 		}
 		
 		// If an "_exit" function exists, run it
-		if(routingContext.response.open && routingContext.response.headers.get("Connection") != "keep-alive") {
-			await this.subRoutes?._exit?.execute(routingContext)
+		if(this.subRoutes?._exit && routingContext.response.open && routingContext.response.headers.get("Connection") != "keep-alive") {
+			await this.subRoutes._exit.execute(routingContext)
 		}
 	}
 }

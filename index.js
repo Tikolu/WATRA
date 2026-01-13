@@ -20,7 +20,7 @@ globalThis.addEventListener("unhandledrejection", event => {
 
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
-	boolean: ["clear-database", "development"],
+	boolean: ["clear-database", "development", "proxy"],
 	string: ["import", "host", "port", "db", "script"]
 })
 
@@ -34,7 +34,8 @@ if(args.host && args.port) {
 	server.start({
 		host: args.host,
 		port: args.port,
-		dev: args["development"],
+		dev: args.development,
+		proxy: args.proxy,
 		async beforeRequest() {
 			// Ensure database connected before request
 			await database.ready
@@ -60,9 +61,9 @@ database.ready.then(async () => {
 	}
 
 	// Run custom script
-	if(args["script"]) {
-		console.log(`Running custom script: ${args["script"]}`)
-		await import(`./${args["script"]}`)
+	if(args.script) {
+		console.log(`Running custom script: ${args.script}`)
+		await import(`./${args.script}`)
 	}
 
 	// Exit
