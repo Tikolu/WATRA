@@ -6,6 +6,12 @@ import * as webauthn from "jsr:@simplewebauthn/server"
 export default async function({userID}) {
 	let user
 	if(userID) {
+		// Ensure user is in savedUsers token
+		const savedUsers = this.request.token.saved || []
+		if(!savedUsers.includes(userID)) {
+			throw new HTTPError(403, "Brak dostępu do podanego użytkownika")
+		}
+		
 		// Find user by ID
 		user = await User.findById(userID)
 		if(!user) throw new HTTPError(404, "Użytkownik nie istnieje")
