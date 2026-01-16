@@ -298,7 +298,8 @@ async function refreshPageData() {
 		"dialog": ["open"],
 		"details": ["open"],
 		"body": ["class"],
-		"html": ["theme"]
+		"html": ["theme"],
+		"*": ["style"]
 	}
 	const extraAttributes = {
 		"input[type=checkbox]": ["checked"]
@@ -326,7 +327,11 @@ async function refreshPageData() {
 
 		// console.log("Merging", oldDoc, newDoc)
 
-		const ignoreAttrs = ignoreAttributes[Object.keys(ignoreAttributes).find(q => oldDoc.matches && oldDoc.matches(q))] || []
+		const ignoreAttrs = []
+		for(const selector in ignoreAttributes) {
+			if(!oldDoc.matches?.(selector)) continue
+			ignoreAttrs.push(...ignoreAttributes[selector])
+		}
 
 		// Update attributes
 		for(const attr of newDoc.attributes || []) {

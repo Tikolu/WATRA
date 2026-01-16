@@ -18,8 +18,9 @@ const errorMessages = {
 // }
 
 export async function _open() {
-	// Set content type to text/html
+	// Set content type and disable caching
 	this.response.headers.set("Content-Type", "text/html; charset=utf-8")
+	this.response.headers.set("Cache-Control", "no-store")
 
 	// Add route data from URL parameters
 	this.addRouteData(Object.fromEntries(this.request.address.searchParams), false)

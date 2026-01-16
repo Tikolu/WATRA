@@ -45,17 +45,20 @@ API.registerHandler("event/[eventID]/file/[fileID]/delete", {
 	successText: "Usunięto"
 })
 
-function unlockEditing() {
-	unlockEditingButton.remove()
+// Unlock editing
+if(window.confirmUnlockEditingButton) {
+	window.confirmUnlockEditingButton.onclick = () => {
+		unlockEditingButton.remove()
 	
-	const disabledElements = [
-		eventTitleInput,
-		eventDescriptionInput,
-		eventStartDateInput,
-		eventEndDateInput,
-		eventLocationInput,
-		...eventDocuments.querySelectorAll("button[disabled]")
-	]
+		const disabledElements = [
+			eventTitleInput,
+			eventDescriptionInput,
+			eventStartDateInput,
+			eventEndDateInput,
+			eventLocationInput,
+			...eventDocuments.querySelectorAll("button[disabled]")
+		]
 
-	disabledElements.forEach(e => e.disabled = false)
+		disabledElements.forEach(e => e.disabled = false)
+	}
 }

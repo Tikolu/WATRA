@@ -25,15 +25,25 @@ dialog.fullClose = async () => {
 	frameElement.src = ""
 }
 
-// Move button
-function moveConfirmButton() {
+// Process buttons
+function processDialogButtons() {
 	const mainButtons = document.querySelectorAll("main button.confirm")
-	if(!mainButtons.length || mainButtons.length > 1) return
 	const dialogButtons = document.querySelectorAll("body > .button-row:last-child > button")
+
+	// Buttons without API attribute close dialog
+	for(const button of dialogButtons) {
+		if(button.hasAttribute("api")) continue
+		button.addEventListener("click", () => {
+			dialog.close()
+		})
+	}
+
+	// Move button to dialog button row (if there is only one)
+	if(!mainButtons.length || mainButtons.length > 1) return
 	if(dialogButtons.length > 1) return
 	document.querySelector("body > .button-row:last-child").appendChild(mainButtons[0])
 }
-moveConfirmButton()
+processDialogButtons()
 
 // Sizing calculations
 async function resizeContainer() {

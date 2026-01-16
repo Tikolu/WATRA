@@ -6,7 +6,7 @@
 
 /* Themes */
 
-html[theme=light] {
+html[theme^=light] {
 	color-scheme: light;
 
 	--hue: 100deg;
@@ -27,7 +27,7 @@ html[theme=light] {
 	--border-radius: 0.5em;
 }
 
-html[theme=dark] {
+html[theme^=dark] {
 	color-scheme: dark;
 
 	--hue: 100deg;

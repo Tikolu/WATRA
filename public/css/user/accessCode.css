@@ -8,12 +8,12 @@ img {
 	pointer-events: none;
 }
 
-.access-code-container {
+#access-code-container {
 	text-align: center;
 	margin: 1em 0;
 }
 
-.access-code {
+#access-code {
 	background-color: var(--surface-2);
 	border-radius: var(--border-radius);
 
@@ -29,7 +29,7 @@ img {
 	cursor: text;
 }
 
-.access-code + p {
+#access-code + p {
 	font-size: 0.8em;
 	margin: 0;
 }

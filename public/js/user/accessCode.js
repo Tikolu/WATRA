@@ -14,3 +14,7 @@ const expiryTime = 1000 * 60 * 5
 sleep(expiryTime).then(() => dialog.fullClose())
 
 window.top.afterDataRefresh.push(callback)
+
+accessCodeContainer.onclick = () => {
+	copy(accessCode)
+}

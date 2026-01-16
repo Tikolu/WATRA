@@ -2,6 +2,18 @@ function setTheme(theme) {
 	theme ||= JSON.parse(localStorage.theme || "\"auto\"")
 	if(theme == "auto") theme = themeQuery.matches ? "dark" : "light"
 	
+	// Get current theme
+	const currentTheme = document.documentElement.getAttribute("theme")
+
+	// Extract hue from theme
+	const currentHue = Number(currentTheme) ?? Number(currentTheme?.split(" ")?.[1])
+
+	// Apply hue if set
+	if(currentHue) {
+		document.documentElement.style.setProperty("--hue", `${currentHue}deg`)
+		theme += ` ${currentHue}`
+	}
+	
 	// Apply theme
 	document.documentElement.setAttribute("theme", theme)
 	

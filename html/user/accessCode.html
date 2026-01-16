@@ -11,15 +11,20 @@
 		<%~ include("/templates/qrCode", {
 			data: `https://${Config.host}/login?code=${code.replaceAll(" ", "")}`
 		}) %>
-		<div class="access-code-container" onclick="copy(this.children[0])">
-			<p class="access-code"><%= code %></p>
+		<div id="access-code-container">
+			<p id="access-code"><%= code %></p>
 			<p>Naciśnij aby skopiować</p>
 		</div>
 	<% } %>
 
-	<% if(!$.parentCode) { %>
+	<% if($.parentCode) { %>
+		<% $.targetUser.defaultName = "Rodzic / opiekun" %>
 		<h2><%= $.targetUser.displayName %></h2>
 		<article><p><i>info</i> Kod ważny przez 5 minut</p></article>
+		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
+		<% accessCodeContainer($.targetUser.parents[0].auth.formattedAccessCode) %>
+	<% } else { %>
+		<h2><%= $.targetUser.displayName %></h2>
 		<% if($.targetUser.id != $.user.id) { %>
 			<% if(!$.targetUser.isParent) { %>
 				<p class="warning">
@@ -31,17 +36,11 @@
 			<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
 		<% } %>
 		<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
-	<% } else { %>
-		<% $.targetUser.defaultName = "Rodzic / opiekun" %>
-		<h2><%= $.targetUser.displayName %></h2>
-		<article><p><i>info</i> Kod ważny przez 5 minut</p></article>
-		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
-		<% accessCodeContainer($.targetUser.parents[0].auth.formattedAccessCode) %>
 	<% } %>
 </main>
 <hr>
 <div class="button-row">
-	<button onclick="dialog.close()">
+	<button>
 		<i>arrow_back</i>
 		Zamknij
 	</button>

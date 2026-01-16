@@ -78,6 +78,11 @@ async function handler(req, ip) {
 	const tokenCookie = await request.token.toCookie()
 	if(tokenCookie) response.headers.set("Set-Cookie", tokenCookie)
 	
+	// Security headers
+	response.headers.set("Strict-Transport-Security", "max-age=31536000")
+	response.headers.set("X-Content-Type-Options", "nosniff")
+	response.headers.set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://api.qrserver.com")
+	
 	response.registerTiming("server", "close response")
 	const res = response.toResponse()
 
