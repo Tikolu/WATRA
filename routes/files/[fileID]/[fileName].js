@@ -13,7 +13,7 @@ export default async function({user, fileID, fileName}) {
 
 	// Set headers
 	this.response.headers.set("Content-Type", file.mimeType)
-	this.response.headers.set("Cache-Control", "max-age=31536000, immutable")
+	this.response.headers.set("Cache-Control", "max-age=31536000")
 
 	this.response.write(file.data)
 	this.response.close()

@@ -85,7 +85,7 @@ export default class {
 
 	/** Starts streaming mode */
 	startStream() {
-		this.headers.set("Content-Type", "text/event-stream")
+		this.headers.set("Content-Type", "text/event-stream; charset=utf-8")
 		this.headers.set("Connection", "keep-alive")
 		this.streaming = true
 

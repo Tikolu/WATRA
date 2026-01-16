@@ -9,6 +9,15 @@ import ServerResponse from "modules/server/response.js"
 import findRoute from "modules/server/route.js"
 import { Logger } from "modules/logger.js"
 
+const cspDirectives = [
+	"default-src 'self'",
+	"frame-ancestors 'self'",
+	"style-src 'self' https://fonts.googleapis.com",
+	"font-src https://fonts.gstatic.com",
+	"img-src 'self' https://api.qrserver.com",
+	"form-action 'self'",
+].join("; ")
+
 const logger = new Logger("Server", 34)
 
 async function handlePublicFile(url, response) {
@@ -28,7 +37,7 @@ async function handlePublicFile(url, response) {
 	if(!type) return
 
 	response.headers.set("Content-Type", `${type}; charset=utf-8`)
-	response.headers.set("Cache-Control", "max-age=31536000, immutable")
+	response.headers.set("Cache-Control", "max-age=31536000")
 	response.write(await Deno.readFile(url))
 	response.close()
 	return true
@@ -81,7 +90,7 @@ async function handler(req, ip) {
 	// Security headers
 	response.headers.set("Strict-Transport-Security", "max-age=31536000")
 	response.headers.set("X-Content-Type-Options", "nosniff")
-	response.headers.set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://api.qrserver.com")
+	response.headers.set("Content-Security-Policy", cspDirectives)
 	
 	response.registerTiming("server", "close response")
 	const res = response.toResponse()

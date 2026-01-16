@@ -206,7 +206,7 @@ class RoutingContext {
 
 		// If an error is already present, just print plain error message and send response
 		if(this.lastError || this.response.statusCode >= 400) {
-			this.response.headers.set("Content-Type", "text/plain; charset=UTF-8")
+			this.response.headers.set("Content-Type", "text/plain; charset=utf-8")
 			this.response.write(this.lastError?.message || `Error ${this.response.statusCode}!`)
 			this.response.write("\n\n\n\nWhile handling the above error, another error occured:\n\n")
 			this.response.write(error.stack)
