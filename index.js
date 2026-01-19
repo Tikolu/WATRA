@@ -1,14 +1,16 @@
-globalThis.VERSION = "2.2.0"
-
-// Set up globals for root directory and startup time
-globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")
-globalThis.SERVER_TIME = new Date()
-
 import * as server from "modules/server"
 import * as database from "modules/database"
 import * as cli from "cli"
 import "modules/util.js"
 import { Logger } from "modules/logger.js"
+
+// Set up globals for root directory and startup time
+globalThis.SERVER_ROOT = import.meta.url.replace("index.js", "")
+globalThis.SERVER_TIME = new Date()
+
+// Get version from deno.json
+import packageInfo from "./deno.json" with { type: "json" }
+globalThis.VERSION = packageInfo.version
 
 // Handle errors in async functions used without await
 const logger = new Logger("Critical", 91)

@@ -1,4 +1,5 @@
 {
+	"version": "2.2.0",
 	"permissions": {
 		"default": {
 			"net": ["localhost:27017", "localhost:8080"],
