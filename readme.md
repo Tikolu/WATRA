@@ -98,3 +98,5 @@ await newUnit.setRole(newUser, "leader")
 const accessCode = await newUser.auth.generateAccessCode(1000*60*5)
 console.log("New user access code:", accessCode)
 ```
+
+If these JSON, CSV or JS files are not created in the `import` directory, you will need to add read permissions for them in the `deno.json` file.

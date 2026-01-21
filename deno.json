@@ -3,7 +3,7 @@
 	"permissions": {
 		"default": {
 			"net": ["localhost:27017", "localhost:8080"],
-			"read": ["config", "html", "modules", "public", "routes"],
+			"read": ["config", "html", "import", "modules", "public", "routes"],
 			"sys": ["osRelease"],
 			"env": true
 		}
