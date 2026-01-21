@@ -290,7 +290,7 @@ button {
 	background-color: var(--surface-4);
 	overflow: hidden;
 	white-space: nowrap;
-	transition: box-shadow 250ms;
+	transition: box-shadow 250ms, background-color 250ms;
 }
 
 button.dangerous {

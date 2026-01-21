@@ -733,8 +733,8 @@ const API = {
 
 			// Disable elements during API call
 			for(const element of elements) {
-				// Skip focused elements
-				if(element == document.activeElement) continue
+				// Skip focused elements, unless button
+				if(element == document.activeElement && !element.matches("button")) continue
 				
 				element.disabled = true
 				element.classList.add("loading")
