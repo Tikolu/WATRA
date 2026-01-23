@@ -14,7 +14,7 @@ const cspDirectives = [
 	"frame-ancestors 'self'",
 	"style-src 'self' https://fonts.googleapis.com",
 	"font-src https://fonts.gstatic.com",
-	"img-src 'self' https://api.qrserver.com",
+	"img-src 'self' data: https://api.qrserver.com",
 	"form-action 'self'",
 ].join("; ")
 

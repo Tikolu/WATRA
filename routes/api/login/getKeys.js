@@ -26,8 +26,7 @@ export default async function({userID}) {
 		}
 	}
 
-	let keys = []
-	if(user) keys = user.auth.keys
+	const keys = user?.auth.keys.map(key => ({id: key.id}))
 
 	const options = await webauthn.generateAuthenticationOptions({
 		rpID: Config.host,
