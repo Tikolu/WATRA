@@ -30,7 +30,7 @@ export async function ACCESS(user) {
 	for(const event of this.eventInvites) {
 		const invite = event.participants.id(this.id)
 		if(invite?.state != "accepted") continue
-		if(user.hasRoleInUnits("accessUser", event)) return true
+		if(await user.hasRoleInUnits("accessUser", event)) return true
 	}
 
 	// Parent can access other parents of their children
@@ -43,7 +43,18 @@ export async function ACCESS(user) {
 
 export async function MANAGE(user) {
 	// Users with "manageUser" role in any unit/upperUnit of user can manage
-	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+	for await(const unit of this.getUnitsTree()) {
+		// Get user's role in unit
+		const userRole = await user.getRoleInUnit(unit)
+		if(!userRole || !userRole.hasTag("manageUser")) continue
+		// Get target user's role in unit
+		const targetUserRole = await this.getRoleInUnit(unit)
+		if(!targetUserRole) continue
+		// Skip if target user has higher role
+		if(targetUserRole.config.rank > userRole.config.rank) continue
+
+		return true
+	}
 	
 	return false
 }
@@ -64,6 +75,12 @@ export async function EDIT(user) {
 
 	// Cannot edit a user who has previously logged in
 	else if(this.auth.lastLogin) return false
+
+	// Cannot edit user whose parents have previously logged in
+	await this.populate("parents")
+	for(const parent of this.parents) {
+		if(parent.auth.lastLogin) return false
+	}
 
 	// Parent can edit other parents of their children
 	for(const child of this.children) {
@@ -89,7 +106,10 @@ export async function ADD_PARENT(user) {
 	// Lack of ACCESS permission denies ADD_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// MANAGE permission grants EDIT
+	// Non-adults cannot add parents to themselves
+	if(user.id == this.id && this.age !== null && this.age < Config.adultAge) return false
+
+	// MANAGE permission grants ADD_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	// Cannot add parents to user with existing, incomplete parent profiles
@@ -172,14 +192,14 @@ export async function GENERATE_ACCESS_CODE(user) {
 
 	else if(user.id == this.id) return true
 
-	// Users with "manageUser" role in any unit/upperUnit of user can generate
-	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+	// MANAGE permission grants GENERATE_ACCESS_CODE
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
-	// Users with "manageUser" role in any unit/upperUnit of any child can generate code for parent
+	// User with MANAGE permission of any child can generate for parent
 	if(this.parent) {
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasRoleInUnits("manageUser", child.getUnitsTree())) return true
+			if(await user.checkPermission(child.PERMISSIONS.MANAGE)) return true
 		}
 	}
 	
@@ -191,17 +211,24 @@ export async function ADD_AS_PARENT(user) {
 	// Lack of ACCESS permission denies ADD_AS_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// Non-adults cannot be added as parents
+	if(this.age !== null && this.age < Config.adultAge) return false
+
 	// Can add other parents of their children
 	await this.populate("children")
 	for(const child of this.children) {
 		if(user.children.hasID(child.id)) return true
 	}
 
-	// Users with "manageUser" role in any unit/upperUnit of user can add as parent
-	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
-	// Users with "manageUser" role in any unit/upperUnit of any child can add as parent
-	for(const child of this.children) {
-		if(await user.hasRoleInUnits("manageUser", child.getUnitsTree())) return true
+	// MANAGE permission grants ADD_AS_PARENT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
+
+	// User with MANAGE permission of any child can add parent as parent
+	if(this.parent) {
+		await this.populate("children")
+		for(const child of this.children) {
+			if(await user.checkPermission(child.PERMISSIONS.MANAGE)) return true
+		}
 	}
 
 	return false

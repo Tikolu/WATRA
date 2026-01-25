@@ -37,8 +37,8 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 	const canSetRole = await (async () => {
 		// Check if member belongs to the event
 		if(targetEvent.participants.hasID(targetUser.id)) {
-			// If user cannot access participants, only allow users with public roles
-			if(await targetUser.hasRoleInUnits("public", targetEvent)) return true
+			// If user cannot access participants, only allow users with roles
+			if(targetEvent.roles.find(r => r.user.id == targetUser.id)) return true
 			if(await user.checkPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) return true
 		}
 

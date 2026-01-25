@@ -207,6 +207,10 @@ input.invalid, select.invalid {
 	background-color: var(--red-background) !important;
 }
 
+input[type^=date]:disabled {
+	appearance: none;
+}
+
 input[type^=date]:disabled:not([value]) {
 	color: transparent;
 }

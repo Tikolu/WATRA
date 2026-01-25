@@ -27,6 +27,13 @@
 </h1>
 <p>(akcja w <%~ include("/templates/linkList", $.targetEvent.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
 
+<% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.dates.start < new Date()) { %>
+	<p class="warning">
+		<i>warning</i>
+		Uwaga! Akcja nie jest zatwierdzona i nie może się odbyć
+	</p>
+<% } %>
+
 <section>
 	<h2>
 		<i>info</i>
@@ -259,7 +266,7 @@
 		<% if($.targetEvent.roles?.length > 0 || directParticipants.length > 0) { %>
 			<div class="entry-grid">
 				<% for(const role of $.targetEvent.roles) { %>
-					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || role.hasTag("public")) { %>
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || $.user.hasPermission($.targetEvent.PERMISSIONS.SET_ROLE) || role.hasTag("public")) { %>
 						<% displayUser(role.user, role.displayName, $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) %>
 					<% } %>
 				<% } %>
@@ -445,7 +452,8 @@
 
 <% if(
 	$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
-	$.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE)
+	$.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) ||
+	$.targetEvent.upperUnits.some(u => $.user.hasPermission(u.PERMISSIONS.ACCESS_EVENTS))
 ) { %>
 	<section>
 		<h2>
@@ -491,7 +499,11 @@
 				<% for(const approver of $.targetEvent.approvers || []) { %>
 					<div>
 						<div class="entry-title">
-							<h3><%= approver.role.user.displayName %></h3>
+							<h3>
+								<a href="/users/<%= approver.role.user.id %>">
+									<%= approver.role.user.displayName %>
+								</a>
+							</h3>
 							<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
 						</div>
 						<div class="entry-content">

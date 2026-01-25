@@ -1,5 +1,6 @@
 import User from "modules/schemas/user"
 import HTTPError from "modules/server/error.js"
+import Config from "modules/config.js"
 
 export async function create({user, targetUser, firstName, lastName}) {
 	// Check permissions

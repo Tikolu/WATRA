@@ -127,6 +127,11 @@ export class EventClass extends UnitClass {
 		})
 		
 		await super.setRole(user, role)
+
+		// Re-calculate approvers if role has "approveEvent" or "manageEvent" tag
+		if(role.hasTag("approveEvent") || role.hasTag("manageEvent")) {
+			await this.calculateApprovers()
+		}
 	}
 
 	/** Invite unit to event */

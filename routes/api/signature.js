@@ -12,9 +12,9 @@ export function _open({user}) {
 }
 
 export async function start({user}) {
-	// if(user.auth.keys.length == 0) {
-	// 	throw new HTTPError(400, "Dodaj klucz dostępu do profilu aby umożliwić podpisywanie")
-	// }
+	if(Config.passkeyRequired && user.auth.keys.length == 0) {
+		throw new HTTPError(400, "Dodaj klucz dostępu do profilu aby umożliwić podpisywanie")
+	}
 
 	const options = await webauthn.generateAuthenticationOptions({
 		rpID: Config.host,

@@ -9,12 +9,15 @@ export default async function({user, targetEvent}) {
 	const usersForAssignment = {}
 	const exclude = () => Object.values(usersForAssignment).flat()
 	// Get all participants
-	await targetEvent.populate({"participants": "user"})
+	await targetEvent.populate({
+		"participants": "user",
+		"roles": "user"
+	})
 	const participants = []
 	for(const participant of targetEvent.participants) {
-		// If user cannot access participants, only add users with public roles
+		// If user cannot access participants, only add users with roles
 		if(!await user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) {
-			if(!await participant.user.hasRoleInUnits("public", targetEvent)) continue
+			if(!targetEvent.roles.find(r => r.user.id == participant.user.id)) continue
 		}
 		participants.push(participant.user)
 	}
