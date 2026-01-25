@@ -2,7 +2,17 @@ API.registerHandler("unit/[unitID]/member/create", {
 	form: main,
 	progressText: "Tworzenie użytkownika...",
 	after: (response, data) => {
-		window.top.createURLDialog(`/users/${response.userID}/accessCode?parent=${data.createParent || ""}`, true)
+		if(data.accessType == "newParent") {
+			window.top.createURLDialog(`/users/${response.userID}/accessCode?parent=true`, true)
+		}
+		
+		else if(data.accessType == "linkParent") {
+			window.top.createURLDialog(`/users/${response.userID}/addParent?action=link`, true)
+		}
+
+		else if(data.accessType == "direct") {
+			window.top.createURLDialog(`/users/${response.userID}/accessCode`, true)
+		}
 	}
 })
 

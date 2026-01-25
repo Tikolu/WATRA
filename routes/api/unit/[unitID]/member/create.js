@@ -3,7 +3,7 @@ import * as Text from "modules/text.js"
 
 import User from "modules/schemas/user"
 
-export default async function({user, targetUnit, firstName="", lastName="", org, createParent=false}) {
+export default async function({user, targetUnit, firstName="", lastName="", org, accessType}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.CREATE_USER)
 
@@ -23,7 +23,7 @@ export default async function({user, targetUnit, firstName="", lastName="", org,
 	await targetUnit.addMember(newUser)
 
 	// Create parent
-	if(createParent) {
+	if(accessType == "newParent") {
 		const parent = new User()
 		await newUser.addParent(parent)
 	}

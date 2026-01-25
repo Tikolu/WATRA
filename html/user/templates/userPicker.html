@@ -1,5 +1,6 @@
 <%
 	$.id ||= "user-picker"
+	$.fieldName ||= "userID"
 	if(Array.isArray($.users)) $.users = {"": $.users}
 	if(Array.isArray($.disabled)) $.disabled = user => [...$.disabled].hasID(user.id)
 	if(Array.isArray($.selected)) $.selected = user => [...$.selected].hasID(user.id)
@@ -35,7 +36,7 @@
 						<input
 							type="<%= $.multiple ? "checkbox" : "radio" %>"
 							id="user-<%= user.id %>"
-							name="userID"
+							name="<%= $.fieldName %>"
 							value="<%= user.id %>"
 							data-org="<%= user.org %>"
 							<% if($.disabled && $.disabled(user)) { %>
@@ -49,6 +50,11 @@
 							<h3><%= user.displayName || "(użytkownik)" %></h3>
 						</label>
 					</div>
+					<% if($.description) { %>
+						<div class="entry-content">
+							<%= $.description(user) %>
+						</div>
+					<% } %>
 				</div>
 			<% } %>
 		</div>

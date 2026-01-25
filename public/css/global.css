@@ -723,6 +723,7 @@ dialog iframe {
 	height: 0;
 	max-height: 90vh;
 	opacity: 0;
+	user-select: none;
 	transition: height 250ms, opacity 250ms;
 }
 

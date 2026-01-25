@@ -1,0 +1,49 @@
+<% layout("/layouts/dialog", {
+	scripts: ["user/addParent", "user/picker"],
+	styles: ["user/addParent", "user/picker"],
+	meta: {
+		userID: $.targetUser.id
+	}
+}) %>
+<h1>Dodawanie rodzica</h1>
+<main>
+	<% if($.action != "link") { %>
+		<section id="create-section">
+			<h3>Utwórz nowego rodzica</h3>
+			<form id="create-parent">
+				<label for="parent-first-name-input">Imię:</label>
+				<input type="text" id="parent-first-name-input" name="firstName" autocomplete="off">
+				<label for="parent-last-name-input">Nazwisko:</label>
+				<input type="text" id="parent-last-name-input" name="lastName" autocomplete="off">
+			</form>
+			<button id="create-parent-button" api="user/[userID]/parent/create" class="confirm">
+				<i>person_add</i>
+				Utwórz rodzica
+			</button>
+		</section>
+	<% } %>
+	<% if($.usersForLinking.length || $.action == "link") { %>
+		<section id="link-section">
+			<h3>Dodaj istniejącego rodzica</h3>
+			<%~ include("/user/templates/userPicker", {
+				users: $.usersForLinking,
+				fieldName: "parentID",
+				description: u => {
+					if(!u.children.length) return ""
+					return `(${u.children.map(c => c.displayName).join(", ")})`
+				}
+			}) %>
+			<button id="link-parent-button" api="user/[userID]/parent/link" class="confirm">
+				<i>person_add</i>
+				Dodaj rodzica
+			</button>
+		</section>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+</div>

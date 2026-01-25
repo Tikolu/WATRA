@@ -292,7 +292,7 @@
 			<% } %>
 		</div>
 		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
-			<button id="add-parent-button" api="user/[userID]/parent/create">
+			<button id="add-parent-button" opens-dialog="/users/<%= $.targetUser.id %>/addParent">
 				<i>person_add</i>
 				<span>Dodaj rodzica / opiekuna</span>
 			</button>

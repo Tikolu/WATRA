@@ -29,3 +29,7 @@
 .user-picker + button {
 	margin-top: 0.5em;
 }
+
+.user-picker .entry-header label {
+	width: 100%;
+}

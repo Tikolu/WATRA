@@ -51,14 +51,25 @@
 			<p>Użytkownik zostanie dodany do <%= $.units[0].displayName %>.</p>
 		<% } %>
 		
-		<h2>Dodatkowe konta</h2>
+		<h2>Konto rodzica / opiekuna</h2>
+		<% const defaultRole = Config.roles[$.units[0].config.defaultRole] %>
 		<form>
-			<input type="checkbox" id="parent-create" name="createParent"
-				<% if($.units[0].defaultRole?.minAge < Config.adultAge) { %>
+			<input type="radio" id="create-parent" name="accessType" value="newParent"
+				<% if(defaultRole?.minAge < Config.adultAge) { %>
 					checked
 				<% } %>
 			>
-			<label for="parent-create">Utwórz również konto dla rodzica / opiekuna</label>
+			<label for="create-parent">Utwórz nowe konto dla rodzica / opiekuna</label>
+
+			<input type="radio" id="link-parent" name="accessType" value="linkParent">
+			<label for="link-parent">Połącz z istniejącym rodzicem / opiekunem</label>
+			
+			<input type="radio" id="direct-access" name="accessType" value="direct"
+				<% if(defaultRole?.minAge >= Config.adultAge) { %>
+					checked
+				<% } %>
+			>
+			<label for="direct-access">Dostęp bezpośredni (bez konta rodzica / opiekuna)</label>
 		</form>
 		<button api="unit/[unitID]/member/create" class="confirm">
 			<i>person_add</i>

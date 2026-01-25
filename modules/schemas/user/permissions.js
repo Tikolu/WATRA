@@ -89,6 +89,9 @@ export async function ADD_PARENT(user) {
 	// Lack of ACCESS permission denies ADD_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// MANAGE permission grants EDIT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
+
 	// Cannot add parents to user with existing, incomplete parent profiles
 	await this.populate("parents")
 	for(const parent of this.parents) {
@@ -97,9 +100,6 @@ export async function ADD_PARENT(user) {
 
 	// Cannot add parent to adult
 	if(this.age !== null && this.age >= Config.adultAge) return false
-
-	// MANAGE permission grants EDIT
-	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	// Parents can add other parents
 	if(this.parents.hasID(user.id)) return true
@@ -117,12 +117,17 @@ export async function DELETE(user) {
 
 	// Parent can delete other parents of their children, unless they have previously signed in, or have roles
 	if(!this.auth.lastLogin && this.roles.length == 0) {
+		await this.populate("children")
 		for(const child of this.children) {
 			if(user.children.hasID(child.id)) return true
+			// Users with MANAGE permission of any child can delete parent, if they have no set name
+			if(await user.checkPermission(child.PERMISSIONS.MANAGE) && !this.name.first && !this.name.last) {
+				return true
+			}
 		}
 	}
 
-	// "deleteUser" roles in user's unit or upper units can add parents
+	// "deleteUser" roles in user's unit or upper units can delete
 	if(await user.hasRoleInUnits("deleteUser", this.getUnitsTree())) return true
 
 	return false
@@ -178,5 +183,26 @@ export async function GENERATE_ACCESS_CODE(user) {
 		}
 	}
 	
+	return false
+}
+
+/** Adding the user as a parent to another user */
+export async function ADD_AS_PARENT(user) {
+	// Lack of ACCESS permission denies ADD_AS_PARENT
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// Can add other parents of their children
+	await this.populate("children")
+	for(const child of this.children) {
+		if(user.children.hasID(child.id)) return true
+	}
+
+	// Users with "manageUser" role in any unit/upperUnit of user can add as parent
+	if(await user.hasRoleInUnits("manageUser", this.getUnitsTree())) return true
+	// Users with "manageUser" role in any unit/upperUnit of any child can add as parent
+	for(const child of this.children) {
+		if(await user.hasRoleInUnits("manageUser", child.getUnitsTree())) return true
+	}
+
 	return false
 }
