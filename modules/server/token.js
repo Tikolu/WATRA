@@ -68,7 +68,7 @@ export default class {
 		if(token) {
 			// Sign token
 			const hash = await Crypto.sign(token)
-			return `token=${token}.${hash}; Max-Age=34560000; Path=/; SameSite=Strict; Secure; HttpOnly`
+			return `token=${token}.${hash}; Max-Age=34560000; Path=/; SameSite=Lax; Secure; HttpOnly`
 		} else {
 			// Clear token cookie if token is empty
 			return "token=; Max-Age=-1; Path=/"

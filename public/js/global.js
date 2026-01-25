@@ -495,20 +495,20 @@ const API = {
 
 	executionQueue: [],
 
-	async request(get="", post=undefined) {
+	async request(url="", body) {
 		let options = {
+			method: "POST",
 			credentials: "same-origin",
 			headers: {},
 			redirect: "manual"
 		}
-		if(post) {
-			options.method = "POST"
-			options.body = JSON.stringify(post)
+		if(body) {
+			options.body = JSON.stringify(body)
 			options.headers["Content-Type"] = "application/json"
 		}
 		let response, text, json
 		try {
-			response = await fetch(`/api/${get}`, options)
+			response = await fetch(`/api/${url}`, options)
 		} catch {
 			text = "Connection failed"
 		}

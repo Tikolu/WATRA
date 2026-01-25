@@ -2,11 +2,14 @@ import HTTPError from "modules/server/error.js"
 
 export async function _open() {
 	this.response.headers.set("Content-Type", "application/json")
-
 	this.logging = {}
 
 	let input = ""
-	if(this.request.method == "POST") input = await this.request.getBody()
+	if(this.request.method == "POST") {
+		input = await this.request.getBody()
+	} else if(!this.routePath.equals(["api", "stream"])) {
+		throw new HTTPError(405, "Only POST method is allowed")
+	}
 
 	try {
 		if(input === "") input = {}

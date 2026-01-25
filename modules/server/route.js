@@ -62,8 +62,11 @@ class Route {
 			if(this.type == Route.TYPE.DIR) {
 				const files = await Array.fromAsync(Deno.readDir(`${Route.dir}/${this.path}`))
 				for(const file of files) {
-					if(file.name.startsWith(".") || file.name == "default.js") continue
+					if(file.name == "default.js" || file.name.startsWith(".") || file.name.startsWith("_")) continue
 					const routeName = file.name.replace(/\.js$/, "")
+					if(this.subRoutes[routeName]) {
+						throw new Error(`Route conflict: ${this.path}${file.name}`)
+					}
 					this.subRoutes[routeName] = new Route(
 						`${this.path}${file.name}${file.isDirectory ? "/" : ""}`,
 						file.isFile ? Route.TYPE.FILE : Route.TYPE.DIR
@@ -78,6 +81,7 @@ class Route {
 					throw new Error(`Multiple parameter routes defined for ${this.path}`)
 				}
 				this.parameterRoute = this.subRoutes[key]
+				delete this.subRoutes[key]
 			}
 		}
 
@@ -85,6 +89,8 @@ class Route {
 	}
 
 	async execute(routingContext, routePath=[]) {
+		routePath = [...routePath]
+		
 		// Try to decode URL segment, otherwise set the response code to 400
 		let segment = routePath.shift()
 		if(segment !== undefined) {
