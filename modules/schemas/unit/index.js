@@ -196,10 +196,12 @@ export class UnitClass {
 	}
 
 	/** Gets all events in all subUnits */
-	async * getSubUnitEvents() {
+	async * getSubUnitEvents(skipPast=false) {
 		const exclude = []
 		for await(const subUnit of this.getSubUnitsTree()) {
-			await subUnit.populate("events")
+			await subUnit.populate("events", {
+				filter: skipPast ? {"dates.end": {$gte: new Date()}} : undefined
+			})
 			for(const event of subUnit.events) {
 				if(exclude.hasID(event.id)) continue
 				exclude.push(event.id)

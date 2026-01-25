@@ -24,7 +24,6 @@ export default async function({user, targetUnit, orgContext}) {
 		"roles",
 		"subUnits",
 		"upperUnits",
-		"events"
 	])
 	await targetUnit.populate(
 		{"roles": "user"},
@@ -37,15 +36,22 @@ export default async function({user, targetUnit, orgContext}) {
 	// Check all permissions
 	await user.checkPermission(targetUnit.PERMISSIONS)
 
-	// Load event invites
+	// Load events for upcoming or ongoing events
+	await targetUnit.populate("events", {
+		filter: {"dates.end": {$gte: new Date()}}			
+	})
+
+	// Load event invites for upcoming or ongoing events
 	if(user.hasPermission(targetUnit.PERMISSIONS.MANAGE_INVITES)) {
-		await targetUnit.populate("eventInvites")
+		await targetUnit.populate("eventInvites", {
+			filter: {"dates.end": {$gte: new Date()}}			
+		})
 	}
 
-	// Load subUnit events
+	// Load subUnit events for upcoming or ongoing events
 	const subUnitEvents = []
 	if(await user.hasRoleInUnits("manageEvent", targetUnit)) {
-		subUnitEvents.push(...await Array.fromAsync(targetUnit.getSubUnitEvents()))
+		subUnitEvents.push(...await Array.fromAsync(targetUnit.getSubUnitEvents(true)))
 		// Sort by date
 		subUnitEvents.sort((a, b) => {
 			const aDate = a.dates.start || 0

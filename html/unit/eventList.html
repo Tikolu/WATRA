@@ -1,0 +1,95 @@
+<% layout("/layouts/main", {
+	title: "Lista akcji",
+	// styles: ["unit/eventList"],
+	meta: {
+		unitID: $.targetUnit.id
+	},
+	navPath: {
+		[$.targetUnit.displayName]: `/units/${$.targetUnit.id}`
+	}
+}) %>
+<h1>	
+	<i>hiking</i>
+	<%= $.targetUnit.displayName %> - Lista akcji
+</h1>
+
+<section>
+	<h2>
+		<i>hiking</i>
+		Akcje
+	</h2>
+	<% if($.targetUnit.events.length) { %>
+		<div id="unit-event-list" class="entry-grid">
+			<% for(const event of $.targetUnit.events) { %>
+				<%~ include("/event/templates/eventEntry.html", {
+					targetEvent: event
+				}) %>
+			<% } %>
+		</div>
+	<% } else { %>
+		<article>
+			<p>Brak akcji</p>
+		</article>
+	<% } %>
+</section>
+
+<section>
+	<h2>
+		<i>hiking</i>
+		Zaproszenia na akcje
+	</h2>
+	<% const eventInvites = $.targetUnit.eventInvites.filter(e => !$.targetUnit.events.hasID(e.id)) %>
+	<% if(eventInvites.length) { %>
+		<div id="invited-event-list" class="entry-grid">
+			<% for(const event of eventInvites) { %>
+				<%
+					const invite = event.invitedUnits.id($.targetUnit.id)
+
+					let content
+					if(invite?.state == "accepted") {
+						if(invite.invitedParticipants.length > 0) {
+							content = `Dodani uczestnicy: ${invite.invitedParticipants.length}`
+						} else {
+							content = `Zaproszenie zaakceptowane`
+						}
+					}
+				%>
+				<%~ include("/event/templates/eventEntry.html", {
+					targetEvent: event,
+					content,
+					warnings: Array.conditional(
+						invite?.state == "pending", "Oczekujące zaproszenie"
+					)
+				}) %>
+			<% } %>
+		</div>
+	<% } else { %>
+		<article>
+			<p>Brak zaproszeń na akcje</p>
+		</article>
+	<% } %>
+</section>
+
+<section>
+	<h2>
+		<i>hiking</i>
+		Akcje jednostek
+	</h2>
+	<% if($.subUnitEvents.length) { %>
+		<div class="entry-grid">
+			<% for(const event of $.subUnitEvents) { %>
+				<%~ include("/event/templates/eventEntry.html", {
+					targetEvent: event,
+					description: event.upperUnits.map(u => u.displayName).join(", "),
+					warnings: Array.conditional(
+						!event.approvalState, "Akcja nie jest zatwierdzona"
+					)
+				}) %>
+			<% } %>
+		</div>
+	<% } else { %>
+		<article>
+			<p>Brak akcji jednostek</p>
+		</article>
+	<% } %>
+</section>

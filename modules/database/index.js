@@ -183,7 +183,7 @@ export async function connect(dbName="main") {
 	try {
 		await mongoose.connect(MONGO_URI, { dbName })
 		
-		logger.log("Connected!")
+		logger.log(`Connected! (using database "${dbName}")`)
 		readyCallbacks.resolve(true)
 		return true
 		

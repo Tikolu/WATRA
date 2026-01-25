@@ -57,6 +57,11 @@ export default async function({user, targetEvent}) {
 		}
 	}
 
+	// Check permissions on upper units
+	for(const upperUnit of targetEvent.upperUnits || []) {
+		await user.checkPermission(upperUnit.PERMISSIONS.ACCESS_EVENTS)
+	}
+
 	// Get participants for approving
 	const approvalParticipants = []
 	for(const participant of [user, ...user.children]) {

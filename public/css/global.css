@@ -430,6 +430,10 @@ li > * {
 	margin-bottom: 1em;
 }
 
+.heading-link > i {
+	margin-left: 0.25em;
+}
+
 /* Custom layouts */
 
 .button-row {

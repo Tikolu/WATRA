@@ -8,7 +8,7 @@
 }) %>
 <% const orgParam = $.orgContext ? `?org=${$.orgContext}` : "" %>
 
-<h1 id="entry-title">
+<h1 id="unit-title">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
 		<input
 			type="text"
@@ -53,8 +53,8 @@
 			<i>person</i>
 			Użytkownicy
 		</h2>
-		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 1) { %>
-			<a href="/units/<%= $.targetUnit.id %>/members<%= orgParam %>" class="heading-link">Pełna lista</a>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 0) { %>
+			<a href="/units/<%= $.targetUnit.id %>/members<%= orgParam %>" class="heading-link">Wszyscy użytkownicy<i>chevron_right</i></a>
 		<% } %>
 		<% if($.targetUnit.roles?.length > 0) { %>
 			<div id="unit-member-list" class="entry-grid">
@@ -142,16 +142,14 @@
 <% } %>
 
 <% if(
-	$.targetUnit.events.length > 0 ||
-	$.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT) ||
-	($.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES) && $.targetUnit.eventInvites.length > 0) ||
-	$.subUnitEvents.length > 0
+	$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_EVENTS)
 ) { %>
 	<section>
 		<h2>
 			<i>hiking</i>
 			Akcje
 		</h2>
+		<a href="/units/<%= $.targetUnit.id %>/events" class="heading-link">Wszystkie akcje<i>chevron_right</i></a>
 		<% if($.targetUnit.events.length) { %>
 			<div id="unit-event-list" class="entry-grid">
 				<% for(const event of $.targetUnit.events) { %>
@@ -161,14 +159,14 @@
 				<% } %>
 			</div>
 		<% } %>
-		<div class="button-row">
-			<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT)) { %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT)) { %>
+			<div class="button-row">
 				<button id="create-event-button" opens-dialog="/units/<%= $.targetUnit.id %>/createEvent">
 					<i>add</i>
 					<span>Utwórz akcję</span>
 				</button>
-			<% } %>
-		</div>
+			</div>
+		<% } %>
 		<% const eventInvites = $.targetUnit.eventInvites.filter(e => !$.targetUnit.events.hasID(e.id)) %>
 		<% if(eventInvites.length && $.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_INVITES)) { %>
 			<hr>
@@ -204,6 +202,7 @@
 				<% for(const event of $.subUnitEvents) { %>
 					<%~ include("/event/templates/eventEntry.html", {
 						targetEvent: event,
+						description: event.upperUnits.map(u => u.displayName).join(", "),
 						warnings: Array.conditional(
 							!event.approvalState, "Akcja nie jest zatwierdzona"
 						)

@@ -80,13 +80,21 @@ export default async function({user}) {
 
 	await user.populate({
 		"children": {
-			"eventInvites": {},
 			"roles": "unit"
 		},
-		"roles": "unit",
-		"eventRoles": "unit",
-		"eventInvites": {}
+		"roles": "unit"
 	})
+	await user.populate(
+		{
+			"eventInvites": {},
+			"children": {
+				"eventInvites": {},
+			}
+		},
+		{
+			filter: {"dates.end": {$gte: new Date()}}			
+		}
+	)
 
 	// Check permissions
 	await user.checkPermission(user.PERMISSIONS.EDIT)
@@ -94,7 +102,6 @@ export default async function({user}) {
 
 	const events = [
 		...user.eventInvites,
-		...user.eventRoles.map(f => f.unit),
 		...user.children.flatMap(c => c.eventInvites)
 	].unique("id")
 	

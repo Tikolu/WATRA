@@ -15,6 +15,11 @@ export default async function({user, targetEvent, participant: targetUserID}) {
 	const targetInvitation = targetEvent.participants.id(targetUser.id)
 	if(!targetInvitation) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
 
+	// Check if event has already started
+	if(targetEvent.dates.start <= new Date()) {
+		throw new HTTPError(400, "Nie można zmieniać uczestnictwa po rozpoczęciu akcji")
+	}
+
 	await targetInvitation.populate(
 		{"user": "parents"},
 		{known: [targetUser]}

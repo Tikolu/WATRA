@@ -151,6 +151,8 @@ export function populate(graph, options={}) {
 	options.known = [...(options.known || [])]
 	options.known.push(this)
 
+	if(options.filter) options.placeholders ??= false
+
 	let parentDocument = this.parent?.(), populationContext = this.$locals?.populationContext
 	while(parentDocument && !options.known.includes(parentDocument)) {
 		options.known.push(parentDocument)
@@ -227,7 +229,7 @@ export function populate(graph, options={}) {
 
 				const query = async () => {
 					if(options.log) logger.log("Requesting", ref, "from DB:", queryIDs)
-					const queryResults = await model.find({_id: queryIDs}, options.select)
+					const queryResults = await model.find({_id: queryIDs, ...options.filter}, options.select)
 					for(const id of queryIDs) {
 						if(!queryResults.some(r => r?.id == id)) {
 							if(options.placeholders === false) continue
