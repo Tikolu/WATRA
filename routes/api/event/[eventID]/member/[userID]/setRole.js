@@ -54,14 +54,6 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 		throw new HTTPError(400, "Nie masz uprawnień do nadania funkcji temu użytkownikowi")
 	}
 
-	// Invite participant to event
-	if(!targetEvent.participants.hasID(targetUser.id)) {
-		targetEvent.participants.push({
-			user: targetUser.id,
-			state: "pending"
-		})
-	}
-
 	// Remove user
 	if(roleType == "remove") {
 		const participant = targetEvent.participants.id(targetUser.id)
@@ -69,6 +61,9 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 		
 	// Set role
 	} else {
+		// Invite participant to event
+		await targetEvent.inviteParticipant(targetUser, undefined, false)
+		
 		await targetEvent.setRole(targetUser, roleType)
 	}
 
