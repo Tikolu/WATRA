@@ -49,9 +49,8 @@ export async function MANAGE(user) {
 		if(!userRole || !userRole.hasTag("manageUser")) continue
 		// Get target user's role in unit
 		const targetUserRole = await this.getRoleInUnit(unit)
-		if(!targetUserRole) continue
 		// Skip if target user has higher role
-		if(targetUserRole.config.rank > userRole.config.rank) continue
+		if(userRole.config.rank < (targetUserRole?.config.rank || 0)) continue
 
 		return true
 	}
