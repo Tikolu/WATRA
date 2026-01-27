@@ -44,6 +44,8 @@ export class UserClass {
 		min: MIN_DATE,
 		max: Date.now,
 		validate: async function(value) {
+			if(!value) return true
+			
 			// Enforce parents to be adults
 			if(this.isParent && this.age < Config.adultAge) {
 				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")

@@ -8,6 +8,14 @@ const logger = new Logger("Import", 36)
 
 const accessCodeExpiry = 1000 * 60 * 60 * 48
 
+const accessCodes = []
+
+function formatUserID(id) {
+	id = String(id)
+	while(id.length < 8) id = `0${id}`
+	return id
+}
+
 async function createUser(user) {
 	if(Array.isArray(user.name)) {
 		user.firstName = user.name[0]
@@ -15,8 +23,12 @@ async function createUser(user) {
 	} else if(user.name) {
 		user.firstName = user.name
 	}
+
+	if(user.id) user.id = formatUserID(user.id)
+
+	const existingUser = await User.findById(user.id)
 	
-	const newUser = new User({
+	const newUser = existingUser || new User({
 		_id: user.id,
 		org: user.org,
 		name: {
@@ -24,23 +36,45 @@ async function createUser(user) {
 			last: user.lastName || ""
 		},
 		phone: user.phone,
-		email: user.email
+		email: user.email,
+		dateOfBirth: user.dateOfBirth
 	})
-	logger.log(`Creating ${newUser.displayName}`)
-	await newUser.save()
+	if(existingUser) {
+		logger.log(`User ${newUser.displayName} already exists! Details will not be updated`)
+	} else {
+		logger.log(`Creating ${newUser.displayName}`)
+		await newUser.save()
+	}
+
+	if(!user.roles?.length && user.unit) {
+		user.roles = [{ unit: user.unit }]
+	}
 
 	for(const role of user.roles || []) {
 		const unit = await Unit.findOne({ name: role.unit })
 		if(!unit) {
 			throw new Error(`Unit not found for role assignment: ${role.unit}`)
 		}
-		logger.log(`Adding ${newUser.displayName} to ${unit.displayName} as ${role.role}`)
+		logger.log(`Adding ${newUser.displayName} to ${unit.displayName} as ${role.role || unit.config.defaultRole}`)
 		await unit.setRole(newUser, role.role)
+	}
+
+	for(let child of user.children || []) {
+		child = formatUserID(child)
+		const childUser = await User.findById(child)
+		if(!childUser) {
+			logger.log(`Child user not found, skipping: ${child}`)
+			continue
+			// throw new Error(`Child user not found: ${child}`)
+		}
+		await childUser.addParent(newUser)
+		logger.log(`Adding ${childUser.displayName} as child of ${newUser.displayName}`)
 	}
 	
 	if(user.generateAccessCode) {
 		const accessCode = await newUser.auth.generateAccessCode(accessCodeExpiry)
 		logger.log(`${newUser.displayName}'s access code:`, accessCode, `(expires in ${accessCodeExpiry / 1000} seconds)`)
+		accessCodes.push(`${newUser.email || ""},${newUser.displayName},${accessCode}`)
 	}
 	return newUser
 }
@@ -112,6 +146,9 @@ export async function setup(file) {
 				})
 				roleIndex += 1
 			}
+
+			user.children = user.children?.split(" ")
+			
 			const newUser = await createUser(user)
 		}
 
@@ -124,6 +161,12 @@ export async function setup(file) {
 	} else {
 		throw new Error("Unsupported import file: " + file)
 	}
-	
+
 	logger.log("Complete!")
+
+	if(accessCodes.length) {
+		console.log("")
+		logger.log("Generated access codes:")
+		console.log(accessCodes.join("\n"), "\n")
+	}
 }
