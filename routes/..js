@@ -2,6 +2,7 @@ import html from "modules/html.js"
 
 import Session from "modules/session.js"
 import User from "modules/schemas/user"
+import Event from "modules/schemas/event"
 
 const errorMessages = {
 	400: ["Nieprawidłowy URL 😳", "Wpisany przez ciebie URL nie ma sensu"],
@@ -96,13 +97,25 @@ export default async function({user}) {
 		}
 	)
 
+	// Find events for approval
+	const approvalEvents = []
+	for(const role of user.roles) {
+		if(!role.hasTag("approveEvent")) continue
+		const events = await Event.find({
+			"dates.end": {$gte: new Date()},
+			"approvers.role": role.id
+		})
+		approvalEvents.push(...events)
+	}
+
 	// Check permissions
 	await user.checkPermission(user.PERMISSIONS.EDIT)
 	await user.checkPermission(user.PERMISSIONS.APPROVE)
 
 	const events = [
 		...user.eventInvites,
-		...user.children.flatMap(c => c.eventInvites)
+		...user.children.flatMap(c => c.eventInvites),
+		...approvalEvents
 	].unique("id")
 	
 	return html("main", {

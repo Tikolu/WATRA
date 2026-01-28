@@ -5,7 +5,7 @@ import accessCode from "./api/login/accessCode.js"
 export default async function({user, code: accessCode}) {
 	if(accessCode) {
 		// Check access code
-		if(!/^[0-9 ]+$/.test(accessCode)) throw new HTTPError(400, "Nie prawidłowy kod dostępu")
+		if(!/^[0-9 ]+$/.test(accessCode)) throw new HTTPError(400, "Nie prawidłowy kod rejestracyjny")
 	}
 	
 	// If user is logged in, redirect or logout

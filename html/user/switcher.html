@@ -1,5 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["login/common", "user/switcher"],
+	styles: ["user/switcher"],
 	meta: {
 		user: $.user.id
 	}
@@ -33,7 +34,7 @@
 		<section>
 			<h2>
 				<i>switch_account</i>
-				Inne konta
+				Inni użytkownicy
 			</h2>
 			<div class="entry-grid narrow">
 				<% for(const user of $.savedUsers) { %>
@@ -76,11 +77,14 @@
 			</select>
 		</form>
 	</section>
+	<p id="watra-info">
+		WATRA (wersja <%= VERSION %>)<a href="https://github.com/Tikolu/WATRA" target="_blank">GitHub</a><a href="https://tikolu.net" target="_blank">Tikolu.net</a>
+	</p>
 </main>
 <hr>
 <div class="button-row">
 	<button>
 		<i>arrow_back</i>
-		Anuluj
+		Zamknij
 	</button>
 </div>

@@ -34,7 +34,7 @@ export default class {
 		// Check if a different user already has this access code
 		const otherUser = await User.findByAccessCode(this.accessCode)
 		if(otherUser) {
-			throw Error("Błąd generowania kodu dostępu, spróbuj ponownie")
+			throw Error("Błąd generowania kodu rejestracyjnego, spróbuj ponownie")
 		}
 		
 		this.accessCodeExpiry = Date.now() + expiry

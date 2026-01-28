@@ -43,7 +43,7 @@ export default class {
 
 		// Ensure access code is not expired
 		if(user.auth.accessCodeExpiry < Date.now()) {
-			throw new HTTPError(400, "Ważność kodu dostępu wygasła")
+			throw new HTTPError(400, "Ważność kodu rejestracyjnego wygasła")
 		}
 		
 		// Clear access code from user

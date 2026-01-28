@@ -21,7 +21,10 @@
 
 <% if($.savedUsers && $.savedUsers.length > 0) { %>
 	<section>
-		<h2>Ostatnie logowania</h2>
+		<h2>
+			<i>history</i>
+			Ostatnie logowania
+		</h2>
 		<div class="entry-grid">
 			<% for(const user of $.savedUsers) { %>
 				<div>
@@ -54,11 +57,11 @@
 			<div class="button-row">
 				<button>
 					<i>arrow_back</i>
-					<span>Anuluj</span>
+					Anuluj
 				</button>
 				<button class="dangerous" command>
 					<i>delete</i>
-					<span>Usuń z listy</span>
+					Usuń z listy
 				</button>
 			</div>
 		</dialog>
@@ -66,9 +69,12 @@
 <% } %>
 
 <section>
-	<h2>Nowy użytkownik</h2>
+	<h2>
+		<i>person_add</i>
+		Nowy użytkownik
+	</h2>
 	<form>
-		<label for="access-code-input">Kod dostępu:</label>
+		<label for="access-code-input">Kod rejestracyjny:</label>
 		<input
 			type="text"
 			id="access-code-input"

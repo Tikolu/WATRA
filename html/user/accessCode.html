@@ -4,7 +4,7 @@
 }) %>
 <h1>
 	<i>password</i>
-	Kod dostępu
+	Kod rejestracyjny
 </h1>
 <main>
 	<% function accessCodeContainer(code) { %>
@@ -21,7 +21,7 @@
 		<% $.targetUser.defaultName = "Rodzic / opiekun" %>
 		<h2><%= $.targetUser.displayName %></h2>
 		<article><p><i>info</i> Kod ważny przez 5 minut</p></article>
-		<p>Jednorazowy kod dostępu dla konta rodzica / opiekuna:</p>
+		<p>Jednorazowy kod rejestracyjny dla konta rodzica / opiekuna:</p>
 		<% accessCodeContainer($.targetUser.parents[0].auth.formattedAccessCode) %>
 	<% } else { %>
 		<h2><%= $.targetUser.displayName %></h2>
@@ -29,11 +29,11 @@
 			<% if(!$.targetUser.isParent) { %>
 				<p class="warning">
 					<i>warning</i>
-					Poniższy kod dostępu umożliwi dostęp do konta <%= $.targetUser.displayName %>, <b>nie konta rodzica/opiekuna</b>!
+					Poniższy kod rejestracyjny umożliwi dostęp do konta <%= $.targetUser.displayName %>, <b>nie konta rodzica/opiekuna</b>!
 				</p>
 			<% } %>
 			<article><p><i>info</i> Kod ważny przez 5 minut</p></article>
-			<p>Jednorazowy kod dostępu dla użytkownika <%= $.targetUser.displayName %>:</p>
+			<p>Jednorazowy kod rejestracyjny dla użytkownika <%= $.targetUser.displayName %>:</p>
 		<% } %>
 		<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
 	<% } %>

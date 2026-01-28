@@ -17,13 +17,13 @@
 	<% if($.user.id == $.targetUser.id) { %>
 		<button id="logout-button" api="logout">
 			<i>logout</i>
-			<span>Wyloguj</span>
+			Wyloguj
 		</button>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
 		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
 			<i>delete</i>
-			<span>Usuń użytkownika</span>
+			Usuń użytkownika
 		</button>
 		<dialog id="delete-user-dialog">
 			<h1>Trwale usunąć użytkownika <%= $.targetUser.displayName %>?</h1>
@@ -31,11 +31,11 @@
 			<div class="button-row">
 				<button>
 					<i>arrow_back</i>
-					<span>Anuluj</span>
+					Anuluj
 				</button>
 				<button class="dangerous" command>
 					<i>delete</i>
-					<span>Usuń</span>
+					Usuń
 				</button>
 			</div>
 		</dialog>
@@ -43,13 +43,14 @@
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
 		<button id="generate-access-code-button" opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
 			<i>password</i>
-			<span>Wygeneruj kod dostępu</span>
+			Wygeneruj kod rejestracyjny
 		</button>
 	<% } %>
 </div>
 
 <%
 	const md = $.targetUser.missingDetails
+	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
 %>
 
 <section>
@@ -283,7 +284,11 @@
 	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>supervisor_account</i>
-			Rodzice / opiekunowie
+			<% if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) { %>
+				Kontakty alarmowe
+			<% } else { %>
+				Rodzice / opiekunowie
+			<% } %>
 		</h2>
 		<div id="parent-list" class="entry-grid">
 			<% for(const parent of $.targetUser.parents || []) { %>

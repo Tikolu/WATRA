@@ -30,7 +30,7 @@
 		</form>
 		<button class="confirm" api="unit/[unitID]/subUnit/[subUnitID]/remove">
 			<i>delete</i>
-			<span>Usuń z jednostki</span>
+			Usuń z jednostki
 		</button>
 		<hr>
 	<% } %>
@@ -38,12 +38,12 @@
 	<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Zawarte jednostki i użytkownicy zostaną przeniesieni do <%= $.targetUnit.upperUnits.map(j => j.displayName).join(", ") %>.</p>
 	<button class="dangerous confirm" api="unit/[unitID]/delete">
 		<i>delete</i>
-		<span>Trwale usuń jednostkę</span>
+		Trwale usuń jednostkę
 	</button>
 </main>
 <div class="button-row">
 	<button>
 		<i>arrow_back</i>
-		<span>Anuluj</span>
+		Anuluj
 	</button>
 </div>
