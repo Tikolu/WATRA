@@ -382,6 +382,7 @@ details[open] > summary > .open-text { display: none }
 dl {
 	display: grid;
 	grid-template-columns: max-content 1fr;
+	overflow-x: auto;
 
 	& > dt {
 		font-weight: bold;
@@ -412,7 +413,7 @@ li > * {
 	margin-bottom: 0;
 }
 
-.warning {
+.warning, .info {
 	background-color: var(--red-background);
 	color: var(--red-text);
 	border-radius: var(--border-radius);
@@ -420,12 +421,17 @@ li > * {
 	/* width: fit-content; */
 }
 
-.warning > * {
+.warning > *, .info > * {
 	margin: 0;
 }
 
-.warning + .warning {
+.warning + .warning, .info + .info {
 	margin-top: -0.5em;
+}
+
+.info {
+	background-color: var(--surface-3);
+	color: var(--text);
 }
 
 .heading-link {
@@ -557,7 +563,7 @@ li > * {
 		margin: 0;
 		height: 0;
 
-		&:last-child {
+		&:last-child, &:first-child, & + .grid-break {
 			display: none;
 		}
 	}
@@ -602,6 +608,7 @@ section {
 	}
 
 	&.disabled {
+		color: var(--secondary-text);
 		opacity: 0.5;
 		cursor: not-allowed;
 

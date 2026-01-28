@@ -18,17 +18,3 @@ API.registerHandler("user/[userID]/medical/add", {
 API.registerHandler("user/[userID]/medical/remove", {
 	progressText: "Usuwanie..."
 })
-
-API.registerHandler("user/[userID]/medical/confirm", {
-	form: confirmation,
-	progressText: "Zatwierdzanie...",
-	successText: "Zatwierdzono",
-	error: () => {
-		signature.reset()
-	}
-})
-
-API.registerHandler("user/[userID]/medical/unconfirm", {
-	progressText: "Cofanie zatwierdzenia...",
-	successText: "Cofnięto zatwierdzenie"
-})

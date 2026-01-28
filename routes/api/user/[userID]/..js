@@ -11,3 +11,21 @@ export async function _open({user, userID}) {
 
 	this.addRouteData({targetUser})
 }
+
+export async function confirm({user, targetUser, signature}) {
+	await user.requirePermission(targetUser.PERMISSIONS.APPROVE)
+
+	// Verify signature
+	await user.verifySignature(signature)
+
+	await targetUser.confirmDetails(signature)
+}
+
+export async function unconfirm({user, targetUser}) {
+	// Check permissions (approve or manage)
+	if(!await user.checkPermission(targetUser.PERMISSIONS.APPROVE) && !await user.checkPermission(targetUser.PERMISSIONS.MANAGE)) {
+		throw new HTTPError(403)
+	}
+	
+	await targetUser.unconfirmDetails()
+}

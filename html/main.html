@@ -41,20 +41,14 @@
 	</section>
 <% } %>
 <% 
-	// Load warnings if user can edit their details
-	const md = []
-	if($.user.hasPermission($.user.PERMISSIONS.EDIT)) {
-		md.push(...$.user.missingDetails)
-	}
-
 	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
-	if(blockAccess) {
-		md.push("passkey")
-	}
 %>
-<% if(md.length > 0) { %>
+<% if(!$.user.profileComplete || blockAccess) { %>
 	<article>
-		<p><i>info</i> Witamy na platformie WATRA! Pierwszy krok - uzupełnij brakujące dane na swoim profilu poniżej.</p>
+		<p>
+			<b><i>info</i> Witamy na platformie WATRA!</b><br>
+			Pierwszy krok - uzupełnij dane na swoim profilu poniżej.
+		</p>
 	</article>
 	<section>
 		<h2>
@@ -64,16 +58,10 @@
 		<div class="entry-grid medium">
 			<%~ include("user/templates/userEntry", {
 				targetUser: $.user,
-				warnings: (() => {
-					return Array.conditional(
-						md.includes("name"), "Brak imienia i nazwiska",
-						md.includes("email"), "Brak adresu e-mail",
-						md.includes("phone"), "Brak numeru telefonu",
-						md.includes("dob"), "Brak daty urodzenia",
-						md.includes("medical"), "Nie zatwierdzone dane medyczne",
-						md.includes("passkey"), "Brak klucza dostępu"
-					)
-				})() || []
+				warnings: Array.conditional(
+					!$.user.profileComplete, "Uzupełnij dane profilu",
+					blockAccess, "Dodaj klucz dostępu"
+				)
 			}) %>
 		</div>
 	</section>
@@ -106,16 +94,9 @@
 		</h2>
 		<div class="entry-grid">
 			<% for(const child of $.user.children) { %>
-				<% const md = child.missingDetails %>
 				<%~ include("user/templates/userEntry", {
 					targetUser: child,
-					warnings: Array.conditional(
-						md.includes("names"), "Brak imienia i nazwiska",
-						md.includes("email"), "Brak adresu e-mail",
-						md.includes("phone"), "Brak numeru telefonu",
-						md.includes("dob"), "Brak daty urodzenia",
-						md.includes("medical"), "Nie zatwierdzone dane medyczne"
-					)
+					warnings: child.confirmed ? [] : ["Zatwierdź dane podopiecznego"]
 				}) %>
 			<% } %>
 		</div>

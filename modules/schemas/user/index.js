@@ -81,6 +81,12 @@ export class UserClass {
 			return phone
 		}
 	}
+	signature = {
+		type: {
+			name: String,
+			time: Date
+		}
+	}
 
 	org = {
 		type: String,
@@ -168,8 +174,7 @@ export class UserClass {
 		// Required for users with roles
 		if(this.roles.length > 0) {
 			missingDetails.push(...Array.conditional(
-				!this.dateOfBirth, "dob",
-				!this.medical.confirmed, "medical"
+				!this.dateOfBirth, "dob"
 			))
 			// Required for adults
 			if(this.age >= Config.adultAge) {
@@ -183,9 +188,18 @@ export class UserClass {
 		return missingDetails
 	}
 
-	/** True if user has no missing details */
+	/** Checks if profile is confirmed (signed) */
+	get confirmed() {
+		if(this.signature?.name && this.signature?.time) return true
+		else return false
+	}
+
+	/** Checks if profile is complete (no missing details) */
 	get profileComplete() {
-		return this.missingDetails.length == 0
+		// Users with roles require confirmation
+		if(this.roles.length > 0) return this.confirmed
+		// Users without roles require no missing details
+		else return this.missingDetails.length == 0
 	}
 
 	/* * Methods * */
@@ -347,6 +361,43 @@ export class UserClass {
 
 		return true
 	}
+	
+	/** Confirms and locks details */
+	async confirmDetails(signature) {
+		if(!signature || this.signature) return
+
+		// Check completeness
+		if(!this.medical.complete) throw Error("Brakujące dane medyczne")
+		if(this.missingDetails.length > 0) throw Error("Brakujące dane profilu")
+		await this.populate("parents")
+		for(const parent of this.parents) {
+			if(!parent.profileComplete) {
+				if(parent.roles.length > 0) throw Error(`Najpierw zatwierdź dane profilu ${parent.displayName}`)
+				else throw Error(`Brakujące dane profilu ${parent.displayName}`)
+			}
+		}
+		
+		this.signature = signature
+		
+		// Save user
+		await this.save()
+	}
+	
+	/** Removes confirmation and unlocks details */
+	async unconfirmDetails() {
+		if(!this.signature) return
+		this.signature = undefined
+
+		// Also unconfirm if any child is confirmed
+		await this.populate("children")
+		for(const child of this.children) {
+			if(child.confirmed) await child.unconfirmDetails()
+		}
+	
+		// Save user
+		await this.save()
+	}
+	
 }
 
 const schema = mongoose.Schema.fromClass(UserClass)

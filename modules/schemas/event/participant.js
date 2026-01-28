@@ -30,14 +30,8 @@ export default class {
 		if(this.state === state) return
 
 		// Check participant eligibility
-		if(!this.user.profileComplete) {
-			throw new HTTPError(400, "Brakuje danych na profilu uczestnika")
-		}
-		// Check parent eligibility
-		if(this.user.parents.length > 0) {
-			if(this.user.parents.every(p => !p.profileComplete)) {
-				throw new HTTPError(400, "Brakuje danych na profilu rodzica uczestnika")
-			}
+		if(!this.user.confirmed) {
+			throw new HTTPError(400, "Dane uczestnika nie zostały zatwierdzone")
 		}
 
 		// Remove role if declined

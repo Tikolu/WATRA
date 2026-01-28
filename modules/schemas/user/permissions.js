@@ -63,6 +63,15 @@ export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// Cannot edit a user with confirmed profile
+	if(this.confirmed) return false
+
+	// Cannot edit parent of confirmed child
+	await this.populate("children")
+	for(const child of this.children) {
+		if(child.confirmed) return false
+	}
+
 	// Users can edit themselves if they are adults or have no set age
 	if(user.id == this.id) {
 		if(this.age === null) return true
@@ -71,15 +80,6 @@ export async function EDIT(user) {
 
 	// Parent can edit their children
 	} else if(user.children.hasID(this.id)) return true
-
-	// Cannot edit a user who has previously logged in
-	else if(this.auth.lastLogin) return false
-
-	// Cannot edit user whose parents have previously logged in
-	await this.populate("parents")
-	for(const parent of this.parents) {
-		if(parent.auth.lastLogin) return false
-	}
 
 	// Parent can edit other parents of their children
 	for(const child of this.children) {
@@ -110,6 +110,9 @@ export async function ADD_PARENT(user) {
 
 	// Non-adults cannot add parents to themselves
 	if(user.id == this.id && this.age !== null && this.age < Config.adultAge) return false
+
+	// Cannot add parent to confirmed user
+	if(this.confirmed) return false
 
 	// MANAGE permission grants ADD_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
@@ -157,13 +160,16 @@ export async function DELETE(user) {
 
 /** Making important / legal decisions for the user */
 export async function APPROVE(user) {
-	// Lack of EDIT permission denies APPROVE
-	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+	// Lack of ACCESS permission denies APPROVE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// Non-adults, or users without set age cannot approve themselves
 	if(user.id == this.id) {
+		// Users without set age cannot approve themselves
 		if(this.age === null) return false
+		// Non-adults cannot approve themselves
 		if(this.age < Config.adultAge) return false
+		// Users without roles cannot approve themselves
+		if(this.roles.length == 0) return false
 		return true
 	}
 	
@@ -192,7 +198,11 @@ export async function GENERATE_ACCESS_CODE(user) {
 	// Cannot generate for user with access keys
 	if(this.auth.keys.length > 0) return false
 
+	// Otherwise, can generate for themselves
 	else if(user.id == this.id) return true
+
+	// Parent can generate for their children
+	if(user.children.hasID(this.id)) return true
 
 	// MANAGE permission grants GENERATE_ACCESS_CODE
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true

@@ -31,6 +31,20 @@ API.registerHandler("user/[userID]/parent/create", {
 	}
 })
 
+API.registerHandler("user/[userID]/confirm", {
+	form: "signature-form",
+	progressText: "Zatwierdzanie...",
+	successText: "Zatwierdzono",
+	error: () => {
+		signature.reset()
+	}
+})
+
+API.registerHandler("user/[userID]/unconfirm", {
+	progressText: "Cofanie zatwierdzenia...",
+	successText: "Cofnięto zatwierdzenie"
+})
+
 API.registerHandler("passkey/create", {
 	progressText: "Tworzenie klucza dostępu...",
 	after: async (response, data, element) => {

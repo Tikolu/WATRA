@@ -64,7 +64,10 @@
 						<%~ include("/user/templates/userEntry.html", {
 							targetUser: role.user,
 							description: role.displayName,
-							classList: $.orgContext && role.org != $.orgContext ? "faded" : null
+							classList: $.orgContext && role.org != $.orgContext ? "faded" : null,
+							warnings: Array.conditional(
+								!role.user.confirmed, "Nie zatwierdzone dane"
+							)
 						}) %>
 					<% } %>
 				<% } %>

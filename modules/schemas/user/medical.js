@@ -4,10 +4,6 @@ import * as Text from "modules/text.js"
 export default class {
 	_id = false
 
-	signature = {
-		name: String,
-		time: Date
-	}
 	entries = [
 		class {
 			title = String
@@ -41,8 +37,6 @@ export default class {
 			
 	/** Updates a medical entry */
 	async updateEntry(category, title, symptoms, solutions) {
-		if(this.confirmed) throw Error("Dane medyczne są zatwierdzone")
-		
 		category = category.trim().toLowerCase()
 		title = title.trim()
 		if(!title) return
@@ -73,8 +67,6 @@ export default class {
 
 	/** Removes a medical entry */
 	async removeEntry(category, title) {
-		if(this.confirmed) throw Error("Dane medyczne są zatwierdzone")
-		
 		category = category.trim().toLowerCase()
 		title = title.trim()
 		
@@ -83,28 +75,6 @@ export default class {
 
 		this.entries.splice(entryIndex, 1)
 		
-		// Save user
-		await this.parent().save()
-	}
-
-	/** Confirms and locks medical info */
-	async confirm(signature) {
-		if(this.confirmed) return
-		for(const entry of this.entries) {
-			if(!entry.symptoms) throw Error(`Brak opisu dla "${entry.title}"`)
-			if(!entry.solutions) throw Error(`Brak zaleceń dla "${entry.title}"`)
-		}
-		this.signature = signature
-		
-		// Save user
-		await this.parent().save()
-	}
-	
-	/** Removes confirmation and unlocks medical info */
-	async unconfirm() {
-		if(!this.confirmed) return
-		this.signature = undefined
-
 		// Save user
 		await this.parent().save()
 	}
@@ -158,8 +128,13 @@ export default class {
 		return displayCategories
 	}
 
-	/** Checks if medical info has a signature */
-	get confirmed() {
-		return this.signature?.name && this.signature?.time
+	/** Checks if any details are missing */
+	get complete() {
+		for(const entry of this.entries) {
+			if(!entry.symptoms) return false
+			if(!entry.solutions) return false
+		}
+
+		return true
 	}
 }
