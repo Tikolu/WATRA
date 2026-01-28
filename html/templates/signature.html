@@ -1,5 +1,5 @@
 <% let signatureEnabled = true %> 
-<% if(Config.passkeyRequired && $.user.auth.keys.length == 0) { %>
+<% if(!$.signature && Config.passkeyRequired && $.user.auth.keys.length == 0) { %>
 	<% signatureEnabled = false %>
 	<p class="warning">
 		<i>warning</i>

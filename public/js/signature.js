@@ -28,6 +28,7 @@ function processSignatureElements() {
 					console.error(error)
 					logError(error)
 					Popup.error("Anulowano podpisywanie")
+					signature.reset()
 					return
 				}
 			}

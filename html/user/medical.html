@@ -132,7 +132,8 @@
 	<% if($.targetUser.medical.confirmed) { %>
 		<p>Dane są zatwierdzone</p>
 		<%~ include("/templates/signature", {
-			signature: $.targetUser.medical.signature
+			signature: $.targetUser.medical.signature,
+			user: $.user
 		}) %>
 
 		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetUser.PERMISSIONS.MANAGE)) { %>
