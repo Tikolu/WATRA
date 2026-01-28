@@ -600,6 +600,15 @@ section {
 	& > :last-child {
 		margin-bottom: 0;
 	}
+
+	&.disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+
+		& > * {
+			pointer-events: none;
+		}
+	}
 }
 
 article {

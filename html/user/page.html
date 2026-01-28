@@ -267,7 +267,7 @@
 <% } %>
 
 <% if($.targetUser.isParent) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>supervisor_account</i>
 			Podopieczni
@@ -280,7 +280,7 @@
 		</div>
 	</section>
 <% } else if($.targetUser.parents.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>supervisor_account</i>
 			Rodzice / opiekunowie
@@ -301,7 +301,7 @@
 <% } %>
 
 <% if($.targetUser.roles.length > 0) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>groups</i>
 			Funkcje w jednostkach
@@ -318,7 +318,7 @@
 <% } %>
 
 <% if($.targetUser.eventRoles.length > 0) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 		<i>hiking</i>
 			Funkcje w akcjach
@@ -335,7 +335,7 @@
 <% } %>
 
 <% if($.targetUser.eventInvites.length > 0) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 		<i>hiking</i>
 			Zaproszenia na akcje

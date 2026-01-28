@@ -105,6 +105,9 @@ export async function ADD_PARENT(user) {
 	// Lack of ACCESS permission denies ADD_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// Block adding parent if user has no passkeys
+	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
+
 	// Non-adults cannot add parents to themselves
 	if(user.id == this.id && this.age !== null && this.age < Config.adultAge) return false
 

@@ -46,13 +46,16 @@
 	if($.user.hasPermission($.user.PERMISSIONS.EDIT)) {
 		md.push(...$.user.missingDetails)
 	}
+
+	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
+	if(blockAccess) {
+		md.push("passkey")
+	}
 %>
 <% if(md.length > 0) { %>
 	<article>
 		<p><i>info</i> Aby rozpocząć korzystanie z systemu, uzupełnij brakujące dane na swoim profilu poniżej.</p>
 	</article>
-<% } %>
-<% if(md.length > 0) { %>
 	<section>
 		<h2>
 			<i>person</i>
@@ -68,6 +71,7 @@
 						md.includes("phone"), "Brak numeru telefonu",
 						md.includes("dob"), "Brak daty urodzenia",
 						md.includes("medical"), "Nie zatwierdzone dane medyczne",
+						md.includes("passkey"), "Brak klucza dostępu"
 					)
 				})() || []
 			}) %>
@@ -76,7 +80,7 @@
 <% } %>
 
 <% if($.user.roles.length > 0) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>groups</i>
 			Jednostki
@@ -95,7 +99,7 @@
 <% } %>
 
 <% if($.user.children.length > 0) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>supervisor_account</i>
 			Podopieczni
@@ -119,7 +123,7 @@
 <% } %>
 
 <% if($.events.length) { %>
-	<section>
+	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
 			<i>hiking</i>
 			Akcje
