@@ -18,7 +18,7 @@ export async function start({user}) {
 
 	const options = await webauthn.generateAuthenticationOptions({
 		rpID: Config.host,
-		allowCredentials: user.auth.keys,
+		allowCredentials: user.auth.keys.map(key => ({id: key.id})),
 		userVerification: "required",
 		timeout: (10 * 60 * 1000) // 10 minutes
 	})
