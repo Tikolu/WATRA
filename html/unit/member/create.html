@@ -51,7 +51,7 @@
 			<p>Użytkownik zostanie dodany do <%= $.units[0].displayName %>.</p>
 		<% } %>
 		
-		<h2>Konto rodzica / opiekuna</h2>
+		<h2>Profil rodzica / opiekuna</h2>
 		<% const defaultRole = Config.roles[$.units[0].config.defaultRole] %>
 		<form>
 			<input type="radio" id="create-parent" name="accessType" value="newParent"
@@ -59,7 +59,7 @@
 					checked
 				<% } %>
 			>
-			<label for="create-parent">Utwórz nowe konto dla rodzica / opiekuna</label>
+			<label for="create-parent">Utwórz nowy profil dla rodzica / opiekuna</label>
 
 			<input type="radio" id="link-parent" name="accessType" value="linkParent">
 			<label for="link-parent">Połącz z istniejącym rodzicem / opiekunem</label>
@@ -69,7 +69,7 @@
 					checked
 				<% } %>
 			>
-			<label for="direct-access">Dostęp bezpośredni (bez konta rodzica / opiekuna)</label>
+			<label for="direct-access">Dostęp bezpośredni (bez profilu rodzica / opiekuna)</label>
 		</form>
 		<button api="unit/[unitID]/member/create" class="confirm">
 			<i>person_add</i>
