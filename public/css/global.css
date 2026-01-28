@@ -57,7 +57,6 @@ html[theme^=dark] {
 
 body {
 	font-family: Lato, sans-serif;
-	background-color: var(--surface-0);
 	color: var(--text);
 	margin: 0;
 	transition: background-color 250ms, color 250ms;
@@ -74,6 +73,8 @@ main {
 /* Browser customisation */
 
 html {
+	background-color: var(--surface-0);
+	overflow-x: hidden;
 	scrollbar-color: var(--secondary-text) var(--surface-2);
 	-webkit-tap-highlight-color: transparent;
 }
@@ -718,6 +719,7 @@ dialog .button-row button:first-child:not(:only-child) {
 
 dialog[open], .popup:popover-open  {
 	animation: popup-show 250ms forwards;
+	display: flex;
 }
 
 dialog:not([open]), .popup.closing {
