@@ -58,6 +58,11 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 	if(roleType == "remove") {
 		const participant = targetEvent.participants.id(targetUser.id)
 		await participant.uninvite()
+
+		// Re-calculate approvers if role had "approveEvent" or "manageEvent" tag
+		if(targetUserRole?.hasTag("approveEvent") || targetUserRole?.hasTag("manageEvent")) {
+			await targetEvent.calculateApprovers()
+		}
 		
 	// Set role
 	} else {

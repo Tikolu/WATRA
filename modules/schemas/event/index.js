@@ -226,10 +226,10 @@ export class EventClass extends UnitClass {
 				// Skip roles without "approveEvent" tag
 				if(!role.hasTag("approveEvent")) continue
 				// Skip roles belonging to users already found
-				if(approverCandidates.some(r => r.user == role.user)) continue
-				if(alternativeCandidates.some(r => r.user == role.user)) continue
+				if(approverCandidates.some(r => r.user.id == role.user.id)) continue
+				if(alternativeCandidates.some(r => r.user.id == role.user.id)) continue
 				// Roles belonging to users with "manageEvent" roles in this event get added as alternatives
-				if(this.roles.some(r => r.user == role.user && r.hasTag("manageEvent"))) {
+				if(this.roles.some(r => r.user.id == role.user.id && r.hasTag("manageEvent"))) {
 					alternativeCandidates.push(role)
 				} else {
 					approverCandidates.push(role)
