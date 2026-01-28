@@ -156,12 +156,18 @@
 }
 
 .signature-container.disabled {
+	color: var(--secondary-text);
+	
 	.signature-slider-container {
-		color: var(--secondary-text);
 		cursor: not-allowed;
 
 		.signature-slider {
 			pointer-events: none;
+
+			i::after {
+				display: block;	
+				content: "close";
+			}
 		}
 	}
 }

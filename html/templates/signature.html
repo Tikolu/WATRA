@@ -1,15 +1,16 @@
-<% let signatureEnabled = true %> 
-<% if(!$.signature && Config.passkeyRequired && $.user.auth.keys.length == 0) { %>
-	<% signatureEnabled = false %>
+<%
+	const passkeyRequired = !$.signature && Config.passkeyRequired && $.user.auth.keys.length == 0
+%> 
+<% if(passkeyRequired) { %>
 	<p class="warning">
 		<i>warning</i>
-		Dodaj klucz dostępu do swojego profilu, aby umożliwić podpisywanie.
+		Dodaj klucz dostępu do profilu, aby umożliwić podpisywanie
 	</p>
 <% } %>
 <%
 	$.id ||= "signature"
 %>
-<div class="signature-container input<% if($.signature) { %> complete<% } else if(!signatureEnabled) { %> disabled<% } %>" name="signature" id="<%= $.id %>">
+<div class="signature-container input<% if($.signature) { %> complete<% } else if(passkeyRequired) { %> disabled<% } %>" name="signature" id="<%= $.id %>">
 	<% if($.signature) { %>
 		<div class="signature-info">
 			<h3>
@@ -27,7 +28,12 @@
 			<div class="signature-slider">
 				<i></i>
 			</div>
-			<p>Przesuń aby podpisać</p>
+			<p>
+			<% if(passkeyRequired) { %>
+				Dodaj klucz dostępu
+			<% } else { %>
+				Przesuń aby podpisać
+			<% } %>
 			<p class="loading-text">Podpisywanie...</p>
 		</div>
 	<% } %>
