@@ -1,7 +1,10 @@
 *.lock
-.vscode
 .env
+*.sh
+*.service
+/.vscode
 scrap
 /import
 /html/custom
-config/custom*.json
+/config/custom*.json
+/cert
