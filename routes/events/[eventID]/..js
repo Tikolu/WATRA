@@ -38,15 +38,6 @@ export default async function({user, targetEvent}) {
 		await targetEvent.sortRoles()
 	}
 
-	if(user.hasPermission(targetEvent.PERMISSIONS.APPROVE) || user.hasPermission(targetEvent.PERMISSIONS.EDIT)) {
-		// Populate event approvers
-		await targetEvent.populate({
-			"approvers": {
-				"role": ["user", "unit"]
-			}
-		})
-	}
-
 	// Check for access to invited units
 	for(const unitInvite of targetEvent.invitedUnits || []) {
 		if(await user.checkPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) {
@@ -60,6 +51,19 @@ export default async function({user, targetEvent}) {
 	// Check permissions on upper units
 	for(const upperUnit of targetEvent.upperUnits || []) {
 		await user.checkPermission(upperUnit.PERMISSIONS.ACCESS_EVENTS)
+	}
+
+	if(
+		user.hasPermission(targetEvent.PERMISSIONS.APPROVE) ||
+		user.hasPermission(targetEvent.PERMISSIONS.EDIT) ||
+		targetEvent.upperUnits.some(u => user.hasPermission(u.PERMISSIONS.ACCESS_EVENTS))
+	) {
+		// Populate event approvers
+		await targetEvent.populate({
+			"approvers": {
+				"role": ["user", "unit"]
+			}
+		})
 	}
 
 	// Get participants for approving
