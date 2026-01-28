@@ -122,6 +122,7 @@ if(window == window.top) {
 	})
 
 	window.addEventListener("beforeunload", () => {
+		document.activeElement?.blur()
 		console.log("Unloading...")
 		document.body.classList.add("unload")
 		window.unloading = true
