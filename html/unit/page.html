@@ -66,7 +66,7 @@
 							description: role.displayName,
 							classList: $.orgContext && role.org != $.orgContext ? "faded" : null,
 							warnings: Array.conditional(
-								!role.user.confirmed, "Nie zatwierdzone dane"
+								$.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && !role.user.confirmed, "Nie zatwierdzone dane"
 							)
 						}) %>
 					<% } %>

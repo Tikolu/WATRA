@@ -221,8 +221,6 @@
 			"name": "Członek zarządu",
 			"rank": 1,
 			"tags": [
-				"public",
-
 				"manageSubUnit",
 				"accessUser",
 				"manageUser",
@@ -261,8 +259,6 @@
 			"rank": 1,
 			"minAge": 18,
 			"tags": [
-				"public",
-				
 				"accessUser",
 				"manageEvent",
 				"manageEventInvite"
@@ -335,8 +331,6 @@
 			},
 			"rank": 1,
 			"tags": [
-				"public",
-				
 				"accessUser"
 			]
 		},
@@ -344,8 +338,6 @@
 			"name": "Kadra",
 			"rank": 1,
 			"tags": [
-				"public",
-
 				"accessUser"
 			]
 		},
@@ -370,8 +362,6 @@
 				"orgHarcerek": "Patrolowa"
 			},
 			"tags": [
-				"public",
-				
 				"setRole",
 				"accessUser",
 				"manageUser",
