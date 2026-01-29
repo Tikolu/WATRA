@@ -165,6 +165,7 @@ input, button, select, textarea {
 	transition: border-color 250ms, background-color 250ms;
 	border: none;
 	box-sizing: border-box;
+	color: var(--text);
 }
 
 textarea {
