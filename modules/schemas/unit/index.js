@@ -105,11 +105,12 @@ export class UnitClass {
 			// Check if existing role is the same
 			if(existingRole.type === role.type) throw Error(`Użytkownik ${user.displayName} już ma tą funkcję`)
 			
-			role = new Role({
-				...role.toObject(),
-				_id: existingRole.id
-			})
-			role.$isNew = false
+			const newRole = role
+			role = existingRole
+			for(const key in newRole.toObject()) {
+				if(key == "_id") continue
+				role[key] = newRole[key]
+			}
 		} 
 
 		role.user = user
@@ -122,7 +123,7 @@ export class UnitClass {
 
 		// Enforce role count limit
 		if("limit" in role.config) {
-			const otherRolesOfType = this.roles.filter(f => f.type == role.type)
+			const otherRolesOfType = this.roles.filter(f => f.type == role.type && f.user.id != user.id)
 			if(otherRolesOfType.length >= role.config.limit) {
 				if(role.config.limit == 1) throw Error(`W jednostce jest już ${role.displayName.toLowerCase()}`)
 				throw Error(`Przekroczono limit (${role.config.limit}) funkcji typu "${role.displayName}"`)
@@ -131,7 +132,7 @@ export class UnitClass {
 
 		// Enforce role age limits
 		const userAge = user.age
-		if(userAge !== null && !role.eventType) {
+		if(userAge !== null) {
 			if(userAge < (role.config.minAge || 0)) {
 				throw Error(`Użytkownik ${user.displayName} nie spełnia wymaganego wieku dla "${role.displayName}"`)
 			}

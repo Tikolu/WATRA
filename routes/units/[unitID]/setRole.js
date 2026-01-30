@@ -1,4 +1,5 @@
 import html from "modules/html.js"
+import Config from "modules/config.js"
 
 export default async function({user, targetUnit, orgContext}) {
 	// Check for permissions
@@ -19,7 +20,7 @@ export default async function({user, targetUnit, orgContext}) {
 	// Get user's role in unit, unless user has SET_ROLE permission in an upperUnit
 	let userRole = await user.getRoleInUnit(targetUnit)
 	await targetUnit.populate("upperUnits")
-	for(const upperUnit of targetUnit.upperUnits) {
+	for await(const upperUnit of targetUnit.getUpperUnitsTree()) {
 		if(await user.checkPermission(upperUnit.PERMISSIONS.SET_ROLE)) {
 			userRole = null
 			break

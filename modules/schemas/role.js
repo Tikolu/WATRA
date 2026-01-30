@@ -66,7 +66,7 @@ schema.beforeDelete = async function() {
 
 	// Remove self from unit
 	await this.populate("unit")
-	this.unit.roles = await this.unit.roles.filter(f => f.id != this.id)
+	this.unit.roles = this.unit.roles.filter(f => f.id != this.id)
 	await this.unit.save()
 }
 

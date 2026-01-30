@@ -21,21 +21,23 @@
 						<option
 							value="<%= roleID %>"
 							data-name-variants="<%= JSON.stringify(role.name) %>"
+							<% if(roleID == $.targetUnit.config.defaultRole) { %> selected <% } %>
 						>
 							<%= role.name[$.orgContext] || role.name[$.targetUnit.org] || role.name["default"] %>
 						</option>
 					<% } %>
 					<option value="remove">
-						(usuń użytkownika z jednostki)
+						(usuń z jednostki)
 					</option>
 				</select>
 			</form>
 		</section>
 			
 		<section>
-			<h2>Wybierz użytkownika</h2>
+			<h2>Wybierz użytkowników</h2>
 			<%~ include("/user/templates/userPicker", {
-				users: $.usersForAssignment
+				users: $.usersForAssignment,
+				multiple: true
 			}) %>
 		</section>
 	<% } else { %>
@@ -49,7 +51,7 @@
 		Anuluj
 	</button>
 	<% if(Object.keys($.usersForAssignment).length) { %>
-		<button id="set-role-button" api="unit/[unitID]/member/[userID]/setRole">
+		<button id="set-role-button" api="unit/[unitID]/member/setRole">
 			<i>check</i>
 			<span>Potwierdź mianowanie</span>
 		</button>

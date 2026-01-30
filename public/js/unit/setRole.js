@@ -1,17 +1,18 @@
-API.registerHandler("unit/[unitID]/member/[userID]/setRole", {
+API.registerHandler("unit/[unitID]/member/setRole", {
 	form: main,
 	progressText: "Mianowanie na funkcję...",
 	successText: "Zapisano",
 	validate: data => {		
-		if(!data.userID) {
-			throw new Error("Nie wybrano użytkownika")
+		data.users = Array.create(data.userID)
+		if(!data.users.length) {
+			throw new Error("Nie wybrano użytkowników")
 		}
 		if(!data.roleType) {
 			throw new Error("Nie wybrano funkcji")
 		}
 		if(data.roleType == "remove") return {
-			api: `unit/[unitID]/member/[userID]/remove`,
-			progressText: "Usuwanie użytkownika...",
+			api: `unit/[unitID]/member/remove`,
+			progressText: "Usuwanie...",
 			successText: "Usunięto"
 		}
 
