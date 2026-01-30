@@ -12,12 +12,14 @@
 		$.scripts.unshift("theme")
 		$.styles ||= []
 		$.styles.unshift("global")
+
+		const assetVersion = globalThis.DEV ? globalThis.SERVER_TIME.getTime().toString(36) : globalThis.VERSION
 	%>
 	<% for (const script of $.scripts) { %>
-		<script src="/js/<%= script %>.js?v=<%= VERSION %>" defer></script>
+		<script src="/js/<%= script %>.js?v=<%= assetVersion %>" defer></script>
 	<% } %>
 	<% for (const style of $.styles) { %>
-		<link rel="stylesheet" href="/css/<%= style %>.css?v=<%= VERSION %>">
+		<link rel="stylesheet" href="/css/<%= style %>.css?v=<%= assetVersion %>">
 	<% } %>
 	<% for (const metaName in $.meta || {}) { %>
 		<%

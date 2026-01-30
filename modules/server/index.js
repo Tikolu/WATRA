@@ -61,7 +61,7 @@ async function handler(req, ip) {
 	// Initialize request object from request and blank response object
 	const request = new ServerRequest(req)
 	request.sourceIP = ip
-	const response = new ServerResponse(developmentMode)
+	const response = new ServerResponse()
 
 	// If a cookie header is present, parse cookies
 	if(request.headers.has("Cookie")) {
@@ -105,7 +105,6 @@ async function handler(req, ip) {
 
 let server
 const controller = new AbortController()
-let developmentMode = false
 
 // Attempt to load certificate
 async function loadCert() {
@@ -122,9 +121,7 @@ async function loadCert() {
 }
 const [cert, key] = await loadCert()
 
-export function start({host, port, dev=false, proxy=false, beforeRequest}) {
-	developmentMode = dev
-
+export function start({host, port, proxy=false, beforeRequest}) {
 	server = Deno.serve({
 		hostname: host,
 		port,

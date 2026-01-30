@@ -26,6 +26,9 @@ const args = cli.parseArgs(Deno.args, {
 	string: ["import", "host", "port", "db", "script"]
 })
 
+// Dev mode
+globalThis.DEV = args.development
+
 if(!args.db) {
 	console.log("Database name is required (--db)")
 	Deno.exit(1)
@@ -36,7 +39,6 @@ if(args.host && args.port) {
 	server.start({
 		host: args.host,
 		port: args.port,
-		dev: args.development,
 		proxy: args.proxy,
 		async beforeRequest() {
 			// Ensure database connected before request
