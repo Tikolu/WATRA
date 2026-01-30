@@ -65,7 +65,7 @@
 			<label for="link-parent">Połącz z istniejącym rodzicem / opiekunem</label>
 			
 			<input type="radio" id="direct-access" name="accessType" value="direct"
-				<% if(defaultRole?.minAge >= Config.adultAge) { %>
+				<% if(!defaultRole?.minAge || defaultRole?.minAge >= Config.adultAge) { %>
 					checked
 				<% } %>
 			>

@@ -347,35 +347,39 @@
 				"orgHarcerzy": "Zastępowy",
 				"orgHarcerek": "Zastępowa"
 			},
-			"rank": 2
+			"rank": 2,
+			"limit": 1
 		},
 		"podzastępowy": {
 			"name": {
 				"orgHarcerzy": "Podzastępowy",
 				"orgHarcerek": "Podzastępowa"
 			},
-			"rank": 2
+			"rank": 2,
+			"limit": 1
 		},
 		"patrolowy": {
 			"name": {
 				"orgHarcerzy": "Patrolowy",
 				"orgHarcerek": "Patrolowa"
 			},
+			"rank": 2,
+			"limit": 1,
 			"tags": [
 				"setRole",
 				"accessUser",
 				"manageUser",
 				"manageEvent",
 				"manageEventInvite"
-			],
-			"rank": 2
+			]
 		},
 		"szóstkowy": {
 			"name": {
 				"orgHarcerzy": "Szóstkowy",
 				"orgHarcerek": "Szóstkowa"
 			},
-			"rank": 2
+			"rank": 2,
+			"limit": 1
 		},
 
 		"szeregowy": {
@@ -389,10 +393,13 @@
 		"zuch": {
 			"name": "Zuch",
 			"minAge": 6,
+			"maxAge": 11,
 			"rank": 0
 		},
 		"skrzat": {
 			"name": "Skrzat",
+			"minAge": 4,
+			"maxAge": 7,
 			"rank": 0
 		},
 

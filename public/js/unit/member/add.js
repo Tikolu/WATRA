@@ -4,6 +4,6 @@ API.registerHandler("unit/[unitID]/member/add", {
 		data.users = Array.create(data.userID)
 		return true
 	},
-	progressText: "Dodawanie użytkownika...",
-	successText: "Dodano użytkownika"
+	progressText: "Dodawanie...",
+	successText: "Dodano"
 })

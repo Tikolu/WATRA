@@ -16,6 +16,7 @@ export default async function({user, targetUnit, orgContext}) {
 	// Find users that can be added
 	const usersForAdding = {}
 
+	const requiredOrg = /*orgContext ||*/ targetUnit.org
 	function addUser(unit, user) {
 		// Skip users in different org
 		if(requiredOrg && user.org != requiredOrg) return
@@ -31,7 +32,6 @@ export default async function({user, targetUnit, orgContext}) {
 	}
 	
 	await user.populate("roles")
-	const requiredOrg = orgContext || targetUnit.org
 	for(const role of user.roles) {
 		if(!role.hasTag("manageUser")) continue
 		await role.populate("unit")
@@ -42,7 +42,7 @@ export default async function({user, targetUnit, orgContext}) {
 			for(const user of await subUnit.getMembers()) addUser(subUnit, user)
 		}
 	}
-	
+
 	return html("unit/member/add", {
 		targetUnit,
 		orgContext,

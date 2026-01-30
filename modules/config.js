@@ -148,6 +148,7 @@ for(const unitID in Config.units) {
 	unit.id = unitID
 	unit.rank ||= 0
 	unit.maxUpperUnits ||= 1
+	unit.roles ||= []
 	
 	processName(unit)
 
