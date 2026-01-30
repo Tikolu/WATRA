@@ -5,7 +5,9 @@ function callback() {
 	if(currentLoginTime == newLoginTime) return
 
 	// Remove callback
-	window.top.afterDataRefresh = window.top?.afterDataRefresh.filter(c => c != callback)
+	if(window.top?.afterDataRefresh) {
+		window.top.afterDataRefresh = window.top.afterDataRefresh.filter(c => c != callback)
+	}
 	// Close dialog
 	dialog.fullClose()
 }

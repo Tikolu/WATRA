@@ -550,9 +550,9 @@
 				<% if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
 					Ustaw datę urodzin aby zatwierdzić dane
 				<% } else if($.targetUser.age === null || $.targetUser.age >= Config.adultAge) { %>
-					Dane oczekują zatwierdzenia przez użytkownika <%= $.targetUser.displayName %>
+					Dane oczekują na zatwierdzenie przez użytkownika <%= $.targetUser.displayName %>
 				<% } else { %>
-					Dane oczekują zatwierdzenia przez rodzica/opiekuna
+					Dane oczekują na zatwierdzenie przez rodzica/opiekuna
 				<% } %>
 			</p>
 		<% } %>

@@ -35,9 +35,8 @@ accessCodeInput.oninput = event => {
 function unsupportedBrowser() {
 	if(!document.contains(main)) return
 	main.remove()
-	const error = "Twoja przeglądarka nie jest obsługiwana!\n\nUżyj nowszej wersji Chrome, Edge, Safari lub Firefox"
-	Popup.error(error)
-	sleep(1000).then(() => alert(error))
+	Popup.error("Twoja przeglądarka nie jest obsługiwana!\nUżyj Chrome, Edge, Safari lub Firefox")
+	sleep(4000).then(() => history.back())
 }
 
 // Check for CSS compatability
@@ -49,6 +48,9 @@ sleep(1000).then(() => {
 })
 
 // Check for passkey support
-if(!window.PublicKeyCredential) {
+if(!window.PublicKeyCredential?.parseRequestOptionsFromJSON) {
 	unsupportedBrowser()
 }
+
+// Remove access code from URL
+history.replaceState(null, null, window.location.pathname)
