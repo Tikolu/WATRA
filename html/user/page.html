@@ -288,13 +288,27 @@
 			<i>key</i>
 			Klucze dostępu
 		</h2>
-		<% if($.user.id == $.targetUser.id && $.targetUser.auth.keys.length == 0) { %>
-			<p class="warning">
-				<i>warning</i>
-				Dodaj klucz dostępu do profilu, aby umożliwić logowanie i podpisywanie
-			</p>
-		<% } %>
 		<p>Klucze dostępu są używane do logowania w systemie i do podpisywania ważnych informacji.</p>
+		<article>
+			<details>
+				<summary><b>Więcej informacji o kluczach dostępu</b></summary>
+				<p>Klucz dostępu można zapisać na różne sposoby. Można utworzyć kilka kluczy dostępu, aby umożliwić logowanie z różnych urządzeń.</p>
+				
+				<h4><i>mobile</i> Zapisywanie na urządzeniu</h4>
+				<p>Klucz można zapisać lokalnie na telefonie lub komputerze. Niektóre starsze komputery mogą nie obsługiwać zapiswania kluczy lokalnie.</p>
+				
+				<h4><i>cloud</i> Zapisywanie w menedżerze haseł</h4>
+				<p>Klucz można zapisać na koncie Google poprzez zalogowanie się na nie w przeglądarce Chrome. W ten sposób klucz będzie automatycznie dostępny na innych urządzeniach z tym samym kontem Google.</p>
+
+				<h4><i>usb</i> Zapisywanie na fizycznym kluczu USB</h4>
+				<p>Jeśli posiadasz fizyczny klucz (n.p YubiKey lub Titan Key) też można go tutaj użyć.</p>
+
+				<% if(Config.contactEmail) { %>
+					<h4><i>help</i> Problemy z kluczami dostępu</h4>
+					<p>W razie problemów lub pytań dotyczących kluczy dostępu, skontaktuj się z <a href="mailto:<%= Config.contactEmail %>"><%= Config.contactEmail %></a>.</p>
+				<% } %>
+			</details>
+		</article>
 		<div class="entry-grid medium">
 			<% for(const key of $.targetUser.auth.keys) { %>
 				<% const provider = key.provider %>

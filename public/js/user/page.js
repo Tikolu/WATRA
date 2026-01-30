@@ -48,13 +48,19 @@ API.registerHandler("user/[userID]/unconfirm", {
 API.registerHandler("passkey/create", {
 	progressText: "Tworzenie klucza dostępu...",
 	after: async (response, data, element) => {
+		let passkeyStartTime = 0
 		try {
 			const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(response.creationOptions)
+			passkeyStartTime = Date.now()
 			var credential = await navigator.credentials.create({publicKey})
 		} catch(error) {
 			console.error(error)
 			logError(error)
-			Popup.error("Anulowano tworzenie klucza")
+			if(Date.now() - passkeyStartTime > 500) {
+				Popup.error("Anulowano tworzenie klucza")
+			} else {
+				Popup.error("Twoja przeglądarka internetowa odrzuciła próbę utworzenia klucza dostępu. Spróbuj użyć innej przeglądarki.")
+			}
 			return
 		}
 
