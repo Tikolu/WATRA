@@ -62,9 +62,6 @@ schema.beforeDelete = async function() {
 	await this.populate("user")
 	const rolesKey = this.eventRole ? "eventRoles" : "roles"
 	this.user[rolesKey] = this.user[rolesKey].filter(f => f.id != this.id)
-	if(this.user.roles.length == 0) {
-		throw new Error("Użytkownik nie może zostać bez funkcji")
-	}
 	await this.user.save()
 
 	// Remove self from unit

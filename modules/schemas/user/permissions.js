@@ -139,21 +139,29 @@ export async function DELETE(user) {
 
 	// User can never delete themselves
 	if(user.id == this.id) return false
+	
+	// Cannot delete user who has previously signed in, or has parents who have signed in
+	if(this.auth.lastLogin) return false
+	await this.populate("parents")
+	for(const parent of this.parents) {
+		if(parent.auth.lastLogin) return false
+	}
 
-	// Parent can delete other parents of their children, unless they have previously signed in, or have roles
-	if(!this.auth.lastLogin && this.roles.length == 0) {
+	// Cannot delete user who has been invited to events
+	if(this.eventInvites.length > 0) return false
+
+	// Parent can delete other parents of their children, unless they have roles
+	if(this.roles.length == 0) {
 		await this.populate("children")
 		for(const child of this.children) {
 			if(user.children.hasID(child.id)) return true
-			// Users with MANAGE permission of any child can delete parent, if they have no set name
-			if(await user.checkPermission(child.PERMISSIONS.MANAGE) && !this.name.first && !this.name.last) {
-				return true
-			}
+			// Users with MANAGE permission of any child can delete parent
+			if(await user.checkPermission(child.PERMISSIONS.MANAGE)) return true
 		}
 	}
 
-	// "deleteUser" roles in user's unit or upper units can delete
-	if(await user.hasRoleInUnits("deleteUser", this.getUnitsTree())) return true
+	// MANAGE permission grants DELETE, if the user has only one role
+	if(this.roles.length <= 1 && await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	return false
 }

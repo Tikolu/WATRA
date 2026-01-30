@@ -402,13 +402,13 @@ export class UserClass {
 
 const schema = mongoose.Schema.fromClass(UserClass)
 
-schema.beforeDelete = async function() {	
+schema.beforeDelete = async function() {
 	// Delete parents
 	await this.populate("parents")
 	for(const parent of this.parents) {
 		// Keep parents with roles
 		if(parent.roles.length > 0) continue
-		// Keep parents other children
+		// Keep parents with other children
 		if(parent.children.length > 1) continue
 		await parent.delete()
 	}
@@ -418,16 +418,6 @@ schema.beforeDelete = async function() {
 	for(const child of this.children) {
 		child.parents = child.parents.filter(p => p.id != this.id)
 		await child.save()
-	}
-
-	// Remove self from all events
-	await this.populate("eventInvites")
-	
-	for(const event of this.eventInvites) {
-		const invite = event.participants.id(this.id)
-		if(!invite) continue
-		await invite.delete()
-		await event.save()
 	}
 
 	// Delete all roles

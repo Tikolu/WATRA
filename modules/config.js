@@ -13,7 +13,6 @@ Config.tags = {
 
 	"accessUser": {},
 	"manageUser": {},
-	"deleteUser": {},
 
 	"manageEvent": {},
 	"accessActivity": {},
