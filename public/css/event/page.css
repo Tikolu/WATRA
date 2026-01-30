@@ -9,3 +9,12 @@
 .approval-block p small {
 	font-style: italic;
 }
+
+#event-dates > div {
+	display: flex;
+	gap: 0.5em;
+
+	input[type=time] {
+		flex: 1;
+	}
+}

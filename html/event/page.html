@@ -65,40 +65,107 @@
 					<% } %>
 				</h3>
 				<form id="event-dates">
-					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.length > 0) { %>
+					<%
+						let startTime = datetime.format($.targetEvent.dates.start, "HH:mm")
+						if(startTime == "00:00") startTime = ""
+					
+						let endTime = datetime.format($.targetEvent.dates.end, "HH:mm")
+						if(endTime == "00:00") endTime = ""
+					%>
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.dates.start - $.targetEvent.dates.end != 0) { %>
 						<label for="event-start-date-input">Od:</label>
 					<% } %>
-					<input
-						type="date"
-						id="event-start-date-input"
-						min="<%= MIN_DATE %>"
-						max="<%= MAX_DATE %>"
-						<% if($.targetEvent.dates.start) { %>
-							value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-dd") %>"
-						<% } %>
-						api="event/[eventID]/update/dates"
-						name="startDate"
-						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+						<div>
+							<input
+								type="date"
+								id="event-start-date-input"
+								min="<%= MIN_DATE %>"
+								max="<%= MAX_DATE %>"
+								<% if($.targetEvent.dates.start) { %>
+									value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-dd") %>"
+								<% } %>
+								api="event/[eventID]/update/dates"
+								name="startDate"
+								<% if($.targetEvent.approvalState) { %>
+									disabled
+								<%- } %>
+							>
+							<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+								<input
+									type="time"
+									id="event-start-time-input"
+									<% if(startTime) { %>
+										value="<%= startTime %>"
+									<% } %>
+									api="event/[eventID]/update/dates"
+									name="startTime"
+									<% if($.targetEvent.approvalState) { %>
+										disabled
+									<%- } %>
+								>
+							<% } %>
+						</div>
+					<% } else if(startTime) { %>
+						<input
+							type="datetime-local"
+							value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-dd'T'HH:mm") %>"
 							disabled
-						<%- } %>
-					>
-
-					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.length > 0) { %>
-						<label for="event-end-date-input">Do:</label>
+						>
+					<% } else { %>
 						<input
 							type="date"
-							id="event-end-date-input"
-							min="<%= MIN_DATE %>"
-							max="<%= MAX_DATE %>"
-							<% if($.targetEvent.dates.end) { %>
-								value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd") %>"
-							<% } %>
-							api="event/[eventID]/update/dates"
-							name="endDate"
-							<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
-								disabled
-							<%- } %>
+							value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-dd") %>"
+							disabled
 						>
+					<% } %>
+
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.dates.start - $.targetEvent.dates.end != 0) { %>
+						<label for="event-end-date-input">Do:</label>
+						<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+							<div>
+								<input
+									type="date"
+									id="event-end-date-input"
+									min="<%= MIN_DATE %>"
+									max="<%= MAX_DATE %>"
+									<% if($.targetEvent.dates.end) { %>
+										value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd") %>"
+									<% } %>
+									api="event/[eventID]/update/dates"
+									name="endDate"
+									<% if($.targetEvent.approvalState) { %>
+										disabled
+									<%- } %>
+								>
+								<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+									<input
+										type="time"
+										id="event-end-time-input"
+										<% if(endTime) { %>
+											value="<%= endTime %>"
+										<% } %>
+										api="event/[eventID]/update/dates"
+										name="endTime"
+										<% if($.targetEvent.approvalState) { %>
+											disabled
+										<%- } %>
+									>
+								<% } %>
+							</div>
+						<% } else if(endTime) { %>
+							<input
+								type="datetime-local"
+								value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd'T'HH:mm") %>"
+								disabled
+							>
+						<% } else { %>
+							<input
+								type="date"
+								value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd") %>"
+								disabled
+							>
+						<% } %>
 					<% } %>
 				</form>
 			</div>

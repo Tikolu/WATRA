@@ -14,7 +14,7 @@ API.registerHandler("event/[eventID]/update/description", {
 
 API.registerHandler("event/[eventID]/update/dates", {
 	form: "event-dates",
-	validate: data => new Date(data.startDate) <= new Date(data.endDate),
+	validate: data => new Date(`${data.startDate} ${data.startTime}`) <= new Date(`${data.endDate} ${data.endTime}`),
 	successText: "Zapisano daty"
 })
 
@@ -54,7 +54,9 @@ if(window.confirmUnlockEditingButton) {
 			eventTitleInput,
 			eventDescriptionInput,
 			eventStartDateInput,
+			eventStartTimeInput,
 			eventEndDateInput,
+			eventEndTimeInput,
 			eventLocationInput,
 			...eventDocuments.querySelectorAll("button[disabled]")
 		]
