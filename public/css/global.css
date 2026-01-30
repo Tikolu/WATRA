@@ -155,6 +155,9 @@ div.vertical-split:last-child form {
 	margin-bottom: 0;
 }
 
+form :only-child {
+	grid-column: 1 / -1;
+}
 
 /* Form elements */
 

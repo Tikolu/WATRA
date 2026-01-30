@@ -110,18 +110,17 @@
 					Lokalizacja
 				</h3>
 				<form>
-					<input
+					<textarea
 						type="text"
 						id="event-location-input"
 						autocomplete="off"
-						value="<%= $.targetEvent.location || "" %>"
 						api="event/[eventID]/update/location"
 						name="location"
 						placeholder="(brak lokalizacji)"
 						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
 							disabled
 						<% } %>
-					>
+					><%= $.targetEvent.location || "" %></textarea>
 				</form>
 			</div>
 		<% } %>
