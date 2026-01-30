@@ -1031,17 +1031,21 @@ function processCustomInputElements() {
 				input.calculateState = () => {
 					input.checked = false
 					input.indeterminate = false
-					let allChecked = true
+					input.disabled = false
+					let allChecked = true, allDisabled = true
 					for(const checkbox of checkboxes) {
 						if(checkbox.disabled) continue
 						if(!checkbox.checkVisibility()) continue
+						allDisabled = false
 						if(checkbox.checked) {
 							input.indeterminate = true
 						} else {
 							allChecked = false
 						}
 					}
-					if(allChecked) {
+					if(allDisabled) {
+						input.disabled = true
+					} else if(allChecked) {
 						input.checked = true
 						input.indeterminate = false
 					}
@@ -1049,7 +1053,16 @@ function processCustomInputElements() {
 				input.calculateState()
 
 				for(const checkbox of checkboxes) {
-					checkbox.addEventListener("change", input.calculateState)
+					checkbox.addEventListener("change", () => {
+						// Find other checkboxes of same value
+						if(checkbox.value) {
+							for(const otherCheckbox of checkboxes) {
+								if(otherCheckbox.value != checkbox.value) continue
+								otherCheckbox.checked = checkbox.checked
+							}
+						}
+						input.calculateState()
+					})
 				}
 			}
 		}

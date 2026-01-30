@@ -1,14 +1,23 @@
+function cleanString(str) {
+	// Trim and lowercase
+	str = str.trim().toLowerCase()
+	// Remove accents
+	str = str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replaceAll("ł", "l")
+	
+	return str
+}
+
 for(const userPicker of document.querySelectorAll(".user-picker")) {
 	const userPickerSearch = document.getElementById(`${userPicker.id}-search`)
 	const chooseAll = document.getElementById(`${userPicker.id}-choose-all`)
 	chooseAll?.globalCheckbox(userPicker)
 
 	userPickerSearch.oninput = () => {
-		const searchTerms = userPickerSearch.value.trim().toLowerCase().split(" ")
+		const searchTerms = cleanString(userPickerSearch.value).split(" ")
 		let resultCount = 0
 		// Hide users not matching search term
 		for(const entry of userPicker.querySelectorAll(".entry-grid > div")) {
-			const entryValue = entry.textContent.toLowerCase()
+			const entryValue = cleanString(entry.textContent)
 			entry.hidden = searchTerms.some(term => !entryValue.includes(term))
 			if(!entry.hidden) resultCount++
 		}

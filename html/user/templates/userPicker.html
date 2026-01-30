@@ -28,6 +28,15 @@
 					<h3><%= category %></h3>
 				</summary>
 		<% } %>
+		<%
+			if($.sort !== false) {
+				$.users[category].sort((a, b) => {
+					const nameA = a.displayName?.toLowerCase() || ""
+					const nameB = b.displayName?.toLowerCase() || ""
+					return nameA.localeCompare(nameB)
+				})
+			}
+		%>
 		<div class="entry-grid">
 			<% for(const user of $.users[category]) { %>
 				<% if($.filter && !$.filter(user)) continue %>
