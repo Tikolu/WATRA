@@ -1,9 +1,6 @@
 import { Buffer } from "node:buffer"
 
 const SERVER_PRIVATE_KEY = Deno.env.get("SERVER_PRIVATE_KEY") 
-if(!SERVER_PRIVATE_KEY) {
-	throw new Error("SERVER_PRIVATE_KEY is not set in .env file")
-}
 
 const encoder = new TextEncoder()
 
@@ -22,6 +19,9 @@ export async function sha256(data, format="base64") {
 
 /** Signs data using the server's private key */
 export async function sign(data) {
+	if(!SERVER_PRIVATE_KEY) {
+		throw new Error("SERVER_PRIVATE_KEY is not set in .env file")
+	}
 	const signature = await sha256(data + SERVER_PRIVATE_KEY)
 	if(!signature) throw new Error("Error signing data")
 	return signature
@@ -29,6 +29,9 @@ export async function sign(data) {
 
 /** Verifies a signature */
 export async function verify(data, signature) {
+	if(!SERVER_PRIVATE_KEY) {
+		throw new Error("SERVER_PRIVATE_KEY is not set in .env file")
+	}
 	if(!signature) throw new Error("No signature provided")
 	const newSignature = await sha256(data + SERVER_PRIVATE_KEY)
 	if(!newSignature) throw new Error("Error verifying signature")
