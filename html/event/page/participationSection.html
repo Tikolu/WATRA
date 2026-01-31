@@ -1,0 +1,49 @@
+<section>
+	<h2>
+		<i>mark_email_read</i>
+		Uczestnictwo
+	</h2>
+	<div class="entry-grid">
+		<% for(const userInvite of $.approvalParticipants) { %>
+			<div>
+				<div class="entry-title">
+					<h3><%= userInvite.user.displayName %></h3>
+					<p>
+						<% if(userInvite.state == "pending") { %>
+							<i>help</i>
+							Oczekiwana odpowiedź...
+						<% } else if(userInvite.state == "accepted") { %>
+							<i>check_circle</i>
+							Zaakceptowano
+						<% } else if(userInvite.state == "declined") { %>
+							<i>cancel</i>
+							Odrzucono
+						<% } %>
+					</p>
+				</div>
+				<div class="entry-content">
+					<% if($.user.hasPermission(userInvite.user.PERMISSIONS.APPROVE)) { %>
+						<div class="button-row">
+							<button opens-dialog="/events/<%= $.targetEvent.id %>/participation?participant=<%= userInvite.user.id %>">
+								<% if(userInvite.state == "pending") { %>
+									Odpowiedz
+								<% } else { %>
+									Zmień odpowiedź
+								<% } %>
+							</button>
+						</div>
+					<% } else if(userInvite.user.id == $.user.id && userInvite.user.age === null) { %>
+						<p class="warning">
+							<i>warning</i>
+							Ustaw datę urodzin aby kontynuować
+						</p>
+					<% } else if(userInvite.user.age === null || userInvite.user.age > Config.adultAge) { %>
+						<p>Odpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
+					<% } else { %>
+						<p>Odpowiedź oczekiwana od rodzica/opiekuna</p>
+					<% } %>
+				</div>
+			</div>
+		<% } %>
+	</div>
+</section>

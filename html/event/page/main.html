@@ -1,0 +1,69 @@
+<% layout("/layouts/main", {
+	title: $.targetEvent.displayName,
+	scripts: ["event/page"],
+	styles: ["event/page"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1 id="event-title">
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<input
+			type="text"
+			name="name"
+			placeholder="Nazwa akcji"
+			autocomplete="off"
+			api="event/[eventID]/update/name"
+			value="<%= $.targetEvent.name || "" %>"
+			title="Zmień nazwę"
+			id="event-title-input"
+			<% if($.targetEvent.approvalState) { %>
+				disabled
+			<% } %>
+		>
+	<% } else { %>
+		<%= $.targetEvent.displayName %>
+	<% } %>
+</h1>
+<p>(akcja w <%~ include("/templates/linkList", $.targetEvent.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
+
+<% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.dates.start < new Date()) { %>
+	<p class="warning">
+		<i>warning</i>
+		Uwaga! Akcja nie jest zatwierdzona i nie może się odbyć
+	</p>
+<% } %>
+
+<%~ include("detailsSection", $) %>
+
+<% if($.files.length > 0 || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+	<%~ include("fileSection", $) %>
+<% } %>
+
+<% if(
+	($.targetEvent.roles.length > 0 && $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) ||
+	$.targetEvent.roles.some(role => role.hasTag("public")) ||
+	$.user.hasPermission($.targetEvent.PERMISSIONS.SET_ROLE)
+) { %>
+	<%~ include("directParticipantsSection", $) %>
+<% } %>
+
+<% if(
+	$.targetEvent.invitedUnits.filter(i => i.state != "declined").length > 0 ||
+	$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) ||
+	$.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MANAGE_INVITES))
+) { %>
+	<%~ include("invitedUnitsSection", $) %>
+<% } %>
+
+<% if($.approvalParticipants?.length) { %>
+	<%~ include("participationSection", $) %>
+<% } %>
+
+<% if(
+	$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
+	$.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) ||
+	$.targetEvent.upperUnits.some(u => $.user.hasPermission(u.PERMISSIONS.ACCESS_EVENTS))
+) { %>
+	<%~ include("approvalSection", $) %>
+<% } %>

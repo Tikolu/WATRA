@@ -1,0 +1,55 @@
+<section id="event-documents">
+	<h2>
+		<i>draft</i>
+		Dokumenty
+	</h2>
+	<div class="entry-grid">
+	<% for(const file of $.files) { %>
+		<div>
+			<h3><%= file.file.name %></h3>
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+				<p>
+					<% if(file.access == "owner") { %>
+						Dostępny dla komendy i zatwierdzających
+					<% } else if(file.access == "role") { %>
+						Dostępny dla kadry i zatwierdzających
+					<% } else if(file.access == "participant") { %>
+						Dostępny dla kadry i uczestników
+					<% } %>
+				</p>
+			<% } %>
+			<div class="button-row">
+				<button href="<%= file.file.url %>" target="_blank">
+					<i>file_open</i>
+					Otwórz
+				</button>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+					<button
+						class="dangerous"
+						api="event/<%= $.targetEvent.id %>/file/<%= file.id %>/delete"
+						<% if($.targetEvent.approvalState) { %>
+							disabled
+						<% } %>
+					>
+						<i>delete</i>
+						Usuń z akcji
+					</button>
+				<% } %>
+			</div>
+		</div>
+	<% } %>
+	</div>
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<div class="button-row">
+			<button
+				opens-dialog="/events/<%= $.targetEvent.id %>/addDocument"
+				<% if($.targetEvent.approvalState) { %>
+					disabled
+				<% } %>
+			>
+				<i>note_add</i>
+				Dodaj dokument
+			</button>
+		</div>
+	<% } %>
+</section>

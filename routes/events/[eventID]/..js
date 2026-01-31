@@ -93,7 +93,7 @@ export default async function({user, targetEvent}) {
 	}
 	await files.populate("file", {ref: "File", select: "name"})
 
-	return html("event/page", {
+	return html("event/page/main", {
 		user,
 		targetEvent,
 		approvalParticipants,

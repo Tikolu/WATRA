@@ -1,0 +1,41 @@
+<section>
+	<h2>
+		<i>article_person</i>
+		Kadra
+	</h2>
+	<% const directParticipants = $.targetEvent.participants.filter(p => !p.originUnit && !$.targetEvent.roles.some(r => r.user.id == p.user.id)) %>
+	<% if($.targetEvent.roles?.length > 0 || directParticipants.length > 0) { %>
+		<div class="entry-grid">
+			<% for(const role of $.targetEvent.roles) { %>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || $.user.hasPermission($.targetEvent.PERMISSIONS.SET_ROLE) || role.hasTag("public")) { %>
+					<%~ include("participant", {
+						targetUser: role.user,
+						description: role.displayName,
+						showState: $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS),
+						...$
+					}) %>
+				<% } %>
+			<% } %>
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS))	 { %>
+				<% for(const participant of directParticipants) { %>
+					<%~ include("participant", {
+						targetUser: participant.user,
+						...$
+					}) %>
+				<% } %>
+			<% } %>
+		</div>
+	<% } %>
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<div class="button-row">
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/setRole">
+				<i>add_moderator</i>
+				<span>Mianuj na funkcję</span>
+			</button>
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteParticipants">
+				<i>person_add</i>
+				Zaproś kadre
+			</button>
+		</div>
+	<% } %>
+</section>

@@ -1,0 +1,82 @@
+<section>
+	<h2>
+		<i>gavel</i>
+		Zatwierdzenie
+	</h2>
+
+	<% if($.targetEvent.approvalState) { %>
+		<p><i>check_circle</i> Akcja zatwierdzona</p>
+	<% } else { %>
+		<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
+	<% } %>
+
+	<% const md = $.targetEvent.missingDetails %>
+	<% const warnings = Array.conditional(
+		md.includes("name"), "Brak nazwy akcji",
+		md.includes("description"), "Brak opisu akcji",
+		md.includes("location"), "Brak lokalizacji akcji",
+		md.includes("dates"), "Brak daty akcji",
+	) %>
+
+	<% if(warnings.length) { %>
+		<div class="warning">
+			<p>
+				<i>warning</i>
+				Nie można zatwierdzić akcji z brakującymi szczegółami:
+			</p>
+			<ul class="warning-list">
+				<% for(const warning of warnings) { %>
+					<li><%= warning %></li>
+				<% } %>
+			</ul>
+		</div>
+
+	<% } else if($.targetEvent.approvers.length == 0) { %>
+		<p class="warning">
+			<i>warning</i>
+			Brak zatwierdzających
+		</p>
+		
+	<% } else { %>
+		<div class="entry-grid medium">
+			<% for(const approver of $.targetEvent.approvers || []) { %>
+				<div>
+					<div class="entry-title">
+						<h3>
+							<a href="/users/<%= approver.role.user.id %>">
+								<%= approver.role.user.displayName %>
+							</a>
+						</h3>
+						<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
+					</div>
+					<div class="entry-content">
+						<% if(approver.approved) { %>
+							<p>
+								Zatwierdzono <i>check</i><br>
+								<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
+							</p>
+						<% } else if(approver.role.user.id != $.user.id) { %>
+							<p>Oczekiwane zatwierdzenie... <i class="spin">progress_activity</i></p>
+						<% } %>
+					
+						<% if(approver.role.user.id == $.user.id) { %>
+							<div class="button-row">
+								<% if(approver.approved) { %>
+									<button api="event/[eventID]/approval/unapprove" class="dangerous">
+										<i>undo</i>
+										<span>Cofnij zatwierdzenie</span>
+									</button>
+								<% } else { %>
+									<button opens-dialog="/events/<%= $.targetEvent.id %>/approve">
+										<i>check</i>
+										<span>Zatwierdź</span>
+									</button>
+								<% } %>
+							</div>
+						<% } %>
+					</div>
+				</div>
+			<% } %>
+		</div>
+	<% } %>
+</section>

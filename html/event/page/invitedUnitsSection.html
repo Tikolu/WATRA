@@ -1,0 +1,34 @@
+<section>
+	<h2>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+			<i>person</i>
+			Uczestnicy
+		<% } else { %>
+			<i>groups</i>
+			Uczestniczące jednostki
+		<% } %>
+	</h2>
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+		<div class="button-row">
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteUnits">
+				<i>group_add</i>
+				Zaproś jednostki
+			</button>
+		</div>
+	<% } %>
+	<% if($.targetEvent.invitedUnits.length > 0) { %>
+		<div class="entry-grid full">
+			<% for(const unitInvite of $.targetEvent.invitedUnits || []) { %>
+				<%
+					if(unitInvite.state == "declined" && !($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES))) continue
+					if(
+						unitInvite.state == "pending" &&
+						!$.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES) &&
+						!$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)
+					) continue
+				%>
+				<%~ include("invitedUnit", {unitInvite, ...$}) %>
+			<% } %>
+		</div>
+	<% } %>
+</section>

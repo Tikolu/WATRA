@@ -1,0 +1,17 @@
+<%
+	const userInvite = $.targetEvent.participants.id($.targetUser.id)
+	let state = ""
+	if($.showState) {
+		if(userInvite.state == "declined") {
+			state = "Odrzucono"
+		} else if(userInvite.state == "pending") {
+			state = "Oczekiwana odpowiedź..."
+		}
+	}
+%>
+<%~ include("/user/templates/userEntry", {
+	targetUser: $.targetUser,
+	description: $.description || state,
+	content: $.description ? state : null,
+	classList: userInvite?.state == "declined" ? ["faded"] : []
+}) %>
