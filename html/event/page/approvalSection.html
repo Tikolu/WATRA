@@ -52,11 +52,11 @@
 					<div class="entry-content">
 						<% if(approver.approved) { %>
 							<p>
-								Zatwierdzono <i>check</i><br>
+								<i>check</i>Zatwierdzono<br>
 								<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
 							</p>
 						<% } else if(approver.role.user.id != $.user.id) { %>
-							<p>Oczekiwane zatwierdzenie... <i class="spin">progress_activity</i></p>
+							<p><i class="spin">progress_activity</i>Oczekiwane zatwierdzenie...</p>
 						<% } %>
 					
 						<% if(approver.role.user.id == $.user.id) { %>

@@ -19,7 +19,6 @@ export async function decline({targetUnit, targetEvent, targetInvitation}) {
 	
 	// Decline invite
 	targetInvitation.state = "declined"
-	await targetInvitation.setParticipants([])
 
 	// Remove event from unit.eventInvites
 	targetUnit.eventInvites = targetUnit.eventInvites.filter(id => id != targetEvent.id)

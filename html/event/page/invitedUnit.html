@@ -1,30 +1,32 @@
-<div<%= $.unitInvite.state == "declined" ? " class=\"faded\"" : "" %>>
+<% const invitedParticipants = $.unitInvite.state == "accepted" ? $.unitInvite.invitedParticipants.filter(p => $.targetEvent.roles.every(r => r.user.id != p.user.id)) : [] %>
+
+<div class="invited-unit<% if($.unitInvite.state == "declined") { %> faded<% } %>">
 	<h3><%= $.unitInvite.unit.displayName %></h3>
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
 		<p>
 			<% if($.unitInvite.state == "accepted") { %>
-				Zaakceptowano zaproszenie <i>check</i>
+				<i>check</i> Zaakceptowano zaproszenie
 			<% } else if($.unitInvite.state == "declined") { %>
-				Odrzucono zaproszenie <i>cancel</i>
+				<i>cancel</i> Odrzucono zaproszenie
 			<% } else if($.unitInvite.state == "pending") { %>
-				Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
+				<i class="spin">progress_activity</i> Oczekiwana odpowiedź...
 			<% } %>
 		</p>
-		<% if($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") { %>
-			<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
-				<i>undo</i>
-				<span>Cofnij zaproszenie</span>
-			</button>
-		<% } %>
-		<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && $.unitInvite.state != "declined") { %>
-			<hr>
-		<% } %>
 	<% } %>
-	<% const invitedParticipants = $.unitInvite.invitedParticipants.filter(p => $.targetEvent.roles.every(r => r.user.id != p.user.id)) %>
-	<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
-		<% if($.unitInvite.state == "accepted") { %>
-			<p>Dodani uczestnicy: <%= invitedParticipants.length %></p>
-			<div class="button-row">
+
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+			<% if($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") { %>
+				<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
+					<i>undo</i>
+					<span>Cofnij zaproszenie</span>
+				</button>
+			<% } %>
+		<% } %>
+
+		<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
+			<% if($.unitInvite.state == "accepted") { %>
 				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
 					<i>group_add</i>
 					<% if(invitedParticipants.length > 0) { %>
@@ -33,10 +35,7 @@
 						<span>Dodaj uczestników</span>
 					<% } %>
 				</button>
-			</div>
-		<% } else if($.unitInvite.state == "pending") { %>
-			<p>Oczekujące zaproszenie...</p>
-			<div class="button-row">
+			<% } else if($.unitInvite.state == "pending") { %>
 				<button api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/accept">
 					<i>check</i>
 					<span>Zaakceptuj</span>
@@ -45,9 +44,10 @@
 					<i>close</i>
 					<span>Odrzuć</span>
 				</button>
-			</div>
+			<% } %>
 		<% } %>
-	<% } %>
+	</div>
+		
 	<% if(
 		invitedParticipants.length &&
 		(
@@ -55,9 +55,20 @@
 			$.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
 		)
 	) { %>
+		<hr>
 		<div class="entry-grid">
 			<% const categories = Object.groupBy(invitedParticipants, p => p.state) %>
 			<% for(const state in categories) { %>
+				<h4>
+					<% if(state == "accepted") { %>
+						<i>check_circle</i> Zaakceptowano
+					<% } else if(state == "pending") { %>
+						<i class="spin">progress_activity</i> Oczekiwana odpowiedź
+					<% } else if(state == "declined") { %>
+						<i>cancel</i> Odrzucono
+					<% } %>
+					(<%= categories[state].length %>)
+				</h4>
 				<% for(const invite of categories[state]) { %>
 					<%~ include("participant", {targetUser: invite.user, ...$}) %>
 				<% } %>

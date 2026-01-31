@@ -22,11 +22,11 @@
 						<% if(!unitInvite) { %>
 							Ilość użytkowników: <%= unit.countMembers(true) %>
 						<% } else if(unitInvite.state == "accepted") { %>
-							Zaakceptowano <i>check</i>
+							<i>check</i> Zaakceptowano
 						<% } else if(unitInvite.state == "declined") { %>
-							Odrzucono <i>close</i>
+							<i>close</i> Odrzucono
 						<% } else if(unitInvite.state == "pending") { %>
-							Oczekiwana odpowiedź... <i class="spin">progress_activity</i>
+							<i class="spin">progress_activity</i> Oczekiwana odpowiedź...
 						<% } %>
 					</p>
 					<div class="button-row">

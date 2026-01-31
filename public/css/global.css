@@ -116,6 +116,7 @@ button i, header i {
 
 i.spin {
 	animation: spin 1s infinite linear;
+	transform-origin: 50% 48%; /* prevents wobble */
 	scale: 0.9;
 }
 
@@ -572,6 +573,11 @@ li > * {
 			display: none;
 		}
 	}
+
+	& > h1, & > h2, & > h3, & > h4 {
+		grid-column: 1 / -1;
+		margin: 0;
+	}
 }
 
 @media (max-width: 50em) {
@@ -630,9 +636,14 @@ article {
 	border-radius: var(--border-radius);
 }
 
-article h3, article h4 {
+article h3 {
 	margin-bottom: -0.5em;
 }
+
+article h4 + p {
+	margin-top: -1em;
+}
+
 
 article :first-child {
 	margin-top: 0;
