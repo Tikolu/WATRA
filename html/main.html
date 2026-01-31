@@ -44,12 +44,14 @@
 	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
 %>
 <% if(!$.user.profileComplete || blockAccess) { %>
-	<article>
-		<p>
-			<b><i>info</i> Witamy na platformie WATRA!</b><br>
-			Pierwszy krok - uzupełnij dane na swoim profilu poniżej.
-		</p>
-	</article>
+	<% if(blockAccess) { %>
+		<article>
+			<p>
+				<b><i>info</i> Witamy na platformie WATRA!</b><br>
+				Pierwszy krok - aby odblokować wszystkie funkcje systemu, dodaj klucz dostępu do swojego profilu poniżej.
+			</p>
+		</article>
+	<% } %>
 	<section>
 		<h2>
 			<i>person</i>

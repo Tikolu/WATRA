@@ -53,6 +53,7 @@ API.registerHandler("passkey/create", {
 			const publicKey = PublicKeyCredential.parseCreationOptionsFromJSON(response.creationOptions)
 			passkeyStartTime = Date.now()
 			var credential = await navigator.credentials.create({publicKey})
+			if(!credential) throw new Error("Null credential returned")
 		} catch(error) {
 			console.error(error)
 			logError(error)

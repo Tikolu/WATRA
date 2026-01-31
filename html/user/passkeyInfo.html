@@ -1,0 +1,37 @@
+<% layout("/layouts/dialog") %>
+<h1>
+	<i>key</i>
+	Więcej informacji o kluczach dostępu
+</h1>
+<main>
+	<p>Klucz dostępu można zapisać na różne sposoby. Można utworzyć kilka kluczy dostępu, aby umożliwić logowanie z różnych urządzeń.</p>
+
+	<section>
+		<h2><i>mobile</i> Zapisywanie na urządzeniu</h2>
+		<p>Klucz można zapisać lokalnie na telefonie lub komputerze. Niektóre starsze komputery mogą nie obsługiwać zapiswania kluczy lokalnie.</p>
+	</section>
+
+	<section>
+		<h2><i>cloud</i> Zapisywanie w menedżerze haseł</h2>
+		<p>Klucz można zapisać na koncie Google poprzez zalogowanie się na nie w przeglądarce Chrome. W ten sposób klucz będzie automatycznie dostępny na innych urządzeniach z tym samym kontem Google.</p>
+	</section>
+
+	<section>
+		<h2><i>usb</i> Zapisywanie na fizycznym kluczu USB</h2>
+		<p>Jeśli posiadasz fizyczny klucz (n.p YubiKey lub Titan Key) też można go tutaj użyć.</p>
+	</section>
+
+	<% if(Config.contactEmail) { %>
+		<section>
+			<h2><i>help</i> Problemy z kluczami dostępu</h2>
+			<p>W razie problemów lub pytań dotyczących kluczy dostępu, skontaktuj się z <a href="mailto:<%= Config.contactEmail %>"><%= Config.contactEmail %></a>.</p>
+		</section>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Zamknij
+	</button>
+</div>
