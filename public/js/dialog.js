@@ -1,4 +1,9 @@
-window.dialog = frameElement.parentElement
+window.dialog = frameElement?.parentElement
+
+if(!window.dialog) {
+	history.back()
+	throw new Error()
+}
 
 // After starting an API request, close the dialog
 API.onRequestStart = async () => {

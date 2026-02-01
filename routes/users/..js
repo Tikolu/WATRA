@@ -1,7 +1,8 @@
 import html from "modules/html.js"
 
 export function _open() {
-	if(!this.session.ensureActiveUser(this)) return
+	const saveRedirect = !this.routePath.equals(["users", "switcher"])
+	if(!this.session.ensureActiveUser(this, saveRedirect)) return
 }
 
 export async function switcher({user}) {
