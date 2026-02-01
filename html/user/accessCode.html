@@ -18,23 +18,22 @@
 	<% } %>
 
 	<% if($.parentCode) { %>
-		<% $.targetUser.defaultName = "Rodzic / opiekun" %>
 		<h2><%= $.targetUser.displayName %></h2>
-		<article><p><i>info</i> Kod ważny przez 5 minut</p></article>
 		<p>Jednorazowy kod rejestracyjny do profilu rodzica / opiekuna:</p>
+		<p><i>info</i> Kod jest ważny przez 5 minut.</p>
+
 		<% accessCodeContainer($.targetUser.parents[0].auth.formattedAccessCode) %>
 	<% } else { %>
 		<h2><%= $.targetUser.displayName %></h2>
-		<% if($.targetUser.id != $.user.id) { %>
-			<% if(!$.targetUser.isParent) { %>
-				<p class="warning">
-					<i>warning</i>
-					Poniższy kod rejestracyjny umożliwi dostęp do profilu <%= $.targetUser.displayName %>, <b>nie profilu rodzica/opiekuna</b>!
-				</p>
-			<% } %>
-			<article><p><i>info</i> Kod ważny przez 5 minut</p></article>
-			<p>Jednorazowy kod rejestracyjny dla użytkownika <%= $.targetUser.displayName %>:</p>
+		<% if(!$.targetUser.isParent) { %>
+			<p class="warning">
+				<i>warning</i>
+				Poniższy kod rejestracyjny umożliwi dostęp do profilu <%= $.targetUser.displayName %>, <b>nie profilu rodzica/opiekuna</b>!
+			</p>
 		<% } %>
+		<p>Jednorazowy kod rejestracyjny dla użytkownika <%= $.targetUser.displayName %>:</p>
+		<p><i>info</i> Kod jest ważny przez 5 minut.</p>
+
 		<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
 	<% } %>
 </main>

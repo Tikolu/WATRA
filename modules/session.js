@@ -26,8 +26,7 @@ export default class {
 		this.token.modified = true
 
 		// Update user
-		user.auth.lastLogin = Date.now()
-		await user.save()
+		await user.auth.registerLogin(this.token.client)
 	}
 
 	/** Ensures user is logged in, redirects if not */
@@ -62,11 +61,6 @@ export default class {
 		if(user.auth.accessCodeExpiry < Date.now()) {
 			throw new HTTPError(400, "Ważność kodu rejestracyjnego wygasła")
 		}
-		
-		// Clear access code from user
-		user.auth.accessCode = undefined
-		user.auth.accessCodeExpiry = undefined
-		await user.save()
 
 		// Login
 		await this.login(user)

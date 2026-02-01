@@ -101,6 +101,18 @@ export default class {
 		await targetUser.save()
 	}
 
+	/** Registers a login for the user */
+	async registerLogin(clientID) {
+		// Update last login time
+		this.lastLogin = Date.now()
+
+		// Remove access code
+		this.accessCode = undefined
+		this.accessCodeExpiry = undefined
+		
+		await this.parent().save()
+	}
+
 	/** Formats the access code nicely */
 	get formattedAccessCode() {
 		return this.accessCode.replace(/(\d{4})/g, "$1 ").trim()
