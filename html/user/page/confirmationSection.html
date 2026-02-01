@@ -1,0 +1,198 @@
+<section>
+	<h2>
+		<i>check</i>
+		Zatwierdzenie danych
+	</h2>
+	<% if($.targetUser.confirmed) { %>
+		<%~ include("/templates/signature", {
+			signature: $.targetUser.signature,
+			user: $.user
+		}) %>
+
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetUser.PERMISSIONS.MANAGE)) { %>
+			<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+				<p>Cofnij zatwierdzenie aby edytować dane.</p>
+			<% } else { %>
+				<p>Cofnij zatwierdzenie aby odrzucić podane dane.<br>Użytkownik będzie musiał ponownie je zatwierdzić.</p>
+			<% } %>
+			<div class="button-row">
+				<button opens-dialog="unconfirm-dialog" class="dangerous">
+					<i>undo</i>
+					Cofnij zatwierdzenie
+				</button>
+			</div>
+			<dialog id="unconfirm-dialog">
+				<h1>Cofnięcie zatwierdzenia danych</h1>
+				<p>
+					Cofnąć zatwierdzenie danych użytkownika <strong><%= $.targetUser.displayName %></strong>?<br><br>
+					<% if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+						Będzie można je edytować i ponownie zatwierdzić.
+					<% } else { %>
+						Użytkownik będzie musiał ponownie je zatwierdzić.
+					<% } %>
+				</p>
+				<div class="button-row">
+					<button>
+						<i>arrow_back</i>
+						Anuluj
+					</button>
+					<button api="user/[userID]/unconfirm" class="dangerous" command>
+						<i>undo</i>
+						Cofnij zatwierdzenie
+					</button>
+				</div>
+			</dialog>
+		<% } %>
+		
+	<% } else if($.user.hasPermission($.targetUser.PERMISSIONS.APPROVE)) { %>
+		<%
+			let confirmationAllowed = true
+			const missingDetails = $.targetUser.missingDetails
+		%>
+		<article>
+			<h3>Dane osobowe</h3>
+			<dl>
+				<% if($.targetUser.name.first && $.targetUser.name.last) { %>
+					<dt>Imię i nazwisko:</dt>
+					<dd><%= $.targetUser.displayName %></dd>
+				<% } else { %>
+					<% confirmationAllowed = false %>
+					<dt>Imię i nazwisko:</dt>
+					<dd><i>warning</i> Brak imienia i nazwiska!</dd>
+				<% } %>
+
+				<% if($.targetUser.email) { %>
+					<dt>Adres e-mail:</dt>
+					<dd><%= $.targetUser.email %></dd>
+				<% } else if(missingDetails.includes("email")) { %>
+					<% confirmationAllowed = false %>
+					<dt>Adres e-mail:</dt>
+					<dd><i>warning</i> Brak adresu e-mail!</dd>
+				<% } %>
+
+				<% if($.targetUser.phone) { %>
+					<dt>Numer telefonu:</dt>
+					<dd><%= Text.formatPhone($.targetUser.phone) %></dd>
+				<% } else if(missingDetails.includes("phone")) { %>
+					<% confirmationAllowed = false %>
+					<dt>Numer telefonu:</dt>
+					<dd><i>warning</i> Brak numeru telefonu!</dd>
+				<% } %>
+
+				<% if($.targetUser.dateOfBirth) { %>
+					<dt>Data urodzenia:</dt>
+					<dd><%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %> (<%= $.targetUser.age %> lat)</dd>
+				<% } else if(missingDetails.includes("dob")) { %>
+					<% confirmationAllowed = false %>
+					<dt>Data urodzenia:</dt>
+					<dd><i>warning</i> Brak daty urodzenia!</dd>
+				<% } %>
+			</dl>
+		</article>
+
+		<article>
+			<h3>Dane medyczne</h3>
+			<% if($.targetUser.medical.entries.length == 0) { %>
+				<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+			<% } else { %>
+				<p><%= $.targetUser.displayName %> ma następujące wymagania:</p>
+				<ul>
+					<% for(const entry of $.targetUser.medical.entries) { %>
+						<li>
+							<h4><%= entry.title %></h4>
+							<dl>
+								<% if(entry.symptoms) { %>
+									<dt>Opis:</dt>
+									<dd>
+										<%= entry.symptoms %>
+									</dd>
+								<% } else { %>
+									<% confirmationAllowed = false %>
+									<dt>Opis:</dt>
+									<dd><i>warning</i> Nie podano opisu!</dd>
+								<% } %>
+								<% if(entry.solutions) { %>
+									<dt>Zalecenia:</dt>
+									<dd>
+										<%= entry.solutions %>
+									</dd>
+								<% } else { %>
+									<% confirmationAllowed = false %>
+									<dt>Zalecenia:</dt>
+									<dd><i>warning</i> Nie podano zaleceń!</dd>
+								<% } %>
+							</dl>
+						</li>
+					<% } %>
+				</ul>
+			<% } %>
+		</article>
+
+		<% if($.targetUser.parents.length > 0) { %>
+			<article>
+				<h3>
+					<% if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) { %>
+						Kontakty alarmowe
+					<% } else { %>
+						Rodzice / opiekunowie
+					<% } %>
+				</h3>
+				<ul>
+					<% for(const parent of $.targetUser.parents) { %>
+						<li>
+							<h4><%= parent.displayName %></h4>
+							<dl>
+								<% if(parent.phone) { %>
+									<dt>Telefon:</dt>
+									<dd><%= Text.formatPhone(parent.phone) %></dd>
+								<% } else { %>
+									<% confirmationAllowed = false %>
+									<dt>Brak numeru telefonu!</dt>
+								<% } %>
+								<% if(parent.email) { %>
+									<dt>E-mail:</dt>
+									<dd><%= parent.email %></dd>
+								<% } else { %>
+									<% confirmationAllowed = false %>
+									<dt>Brak adresu e-mail!</dt>
+								<% } %>
+							</dl>
+						</li>
+					<% } %>
+				</ul>
+			</article>
+		<% } %>
+		
+		<% if(!confirmationAllowed) { %>
+			<p class="warning">
+				<i>warning</i>
+				Uzupełnij brakujące informacje aby kontynuować
+			</p>
+		<% } else { %>
+			<div id="signature-form">
+				<p>Podpisując, potwierdzasz że wszystkie powyższe informacje są prawdziwe i kompletne.</p>
+				<%~ include("/templates/signature", {
+					user: $.user
+				}) %>
+				<div class="button-row">
+					<button api="user/[userID]/confirm" id="confirm-button">
+						<i>check</i>
+						Zatwierdź dane
+					</button>
+				</div>
+			</div>
+		<% } %>
+
+	<% } else { %>
+		<p class="warning">
+			<i>warning</i>
+			<% if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
+				Ustaw datę urodzin aby zatwierdzić dane
+			<% } else if($.targetUser.age === null || $.targetUser.age >= Config.adultAge) { %>
+				Dane oczekują na zatwierdzenie przez użytkownika <%= $.targetUser.displayName %>
+			<% } else { %>
+				Dane oczekują na zatwierdzenie przez rodzica/opiekuna
+			<% } %>
+		</p>
+	<% } %>
+</section>

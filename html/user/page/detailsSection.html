@@ -1,0 +1,82 @@
+<section>
+	<h2>
+		<i>assignment</i>
+		Dane
+	</h2>
+	<div class="vertical-split">
+		<form>
+			<label for="first-name-input">Imię:</label>
+			<input
+				type="text"
+				id="first-name-input"
+				autocomplete="off"
+				value="<%= $.targetUser.name.first || "" %>"
+				api="user/[userID]/update/names"
+				name="firstName"
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+			>
+
+			<label for="last-name-input">Nazwisko:</label>
+			<input
+				type="text"
+				id="last-name-input"
+				autocomplete="off"
+				value="<%= $.targetUser.name.last || "" %>"
+				api="user/[userID]/update/names"
+				name="lastName"
+				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+			>
+
+			<% if($.targetUser.roles.length > 0) { %>
+				<label for="date-of-birth-input">Data urodzenia:</label>
+				<input
+					type="date" id="date-of-birth-input"
+					min="<%= MIN_DATE %>"
+					max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
+					<% if($.targetUser.dateOfBirth) { %>
+						value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
+					<% } %>
+					api="user/[userID]/update/dateOfBirth"
+					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : " disabled" %>
+				>
+			<% } %>
+		</form>
+		<% if($.targetUser.email || $.targetUser.phone ||
+			($.user.hasPermission($.targetUser.PERMISSIONS.EDIT) && (
+				$.user.missingDetails.includes("email") || $.user.missingDetails.includes("phone")
+			))
+		) { %>
+			<form>
+				<label for="email-input">E-mail:</label>
+				<input
+					type="email"
+					id="email-input"
+					autocomplete="off"
+					value="<%= $.targetUser.email || "" %>"
+					api="user/[userID]/update/email"
+					name="email"
+					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+				>
+
+				<label for="phone-input">Telefon:</label>
+				<input
+					type="tel"
+					id="phone-input"
+					autocomplete="off"
+					value="<%= Text.formatPhone($.targetUser.phone, $.targetUser.phone?.startsWith("+353")) || "" %>"
+					api="user/[userID]/update/phone"
+					name="phone"
+					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+				>
+			</form>
+		<% } %>
+	</div>
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+			<button href="/users/<%= $.targetUser.id %>/log">
+				<i>history</i>
+				Log aktywności
+			</button>
+		<% } %>
+	</div>
+</section>

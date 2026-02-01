@@ -32,5 +32,5 @@ export default async function({user, targetUser}) {
 		await targetUser.auth.populate("keys")
 	}
 
-	return html("user/page", {user, targetUser})
+	return html("user/page/main", {user, targetUser})
 }

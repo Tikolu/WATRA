@@ -1,0 +1,171 @@
+<% layout("/layouts/main", {
+	title: $.targetUser.displayName,
+	scripts: ["user/page", "signature"],
+	styles: ["signature"],
+	meta: {
+		userID: $.targetUser.id,
+		lastLogin: $.targetUser.auth.lastLogin
+	}
+}) %>
+<%
+	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
+%>
+
+<h1 id="user-title">
+	<i>person</i>
+	<%= $.targetUser.displayName %>
+</h1>
+<% if($.targetUser.org) { %>
+	<p>(<%= Config.orgs[$.targetUser.org].name %>)</p>
+<% } %>
+<div class="button-row">
+	<% if($.user.id == $.targetUser.id) { %>
+		<button id="logout-button" api="logout">
+			<i>logout</i>
+			Wyloguj
+		</button>
+	<% } %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
+		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
+			<i>delete</i>
+			<% if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
+				Usuń rodzica
+			<% } else { %>
+				Usuń użytkownika
+			<% } %>
+		</button>
+		<dialog id="delete-user-dialog">
+			<h1>Trwale usunąć użytkownika <%= $.targetUser.displayName %>?</h1>
+			<p>Użytkownik i wszystkie jego dane zostaną trwale usunięte.</p>
+			<div class="button-row">
+				<button>
+					<i>arrow_back</i>
+					Anuluj
+				</button>
+				<button class="dangerous" command>
+					<i>delete</i>
+					Usuń
+				</button>
+			</div>
+		</dialog>
+	<% } %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
+		<button id="generate-access-code-button" opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
+			<i>password</i>
+			Wygeneruj kod rejestracyjny
+		</button>
+	<% } %>
+</div>
+
+<% if(!blockAccess) { %>
+	<%~ include("detailsSection", $) %>
+<% } %>
+
+<% if(!blockAccess && ($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length > 0)) { %>
+	<%~ include("medicalSection", $) %>
+<% } %>
+
+<% if(!blockAccess && $.targetUser.isParent) { %>
+	<section>
+		<h2>
+			<i>supervisor_account</i>
+			Podopieczni
+		</h2>
+		<div id="child-list" class="entry-grid">
+			<% for(const child of $.targetUser.children || []) { %>
+				<% child.defaultName = "(podopieczny)" %>
+				<%~ include("/user/templates/userEntry", {
+					targetUser: child,
+					warnings: $.user.id == $.targetUser.id && !child.confirmed ? ["Zatwierdź dane podopiecznego"] : []
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } else if(!blockAccess && ($.targetUser.parents.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT))) { %>
+	<section>
+		<h2>
+			<i>supervisor_account</i>
+			<% if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) { %>
+				Kontakty alarmowe
+			<% } else { %>
+				Rodzice / opiekunowie
+			<% } %>
+		</h2>
+		<div id="parent-list" class="entry-grid">
+			<% for(const parent of $.targetUser.parents || []) { %>
+				<% parent.defaultName = "(rodzic / opiekun)" %>
+				<%~ include("/user/templates/userEntry", {targetUser: parent}) %>
+			<% } %>
+		</div>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
+			<button id="add-parent-button" opens-dialog="/users/<%= $.targetUser.id %>/addParent">
+				<i>person_add</i>
+				<span>Dodaj rodzica / opiekuna</span>
+			</button>
+		<% } %>
+	</section>
+<% } %>
+
+<% if(!blockAccess && $.targetUser.roles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+	<section>
+		<h2>
+			<i>groups</i>
+			Funkcje w jednostkach
+		</h2>
+		<div class="entry-grid">
+			<% for(const role of $.targetUser.roles) { %>
+				<%~ include("/unit/templates/unitEntry", {
+					targetUnit: role.unit,
+					content: Text.capitalise(role.displayName)
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>
+
+<% if(!blockAccess && $.targetUser.eventRoles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+	<section>
+		<h2>
+		<i>hiking</i>
+			Funkcje w akcjach
+		</h2>
+		<div class="entry-grid">
+			<% for(const role of $.targetUser.eventRoles) { %>
+				<%~ include("/event/templates/eventEntry.html", {
+					targetEvent: role.unit,
+					content: Text.capitalise(role.displayName)
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>
+
+<% if(!blockAccess && $.targetUser.eventInvites.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+	<section>
+		<h2>
+		<i>hiking</i>
+			Zaproszenia na akcje
+		</h2>
+		<div class="entry-grid">
+			<% for(const event of $.targetUser.eventInvites) { %>
+				<% const inviteState = event.participants.id($.targetUser.id)?.state %>
+				<%~ include("/event/templates/eventEntry.html", {
+					targetEvent: event,
+					content: ({
+						"pending": "Oczekujące zaproszenie",
+						"accepted": "Zaakceptowane zaproszenie",
+						"declined": "Odrzucone zaproszenie"
+					})[inviteState]
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>
+
+<% if($.targetUser.id == $.user.id) { %>
+	<%~ include("passkeySection", $) %>
+<% } %>
+
+<% if(!blockAccess && $.targetUser.roles.length > 0) { %>
+	<%~ include("confirmationSection", $) %>
+<% } %>

@@ -1,0 +1,62 @@
+<section>
+	<h2>
+		<i>key</i>
+		Klucze dostępu
+	</h2>
+	<p>Klucze dostępu są używane do logowania w systemie i do podpisywania ważnych informacji.</p>
+	<div class="entry-grid medium">
+		<% for(const key of $.targetUser.auth.keys) { %>
+			<% const provider = key.provider %>
+			<div>
+				<div class="entry-header">
+					<div class="entry-image">
+						<% if(provider?.icon_light) { %>
+							<img src="<%= provider?.icon_light %>">
+						<% } else { %>
+							<i>passkey</i>
+						<% } %>
+					</div>
+					<div class="entry-title">
+						<h3><%= provider?.name || "Klucz dostępu" %></h3>
+					</div>
+				</div>
+				<dl>
+					<dt>Dodano</dt>
+					<dd><%= datetime.format(key.created, "yyyy-MM-dd HH:mm") %></dd>
+					<dt>Ostatnio użyto</dt>
+					<dd><%= key.lastUsed ? datetime.format(key.lastUsed, "yyyy-MM-dd HH:mm") : "Nigdy" %></dd>
+				</dl>
+				<div class="button-row">
+					<button class="dangerous" api="passkey/<%= key.id %>/delete">
+						<i>delete</i>
+						<span>Usuń</span>
+					</button>
+				</div>
+			</div>
+		<% } %>
+	</div>
+	<div class="button-row">
+		<button id="add-passkey-button" api="passkey/create">
+			<i>add</i>
+			<span>Utwórz klucz dostępu</span>
+		</button>
+		<button opens-dialog="/users/passkeyInfo">
+			<i>help</i>
+			<span>Więcej informacji</span>
+		</button>
+	</div>
+</section>
+<dialog id="delete-passkey-dialog">
+	<h1>Trwale usunąć klucz dostępu?</h1>
+	<p>Nie będzie można się nim więcej logować, ani używać do podpisywania.</p>
+	<div class="button-row">
+		<button>
+			<i>arrow_back</i>
+			<span>Anuluj</span>
+		</button>
+		<button class="dangerous" command>
+			<i>delete</i>
+			<span>Usuń</span>
+		</button>
+	</div>
+</dialog>

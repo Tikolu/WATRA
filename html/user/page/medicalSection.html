@@ -1,0 +1,45 @@
+<section>
+	<h2>
+		<i>medical_information</i>
+		Dane medyczne
+	</h2>			
+	<% if($.targetUser.confirmed) { %>	
+		<% if($.targetUser.medical.entries.length == 0) { %>
+			<article>
+				<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+			</article>
+		<% } else { %>
+			<div class="entry-grid">
+				<% for(const category of $.targetUser.medical.displayCategories()) { %>
+					<!-- <h3><%= category.title %></h3> -->
+					<% for(const element of category.elements) { %>
+						<div>
+							<h3><%= element.title %></h3>
+							<div class="entry-content">
+								<p><%= element.symptoms %></p>
+							</div>
+						</div>
+					<% } %>
+				<% } %>
+			</div>
+		<% } %>
+	<% } else if(!$.targetUser.medical.complete) { %>
+		<p class="warning">
+			<i>warning</i>
+			Brakuje informacji
+		</p>
+	<% } %>
+
+	<% if($.targetUser.medical.entries.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+		<div class="button-row">
+			<button href="/users/<%= $.targetUser.id %>/medical">
+				<i>medical_information</i>
+				<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+					Edytuj dane medyczne
+				<% } else { %>
+					Szczegóły
+				<% } %>
+			</button>
+		</div>
+	<% } %>
+</section>
