@@ -8,6 +8,7 @@ import ServerRequest from "modules/server/request.js"
 import ServerResponse from "modules/server/response.js"
 import findRoute from "modules/server/route.js"
 import { Logger } from "modules/logger.js"
+import Config from "modules/config.js"
 
 const cspDirectives = [
 	"default-src 'self'",

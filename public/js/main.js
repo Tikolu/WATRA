@@ -24,8 +24,12 @@ eventSource.addEventListener("error", event => {
 	eventSource.close()
 
 	if(error.code == 403) {
-		window.channel?.postMessage({event: "refresh"})
-		document.location.reload()
+		// Redirect to login page
+		window.top.channel?.postMessage({
+			event: "navigate",
+			path: "/login"
+		})
+		window.top.location.href = "/login"
 
 	} else {
 		throw error.message || error

@@ -1,16 +1,25 @@
 API.registerHandler("login/getKeys", {
 	progressText: "Logowanie...",
+	refresh: false,
 	after: async (response, data, element) => {
 		if(response.loggedIn) {
 			Popup.success("Zalogowano!")
-			window.top.channel?.postMessage({event: "refresh"})
-			window.top.refreshPageData()
+
+			// Redirect to main page
+			window.top.channel?.postMessage({
+				event: "navigate",
+				path: "/"
+			})
+			window.top.location.href = "/"
+			// Close switcher dialog
 			window.dialog?.fullClose()
+			
 			return
 		}
-		
+
+		let credential
 		try {
-			var credential = await top.navigator.credentials.get({
+			credential = await top.navigator.credentials.get({
 				publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(response.options)
 			})
 		} catch(error) {
@@ -30,8 +39,15 @@ API.registerHandler("login/getKeys", {
 API.registerHandler("login/verify", {
 	progressText: "Logowanie...",
 	successText: "Zalogowano!",
-	refresh: "all",
+	refresh: false,
 	after: () => {
+		// Redirect to main page
+		window.top.channel?.postMessage({
+			event: "navigate",
+			path: "/"
+		})
+		window.top.location.href = "/"
+		// Close switcher dialog
 		window.dialog?.fullClose()
 	}
 })

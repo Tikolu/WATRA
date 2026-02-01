@@ -113,6 +113,10 @@ if(window == window.top) {
 			if(event == "refresh") {
 				document.location.reload()
 
+			// Navigate to other page
+			} else if(event == "navigate") {
+				document.location.href = message.data.path
+
 			// Unknown event
 			} else {
 				throw new Error(`Unknown event: ${event}`)

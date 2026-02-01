@@ -3,7 +3,7 @@ import html from "modules/html.js"
 import Config from "modules/config.js"
 
 export default async function({user, newsID}) {
-	if(!user) return this.response.redirect("/login")
+	if(!this.session.ensureActiveUser(this)) return
 
 	// Find news
 	const news = Config.news?.find(n => n.id == newsID)

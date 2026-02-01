@@ -108,8 +108,16 @@ async function deleteCredential(id) {
 
 API.registerHandler("logout", {
 	progressText: "Wylogowywanie...",
-	refresh: "all",
 	data: {
 		userID: undefined
+	},
+	refresh: false,
+	after: () => {
+		// Redirect to login page
+		window.top.channel?.postMessage({
+			event: "navigate",
+			path: "/login"
+		})
+		document.location.href = "/login"
 	}
 })

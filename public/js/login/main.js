@@ -1,11 +1,18 @@
 API.registerHandler("login/accessCode", {
 	progressText: "Logowanie...",
-	refresh: "all",
 	validate: data => {
 		data.accessCode = data.accessCode.replaceAll(" ", "")
 		return !!data.accessCode
 	},
-	after: () => document.location.href = "/"
+	refresh: false,
+	after: () => {
+		// Redirect to main page
+		window.top.channel?.postMessage({
+			event: "navigate",
+			path: "/"
+		})
+		document.location.href = "/"
+	}
 })
 
 API.registerHandler("logout", {

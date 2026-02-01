@@ -30,6 +30,23 @@ export default class {
 		await user.save()
 	}
 
+	/** Ensures user is logged in, redirects if not */
+	ensureActiveUser(context, saveRedirect = true) {
+		if(!context.routeData.user) {
+			const path = context.request.address.pathname
+			
+			// Save redirect path in token, unless one is already set
+			if(saveRedirect && !this.token.redirect && path != "/") {
+				this.token.redirect = path
+			}
+
+			// Redirect to login
+			context.response.redirect("/login")
+			return false
+		}
+		return true
+	}
+
 	/** Reset session timeout */
 	resetTimeout() {
 		this.token.loginTime = Date.now()

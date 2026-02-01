@@ -1,3 +1,3 @@
-export function _open({user}) {
-	if(!user) return this.response.redirect("/login")
+export function _open() {
+	if(!this.session.ensureActiveUser(this)) return
 }

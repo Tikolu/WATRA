@@ -29,11 +29,15 @@
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
 		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
 			<i>delete</i>
-			Usuń użytkownika
+			<% if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
+				Usuń rodzica
+			<% } else { %>
+				Usuń użytkownika
+			<% } %>
 		</button>
 		<dialog id="delete-user-dialog">
 			<h1>Trwale usunąć użytkownika <%= $.targetUser.displayName %>?</h1>
-			<p>Użytkownik i wszystkie związane z nim dane zostaną trwale usunięte.</p>
+			<p>Użytkownik i wszystkie jego dane zostaną trwale usunięte.</p>
 			<div class="button-row">
 				<button>
 					<i>arrow_back</i>

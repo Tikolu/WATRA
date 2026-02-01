@@ -77,7 +77,17 @@ export function _exit({user}) {
 
 
 export default async function({user}) {
-	if(!user) return this.response.redirect("/login")
+	if(!this.session.ensureActiveUser(this, false)) return
+
+	// Check for saved redirect
+	const redirect = this.token.redirect
+	if(redirect) {
+		// Clear redirect token
+		delete this.token.redirect
+
+		// Perform redirect
+		return this.response.redirect(redirect)
+	}
 
 	await user.populate({
 		"children": {

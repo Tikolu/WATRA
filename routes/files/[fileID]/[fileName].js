@@ -1,8 +1,8 @@
 import File from "modules/schemas/file.js"
 import HTTPError from "modules/server/error.js"
 
-export default async function({user, fileID, fileName}) {
-	if(!user) return this.response.redirect("/login")
+export default async function({fileID, fileName}) {
+	if(!this.session.ensureActiveUser(this)) return
 
 	// Find file
 	const file = await File.findById(fileID)
