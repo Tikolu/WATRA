@@ -43,7 +43,7 @@
 		</form>
 		<% if($.targetUser.email || $.targetUser.phone ||
 			($.user.hasPermission($.targetUser.PERMISSIONS.EDIT) && (
-				$.user.missingDetails.includes("email") || $.user.missingDetails.includes("phone")
+				$.targetUser.missingDetails.includes("email") || $.targetUser.missingDetails.includes("phone")
 			))
 		) { %>
 			<form>

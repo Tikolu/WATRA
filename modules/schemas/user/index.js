@@ -166,10 +166,11 @@ export class UserClass {
 		)
 
 		// Required for parents
-		if(this.isParent) missingDetails.push(...Array.conditional(
-			!this.email, "email",
-			!this.phone, "phone"
-		))
+		if(this.isParent) {
+			if(!this.phone) missingDetails.push("phone")
+			// Required for parent who have signed in
+			if(this.auth.lastLogin && !this.email) missingDetails.push("email")
+		}
 
 		// Required for users with roles
 		if(this.roles.length > 0) {
