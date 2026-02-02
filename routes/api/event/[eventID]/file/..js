@@ -11,6 +11,7 @@ export async function _open({user, targetEvent}) {
 	}
 }
 
+const allowFileTypes = ["application/pdf", "image/png", "image/jpeg"]
 export async function add({user, targetEvent, files, access}) {
 	if(!files?.length) throw new HTTPError(400, "Nie załączono dokumentu")
 	if(files.length > 1) throw new HTTPError(400, "Można dodać tylko jeden dokument na raz")
@@ -23,7 +24,7 @@ export async function add({user, targetEvent, files, access}) {
 
 	// Check file
 	const file = await File.fromJSON(files[0])
-	if(file.type != "application/pdf") {
+	if(!allowFileTypes.includes(file.type)) {
 		throw new Error("Nieobsługiwany typ pliku")
 	}
 
