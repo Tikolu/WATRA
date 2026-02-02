@@ -289,7 +289,7 @@
 
 		"opiekun": {
 			"name": "Opiekun",
-			"rank": 3,
+			"rank": 4,
 			"limit": 1,
 			"minAge": 18,
 			"tags": [
@@ -310,7 +310,7 @@
 				"orgHarcerzy": "Drużynowy",
 				"orgHarcerek": "Drużynowa"
 			},
-			"rank": 2,
+			"rank": 3,
 			"limit": 1,
 			"tags": [
 				"public",
@@ -329,7 +329,7 @@
 				"orgHarcerzy": "Przyboczny",
 				"orgHarcerek": "Przyboczna"
 			},
-			"rank": 1,
+			"rank": 2,
 			"tags": [
 				"accessUser"
 			]
@@ -347,7 +347,7 @@
 				"orgHarcerzy": "Zastępowy",
 				"orgHarcerek": "Zastępowa"
 			},
-			"rank": 2,
+			"rank": 3,
 			"limit": 1
 		},
 		"podzastępowy": {
