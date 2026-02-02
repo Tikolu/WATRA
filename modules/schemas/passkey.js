@@ -31,6 +31,11 @@ export class PasskeyClass {
 
 	lastUsed = Date
 
+	async registerUsage() {
+		this.lastUsed = new Date()
+		await this.save()
+	}
+
 	get provider() {
 		return AAGUIDs[this.aaguid]
 	}

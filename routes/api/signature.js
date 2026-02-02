@@ -49,6 +49,9 @@ export async function verify({user, credential}) {
 		})
 		
 		if(!verification.verified) throw Error("Błąd weryfikowania klucza dostępu")
+
+		// Register passkey usage
+		await passkey.registerUsage()
 	}
 
 	// Generate signature

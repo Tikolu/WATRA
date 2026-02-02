@@ -35,8 +35,7 @@ export default async function({credential, userID}) {
 	})
 
 	// Register passkey usage
-	passkey.lastUsed = new Date()
-	await passkey.save()
+	await passkey.registerUsage()
 
 	await this.session.login(passkey.user)
 		
