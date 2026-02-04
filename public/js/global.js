@@ -939,33 +939,26 @@ function processDialogOpeners() {
 	window.dialogOpeners = []
 	
 	for(const element of document.querySelectorAll("[opens-dialog]")) {
-		const dialogID = element.getAttribute("opens-dialog")
+		element.onclick = async () => {
+			const dialogID = element.getAttribute("opens-dialog")
 
-		// URL mode
-		if(dialogID.startsWith("/")) {
-			const dialog = createURLDialog(dialogID)
-			
-			element.onclick = async () => {
-				dialog.result()
+			// URL mode
+			if(dialogID.startsWith("/")) {
+				element.dialog = createURLDialog(dialogID)
+
+
+			// Dialog mode
+			} else {		
+				element.dialog = document.getElementById(dialogID)
+				if(!element.dialog) {
+					console.warn(`Dialog with ID ${dialogID} not found for element`, element)
+					return
+				}
 			}
 
-			element.removeDialogOpener = () => {
-				element.onclick = undefined
-			}
-
-
-		// Dialog mode
-		} else {		
-			const dialog = document.getElementById(dialogID)
-			if(!dialog) {
-				console.warn(`Dialog with ID ${dialogID} not found for element`, element)
-				continue
-			}
-
-			element.onclick = () => dialog.result()
-			element.removeDialogOpener = () => element.onclick = undefined
-
+			return await element.dialog.result()
 		}
+		element.removeDialogOpener = () => element.onclick = undefined
 
 		window.dialogOpeners.push(element)
 	}
