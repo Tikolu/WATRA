@@ -6,10 +6,7 @@ export function _open() {
 }
 
 export async function switcher({user}) {
-	const savedUsers = (this.request.token?.saved || [])
-						.filter(u => u.id != user.id)
-	
-	await savedUsers.populate({}, {ref: "User"})
+	const savedUsers = await this.session.getSavedUsers()
 
 	return html("user/switcher", {
 		user,

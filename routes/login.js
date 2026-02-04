@@ -16,15 +16,8 @@ export default async function({user, code: accessCode}) {
 			return
 		}
 	}
-	
-	const savedUsers = [...this.token.saved || []]
-	await savedUsers.populate({}, {ref: "User", placeholders: false})
 
-	// Remove null users
-	if(savedUsers.length != (this.token.saved?.length || 0)) {
-		this.token.saved = savedUsers.filter(u => u).map(u => u.id)
-		if(!this.token.saved.length) delete this.token.saved
-	}
+	const savedUsers = await this.session.getSavedUsers()
 	
 	// Render login page
 	return html("login/main", {

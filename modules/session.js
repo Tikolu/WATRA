@@ -83,6 +83,28 @@ export default class {
 		}
 	}
 
+	/** Loads saved users */
+	async getSavedUsers() {
+		// Get saved user IDs
+		const savedUsers = [...this.token.saved || []]
+		
+		// Load and sort saved users
+		await savedUsers.populate({}, {ref: "User", placeholders: false})
+		savedUsers.sort((a, b) => b.auth.lastLogin - a.auth.lastLogin)
+
+		// Remove null users
+		if(savedUsers.length != (this.token.saved?.length || 0)) {
+			this.token.saved = savedUsers.filter(u => u).map(u => u.id)
+			if(!this.token.saved.length) delete this.token.saved
+		}
+
+		// Sort users
+		savedUsers.sort((a, b) => b.auth.lastLogin - a.auth.lastLogin)
+
+		// Exclude active user
+		return savedUsers.filter(u => !this.token.active || u.id != this.token.active)
+	}
+
 	/** Get currently logged in user */
 	async getActiveUser() {
 		if(!this.token.active) return
