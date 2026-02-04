@@ -21,7 +21,6 @@ themeChooser.onchange = () => {
 	// Save value
 	Local.theme = themeChooser.value
 	// Apply theme
-	setTheme(themeChooser.value)
 	top.setTheme(themeChooser.value)
 }
 

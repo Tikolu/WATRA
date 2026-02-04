@@ -1,6 +1,6 @@
 function setTheme(theme) {	
-	theme ||= JSON.parse(localStorage.theme || "\"auto\"")
-	if(theme == "auto") theme = themeQuery.matches ? "dark" : "light"
+	let settingTheme = theme || JSON.parse(localStorage.theme || "\"auto\"")
+	if(settingTheme == "auto") settingTheme = themeQuery.matches ? "dark" : "light"
 	
 	// Get current theme
 	const currentTheme = document.documentElement.getAttribute("theme")
@@ -11,11 +11,16 @@ function setTheme(theme) {
 	// Apply hue if set
 	if(currentHue) {
 		document.documentElement.style.setProperty("--hue", `${currentHue}deg`)
-		theme += ` ${currentHue}`
+		settingTheme += ` ${currentHue}`
 	}
 	
-	// Apply theme
-	document.documentElement.setAttribute("theme", theme)
+	if(theme && document.startViewTransition) {
+		// Apply theme with animation
+		document.startViewTransition(() => document.documentElement.setAttribute("theme", settingTheme))
+	} else {
+		// Apply theme without animation
+		document.documentElement.setAttribute("theme", settingTheme)
+	}
 	
 	// Apply theme colour
 	const colour = window.getComputedStyle(document.documentElement).getPropertyValue("--surface-4")
