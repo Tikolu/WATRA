@@ -5,14 +5,7 @@ API.registerHandler("login/accessCode", {
 		return !!data.accessCode
 	},
 	refresh: false,
-	after: () => {
-		// Redirect to main page
-		window.top.channel?.postMessage({
-			event: "navigate",
-			path: "/"
-		})
-		document.location.href = "/"
-	}
+	after: redirectAfterLogin
 })
 
 API.registerHandler("logout", {

@@ -109,9 +109,13 @@ if(window == window.top) {
 		window.channel.onmessage = message => {
 			const {event, type, id} = message.data
 
-			// Refresh the page
-			if(event == "refresh") {
+			// Reload the page
+			if(event == "reload") {
 				document.location.reload()
+
+			// Refresh page data
+			} else if(event == "refresh") {
+				refreshPageData()
 
 			// Navigate to other page
 			} else if(event == "navigate") {

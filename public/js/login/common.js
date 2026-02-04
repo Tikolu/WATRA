@@ -1,3 +1,23 @@
+function redirectAfterLogin() {
+	if(window.dialog) {
+		// If in dialog, refresh pages
+		window.top.channel?.postMessage({
+			event: "refresh"
+		})
+		window.top.refreshPageData()
+		window.dialog.fullClose()
+		return
+
+	} else {
+		// Otherwise, redirect to main page
+		window.top.channel?.postMessage({
+			event: "navigate",
+			path: "/"
+		})
+		window.top.location.href = "/"
+	}
+}
+
 API.registerHandler("login/getKeys", {
 	progressText: "Logowanie...",
 	refresh: false,
@@ -5,15 +25,7 @@ API.registerHandler("login/getKeys", {
 		if(response.loggedIn) {
 			Popup.success("Zalogowano!")
 
-			// Redirect to main page
-			window.top.channel?.postMessage({
-				event: "navigate",
-				path: "/"
-			})
-			window.top.location.href = "/"
-			// Close switcher dialog
-			window.dialog?.fullClose()
-			
+			redirectAfterLogin()
 			return
 		}
 
@@ -40,14 +52,5 @@ API.registerHandler("login/verify", {
 	progressText: "Logowanie...",
 	successText: "Zalogowano!",
 	refresh: false,
-	after: () => {
-		// Redirect to main page
-		window.top.channel?.postMessage({
-			event: "navigate",
-			path: "/"
-		})
-		window.top.location.href = "/"
-		// Close switcher dialog
-		window.dialog?.fullClose()
-	}
+	after: redirectAfterLogin
 })
