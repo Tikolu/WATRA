@@ -1,7 +1,7 @@
 import Config from "modules/config.js"
 
 /** Accessing the user's profile page and any user details */
-export async function ACCESS(user) {
+export async function ACCESS(user) {	
 	// User can access themselves
 	if(user.id == this.id) return true
 	
@@ -17,11 +17,23 @@ export async function ACCESS(user) {
 	// Users with "accessUser" role in any unit/upperUnit of user can access
 	if(await user.hasRoleInUnits("accessUser", this.getUnitsTree())) return true
 
+	if(this.archived) {
+		await this.populate("archived")
+		// Users with ACCESS_ARCHIVED_MEMBERS permission in user's archival unit can access
+		if(await user.checkPermission(this.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
+	}
+
 	// Users with "accessUser" role in any unit/upperUnit of any child can access parent
 	if(this.parent) {
-		await this.populate("children")
+		await this.populate({"children": "archived"})
 		for(const child of this.children) {
 			if(await user.hasRoleInUnits("accessUser", child.getUnitsTree())) return true
+		}
+
+		// Users with ACCESS_ARCHIVED_MEMBERS permission in unit of any child can access parent
+		for(const child of this.children) {
+			if(!child.archived) continue
+			if(await user.checkPermission(child.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
 		}
 	}
 
@@ -65,6 +77,9 @@ export async function EDIT(user) {
 
 	// Cannot edit a user with confirmed profile
 	if(this.confirmed) return false
+
+	// Cannot edit archived user
+	if(this.archived) return false
 
 	// Cannot edit parent of confirmed child
 	await this.populate("children")
@@ -162,6 +177,32 @@ export async function DELETE(user) {
 
 	// MANAGE permission grants DELETE, if the user has only one role
 	if(this.roles.length <= 1 && await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
+
+	return false
+}
+
+/** Archiving/unarchiving a user */
+export async function ARCHIVE(user) {
+	// Lack of ACCESS permission denies ARCHIVE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+	
+	// User cannot archive themselves
+	if(user.id == this.id) return false
+
+	if(this.archived) {
+		await this.populate("archived")
+		// Users with "manageUser" role in archival unit/upperUnit can unarchive
+		if(await user.hasRoleInUnits("manageUser", this.archived, this.archived.getUpperUnitsTree())) return true
+
+	} else {
+		// Cannot archive user with no roles
+		if(this.roles.length == 0) return false
+		// Cannot archive user with children
+		if(this.children.length > 0) return false
+	}
+
+	// Manage permission grants ARCHIVE
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	return false
 }

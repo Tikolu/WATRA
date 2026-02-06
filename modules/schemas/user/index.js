@@ -133,6 +133,11 @@ export class UserClass {
 		}
 	]
 
+	archived = {
+		type: String,
+		ref: "Unit"
+	}		
+
 	medical = userMedical
 	auth = userAuth
 
@@ -398,6 +403,45 @@ export class UserClass {
 		}
 	
 		// Save user
+		await this.save()
+	}
+	
+	/** Archives the user */
+	async archive() {
+		if(this.archived) throw Error("Użytkownik jest już zarchiwizowany")
+		if(this.roles.length > 1) throw Error("Nie można archiwizować użytkownika z więcej niż jedną funkcją")
+		if(this.children.length > 0) throw Error("Nie można archiwizować użytkownika z podopiecznymi")
+
+		await this.populate({"roles": "unit"})
+		
+		// Save archive unit
+		this.archived = this.roles[0].unit.id
+		this.roles[0].unit.archivedUsers.push(this.id)
+		await this.roles[0].unit.save()
+
+		// Remove role
+		await this.roles[0].delete()
+
+		// Save user
+		await this.save()
+	}
+
+	/** Unarchives the user */
+	async unarchive() {
+		if(!this.archived) throw Error("Użytkownik nie jest zarchiwizowany")
+		await this.populate("archived")
+		const unit = this.archived
+		this.archived = undefined
+
+		// Add user to unit
+		const role = await unit.setRole(this, undefined, false)
+
+		// Remove archive unit
+		unit.archivedUsers = unit.archivedUsers.filter(user => user.id != this.id)
+		
+		// Save user
+		await role.save()
+		await unit.save()
 		await this.save()
 	}
 	

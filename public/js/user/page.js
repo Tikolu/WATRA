@@ -23,6 +23,16 @@ API.registerHandler("user/[userID]/delete", {
 	after: () => history.back()
 })
 
+API.registerHandler("user/[userID]/archive", {
+	progressText: "Archiwizowanie użytkownika...",
+	successText: "Zarchiwizowano użytkownika"
+})
+
+API.registerHandler("user/[userID]/unarchive", {
+	progressText: "Cofanie archiwizacji...",
+	successText: "Cofnięto archiwizację"
+})
+
 API.registerHandler("user/[userID]/parent/create", {
 	progressText: "Tworzenie rodzica...",
 	after: response => {

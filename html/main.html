@@ -43,7 +43,7 @@
 <% 
 	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
 %>
-<% if(!$.user.profileComplete || blockAccess) { %>
+<% if(!$.user.profileComplete || blockAccess || $.user.archived) { %>
 	<% if(blockAccess) { %>
 		<article>
 			<p>
@@ -62,7 +62,8 @@
 				targetUser: $.user,
 				warnings: Array.conditional(
 					!$.user.profileComplete, "Uzupełnij dane profilu",
-					blockAccess, "Dodaj klucz dostępu"
+					blockAccess, "Dodaj klucz dostępu",
+					$.user.archived, "Profil zarchiwizowany"
 				)
 			}) %>
 		</div>
@@ -96,9 +97,13 @@
 		</h2>
 		<div class="entry-grid">
 			<% for(const child of $.user.children) { %>
+				<%
+					const warnings = []
+					if(!child.archived && !child.confirmed) warnings.push("Zatwierdź dane podopiecznego")
+				%>
 				<%~ include("user/templates/userEntry", {
 					targetUser: child,
-					warnings: child.confirmed ? [] : ["Zatwierdź dane podopiecznego"]
+					warnings
 				}) %>
 			<% } %>
 		</div>

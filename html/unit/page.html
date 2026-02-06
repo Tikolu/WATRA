@@ -59,7 +59,10 @@
 			<i>person</i>
 			Użytkownicy
 		</h2>
-		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 0) { %>
+		<% if(
+			($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 0) ||
+			($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS) && $.targetUnit.archivedUsers?.length > 0)
+		) { %>
 			<a href="/units/<%= $.targetUnit.id %>/members<%= orgParam %>" class="heading-link">Wszyscy użytkownicy<i>chevron_right</i></a>
 		<% } %>
 		<% if($.targetUnit.roles?.length > 0) { %>

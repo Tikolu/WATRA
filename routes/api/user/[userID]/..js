@@ -29,3 +29,18 @@ export async function unconfirm({user, targetUser}) {
 	
 	await targetUser.unconfirmDetails()
 }
+
+export async function archive({user, targetUser}) {
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.ARCHIVE)
+	
+	await targetUser.archive()
+}
+
+
+export async function unarchive({user, targetUser}) {
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.ARCHIVE)
+	
+	await targetUser.unarchive()
+}

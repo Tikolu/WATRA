@@ -19,15 +19,6 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 			throw new HTTPError(404, "Użytkownik nie istnieje")
 		}
 	}
-
-	// Sort available roles
-	const roleOptions = [targetUnit.config.defaultRole, ...targetUnit.config.roles].map(r => Config.roles[r])
-	if(!roleOptions || roleOptions.every(r => !r)) throw Error(`Jednostka "${targetUnit.typeName}" nie ma skonfigurowanych funkcji`)
-	roleOptions.sort((a, b) => {
-		if(b.id == targetUnit.config.defaultRole) return 1
-		else if(a.id == targetUnit.config.defaultRole) return -1
-		else return a.rank - b.rank
-	})
 	
 	const members = await targetUnit.getMembers()
 	const newRoles = []
@@ -41,24 +32,9 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 		if(!await user.hasRoleInUnits("manageUser", targetUser.getUnitsTree())) {
 			throw new HTTPError(403, `Nie masz uprawnień do dodania użytkownika ${targetUser.displayName}`)
 		}
-	
-		let role
-		const userAge = targetUser.age
-		for(const roleConfig of roleOptions) {
-			if(userAge !== null) {
-				if(userAge < (roleConfig.minAge || 0)) continue
-				if(userAge > (roleConfig.maxAge || Infinity)) continue
-			}
-			role = roleConfig
-			break
-		}
-			
-		if(!role) {
-			throw new HTTPError(400, "Użytkownik nie spełnia wymagań wiekowych dla funkcji w jednostce")
-		}
 
 		// Add user to unit
-		const newRole = await targetUnit.setRole(targetUser, role.id, false)
+		const newRole = await targetUnit.setRole(targetUser, undefined, false)
 		newRoles.push(newRole)
 	}
 

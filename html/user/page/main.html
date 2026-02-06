@@ -18,12 +18,49 @@
 <% if($.targetUser.org) { %>
 	<p>(<%= Config.orgs[$.targetUser.org].name %>)</p>
 <% } %>
+
+<% if($.targetUser.archived) { %>
+	<article>
+		<p>
+			<b><i>archive</i> Profil zarchiwizowany</b><br>
+			<% if($.targetUser.id == $.user.id || $.user.children.some(child => child.id == $.targetUser.id)) { %>
+				Skontaktuj się z przełożonym aby odblokować profil.
+			<% } %>
+		</p>
+	</article>
+<% } %>
+
 <div class="button-row">
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+		<button href="/users/<%= $.targetUser.id %>/log">
+			<i>history</i>
+			Log aktywności
+		</button>
+	<% } %>
 	<% if($.user.id == $.targetUser.id) { %>
 		<button id="logout-button" api="logout">
 			<i>logout</i>
 			Wyloguj
 		</button>
+	<% } %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
+		<button id="generate-access-code-button" opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
+			<i>password</i>
+			Wygeneruj kod rejestracyjny
+		</button>
+	<% } %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ARCHIVE)) { %>
+		<% if($.targetUser.archived) { %>
+			<button id="unarchive-user-button" api="user/[userID]/unarchive">
+				<i>unarchive</i>
+				Cofnij archiwizację
+			</button>
+		<% } else { %>
+			<button id="archive-user-button" api="user/[userID]/archive">
+				<i>archive</i>
+				Archiwizuj użytkownika
+			</button>
+		<% } %>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
 		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
@@ -48,18 +85,6 @@
 				</button>
 			</div>
 		</dialog>
-	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
-		<button id="generate-access-code-button" opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
-			<i>password</i>
-			Wygeneruj kod rejestracyjny
-		</button>
-	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
-		<button href="/users/<%= $.targetUser.id %>/log">
-			<i>history</i>
-			Log aktywności
-		</button>
 	<% } %>
 </div>
 

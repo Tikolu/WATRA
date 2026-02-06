@@ -47,3 +47,19 @@
 		<p>Brak użytkowników w tej jednostce.</p>
 	<% } %>
 </section>
+
+<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS) && $.targetUnit.archivedUsers?.length > 0) { %>
+	<section>
+		<h2>
+			<i>archive</i>
+			Zarchiwizowani użytkownicy
+		</h2>
+		<div class="entry-grid">
+			<% for(const user of $.targetUnit.archivedUsers) { %>
+				<%~ include("/user/templates/userEntry.html", {
+					targetUser: user
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>

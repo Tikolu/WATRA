@@ -109,7 +109,7 @@ for(const orgID in Config.orgs) {
 for(const roleID in Config.roles) {
 	const role = Config.roles[roleID]
 	
-	// Prevent invalid role nname
+	// Prevent invalid role name
 	if(roleID == "remove") {
 		throw new ConfigError("Invalid role ID \"remove\"")
 	}

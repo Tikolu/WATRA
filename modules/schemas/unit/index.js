@@ -54,6 +54,12 @@ export class UnitClass {
 			ref: "Event"
 		}
 	]
+	archivedUsers = [
+		{
+			type: String,
+			ref: "User"
+		}
+	]
 
 
 	/** * Getters * */
@@ -80,16 +86,44 @@ export class UnitClass {
 	/** Methods */
 	
 	/** Add user to unit with a role, any existing role in the unit gets overwritten */
-	async setRole(user, roleType=this.config.defaultRole, save=true) {
+	async setRole(user, roleType, save=true) {
 		// Populate roles
 		await this.populate("roles")
+		
+		// Find appropriate role type if not given
+		if(!roleType) {
+			// Sort available roles by rank
+			const roleOptions = this.config.roles.map(r => Config.roles[r])
+			if(!roleOptions || roleOptions.every(r => !r)) throw Error(`Jednostka "${this.typeName}" nie ma skonfigurowanych funkcji`)
+			roleOptions.sort((a, b) => {
+				if(b.id == this.config.defaultRole) return 1
+				else if(a.id == this.config.defaultRole) return -1
+				else return a.rank - b.rank
+			})
 
+			if(!roleOptions.length) {
+				throw Error("Jednostka nie ma skonfigurowanych funkcji")
+			}
+			
+			const userAge = user.age
+			for(const roleConfig of roleOptions) {
+				if(userAge !== null) {
+					if(userAge < (roleConfig.minAge || 0)) continue
+					if(userAge > (roleConfig.maxAge || Infinity)) continue
+				}
+				roleType = roleConfig.id
+				break
+			}
+				
+			if(!roleType) {
+				throw new Error("Użytkownik nie spełnia wymagań wiekowych dla funkcji w jednostce")
+			}
+		}
+		
 		let role
-		
-		if(!roleType) throw Error(`Jednostka "${this.typeName}" nie ma skonfigurowanych funkcji`)
-		
+
 		// Value is a Role instance: add the role directly
-		else if(roleType instanceof Role) role = roleType
+		if(roleType instanceof Role) role = roleType
 
 		// Value is a role type: create new role with said type
 		else if(this.config.roles.includes(roleType)) {

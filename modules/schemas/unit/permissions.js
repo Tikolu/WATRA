@@ -19,6 +19,17 @@ export async function ACCESS_MEMBERS(user) {
 	return false
 }
 
+/** Accessing archived members */
+export async function ACCESS_ARCHIVED_MEMBERS(user) {
+	// Lack of ACCESS_MEMBERS permission denies ACCESS_ARCHIVED_MEMBERS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS_MEMBERS, true) === false) return false
+
+	// "manageUser" roles in this unit or upper units can access archived members
+	if(await user.hasRoleInUnits("manageUser", this, this.getUpperUnitsTree())) return true
+
+	return false
+}
+
 /** Editing key unit details, such as name and type, and deleting the unit */
 export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
