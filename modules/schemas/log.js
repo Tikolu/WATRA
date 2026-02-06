@@ -46,7 +46,10 @@ const eventTypes = {
 	"event/*/unit/*/invite": "Zaproszono $UNIT na $EVENT",
 	"event/*/unit/*/uninvite": "Cofnięto zaproszenie $UNIT na $EVENT",
 	"event/*/file/add": "Dodano dokument do $EVENT",
-	"event/*/file/*/delete": "Usunięto dokument z $EVENT"
+	"event/*/file/*/delete": "Usunięto dokument z $EVENT",
+	"event/*/member/*/invite": "Zaproszono $USER na $EVENT",
+	"event/*/member/*/setParticipation": "Ustawiono uczestnictwo $USER na $EVENT",
+	"event/*/member/*/setRole": "Ustawiono funkcję $USER na $EVENT"
 }
 
 const types = {}
@@ -151,7 +154,7 @@ const schema = mongoose.Schema.fromClass(LogClass)
 
 schema.permissions = {
 	async ACCESS(user) {
-		await this.populate(["targetUser", "targetUnit", "targetEvent", "user"])
+		await this.populate(["targetUser", "targetUnit", "targetEvent", "user"], {placeholders: false})
 		
 		if(this.user && await user.checkPermission(this.user.PERMISSIONS.ACCESS)) return true
 		

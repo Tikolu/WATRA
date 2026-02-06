@@ -38,7 +38,7 @@ export default async function({user, targetUnit, start, end, direct, type}) {
 	}
 	const logs = await Log.find(query)
 
-	await logs.populate(["user", "targetUser", "targetEvent", "targetUnit"])
+	await logs.populate(["user", "targetUser", "targetEvent", "targetUnit"], {placeholders: false})
 
 	return html("logs/list", {
 		user,
