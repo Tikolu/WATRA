@@ -7,17 +7,23 @@ export default async function({user, targetUser, parent: parentCode}) {
 	await user.requirePermission(targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)
 
 	// Generate access code for parent
+	let generateUser = targetUser
 	if(parentCode) {
 		if(targetUser.parents.length == 0) {
 			throw new HTTPError(400, "Użytkownik nie ma rodziców")
 		}
 		await targetUser.populate("parents")
-		await targetUser.parents[0].auth.generateAccessCode(1000 * 60 * 5)
-
-	// Generate access code for user
-	} else {
-		await targetUser.auth.generateAccessCode(1000 * 60 * 5)
+		generateUser = targetUser.parents[0]
 	}
+
+	// Generate access code	
+	await generateUser.auth.generateAccessCode(1000 * 60 * 5)
+
+	// Log event
+	await user.logEvent(`user/${generateUser.id}/accessCode/generate`, {
+		request: this.request,
+		targetUser: generateUser.id
+	})
 	
 	return html("user/accessCode", {
 		user,

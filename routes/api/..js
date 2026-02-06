@@ -48,12 +48,16 @@ export async function _exit({user}) {
 
 	let output = this.lastOutput
 	if(user && user.logEvent && !this.logging.disabled) {
-		await user.logEvent(decodeURI(this.request.address.pathname).replace(/^\/api\//, ""), {
-			targetUser: this.routeData.targetUser,
-			targetUnit: this.routeData.targetUnit,
-			targetEvent: this.routeData.targetEvent,
-			data: this.logging.noOutput ? undefined : output
-		})
+		await user.logEvent(
+			decodeURI(this.request.address.pathname).replace(/^\/api\//, ""),
+			{
+				request: this.request,
+				targetUser: this.routeData.targetUser,
+				targetUnit: this.routeData.targetUnit,
+				targetEvent: this.routeData.targetEvent,
+				data: this.logging.noOutput ? undefined : output
+			}
+		)
 	}
 
 	output ||= {}

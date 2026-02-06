@@ -61,6 +61,17 @@ export async function MANAGE_INVITES(user) {
 	return false
 }
 
+/** Accessing the unit's activity log */
+export async function ACCESS_ACTIVITY(user) {
+	// Lack of ACCESS permission denies ACCESS_ACTIVITY
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "accessActivity" roles in this unit or upper units can access activity log
+	if(await user.hasRoleInUnits("accessActivity", this, this.getUpperUnitsTree())) return true
+
+	return false
+}
+
 /** Displaying events of a unit (and subUnits) */
 export async function ACCESS_EVENTS(user) {
 	// Lack of ACCESS permission denies CREATE_EVENT

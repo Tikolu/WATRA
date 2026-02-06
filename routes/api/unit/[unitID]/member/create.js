@@ -28,6 +28,7 @@ export default async function({user, targetUnit, firstName="", lastName="", org,
 		await newUser.addParent(parent)
 	}
 
+	this.addRouteData({targetUser: newUser})
 	return {
 		userID: newUser.id
 	}

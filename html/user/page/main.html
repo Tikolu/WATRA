@@ -55,6 +55,12 @@
 			Wygeneruj kod rejestracyjny
 		</button>
 	<% } %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+		<button href="/users/<%= $.targetUser.id %>/log">
+			<i>history</i>
+			Log aktywności
+		</button>
+	<% } %>
 </div>
 
 <% if(!blockAccess) { %>

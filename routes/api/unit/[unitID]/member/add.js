@@ -95,4 +95,8 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 		}
 		await targetUser.save()
 	}
+
+	return {
+		userIDs
+	}
 }

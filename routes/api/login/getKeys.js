@@ -37,6 +37,9 @@ export default async function({userID}) {
 
 	this.session.setChallenge(options.challenge, options.timeout)
 
+	// Disable logging
+	this.logging.disabled = true
+
 	return {
 		options,
 		userID

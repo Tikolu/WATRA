@@ -1,0 +1,27 @@
+@media (min-width: 45em) {
+	#activity-filters > div {
+		margin: -1em 0;
+	}
+}
+
+#activity-log {
+	padding-top: 1em;
+	margin-bottom: 2em;
+}
+
+#activity-log div {
+	.entry-title h3 {
+		white-space: wrap;
+	}
+
+	p {
+		font-size: 0.85em;
+		
+		span:not(:last-child) {
+			display: inline-block;
+			margin-right: 0.5em;
+			padding-right: 0.5em;
+			border-right: 1px solid var(--secondary-text);
+		}
+	}
+}

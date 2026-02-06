@@ -78,6 +78,7 @@ export default async function({user, targetUnit, users: userIDs, roleType}) {
 
 
 	return {
+		userIDs,
 		roleType
 	}
 }

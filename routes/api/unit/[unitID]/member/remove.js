@@ -44,4 +44,8 @@ export default async function({user, targetUnit, users: userIDs}) {
 	for(const role of rolesForRemoval) {
 		await role.delete()
 	}
+
+	return {
+		userIDs
+	}
 }

@@ -1,0 +1,64 @@
+<% layout("/layouts/dialog") %>
+<main>
+	<h1>
+		<%= $.targetLog.description %>
+	</h1>
+
+	<section>
+		<h2><i>assignment</i> Szczegóły</h2>
+		<dl>
+			<dt>Data</dt>
+			<dd><%= datetime.format($.targetLog.time, "dd/MM/yyyy HH:mm:ss") %></dd>
+			
+			<dt>Użytkownik</dt>
+			<dd><a href="/users/<%= $.targetLog.user.id %>"><%= $.targetLog.user.displayName %></a></dd>
+
+			<% if($.targetLog.ip) { %>
+				<dt>Adres IP</dt>
+				<dd><a href="https://ipinfo.io/<%= $.targetLog.ip %>" target="_blank"><%= $.targetLog.ip %></a></dd>
+			<% } %>
+
+			<% if($.targetLog.agent) { %>
+				<dt>Agent</dt>
+				<dd><%= $.targetLog.agent %></dd>
+			<% } %>
+		</dl>
+	</section>
+
+	<section>
+		<h2><i>explosion</i> Wydarzenie</h2>
+		<dl>
+			<dt>ID</dt>
+			<dd><%= $.targetLog.eventType %></dd>
+
+			<% if($.targetLog.targetUser) { %>
+				<dt>Użytkownik</dt>
+				<dd><%= $.targetLog.targetUser.id %> (<a href="/users/<%= $.targetLog.targetUser.id %>"><%= $.targetLog.targetUser.displayName %></a>)</dd>
+			<% } %>
+
+			<% if($.targetLog.targetUnit) { %>
+				<dt>Jednostka</dt>
+				<dd><%= $.targetLog.targetUnit.id %> (<a href="/units/<%= $.targetLog.targetUnit.id %>"><%= $.targetLog.targetUnit.name %></a>)</dd>
+			<% } %>
+
+			<% if($.targetLog.targetEvent) { %>
+				<dt>Wydarzenie</dt>
+				<dd><%= $.targetLog.targetEvent.id %> (<a href="/events/<%= $.targetLog.targetEvent.id %>"><%= $.targetLog.targetEvent.name %></a>)</dd>
+			<% } %>
+		</dl>
+	</section>
+
+	<% if($.targetLog.data) { %>
+		<section>
+			<h2><i>data_object</i> Dane</h2>
+			<pre><%= JSON.stringify($.targetLog.data, null, 2) %></pre>
+		</section>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Zamknij
+	</button>
+</div>

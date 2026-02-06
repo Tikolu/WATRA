@@ -1,0 +1,70 @@
+<% layout("/layouts/main", {
+	title: "Log aktywności",
+	scripts: ["log/list"],
+	styles: ["log/list"],
+	meta: {
+		userID: $.targetUser?.id,
+		unitID: $.targetUnit?.id
+	}
+}) %>
+<h1>
+	<i>history</i><%= $.targetUser?.displayName || $.targetUnit?.displayName %> - Log aktywności
+</h1>
+<div id="activity-filters" class="vertical-split">
+	<form>
+		<label for="filter-start">Od:</label>
+		<input type="datetime-local" id="filter-start" value="<%= datetime.format(new Date($.start), "yyyy-MM-dd'T'HH:mm") %>">
+
+		<label for="filter-end">Do:</label>
+		<input type="datetime-local" id="filter-end" value="<%= datetime.format(new Date($.end), "yyyy-MM-dd'T'HH:mm") %>">
+	</form>
+	<div>
+		<form>
+			<label for="event-type-filter">Wydarzenie:</label>
+			<select id="event-type-filter">
+				<option value>Wszystkie</option>
+				<hr>
+				<% for(const eventType in $.Log.eventTypes) { %>
+					<option
+						value="<%= eventType %>"
+						<% if($.type == eventType) { %>
+							selected
+						<% } %>
+					>
+						<%= $.Log.formatDescription($.Log.eventTypes[eventType].description) %>
+					</option>
+				<% } %>
+			</select>
+		</form>
+		<form>
+			<input type="checkbox" id="direct-filter" name="direct"<%= $.directOnly ? "checked" : "" %>>
+			<label for="direct-filter">Bezpośrednio dotyczące <%= $.targetUser?.displayName || $.targetUnit?.displayName %></label>
+		</form>
+	</div>
+</div>
+<hr>
+<div id="activity-log" class="entry-grid full">
+	<% if ($.logs.length == 0) { %>
+		<p>Brak wyników.</p>
+	<% } %>
+	<% for(const logEntry of $.logs) { %>
+		<div>
+			<div class="entry-title">
+				<h3>
+					<%= logEntry.description %>
+				</h3>
+				<p>
+					<span>
+						<a href="/users/<%= logEntry.user.id %>"><%= logEntry.user.displayName %></a>
+					</span>
+					<span>
+						<%= datetime.format(logEntry.time, "dd/MM/yyyy HH:mm:ss") %>
+					</span>
+					<span>
+						<a opens-dialog="/logs/<%= logEntry.id %>">Szczegóły</a>
+					</span>
+				</p>
+			</div>
+		</div>
+	<% } %>
+</div>

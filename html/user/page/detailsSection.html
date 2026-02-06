@@ -71,12 +71,4 @@
 			</form>
 		<% } %>
 	</div>
-	<div class="button-row">
-		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
-			<button href="/users/<%= $.targetUser.id %>/log">
-				<i>history</i>
-				Log aktywności
-			</button>
-		<% } %>
-	</div>
 </section>

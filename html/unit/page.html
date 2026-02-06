@@ -40,6 +40,12 @@
 			<span>Usuń jednostkę</span>
 		</button>
 	<% } %>
+	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+		<button id="activity-log-button" href="/units/<%= $.targetUnit.id %>/log">
+			<i>history</i>
+			<span>Log aktywności</span>
+		</button>
+	<% } %>
 </div>
 
 <% if(

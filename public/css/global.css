@@ -151,7 +151,7 @@ div.vertical-split > form {
 	margin-top: 0;
 }
 
-div.vertical-split:last-child form {
+div.vertical-split:last-child form:last-child {
 	margin-bottom: 0;
 }
 
@@ -343,10 +343,11 @@ h1 + h2 {
 	margin-top: -0.5em;
 }
 
-a {
+a, a[opens-dialog] {
 	color: var(--text);
 	outline: none;
 	cursor: pointer;
+	text-decoration: underline;
 	transition: color 250ms;
 }
 

@@ -201,8 +201,11 @@ class RoutingContext {
 			error = new HTTPError(error)
 		}
 
-		console.log("\nURL:", decodeURI(this.request.address.pathname))
-		console.error(error)
+		// Only log 404 errors in development mode
+		if(error.httpCode != 404 || globalThis.DEV) {
+			console.log("\nURL:", decodeURI(this.request.address.pathname))
+			console.error(error)
+		}
 
 		// If in streaming mode, output error to stream
 		if(this.response.streaming) {

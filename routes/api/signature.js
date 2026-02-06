@@ -25,6 +25,9 @@ export async function start({user}) {
 
 	this.session.setChallenge(options.challenge, options.timeout)
 
+	// Disable logging
+	this.logging.disabled = true
+
 	return {
 		options
 	}
