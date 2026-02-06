@@ -20,6 +20,8 @@ const eventTypes = {
 	"user/*/parent/create": "Utworzono rodzica dla $USER",
 	"user/*/parent/link": "Dodano rodzica do $USER",
 	"user/*/medical/*": "Edytowano dane medyczne $USER",
+	"user/*/archive": "Zarchiwizowano $USER",
+	"user/*/unarchive": "Cofnięto archiwizację $USER",
 
 	"signature/verify": "Podpisano",
 
