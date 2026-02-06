@@ -29,7 +29,8 @@ eventSource.addEventListener("error", event => {
 			event: "navigate",
 			path: "/login"
 		})
-		window.top.location.href = "/login"
+		// Reload page
+		window.top.location.reload()
 
 	} else {
 		throw error.message || error

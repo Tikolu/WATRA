@@ -88,9 +88,8 @@ export default class {
 		// Get saved user IDs
 		const savedUsers = [...this.token.saved || []]
 		
-		// Load and sort saved users
+		// Load users
 		await savedUsers.populate({}, {ref: "User", placeholders: false})
-		savedUsers.sort((a, b) => b.auth.lastLogin - a.auth.lastLogin)
 
 		// Remove null users
 		if(savedUsers.length != (this.token.saved?.length || 0)) {
