@@ -243,15 +243,15 @@ export async function ACCESS_ACTIVITY(user) {
 export async function GENERATE_ACCESS_CODE(user) {
 	// Lack of ACCESS permission denies GENERATE_ACCESS_CODE
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
-	
-	// Cannot generate for user with access keys
-	if(this.auth.keys.length > 0) return false
 
-	// Otherwise, can generate for themselves
-	else if(user.id == this.id) return true
+	// User can generate for themselves
+	if(user.id == this.id) return true
 
 	// Parent can generate for their children
-	if(user.children.hasID(this.id)) return true
+	else if(user.children.hasID(this.id)) return true
+
+	// Cannot generate for user with access keys
+	else if(this.auth.keys.length > 0) return false
 
 	// MANAGE permission grants GENERATE_ACCESS_CODE
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
