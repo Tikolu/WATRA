@@ -17,21 +17,30 @@ export default async function({user, targetUnit, users: userIDs}) {
 		}
 	}
 
-	// Get user's role
-	const userRole = await user.getRoleInUnit(targetUnit)
+	// Get user's role in unit, unless user has SET_ROLE permission in an upperUnit
+	let userRole = await user.getRoleInUnit(targetUnit)
+	for await(const upperUnit of targetUnit.getUpperUnitsTree()) {
+		if(await user.checkPermission(upperUnit.PERMISSIONS.SET_ROLE)) {
+			userRole = null
+			break
+		}
+	}
 
 	const rolesForRemoval = []
 	for(const targetUser of users) {
 		// Ensure current role is not higher in rank than user's role
 		const targetUserRole = await targetUser.getRoleInUnit(targetUnit)
 		if(!targetUserRole) throw new HTTPError(400, `Użytkownik ${targetUser.displayName} nie należy do jednostki`)
-		if(userRole && targetUserRole.config.rank > userRole.config.rank) {
-			throw new HTTPError(400, `Brak uprawnień do zdjęcia użytkownika ${targetUser.displayName} z funkcji`)
-		}
 
-		// User can only remove themselves if they have a "setRole" role in an upper unit
-		if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", targetUnit.getUpperUnitsTree())) {
-			throw new HTTPError(400, "Nie można zdjąć siebie z funkcji")
+		if(userRole) {
+			if(targetUserRole.config.rank > userRole.config.rank) {
+				throw new HTTPError(400, `Brak uprawnień do zdjęcia użytkownika ${targetUser.displayName} z funkcji`)
+			}
+
+			// User cannot remove their own role
+			if(user.id == targetUser.id) {
+				throw new HTTPError(400, "Nie można zdjąć siebie z funkcji")
+			}
 		}
 
 		// Ensure user has at least one other role
