@@ -644,6 +644,10 @@ article h4 + p {
 	margin-top: -1em;
 }
 
+p + p {
+	margin-top: -0.5em;
+}
+
 
 article :first-child {
 	margin-top: 0;

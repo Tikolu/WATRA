@@ -44,10 +44,50 @@
 		</button>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
-		<button id="generate-access-code-button" opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
+		<%
+			let showAccessCodeWarning = (() => {
+				if($.targetUser.isParent) return false
+				if($.targetUser.id == $.user.id) return false
+				if($.targetUser.parents.hasID($.user.id)) return false
+				if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) return false
+				return true
+			})()
+		%>
+		<button
+			id="generate-access-code-button"
+			<% if(showAccessCodeWarning) { %>
+				opens-dialog="access-code-warning-dialog"
+			<% } else { %>
+				opens-dialog="/users/<%= $.targetUser.id %>/accessCode"
+			<% } %>
+		>
 			<i>password</i>
 			Wygeneruj kod rejestracyjny
 		</button>
+		<% if(showAccessCodeWarning) { %>
+			<dialog id="access-code-warning-dialog">
+				<h1>
+					<i>password</i>
+					Kod rejestracyjny
+				</h1>
+				<p class="warning">
+					<i>warning</i>
+					Kod <b>nie umożliwi dostępu do profilu rodzica / opiekuna</b>, tylko do profilu <%= $.targetUser.displayName %>.
+				</p>
+				<p>Opcje do wygenerowania kodu dla rodzica / opiekuna można znaleźć na profilu rodzica / opiekuna.</p>
+				<p>Na pewno kontynuować z wygenerowaniem kodu?</p>
+				<div class="button-row">
+					<button>
+						<i>arrow_back</i>
+						Anuluj
+					</button>
+					<button opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
+						<i>password</i>
+						Wygeneruj kod
+					</button>
+				</div>
+			</dialog>
+		<% } %>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ARCHIVE)) { %>
 		<% if($.targetUser.archived) { %>
