@@ -4,7 +4,10 @@ import Config from "modules/config.js"
 export async function ACCESS(user) {	
 	// User can access themselves
 	if(user.id == this.id) return true
-	
+
+	// Block access from archived users
+	if(user.archived) return false
+
 	// Block access if user has no passkeys
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 

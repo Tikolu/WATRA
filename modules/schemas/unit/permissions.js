@@ -2,6 +2,9 @@ import Config from "modules/config.js"
 
 /** Accessing the unit's page and any unit details */
 export function ACCESS(user) {
+	// Block access from archived users
+	if(user.archived) return false
+
 	// Block access if user has no passkeys
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
