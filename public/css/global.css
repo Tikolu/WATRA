@@ -666,7 +666,7 @@ dialog, .popup {
 	width: 25em;
 	max-width: 80vw;
 	min-height: 5em;
-	max-height: 90vh;
+	max-height: 85vh;
 
 	color: var(--text);
 	background-color: var(--surface-0);
@@ -762,7 +762,7 @@ body:has(dialog[open]) .popup button {
 dialog iframe {
 	border: none;
 	height: 0;
-	max-height: 90vh;
+	max-height: 85vh;
 	opacity: 0;
 	user-select: none;
 	transition: height 250ms, opacity 250ms;

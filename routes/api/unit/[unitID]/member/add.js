@@ -29,7 +29,8 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 		}
 
 		// Check permissions
-		if(!await user.hasRoleInUnits("manageUser", targetUser.getUnitsTree())) {
+		await targetUser.populate("children")
+		if(!await user.hasRoleInUnits("manageUser", targetUser.getUnitsTree(), targetUser.children.map(c => c.getUnitsTree()))) {
 			throw new HTTPError(403, `Nie masz uprawnień do dodania użytkownika ${targetUser.displayName}`)
 		}
 

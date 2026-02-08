@@ -59,9 +59,12 @@
 							<h3><%= user.displayName || "(użytkownik)" %></h3>
 						</label>
 					</div>
-					<% if($.description) { %>
+					<%
+						let description = user.description || $.description?.(user)
+					%>
+					<% if(description) { %>
 						<div class="entry-content">
-							<%= $.description(user) %>
+							<%= description %>
 						</div>
 					<% } %>
 				</div>

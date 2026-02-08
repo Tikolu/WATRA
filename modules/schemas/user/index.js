@@ -90,14 +90,7 @@ export class UserClass {
 
 	org = {
 		type: String,
-		enum: Object.keys(Config.orgs),
-		required: function() {
-			// Not required for users without role
-			if(this.roles.length == 0) return false
-
-			// Otherwise, required if orgs are configures
-			else if(Object.keys(Config.orgs).length > 1) return true
-		}
+		enum: Object.keys(Config.orgs)
 	}
 	
 	parents = [
