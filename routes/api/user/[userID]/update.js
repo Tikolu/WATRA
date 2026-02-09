@@ -1,5 +1,6 @@
 import * as datetime from "jsr:@std/datetime"
 import * as Text from "modules/text.js"
+import HTTPError from "modules/server/error.js"
 
 export async function _open({user, targetUser}) {
 	// Check permissions
@@ -49,5 +50,19 @@ export async function phone({targetUser, phone}) {
 
 	return {
 		phone: Text.formatPhone(targetUser.phone, targetUser.phone?.startsWith("+353"))
+	}
+}
+
+export async function org({user, targetUser, org}) {
+	await user.requirePermission(targetUser.PERMISSIONS.MANAGE)
+
+	if(!org) throw new HTTPError(400)
+
+	targetUser.org = org
+	
+	await targetUser.save()
+	
+	return {
+		org: targetUser.org
 	}
 }

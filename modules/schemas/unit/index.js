@@ -150,9 +150,12 @@ export class UnitClass {
 		role.user = user
 		role.unit = this
 
+		// Set user org to unit org
+		user.org ||= this.org
+
 		// Check org mismatch
 		if(this.org && this.org != user.org) {
-			throw Error(`Nie można przypisać użytkownika z organizacji "${Config.orgs[user.org].name}" do jednostki z organizacji "${Config.orgs[this.org].name}"`)
+			throw Error(`Nie można przypisać użytkownika z organizacji "${Config.orgs[user.org]?.name || "(nieznana)"}" do jednostki z organizacji "${Config.orgs[this.org]?.name || "(nieznana)"}"`)
 		}
 
 		// Enforce role count limit

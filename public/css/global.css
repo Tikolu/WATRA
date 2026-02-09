@@ -650,6 +650,10 @@ article h4 + p {
 	margin-top: -1em;
 }
 
+p > button {
+	margin-left: 0.5em;
+}
+
 p + p {
 	margin-top: -0.5em;
 }

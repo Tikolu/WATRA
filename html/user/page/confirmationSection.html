@@ -195,7 +195,7 @@
 			<i>warning</i>
 			<% const confirmedChild = $.targetUser.children.find(child => child.confirmed) %>
 			<% if(confirmedChild) { %>
-				Cofnij <a href="/users/<%= confirmedChild.id %>#confirmation-section">zatwierdzenie danych podopiecznego</a> aby odblokować edycję własnych danych
+				Cofnij <a href="/users/<%= confirmedChild.id %>#confirmation-section">zatwierdzenie danych podopiecznego</a> aby odblokować edycję danych
 			<% } else if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
 				Ustaw datę urodzin aby zatwierdzić dane
 			<% } else if($.targetUser.age === null || $.targetUser.age >= Config.adultAge) { %>

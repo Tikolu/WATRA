@@ -54,7 +54,6 @@
 					autocomplete="off"
 					value="<%= $.targetUser.email || "" %>"
 					api="user/[userID]/update/email"
-					name="email"
 					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 				>
 
@@ -65,7 +64,6 @@
 					autocomplete="off"
 					value="<%= Text.formatPhone($.targetUser.phone, $.targetUser.phone?.startsWith("+353")) || "" %>"
 					api="user/[userID]/update/phone"
-					name="phone"
 					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 				>
 			</form>

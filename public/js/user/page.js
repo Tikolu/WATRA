@@ -17,6 +17,13 @@ API.registerHandler("user/[userID]/update/phone", {
 	successText: "Zapisano numer telefonu"
 })
 
+API.registerHandler("user/[userID]/update/org", {
+	form: "change-org-dialog",
+	valueKey: "org",
+	progressText: "Zapisywanie organizacji...",
+	successText: "Zapisano organizację"
+})
+
 API.registerHandler("user/[userID]/delete", {
 	progressText: "Kasowanie użytkownika...",
 	before: () => deleteUserDialog.result(),

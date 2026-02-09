@@ -1,0 +1,58 @@
+<p>
+	<% if($.targetUser.org) { %>
+		<%= Config.orgs[$.targetUser.org].name %>
+	<% } else { %>
+		Brak organizacji
+	<% } %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.MANAGE) && $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+		<button opens-dialog="change-org-dialog">
+			<i>edit</i>
+			<% if($.targetUser.org) { %>
+				Zmień
+			<% } else { %>
+				Ustaw
+			<% } %>
+		</button>
+	<% } %>
+</p>
+
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.MANAGE) && $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+	<dialog id="change-org-dialog">
+		<h1>
+			<i>edit</i>
+			<% if($.targetUser.org) { %>
+				Zmień organizację użytkownika
+			<% } else { %>
+				Ustaw organizację użytkownika
+			<% } %>
+		</h1>
+		<section>
+			<form>
+				<% for(let orgID in Config.orgs) { %>
+					<input
+						type="radio"
+						name="org"
+						value="<%= orgID %>"
+						id="org-<%= orgID %>"
+						<% if($.targetUser.org == orgID) { %>checked<% } %>
+					>
+					<label for="org-<%= orgID %>"><%= Config.orgs[orgID].name %></label>
+				<% } %>
+			</form>
+		</section>
+		<div class="button-row">
+			<button>
+				<i>arrow_back</i>
+				Anuluj
+			</button>
+			<button api="user/[userID]/update/org" command>
+				<i>edit</i>
+				<% if($.targetUser.org) { %>
+					Zmień
+				<% } else { %>
+					Ustaw
+				<% } %>
+			</button>
+		</div>
+	</dialog>
+<% } %>
