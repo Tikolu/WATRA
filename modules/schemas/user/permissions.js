@@ -238,6 +238,14 @@ export async function ACCESS_ACTIVITY(user) {
 	
 	// "accessActivity" roles in any unit/upperUnit of user can access
 	if(await user.hasRoleInUnits("accessActivity", this.getUnitsTree())) return true
+
+	// "accessActivity" roles in any unit/upperUnit of user can access activity of any child
+	if(this.parent) {
+		await this.populate("children")
+		for(const child of this.children) {
+			if(await user.hasRoleInUnits("accessActivity", child.getUnitsTree())) return true
+		}
+	}
 	
 	return false
 }
