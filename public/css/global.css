@@ -25,6 +25,7 @@ html[theme^=light] {
 	--shadow: hsla(var(--hue), 20%, 10%, 0.4);
 	
 	--border-radius: 0.5em;
+	--highlight-brightness: 0.75;
 }
 
 html[theme^=dark] {
@@ -46,6 +47,7 @@ html[theme^=dark] {
 	--shadow: hsl(var(--hue), 5%, 5%);
 	
 	--border-radius: 0.5em;
+	--highlight-brightness: 2;
 }
 
 .watra-logo {
@@ -627,6 +629,10 @@ section {
 			pointer-events: none;
 		}
 	}
+
+	&.highlight {
+		animation: highlight 250ms 500ms 2 alternate;
+	}
 }
 
 article {
@@ -862,6 +868,15 @@ dialog.frame:has(> iframe.loaded) i.spin {
 	}
 	to {
 		rotate: 1turn;
+	}
+}
+
+@keyframes highlight {
+	from {
+		filter: brightness(1)
+	}
+	to {
+		filter: brightness(var(--highlight-brightness))
 	}
 }
 

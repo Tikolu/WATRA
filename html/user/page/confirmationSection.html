@@ -1,4 +1,4 @@
-<section>
+<section id="confirmation-section">
 	<h2>
 		<i>check</i>
 		Zatwierdzenie danych
@@ -158,6 +158,11 @@
 									<dt>E-mail:</dt>
 									<dd><i>warning</i> Brak adresu e-mail!</dd>
 								<% } %>
+								<% if(parent.roles.length > 0 && !parent.profileComplete) { %>
+									<% confirmationAllowed = false %>
+									<dt>Zatwierdzenie:</dt>
+									<dd><i>warning</i> Rodzic / opiekun ma niezatwierdzony profil!</dd>
+								<% } %>
 							</dl>
 						</li>
 					<% } %>
@@ -188,7 +193,10 @@
 	<% } else { %>
 		<p class="warning">
 			<i>warning</i>
-			<% if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
+			<% const confirmedChild = $.targetUser.children.find(child => child.confirmed) %>
+			<% if(confirmedChild) { %>
+				Cofnij <a href="/users/<%= confirmedChild.id %>#confirmation-section">zatwierdzenie danych podopiecznego</a> aby odblokować edycję własnych danych
+			<% } else if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
 				Ustaw datę urodzin aby zatwierdzić dane
 			<% } else if($.targetUser.age === null || $.targetUser.age >= Config.adultAge) { %>
 				Dane oczekują na zatwierdzenie

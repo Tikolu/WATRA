@@ -1210,3 +1210,11 @@ if(window.top != window && !document.body.classList.contains("allow-frames")) {
 	console.warn("Frame detected, attempting to exit...")
 	if(!META.error) window.top.location = location
 }
+
+if(location.hash) {
+	const highlightedSection = document.getElementById(location.hash.slice(1))
+	if(highlightedSection?.matches("section")) {
+		highlightedSection.classList.add("highlight")
+		sleep(1000).then(() => highlightedSection.classList.remove("highlight"))
+	}
+}
