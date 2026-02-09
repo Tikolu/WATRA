@@ -125,6 +125,9 @@ export class LogClass {
 	}
 	
 	get description() {
+		// If log has error data, user error message as description
+		if(this.data?.error?.message) return this.data.error.message
+		
 		// Attempt to find exact match
 		let text = LogClass.eventTypes[this.eventType]?.description || ""
 
