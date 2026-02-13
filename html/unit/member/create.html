@@ -38,6 +38,7 @@
 				<% } %>
 			>
 				<% for(const org in Config.orgs) { %>
+					<% if($.units[0].org && $.units[0].org != org) continue %>
 					<option
 						value="<%= org || "" %>"
 						<% if(($.units.length == 1 && $.units[0].org == org) || $.orgContext == org) { %>

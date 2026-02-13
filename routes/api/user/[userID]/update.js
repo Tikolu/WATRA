@@ -54,7 +54,7 @@ export async function phone({targetUser, phone}) {
 }
 
 export async function org({user, targetUser, org}) {
-	await user.requirePermission(targetUser.PERMISSIONS.MANAGE)
+	await user.requirePermission(targetUser.PERMISSIONS.SET_ORG)
 
 	if(!org) throw new HTTPError(400)
 

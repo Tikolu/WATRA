@@ -210,6 +210,23 @@ export async function ARCHIVE(user) {
 	return false
 }
 
+/** Changing the user's org */
+export async function SET_ORG(user) {
+	// Lack of EDIT permission denies SET_ORG
+	if(!await user.checkPermission(this.PERMISSIONS.EDIT)) return false
+
+	// Cannot change org if any of the user's units have an org
+	for await(const unit of this.listUnits()) {
+		if(unit.org) return false
+	}
+
+	// MANAGE permission grants SET_ORG
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
+
+	return false
+}
+
+
 /** Making important / legal decisions for the user */
 export async function APPROVE(user) {
 	// Lack of ACCESS permission denies APPROVE

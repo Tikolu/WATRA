@@ -4,7 +4,7 @@
 	<% } else { %>
 		Brak organizacji
 	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.MANAGE) && $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG)) { %>
 		<button opens-dialog="change-org-dialog">
 			<i>edit</i>
 			<% if($.targetUser.org) { %>
@@ -16,7 +16,7 @@
 	<% } %>
 </p>
 
-<% if($.user.hasPermission($.targetUser.PERMISSIONS.MANAGE) && $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG)) { %>
 	<dialog id="change-org-dialog">
 		<h1>
 			<i>edit</i>

@@ -15,7 +15,7 @@
 	<i>person</i>
 	<%= $.targetUser.displayName %>
 </h1>
-<% if($.targetUser.roles.length > 0 && ($.targetUser.org || $.user.hasPermission($.targetUser.PERMISSIONS.MANAGE))) { %>
+<% if($.targetUser.roles.length > 0 && ($.targetUser.org || $.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG))) { %>
 	<%~ include("orgOptions", $) %>
 <% } %>
 
