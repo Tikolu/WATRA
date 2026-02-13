@@ -1,3 +1,5 @@
+import "modules/generator.js"
+
 /** Global date limits */
 globalThis.MIN_DATE = "1800-01-01"
 globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
@@ -63,32 +65,5 @@ Object.defineProperty(Array.prototype, "equals", {
 			if(this[i] !== array[i]) return false
 		}
 		return true
-	}
-})
-
-/** AsyncGenerator functions */
-const tempAsyncGenerator = (async function* () { yield })()
-tempAsyncGenerator.return()
-const asyncGeneratorPrototype = tempAsyncGenerator.constructor.prototype
-Object.defineProperty(asyncGeneratorPrototype, "find", {
-	value: async function(callback) {
-		for await(const item of this) {
-			if(await callback(item)) {
-				await this.return()
-				return item
-			}
-		}
-		return undefined
-	}
-})
-Object.defineProperty(asyncGeneratorPrototype, "some", {
-	value: async function(callback) {
-		for await(const item of this) {
-			if(await callback(item)) {
-				await this.return()
-				return true
-			}
-		}
-		return false
 	}
 })
