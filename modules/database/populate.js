@@ -4,7 +4,6 @@ import { Logger } from "modules/logger.js"
 const logger = new Logger("Populate", 32)
 
 function createFakeDocument(model, id, placeholder=true) {
-	logger.log(`Creating fake ${model.modelName} ${id}`)
 	const newDocument = new model({
 		_id: id
 	})
@@ -13,8 +12,9 @@ function createFakeDocument(model, id, placeholder=true) {
 }
 
 
-export function isPopulated(object) {
+export function isPopulated(object, filter) {
 	if(typeof object == "string") return false
+	if(filter && JSON.stringify(object?.$locals?.filteredBy) == JSON.stringify(filter)) return true
 	if(object?.$locals.unpopulatedPlaceholder) return false
 	return true
 }
@@ -96,19 +96,23 @@ class PopulationContext {
 				const populateIDs = []
 
 				for(const subDocument of subDocuments) {
-					if(isPopulated(subDocument)) continue
+					if(isPopulated(subDocument, options.filter)) continue
 					if(options?.exclude?.hasID(subDocument.id)) continue
 					populateIDs.push(subDocument.id)
 				}
 				this.registerPopulateCallback(ref, populateIDs, results => {
 					const newArray = []
 					for(const subDocument of subDocuments) {
-						if(typeof subDocument != "string") continue
-						let newDocument = results[subDocument]
+						if(isPopulated(subDocument, options.filter)) {
+							newArray.push(subDocument)
+							continue
+						}
+						let newDocument = results[subDocument.id]
 						if(!newDocument) {
 							if(options?.placeholders === false) continue
-							newDocument = createFakeDocument(mongoose.model(ref), subDocument)
-							results[subDocument] = newDocument
+							if(options.log) logger.log(`Creating fake ${ref} ${subDocument.id}`)
+							newDocument = createFakeDocument(mongoose.model(ref), subDocument.id)
+							results[subDocument.id] = newDocument
 						}
 						newDocument.$__parent = document
 						newDocument.$__.parent = document
@@ -135,7 +139,7 @@ class PopulationContext {
 		}
 		for(const id in entry.results) {
 			const document = entry.results[id]
-			if(document.$locals?.selectedFields) {
+			if(document.$locals?.selectedFields || document.$locals?.unpopulatedPlaceholder) {
 				delete entry.results[id]
 			}
 		}
@@ -147,11 +151,12 @@ class PopulationContext {
 
 export function populate(graph, options={}) {
 	const label = Array.isArray(this) ? "array" : (this.constructor.modelName + " " + this.id)
+
+	if(typeof options != "object") throw Error(`Invalid options argument "${options}"`)
+
 	if(options.log) logger.log("Populating", label)
 	options.known = [...(options.known || [])]
 	options.known.push(this)
-
-	if(options.filter) options.placeholders ??= false
 
 	let parentDocument = this.parent?.(), populationContext = this.$locals?.populationContext
 	while(parentDocument && !options.known.includes(parentDocument)) {
@@ -171,7 +176,7 @@ export function populate(graph, options={}) {
 			for(const index in this) {
 				const item = this[index]
 				if(options?.exclude?.hasID(item.id)) continue
-				if(isPopulated(item)) {
+				if(isPopulated(item, options.filter)) {
 					populationContext.findPopulatable(graph, item, options)
 
 				} else {
@@ -187,6 +192,7 @@ export function populate(graph, options={}) {
 						let newDocument = results[subDocument.id]
 						if(!newDocument) {
 							if(options.placeholders === false) continue
+							if(options.log) logger.log(`Creating fake ${options.ref} ${subDocument.id}`)
 							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id)
 							results[subDocument.id] = newDocument
 						}
@@ -228,16 +234,18 @@ export function populate(graph, options={}) {
 				}
 
 				const query = async () => {
-					if(options.log) logger.log("Requesting", ref, "from DB:", queryIDs)
+					if(options.log) logger.log("Requesting", ref, "from DB:", queryIDs, options.filter || "")
 					const queryResults = await model.find({_id: queryIDs, ...options.filter}, options.select)
 					for(const id of queryIDs) {
-						if(!queryResults.some(r => r?.id == id)) {
-							if(options.placeholders === false) continue
-							queryResults.push(createFakeDocument(model, id, false))
-						}
+						if(options.placeholders === false) continue
+						if(queryResults.some(r => r?.id == id)) continue
+						if(options.log) logger.log(`Creating fake ${model.modelName} ${id}`)
+						const fakeDocument = createFakeDocument(model, id)
+						queryResults.push(fakeDocument)
 					}
 					for(const doc of queryResults) {
 						if(options.select) doc.$locals.selectedFields = options.select
+						if(options.filter) doc.$locals.filteredBy = options.filter
 						populationContext.entries[ref].results[doc.id] = doc
 					}
 					populationContext.finalise(ref)
