@@ -1,6 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["unit/chooseEventParticipants", "user/picker"],
-	styles: ["unit/chooseEventParticipants", "user/picker"],
+	styles: ["user/picker"],
 	meta: {
 		unitID: $.targetUnit.id,
 		eventID: $.targetEvent.id
@@ -8,7 +8,7 @@
 }) %>
 <h1><%= $.targetUnit.displayName %></h1>
 <main>
-	<section>
+	<section class="fill-height">
 		<%~ include("/user/templates/userPicker", {
 			graph: $.graph,
 			multiple: true,
@@ -18,7 +18,7 @@
 				const participant = $.targetEvent.participants.id(user.id)
 				if(!participant) return
 				if(participant.originUnit?.id != $.targetUnit.id) return true
-			},
+			}
 		}) %>
 	</section>
 </main>

@@ -1,6 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["unit/member/add", "user/picker"],
-	styles: ["unit/addUser", "user/picker"],
+	styles: ["user/picker"],
 	meta: {
 		unitID: $.targetUnit.id
 	}
@@ -10,7 +10,7 @@
 	Dodawanie istniejących użytkowników
 </h1>
 <main>
-	<section>
+	<section class="fill-height">
 		<%~ include("/user/templates/userPicker", {
 			graph: $.graph,
 			multiple: true

@@ -1,6 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["user/addParent", "user/picker"],
-	styles: ["user/addParent", "user/picker"],
+	styles: ["user/picker"],
 	meta: {
 		userID: $.targetUser.id
 	}
@@ -23,7 +23,7 @@
 		</section>
 	<% } %>
 	<% if($.graph.userCount || $.action == "link") { %>
-		<section id="link-section">
+		<section id="link-section" class="fill-height">
 			<h3>Dodaj istniejącego rodzica</h3>
 			<%~ include("/user/templates/userPicker", {
 				graph: $.graph,

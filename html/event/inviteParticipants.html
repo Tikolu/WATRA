@@ -1,13 +1,13 @@
 <% layout("/layouts/dialog", {
 	scripts: ["event/inviteParticipants", "user/picker"],
-	styles: ["event/inviteParticipants", "user/picker"],
+	styles: ["user/picker"],
 	meta: {
 		eventID: $.targetEvent.id
 	}
 }) %>
 <h1>Zapraszanie kadry na <%= $.targetEvent.displayName %></h1>
 <main>
-	<section>
+	<section class="fill-height">
 		<%~ include("/user/templates/userPicker", {
 			graph: $.graph
 		}) %>

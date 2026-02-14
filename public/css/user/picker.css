@@ -1,6 +1,7 @@
 .user-picker {
 	overflow-y: scroll;
 	margin-top: 0.5em;
+	flex: 1;
 }
 
 .user-picker-options {
@@ -22,7 +23,7 @@
 	margin: 2em 0;
 }
 
-.user-picker details {
+.user-picker details:not(:first-child) {
 	margin-top: 0.5em;
 }
 

@@ -175,6 +175,7 @@ input, button, select, textarea {
 
 textarea {
 	width: 100%;
+	height: 100%;
 	min-height: 5em;
 	field-sizing: content;
 	resize: none;
@@ -671,16 +672,13 @@ article :last-child, article:last-child {
 /* Dialogs and popups */
 
 dialog, .popup {
+	max-width: min(80%, 50em);
 	position: fixed;
 	inset: 0;
 	margin: auto !important;
 	flex-direction: column;
 	
 	padding: 1em;
-	width: 25em;
-	max-width: 80vw;
-	min-height: 5em;
-	max-height: 85vh;
 
 	color: var(--text);
 	background-color: var(--surface-0);
@@ -710,6 +708,7 @@ dialog .button-row button:first-child:not(:only-child) {
 
 .popup {
 	min-width: 10em;
+	max-width: min(80%, 30em);
 	min-height: 1em;
 	top: unset;
 	bottom: 2em;
@@ -775,29 +774,42 @@ body:has(dialog[open]) .popup button {
 
 dialog iframe {
 	border: none;
-	height: 0;
-	max-height: 85vh;
+	height: 100%;
+	display: none;
 	opacity: 0;
 	user-select: none;
-	transition: height 250ms, opacity 250ms;
+	transition: opacity 250ms;
 }
 
 dialog.frame {
-	width: 35em;
+	width: min(90%, 35em);
+	height: 10em;
+	max-height: 85%;
+	max-width: unset;
 	padding: 0.5em;
+	transition: width 250ms, height 250ms;
 
 	& > i.spin {
 		margin: auto;
-		scale: 1.5;
+		scale: 2;
 	}
 
 	& > iframe.loaded {
 		opacity: 1;
+		display: block;
 	}
 }
 
-dialog.frame:has(> iframe.loaded) i.spin {
-	display: none;
+dialog.full-height {
+	width: min(90%, 50em);
+}
+
+dialog.frame:has(> iframe.loaded) {
+	height: min(85%, 60em);
+	
+	& i.spin {
+		display: none;
+	}
 }
 
 /* Page data refresh animations */

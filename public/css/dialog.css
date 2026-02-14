@@ -1,6 +1,24 @@
-html {
-	height: 100%;
+html, body {
+	max-height: 100vh;
 	overflow: hidden;
+}
+
+/* Large dialog layout */
+html:has(section.fill-height) {
+	height: 100%;
+
+	body {
+		height: 100%;
+	}
+	
+	main section.fill-height {
+		flex: 1;
+		min-height: 0;
+		
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
+	}
 }
 
 body {
@@ -9,7 +27,6 @@ body {
 	background-color: transparent;
 	margin: 0;
 	padding: 0.5em;
-	overflow: hidden;
 	box-sizing: border-box;
 }
 
@@ -27,11 +44,24 @@ body > .button-row:last-child button:first-child:not(.confirm) {
 }
 
 main {
+	display: flex;
+	flex-direction: column;
+	
 	padding: 0;
-	overflow: auto;
-	max-height: 100%;
+	height: 100%;
 	max-width: none;
 	margin: 0;
+
+	animation: enable-scroll 500ms;
+}
+
+@keyframes enable-scroll {
+	from { overflow: hidden }
+	to { overflow: auto }
+}
+
+main > * {
+	margin-top: 0;
 }
 
 body > main > :first-child {
@@ -46,4 +76,24 @@ button.confirm {
 
 textarea {
 	field-sizing: fixed;
+}
+
+body > hr {
+	margin-top: auto;
+}
+
+/* transitions */
+main > * {
+	opacity: 1;
+	transition: 250ms opacity, 250ms scale;
+}
+
+body.unload main > * {
+	opacity: 0;
+	scale: 99% 100%;
+	cursor: wait;
+}
+
+body.unload::after {
+	animation: spin 1s infinite linear;
 }

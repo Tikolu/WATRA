@@ -52,13 +52,26 @@ processDialogButtons()
 
 // Sizing calculations
 async function resizeContainer() {
-	const maxHeight = window.top.getComputedStyle(frameElement).maxHeight
-	document.body.style.maxHeight = maxHeight
-
-	frameElement.style.height = `${document.documentElement.scrollHeight}px`
+	if(!dialog.open) return
+	if(document.documentElement.offsetHeight >= document.documentElement.scrollHeight) return
+	// Stop height transition
+	for(const animation of dialog.getAnimations()) {
+		if(animation.transitionProperty == "height") animation.finish()
+	}
+	dialog.style.height = `${document.documentElement.offsetHeight + 5}px`
+	document.body.classList.remove("unload")
 }
 
-window.onresize = () => resizeContainer()
-resizeContainer()
+if(document.querySelector("section.fill-height")) {
+	document.body.classList.remove("unload")
+	dialog.classList.add("full-height")
+} else {
+	window.onresize = resizeContainer
+	sleep(250).then(() => document.body.classList.remove("unload"))
+}
 
 frameElement.classList.add("loaded")
+
+window.addEventListener("beforeunload", () => {
+	document.body.classList.add("unload")
+})

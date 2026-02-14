@@ -1,6 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["unit/setRole", "user/picker"],
-	styles: ["unit/setRole", "user/picker"],
+	styles: ["user/picker"],
 	meta: {
 		unitID: $.targetUnit.id
 	}
@@ -33,7 +33,7 @@
 			</form>
 		</section>
 			
-		<section>
+		<section class="fill-height">
 			<h2>Wybierz użytkowników</h2>
 			<%~ include("/user/templates/userPicker", {
 				graph: $.graph,
