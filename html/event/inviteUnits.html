@@ -51,7 +51,11 @@
 	<% } %>
 
 	<section class="fill-height">
-		<% displayUnit($.graph) %> 
+		<% if(!$.graph.unit) { %>
+			<p>Brak jednostek do zaproszenia</p>
+		<% } else { %>
+			<% displayUnit($.graph) %> 
+		<% } %>
 	</section>
 </main>
 <hr>

@@ -139,6 +139,8 @@ export class EventClass extends UnitClass {
 		if(!units.length) {
 			throw new Error("Akcja musi należeć do co najmniej jednej jednostki")
 		}
+
+		const unitsForSaving = []
 		
 		// Add event to new upper units
 		for(const unit of units) {
@@ -148,7 +150,7 @@ export class EventClass extends UnitClass {
 			}
 			if(this.upperUnits.hasID(unit.id)) continue
 			unit.events.push(this.id)
-			await unit.save()
+			unitsForSaving.push(unit)
 		}
 		
 		// Remove event from old upper units
@@ -156,11 +158,28 @@ export class EventClass extends UnitClass {
 		for(const upperUnit of this.upperUnits) {
 			if(units.hasID(upperUnit.id)) continue
 			upperUnit.events = upperUnit.events.filter(e => e != this.id)
-			await upperUnit.save()
+			unitsForSaving.push(upperUnit)
 		}
 
 		this.upperUnits = units
+
+		// Check for org mismatch within invited units
+		const eventOrg = await this.getOrg()
+		if(eventOrg) {
+			await this.populate({"invitedUnits": "unit"})
+			for(const invite of this.invitedUnits) {
+				if(invite.state == "declined") continue
+				if(invite.unit.org && invite.unit.org != eventOrg) {
+					throw new HTTPError(400, "Na akcję zaproszona jest jednostka z innej organizacji")
+				}
+			}
+		}
+
+		// Save event
 		await this.save()
+
+		// Save all units
+		for(const unit of unitsForSaving) await unit.save()
 
 		// Re-calculate approvers
 		await this.calculateApprovers()
@@ -170,6 +189,12 @@ export class EventClass extends UnitClass {
 	async inviteUnit(unit, state="pending") {
 		// Remove existing invites
 		this.invitedUnits = this.invitedUnits.filter(i => i.unit != unit.id)
+
+		// Check for org mismatch
+		const eventOrg = await this.getOrg()
+		if(eventOrg && unit.org && unit.org != eventOrg) {
+			throw new HTTPError(400, "Nie można zaprosić jednostki z innej organizacji")
+		}
 		
 		// Invite unit
 		this.invitedUnits.push({

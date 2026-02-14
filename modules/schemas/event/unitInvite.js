@@ -21,15 +21,21 @@ export default class {
 		if(this.state != "accepted") {
 			throw new HTTPError(400, "Zaproszenie na akcję nie zostało zaakceptowane")
 		}
+
+		const eventOrg = await targetEvent.getOrg()
 		
-		// Ensure all participants belong to unit
 		await this.populate("unit")
 		const members = this.unit.listMembers(true)
 		const participants = []
 		for(const participantID of participantIDs) {
 			const participant = await members.find(m => m.id == participantID)
+			// Ensure all participants belong to unit
 			if(!participant) {
 				throw new HTTPError(400, "Nie można dodać uczestnika, który nie jest członkiem jednostki.")
+			}
+			// Ensure all participants are in the same org as event
+			if(eventOrg && participant.org && participant.org != eventOrg) {
+				throw new HTTPError(400, "Nie można dodać uczestnika z innej organizacji.")
 			}
 			participants.push(participant)
 		}

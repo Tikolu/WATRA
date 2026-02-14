@@ -72,7 +72,7 @@
 			"rank": 2,
 			"maxUpperUnits": 2,
 			"eventRules": {
-				"create": false,
+				"create": true,
 				"invite": false
 			}
 		},

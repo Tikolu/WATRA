@@ -812,6 +812,10 @@ dialog.frame:has(> iframe.loaded) {
 	}
 }
 
+dialog:focus-visible {
+	outline: none;
+}
+
 /* Page data refresh animations */
 .removing { animation: element-shrink 250ms forwards }
 .adding { animation: element-grow 250ms }

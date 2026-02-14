@@ -23,8 +23,17 @@ export async function chooseParticipants({user, targetUnit, targetEvent, targetI
 	// Check unit invitation state
 	if(targetInvitation.state != "accepted") throw new HTTPError("Zaproszenie jednostki na akcję nie zostało zaakceptowane")
 
+	// Get event org
+	const eventOrg = await targetEvent.getOrg()
+
 	// Generate graph
-	const graph = await targetUnit.getGraph()
+	const graph = await targetUnit.getGraph({
+		userFilter: user => {
+			// Only add users from the same org as the event
+			if(!eventOrg || !user.org) return true
+			return eventOrg == user.org
+		}
+	})
 
 	return html("unit/chooseEventParticipants", {
 		user,
