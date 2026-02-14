@@ -64,6 +64,15 @@ async function handler(req, ip) {
 	request.sourceIP = ip
 	const response = new ServerResponse()
 
+	// Redirect to host
+	if(!forwardedFor && Config.host && request.address.host != Config.host) {
+		const address = request.address.href.replace(request.address.host, Config.host)
+		return new Response(null, {
+			status: 301,
+			headers: {"Location": address}
+		})
+	}
+
 	// If a cookie header is present, parse cookies
 	if(request.headers.has("Cookie")) {
 		request.getCookies()
