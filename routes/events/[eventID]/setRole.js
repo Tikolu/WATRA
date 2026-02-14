@@ -26,7 +26,7 @@ export default async function({user, targetEvent}) {
 	// If user has "manageUser" role in upperUnit, add all subMembers of unit
 	await targetEvent.populate("upperUnits")
 	for(const unit of targetEvent.upperUnits) {
-		if(!await user.hasRoleInUnits("manageUser", unit, unit.getUpperUnitsTree())) continue
+		if(!await user.hasRoleInUnits("manageUser", unit.traverse("upperUnits", {includeSelf: true}))) continue
 
 		// Add all direct members, excluding users already added
 		usersForAssignment[unit.displayName] = await unit.getMembers(exclude())

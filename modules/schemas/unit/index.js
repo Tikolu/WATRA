@@ -208,6 +208,26 @@ export class UnitClass {
 		await this.populate("roles")
 		return this.roles.some(f => f.user.id == user.id)
 	}
+
+	/** Lists all members in the unit */
+	async * listMembers(recursive=false, org) {
+		const units = this.traverse("subUnits", {
+			includeSelf: true,
+			depth: recursive ? undefined : 0,
+			filter: org ? {org: {$in: [org, undefined]}} : undefined
+		})
+		for await(const unit of units) {
+			await unit.populate("roles")
+			await unit.populate({"roles": "user"},
+				org ? {filter: {org}} : undefined
+			)
+			for(const role of unit.roles) {
+				if(!role.user) continue
+				if(org && role.user.org != org) continue
+				yield role.user
+			}
+		}
+	}
 	
 	/** Link an existing unit as subUnit */
 	async addSubUnit(subUnit) {
@@ -231,21 +251,6 @@ export class UnitClass {
 
 		await this.save()
 		await subUnit.save()
-	}
-
-	/** Gets all events in all subUnits */
-	async * getSubUnitEvents(skipPast=false) {
-		const exclude = []
-		for await(const subUnit of this.getSubUnitsTree()) {
-			await subUnit.populate("events", {
-				filter: skipPast ? {"dates.end": {$gte: new Date()}} : undefined
-			})
-			for(const event of subUnit.events) {
-				if(exclude.hasID(event.id)) continue
-				exclude.push(event.id)
-				yield event
-			}
-		}
 	}
 
 	/** Removes a subUnit */
@@ -300,87 +305,14 @@ export class UnitClass {
 		})
 	}
 
-	/** List of subUnits in the given org */
-	orgSubUnits(org=this.org) {
-		const subUnits = []
-		for(const subUnit of this.subUnits) {
-			// If org is given, and subUnit's org (if present) is different, skip it
-			if(org && subUnit.org && subUnit.org != org) continue
-			subUnits.push(subUnit)
-		}
-		return subUnits
-	}
-
-	/** List of the unit's upper units */
-	async getUpperUnits() {
-		await this.populate("upperUnits")
-		return this.upperUnits
-	}
-
-	/** Recursive generator of all upperUnits */
-	async * getUpperUnitsTree(exclude=[], condition) {
-		exclude = [...exclude]
-
-		for(const upperUnit of await this.getUpperUnits()) {
-			if(exclude.hasID(upperUnit.id)) continue
-			// exclude.push(upperUnit.id)
-			if(condition && !await condition(upperUnit)) continue
-			yield upperUnit
-			yield * upperUnit.getUpperUnitsTree(exclude, condition)
-		}
-	}
-
-	/** Recursive generator of all subUnits */
-	async * getSubUnitsTree(exclude=[], org=this.org, condition) {
-		exclude = [...exclude]
-		await this.populate("subUnits", {exclude})
-
-		for(const subUnit of this.orgSubUnits(org)) {
-			if(exclude.hasID(subUnit.id)) continue
-			// exclude.push(subUnit.id)
-			if(condition && !await condition(subUnit)) continue
-			yield subUnit
-			yield * subUnit.getSubUnitsTree(exclude, org, condition)
-		}
-	}
-
-	/** List of all direct members */
-	async getMembers(exclude=[]) {
-		exclude = [...exclude]
-		await this.populate({"roles": "user"}, {exclude})
-		const users = []
-		for(const role of this.roles) {
-			if(exclude.hasID(role.user.id)) continue
-			// exclude.push(role.user.id)
-			users.push(role.user)
-		}
-		return users
-	}
-
-	/** Recursive list of all members (including members of subUnits) */
-	async * getSubMembers(exclude=[]) {
-		exclude = [...exclude]
-		// Yield all members of this unit
-		for(const member of await this.getMembers(exclude)) {
-			exclude.push(member.id)
-			yield member
-		}
-		// Yield all members of the all subUnits
-		for await(const subUnit of await this.getSubUnitsTree()) {
-			for(const member of await subUnit.getMembers(exclude)) {
-				if(exclude.hasID(member.id)) continue
-				exclude.push(member.id)
-				yield member
-			}
-		}
-	}
-
-	/** Counts the amount of members */
-	countMembers(recursive=false) {
-		let count = this.roles.length
-		if(recursive) {
-			for(const subUnit of this.subUnits) {
-				count += subUnit.countMembers?.(true) || 0
+	/** Gets all events in all subUnits */
+	async * getSubUnitEvents(skipPast=false) {
+		for await(const subUnit of this.traverse("subUnits")) {
+			await subUnit.populate("events", {
+				filter: skipPast ? {"dates.end": {$gte: new Date()}} : undefined
+			})
+			for(const event of subUnit.events) {
+				yield event
 			}
 		}
 		return count
@@ -388,6 +320,21 @@ export class UnitClass {
 }
 
 const schema = mongoose.Schema.fromClass(UnitClass)
+
+schema.traversalFilters = {
+	"subUnits": unit => {
+		if(!unit.org) return
+		else return {
+			"org": {$in: [unit.org, undefined]}
+		}
+	},
+	"upperUnits": unit => {
+		if(!unit.org) return
+		else return {
+			"org": {$in: [unit.org, undefined]}
+		}
+	}
+}
 
 schema.beforeDelete = async function() {
 	await this.populate({

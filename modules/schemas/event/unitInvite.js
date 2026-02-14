@@ -24,10 +24,10 @@ export default class {
 		
 		// Ensure all participants belong to unit
 		await this.populate("unit")
-		const members = await Array.fromAsync(this.unit.getSubMembers())
+		const members = this.unit.listMembers(true)
 		const participants = []
 		for(const participantID of participantIDs) {
-			const participant = members.find(m => m.id == participantID)
+			const participant = await members.find(m => m.id == participantID)
 			if(!participant) {
 				throw new HTTPError(400, "Nie można dodać uczestnika, który nie jest członkiem jednostki.")
 			}

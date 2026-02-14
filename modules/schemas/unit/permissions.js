@@ -17,7 +17,7 @@ export async function ACCESS_MEMBERS(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// "accessUser" roles in this unit or upper units can access members
-	if(await user.hasRoleInUnits("accessUser", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("accessUser", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -28,7 +28,7 @@ export async function ACCESS_ARCHIVED_MEMBERS(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS_MEMBERS, true) === false) return false
 
 	// "manageUser" roles in this unit or upper units can access archived members
-	if(await user.hasRoleInUnits("manageUser", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageUser", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -42,7 +42,7 @@ export async function EDIT(user) {
 	if(await user.hasRoleInUnits("editUnit", this)) return true
 
 	// "manageSubUnit" roles in upper units can edit
-	if(await user.hasRoleInUnits("manageSubUnit", this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageSubUnit", this.traverse("upperUnits"))) return true
 
 	return false
 }
@@ -56,7 +56,7 @@ export async function ADD_SUBUNIT(user) {
 	if(this.getSubUnitOptions().length == 0) return false
 
 	// "manageSubUnit" roles in this unit or upper units can add subUnits
-	if(await user.hasRoleInUnits("manageSubUnit", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageSubUnit", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -70,7 +70,7 @@ export async function MANAGE_INVITES(user) {
 	if(!this.config.eventRules.invite) return false
 
 	// "manageEventInvite" roles in this unit or upper units can manage invites
-	if(await user.hasRoleInUnits("manageEventInvite", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageEventInvite", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -81,7 +81,7 @@ export async function ACCESS_ACTIVITY(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// "accessActivity" roles in this unit or upper units can access activity log
-	if(await user.hasRoleInUnits("accessActivity", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("accessActivity", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -98,7 +98,7 @@ export async function ACCESS_EVENTS(user) {
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE_INVITES, true)) return true
 	
 	// "manageEvent" roles in this unit and upper units can access events
-	if(await user.hasRoleInUnits("manageEvent", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -126,7 +126,7 @@ export async function CREATE_USER(user) {
 	if(!this.config.defaultRole) return false
 
 	// "manageUser" roles in this unit or upper units can create new users
-	if(await user.hasRoleInUnits("manageUser", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageUser", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -143,10 +143,10 @@ export async function SET_ROLE(user) {
 	if(this.roles.length == 0 && this.subUnits.length == 0) return false
 
 	// "setRole" roles in this unit or upper units can set roles
-	if(await user.hasRoleInUnits("setRole", this, this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("setRole", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	// "manageSubUnit" roles upper units can set roles
-	if(await user.hasRoleInUnits("manageSubUnit", this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageSubUnit", this.traverse("upperUnits"))) return true
 
 	return false
 }

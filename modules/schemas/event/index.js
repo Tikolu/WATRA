@@ -216,7 +216,7 @@ export class EventClass extends UnitClass {
 		}
 		
 		// Loop through all upper units
-		for await(const unit of this.getUpperUnitsTree()) {
+		for await(const unit of this.traverse("upperUnits")) {
 			// Skip units in different org
 			if(eventOrg && unit.org != eventOrg) continue
 			

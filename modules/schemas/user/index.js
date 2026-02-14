@@ -246,6 +246,18 @@ export class UserClass {
 		return false
 	}
 
+	/** Lists the units (optionally upper units) the user belongs to */
+	async * listUnits(recursive=false) {
+		await this.populate({"roles": "unit"})
+		for(const role of this.roles) {
+			yield * role.unit.traverse("upperUnits", {
+				includeSelf: true,
+				depth: recursive ? undefined : 0,
+				filter: this.org ? {org: {$in: [this.org, undefined]}} : undefined
+			})
+		}
+	}
+
 	/** Checks permission and returns the result. The result is cached for future calls */
 	async checkPermission(permission, fromCache=false) {
 		if(!(permission instanceof Function)) {
@@ -308,17 +320,6 @@ export class UserClass {
 				state: cacheEntry[1]
 			}
 			yield permission
-		}
-	}
-
-	/** Returns an asynchronous list of all user's units and upper units */
-	async * getUnitsTree() {
-		await this.populate("roles")
-		for(const role of this.roles) {
-			if(!role.unit) continue
-			await role.populate("unit")
-			yield role.unit
-			yield * role.unit.getUpperUnitsTree()
 		}
 	}
 

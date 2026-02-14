@@ -20,17 +20,17 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 		}
 	}
 	
-	const members = await targetUnit.getMembers()
+	const members = targetUnit.listMembers()
 	const newRoles = []
 	for(const targetUser of users) {
 		// Check if user is already a member
-		if(members.hasID(targetUser.id)) {
+		if(await members.some(u => u.id == targetUser.id)) {
 			throw new HTTPError(400, `Użytkownik ${targetUser.displayName} jest już członkiem jednostki`)
 		}
 
 		// Check permissions
 		await targetUser.populate("children")
-		if(!await user.hasRoleInUnits("manageUser", targetUser.getUnitsTree(), targetUser.children.map(c => c.getUnitsTree()))) {
+		if(!await user.hasRoleInUnits("manageUser", targetUser.listUnits(true), targetUser.children.map(c => c.listUnits(true)))) {
 			throw new HTTPError(403, `Nie masz uprawnień do dodania użytkownika ${targetUser.displayName}`)
 		}
 
@@ -60,7 +60,7 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 				if(role.unit.id == targetUnit.id) continue
 				
 				// User can only remove their own role if they have a "setRole" role in an upper unit
-				if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", role.unit.getUpperUnitsTree())) continue
+				if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", role.unit.traverse("upperUnits"))) continue
 
 				// Ensure targetUser's current role is not higher in rank than user's role
 				const userRole = await user.getRoleInUnit(role.unit)

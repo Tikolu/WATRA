@@ -50,8 +50,8 @@ export default async function({user, targetUnit, orgContext}) {
 
 	// Load subUnit events for upcoming or ongoing events
 	const subUnitEvents = []
-	if(await user.hasRoleInUnits("manageEvent", targetUnit)) {
-		subUnitEvents.push(...await Array.fromAsync(targetUnit.getSubUnitEvents(true)))
+	if(user.hasPermission(targetUnit.PERMISSIONS.ACCESS_EVENTS)) {
+		subUnitEvents.push(...await targetUnit.getSubUnitEvents(true).toArray())
 		// Sort by date
 		subUnitEvents.sort((a, b) => {
 			const aDate = a.dates.start || 0

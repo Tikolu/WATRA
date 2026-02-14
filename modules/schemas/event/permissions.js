@@ -18,7 +18,7 @@ export async function ACCESS(user) {
 	}
 
 	// "manageEvent" roles in event and upperUnit can access
-	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnitsTree())) return true
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	// "manageEventInvite" roles in any invited unit can access
 	await this.populate({"invitedUnits": "unit"})
@@ -49,7 +49,7 @@ export async function EDIT(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// "manageEvent" roles in event and direct upperUnits can edit
-	if(await user.hasRoleInUnits("manageEvent", this, this.getUpperUnits())) return true
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1, includeSelf: true}))) return true
 
 	return false
 }
@@ -63,7 +63,7 @@ export async function DELETE(user) {
 	if(this.participants.some(p => p.state == "accepted")) return false
 	
 	// "manageEvent" roles in direct upperUnits can delete
-	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnits())) return true
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1}))) return true
 
 	return false
 }
@@ -80,7 +80,7 @@ export async function SET_ROLE(user) {
 	if(await user.hasRoleInUnits("setRole", this)) return true
 
 	// "manageEvent" roles in direct upperUnits can set roles
-	if(await user.hasRoleInUnits("manageEvent", this.getUpperUnits())) return true
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1}))) return true
 
 	return false
 }
@@ -91,8 +91,7 @@ export async function INVITE_PARTICIPANT(user) {
 	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
 
 	// "manageEvent" roles in event and direct upper unit can invite units
-	await this.populate("upperUnits")
-	if(await user.hasRoleInUnits("manageEvent", this, this.upperUnits)) return true
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1, includeSelf: true}))) return true
 
 	return false
 }

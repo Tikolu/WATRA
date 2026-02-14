@@ -8,7 +8,7 @@ export default async function({user, targetUnit, orgContext}) {
 	await user.requirePermission(targetUnit.PERMISSIONS.ADD_SUBUNIT)
 	
 	// Get subUnits
-	const subUnitsTree = await Array.fromAsync(targetUnit.getSubUnitsTree())
+	const subUnitsTree = targetUnit.traverse("subUnits")
 	
 	// Find units that can be linked as subUnits
 	const unitsForLinking = []
@@ -16,13 +16,13 @@ export default async function({user, targetUnit, orgContext}) {
 	for(const role of user.roles) {
 		if(!role.hasTag("manageSubUnit")) continue
 		await role.populate("unit")
-		for await(const unit of role.unit.getSubUnitsTree()) {
+		for await(const unit of role.unit.traverse("subUnits")) {
 			// Skip units at their upperUnit limit
 			if(unit.upperUnits.length >= unit.config.maxUpperUnits) continue
 			// Skip units of higher or equal rank
 			if(unit.config.rank >= targetUnit.config.rank) continue
 			// Skip units which already are subUnits
-			if(subUnitsTree.hasID(unit.id)) continue
+			if(await subUnitsTree.some(u => u.id == unit.id)) continue
 			if(unitsForLinking.hasID(unit.id)) continue
 
 			await unit.populate("upperUnits")

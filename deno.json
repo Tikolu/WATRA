@@ -21,6 +21,7 @@
 		"modules/schemas/event": "./modules/schemas/event/index.js",
 
 		"mongoose": "npm:mongoose@9.0.0",
+		"sift": "npm:sift",
 		"cli": "jsr:@std/cli",
 		"csv": "jsr:@std/csv",
 		"mime": "npm:mime",

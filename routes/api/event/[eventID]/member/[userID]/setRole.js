@@ -25,7 +25,7 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 	}
 
 	// User can only set their own role if they have a "setRole" role in an upper unit
-	if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", targetEvent.getUpperUnitsTree())) {
+	if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", targetEvent.traverse("upperUnits"))) {
 		throw new HTTPError(400, "Nie można zmienić własnej funkcji")
 	}
 
@@ -45,8 +45,8 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 		// If user has "manageUser" role in upperUnit, check subMembers of unit
 		await targetEvent.populate("upperUnits")
 		for(const unit of targetEvent.upperUnits) {
-			if(!await user.hasRoleInUnits("manageUser", unit, unit.getUpperUnitsTree())) continue
-			if(await unit.getSubMembers().find(u => u.id == targetUser.id)) return true
+			if(!await user.hasRoleInUnits("manageUser", unit.traverse("upperUnits", {includeSelf: true}))) continue
+			if(await unit.listMembers(true).find(u => u.id == targetUser.id)) return true
 		}
 	})()
 

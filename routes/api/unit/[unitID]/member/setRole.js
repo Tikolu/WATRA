@@ -32,11 +32,8 @@ export default async function({user, targetUnit, users: userIDs, roleType}) {
 
 	// Get user's role in unit, unless user has SET_ROLE permission in an upperUnit
 	let userRole = await user.getRoleInUnit(targetUnit)
-	for await(const upperUnit of targetUnit.getUpperUnitsTree()) {
-		if(await user.checkPermission(upperUnit.PERMISSIONS.SET_ROLE)) {
-			userRole = null
-			break
-		}
+	if(await targetUnit.traverse("upperUnits").some(u => user.checkPermission(u.PERMISSIONS.SET_ROLE))) {
+		userRole = null
 	}
 
 	// Ensure new role is not higher in rank than user's role
@@ -44,7 +41,7 @@ export default async function({user, targetUnit, users: userIDs, roleType}) {
 		throw new HTTPError(403, "Brak uprawnień do nadania wyższej funkcji niż własna")
 	}
 
-	const subMembers = await Array.fromAsync(targetUnit.getSubMembers())
+	const members = targetUnit.listMembers(true)
 	const newRoles = []
 	for(const targetUser of users) {
 		if(userRole) {
@@ -61,7 +58,7 @@ export default async function({user, targetUnit, users: userIDs, roleType}) {
 		}
 
 		// Check if member belongs to the unit
-		if(!subMembers.find(u => u.id == targetUser.id)) {
+		if(!await members.find(u => u.id == targetUser.id)) {
 			throw new HTTPError(400, `Użytkownik ${targetUser.displayName} nie należy do jednostki`)
 		}
 

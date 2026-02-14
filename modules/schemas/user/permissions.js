@@ -18,7 +18,7 @@ export async function ACCESS(user) {
 	if(user.parents.hasID(this.id)) return true
 
 	// Users with "accessUser" role in any unit/upperUnit of user can access
-	if(await user.hasRoleInUnits("accessUser", this.getUnitsTree())) return true
+	if(await user.hasRoleInUnits("accessUser", this.listUnits(true))) return true
 
 	if(this.archived) {
 		await this.populate("archived")
@@ -30,7 +30,7 @@ export async function ACCESS(user) {
 	if(this.parent) {
 		await this.populate({"children": "archived"})
 		for(const child of this.children) {
-			if(await user.hasRoleInUnits("accessUser", child.getUnitsTree())) return true
+			if(await user.hasRoleInUnits("accessUser", child.listUnits(true))) return true
 		}
 
 		// Users with ACCESS_ARCHIVED_MEMBERS permission in unit of any child can access parent
@@ -58,7 +58,7 @@ export async function ACCESS(user) {
 
 export async function MANAGE(user) {
 	// Users with "manageUser" role in any unit/upperUnit of user can manage
-	for await(const unit of this.getUnitsTree()) {
+	for await(const unit of this.listUnits(true)) {
 		// Get user's role in unit
 		const userRole = await user.getRoleInUnit(unit)
 		if(!userRole || !userRole.hasTag("manageUser")) continue
@@ -195,7 +195,7 @@ export async function ARCHIVE(user) {
 	if(this.archived) {
 		await this.populate("archived")
 		// Users with "manageUser" role in archival unit/upperUnit can unarchive
-		if(await user.hasRoleInUnits("manageUser", this.archived, this.archived.getUpperUnitsTree())) return true
+		if(await user.hasRoleInUnits("manageUser", this.archived.traverse("upperUnits", {includeSelf: true}))) return true
 
 	} else {
 		// Cannot archive user with no roles
@@ -254,13 +254,13 @@ export async function ACCESS_ACTIVITY(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 	
 	// "accessActivity" roles in any unit/upperUnit of user can access
-	if(await user.hasRoleInUnits("accessActivity", this.getUnitsTree())) return true
+	if(await user.hasRoleInUnits("accessActivity", this.listUnits(true))) return true
 
 	// "accessActivity" roles in any unit/upperUnit of user can access activity of any child
 	if(this.parent) {
 		await this.populate("children")
 		for(const child of this.children) {
-			if(await user.hasRoleInUnits("accessActivity", child.getUnitsTree())) return true
+			if(await user.hasRoleInUnits("accessActivity", child.listUnits(true))) return true
 		}
 	}
 	

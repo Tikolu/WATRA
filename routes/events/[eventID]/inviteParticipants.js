@@ -5,7 +5,7 @@ export default async function({user, targetEvent}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.INVITE_PARTICIPANT)
 
-	const unitsTree = await Array.fromAsync(user.getUnitsTree())
+	const unitsTree = await user.listUnits(true).toArray()
 	const topUnit = unitsTree.at(-1)
 
 	const users = []

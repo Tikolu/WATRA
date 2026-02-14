@@ -13,7 +13,7 @@ export default async function({user, targetUnit, start, end, direct, type}) {
 	const directOnly = direct == "true"
 
 	// Load unit members
-	const members = await Array.fromAsync(targetUnit.getSubMembers())
+	const members = await targetUnit.listMembers(true).toArray()
 	// Load logs
 	const query = {
 		$or: [

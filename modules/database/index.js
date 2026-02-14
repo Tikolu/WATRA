@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import sift from "sift"
 
 import shortID from "modules/database/shortID.js"
 import { populate, isPopulated } from "modules/database/populate.js"
@@ -171,6 +172,63 @@ mongoose.plugin(schema => schema.methods.delete = async function() {
 	if(schema.beforeDelete) await schema.beforeDelete.call(this)
 	await this.deleteOne()
 })
+
+// Function for traversing trees of related documents
+mongoose.plugin(schema => schema.methods.traverse = async function * (path, options={}) {
+	if(!schema.tree[path]) throw Error(`Invalid or unknown traversal path ${path}`)
+	
+	// Default options
+	let {
+		includeSelf=false,
+		depth=Infinity,
+		filter
+	} = options
+	
+	if(includeSelf) yield this
+	if(depth <= 0) return
+
+	// Get filter from schema if not provided
+	filter ||= schema.traversalFilters?.[path]
+
+	// Filter is a function, call to convert to filter
+	if(typeof filter == "function") {
+		const filterResult = filter(this)
+		if(filterResult) filter = {query: filterResult}
+		else filter = null
+
+	// Filter is an object
+	} else if(typeof filter == "object" && !filter.query && !filter.function) {
+		filter = {query: filter}
+	}
+
+	// Create function using sift
+	if(filter?.query && !filter.function) {
+		filter = {
+			query: filter.query || filter,
+			function: sift(filter.query || filter)
+		}
+	}
+	
+	await this.populate(path, {
+		filter: filter?.query,
+		placeholders: true
+	})
+	for(const relatedDocument of this[path]) {
+		if(relatedDocument.$locals?.unpopulatedPlaceholder) continue
+		if(filter?.function && !await filter.function(relatedDocument)) continue
+		
+		// Recursively traverse related documents
+		yield * relatedDocument.traverse(path, {
+			includeSelf: true,
+			depth: depth - 1,
+			filter: filter && {
+				query: filter.query,
+				function: filter.function
+			}
+		})
+	}
+})
+
 
 let readyCallbacks
 export const ready = new Promise((resolve, reject) => {
