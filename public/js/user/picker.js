@@ -22,10 +22,16 @@ for(const userPicker of document.querySelectorAll(".user-picker")) {
 			if(!entry.hidden) resultCount++
 		}
 
-		// Show or hide group titles
 		for(const group of userPicker.querySelectorAll("details")) {
-			const groupEntries = [...group.querySelectorAll(".entry-grid > div")]
-			group.hidden = groupEntries.every(entry => entry.hidden)
+			// Open groups with results, if search term is longer than 2 characters
+			group.open = false
+			if(group.querySelector(".entry-grid > div:not([hidden])")) {
+				group.hidden = false
+				if(userPickerSearch.value.length > 2) group.open = true
+			// Hide groups without results, open all other groups
+			} else {
+				group.hidden = true
+			}
 		}
 
 		// Show error message if no results
