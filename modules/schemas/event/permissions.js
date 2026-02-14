@@ -90,6 +90,9 @@ export async function INVITE_PARTICIPANT(user) {
 	// Lack of EDIT permission denies INVITE_PARTICIPANT
 	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
 
+	// Cannot invite once event has started
+	if(this.isPast) return false
+
 	// "manageEvent" roles in event and upper units can invite units
 	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
@@ -97,7 +100,13 @@ export async function INVITE_PARTICIPANT(user) {
 }
 
 /** Approving the event */
-export function APPROVE(user) {
+export async function APPROVE(user) {
+	// Lack of ACCESS permission denies APPROVE
+	if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
+
+	// Cannot approve past events
+	if(this.isPast) return false
+	
 	// Users with roles on the approvers list can approve the event
 	for(const approver of this.approvers) {
 		if(user.roles.hasID(approver.role.id)) return true

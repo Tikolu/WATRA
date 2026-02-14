@@ -426,12 +426,14 @@ li > * {
 	background-color: var(--red-background);
 	color: var(--red-text);
 	border-radius: var(--border-radius);
-	padding: 0.5em;
-	/* width: fit-content; */
 }
 
-.warning > *, .info > * {
-	margin: 0;
+p.warning, p.info {
+	padding: 0.5em;
+
+	& > * {
+		margin: 0;
+	}
 }
 
 .warning + .warning, .info + .info {

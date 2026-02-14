@@ -4,11 +4,13 @@
 		Zatwierdzenie
 	</h2>
 
-	<% if($.targetEvent.approvalState) { %>
-		<p><i>check_circle</i> Akcja zatwierdzona</p>
-	<% } else { %>
-		<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
-	<% } %>
+	<article>
+		<% if($.targetEvent.approvalState) { %>
+			<p><i>check_circle</i> Akcja zatwierdzona</p>
+		<% } else { %>
+			<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
+		<% } %>
+	</article>
 
 	<% const md = $.targetEvent.missingDetails %>
 	<% const warnings = Array.conditional(
@@ -55,11 +57,13 @@
 								<i>check</i>Zatwierdzono<br>
 								<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
 							</p>
+						<% } else if($.targetEvent.isPast) { %>
+							<p><i>close</i>Nie zatwierdzono</p>
 						<% } else if(approver.role.user.id != $.user.id) { %>
 							<p><i class="spin">progress_activity</i>Oczekiwane zatwierdzenie...</p>
 						<% } %>
 					
-						<% if(approver.role.user.id == $.user.id) { %>
+						<% if(approver.role.user.id == $.user.id && $.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE)) { %>
 							<div class="button-row">
 								<% if(approver.approved) { %>
 									<button api="event/[eventID]/approval/unapprove" class="dangerous">

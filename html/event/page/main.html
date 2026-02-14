@@ -35,11 +35,14 @@
 	<% } %>
 </p>
 
-<% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.dates.start < new Date()) { %>
-	<p class="warning">
-		<i>warning</i>
-		Uwaga! Akcja nie jest zatwierdzona i nie może się odbyć
-	</p>
+<% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.isPast) { %>
+	<article class="warning">
+		<p>
+			<i>warning</i>
+			<b>Uwaga!</b>
+		</p>
+		<p>Akcja nie jest zatwierdzona i nie może się odbyć!</p>
+	</article>
 <% } %>
 
 <%~ include("detailsSection", $) %>

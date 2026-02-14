@@ -29,6 +29,10 @@ export default class {
 		// Ignore existing state
 		if(this.state === state) return
 
+		if(state == "accepted" && !targetEvent.registrationOpen) {
+			throw new HTTPError(400, "Rejestracja na tę akcję jest zamknięta")
+		}
+
 		// Check participant eligibility
 		if(!this.user.confirmed) {
 			throw new HTTPError(400, "Dane uczestnika nie zostały zatwierdzone")

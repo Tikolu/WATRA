@@ -73,6 +73,9 @@ export default async function({user, targetEvent}) {
 		const userInvite = targetEvent.participants.id(participant.id)
 		if(!userInvite) continue
 
+		// Skip if registration is closed and user has not accepted yet
+		if(userInvite.state == "pending" && !targetEvent.registrationOpen) continue
+
 		await userInvite.populate("user")
 
 		// Check for approval permission on participant

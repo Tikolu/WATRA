@@ -27,7 +27,7 @@ export class EventClass extends UnitClass {
 		start: {
 			type: Date,
 			min: [
-				() => new Date().setHours(0, 0, 0, 0),
+				() => new Date(),
 				"Data rozpoczęcia akcji nie może być w przeszłości"
 			],
 			max: MAX_DATE,
@@ -42,7 +42,7 @@ export class EventClass extends UnitClass {
 		end: {
 			type: Date,
 			min: [
-				() => new Date().setHours(0, 0, 0, 0),
+				() => new Date(),
 				"Data zakończenia akcji nie może być w przeszłości"
 			],
 			max: MAX_DATE,
@@ -82,6 +82,11 @@ export class EventClass extends UnitClass {
 		}
 	]
 
+	reg = {
+		type: Boolean,
+		default: true
+	}
+
 	invitedUnits = [unitInvite]
 	participants = [participant]
 	approvers = [approver]
@@ -115,6 +120,20 @@ export class EventClass extends UnitClass {
 			!this.location, "location",
 			!this.dates.start || !this.dates.end, "dates"
 		)
+	}
+
+	/** Checks if registration is currently open */
+	get registrationOpen() {
+		if(!this.reg) return false
+		if(this.isPast) return false
+		return true
+	}
+
+	/** Checks if the event starts in the past */
+	get isPast() {
+		if(!this.dates.start) return false
+		const now = new Date()
+		return this.dates.start < now
 	}
 
 	/* * Methods * */
@@ -219,6 +238,21 @@ export class EventClass extends UnitClass {
 		}
 
 		await targetInvitation.uninvite()
+	}
+
+	/** Sets registration open state */
+	async setRegistrationState(value) {
+		if(value) {
+			if(this.isPast) {
+				throw new HTTPError(400, "Nie można otworzyć zapisów na akcję, która już się rozpoczęła")
+			}
+			this.reg = true
+		} else {
+			this.reg = false
+		}
+
+		// Save event
+		await this.save()
 	}
 
 	/** Invites a participant to the event */

@@ -384,6 +384,7 @@ export class UnitClass {
 				filter: skipPast ? {"dates.end": {$gte: new Date()}} : undefined
 			})
 			for(const event of subUnit.events) {
+				if(event.$locals?.unpopulatedPlaceholder) continue
 				yield event
 			}
 		}

@@ -57,13 +57,27 @@
 	) { %>
 		<hr>
 		<div class="entry-grid">
-			<% const categories = Object.groupBy(invitedParticipants, p => p.state) %>
+			<%
+				const categories = {
+					accepted: [],
+					pending: [],
+					declined: []
+				}
+				for(const participant of invitedParticipants) {
+					categories[participant.state].push(participant)
+				}
+			%>
 			<% for(const state in categories) { %>
+				<% if(categories[state].length == 0) continue %>
 				<h4>
 					<% if(state == "accepted") { %>
 						<i>check_circle</i> Zaakceptowano
 					<% } else if(state == "pending") { %>
-						<i class="spin">progress_activity</i> Oczekiwana odpowiedź
+						<% if($.targetEvent.registrationOpen) { %>
+							<i class="spin">progress_activity</i> Oczekiwana odpowiedź
+						<% } else { %>
+							<i>person_add</i> Dodani do akcji
+						<% } %>
 					<% } else if(state == "declined") { %>
 						<i>cancel</i> Odrzucono
 					<% } %>

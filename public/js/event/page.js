@@ -35,6 +35,16 @@ API.registerHandler("event/[eventID]/unit/[unitID]/uninvite", {
 	successText: "Cofnięto zaproszenie",
 })
 
+API.registerHandler("event/[eventID]/registration/enable", {
+	progressText: "Włączanie zapisów...",
+	successText: "Włączono zapisy"
+})
+
+API.registerHandler("event/[eventID]/registration/disable", {
+	progressText: "Wyłączanie zapisów...",
+	successText: "Wyłączono zapisy"
+})
+
 API.registerHandler("event/[eventID]/approval/unapprove", {
 	progressText: "Cofanie zatwierdzenia...",
 	successText: "Cofnięto zatwierdzenie"

@@ -51,7 +51,9 @@ const eventTypes = {
 	"event/*/member/*/invite": "Zaproszono $USER na $EVENT",
 	"event/*/member/*/setParticipation": "Ustawiono uczestnictwo $USER na $EVENT",
 	"event/*/member/*/setRole": "Ustawiono funkcję $USER na $EVENT",
-	"event/*/setUpperUnits": "Zmieniono jednostki nadrzędne $EVENT"
+	"event/*/setUpperUnits": "Zmieniono jednostki nadrzędne $EVENT",
+	"event/*/registration/enable": "Włączono zapisy na $EVENT",
+	"event/*/registration/disable": "Wyłączono zapisy na $EVENT",
 }
 
 const types = {}

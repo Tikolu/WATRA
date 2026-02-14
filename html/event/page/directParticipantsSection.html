@@ -26,16 +26,18 @@
 			<% } %>
 		</div>
 	<% } %>
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-		<div class="button-row">
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/setRole">
 				<i>add_moderator</i>
 				<span>Mianuj na funkcję</span>
 			</button>
+		<% } %>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteParticipants">
 				<i>person_add</i>
 				Zaproś kadrę
 			</button>
-		</div>
-	<% } %>
+		<% } %>
+	</div>
 </section>

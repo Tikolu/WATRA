@@ -119,7 +119,10 @@
 		<div class="entry-grid">
 			<% for(const event of $.events) { %>
 				<%
-					const inviteStates = [$.user, ...$.user.children].map(u => event.participants.id(u.id)?.state)
+					const inviteStates = [$.user, ...$.user.children].map(u => {
+						if(!event.registrationOpen) return null
+						return event.participants.id(u.id)?.state
+					})
 					const approvalState = event.getApprover($.user)?.approved
 
 					if(approvalState === true && !inviteStates.length) continue
@@ -128,7 +131,7 @@
 					targetEvent: event,
 					warnings: Array.conditional(
 						inviteStates.includes("pending"), "Oczekiwana odpowiedź",
-						approvalState === false, "Oczekiwane zatwierdzenie"
+						approvalState === false, event.isPast ? "Akcja nie została zatwierdzona" : "Oczekiwane zatwierdzenie"
 					)
 				}) %>
 			<% } %>
