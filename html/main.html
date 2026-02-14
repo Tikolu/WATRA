@@ -99,7 +99,7 @@
 			<% for(const child of $.user.children) { %>
 				<%
 					const warnings = []
-					if(!child.archived && !child.confirmed) warnings.push("Zatwierdź dane podopiecznego")
+					if(!child.confirmed && $.user.hasPermission(child.PERMISSIONS.APPROVE)) warnings.push("Zatwierdź dane podopiecznego")
 				%>
 				<%~ include("user/templates/userEntry", {
 					targetUser: child,

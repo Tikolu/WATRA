@@ -107,6 +107,11 @@ export default async function({user}) {
 		}
 	)
 
+	// Check child permissions
+	for(const child of user.children) {
+		await user.checkPermission(child.PERMISSIONS.APPROVE)
+	}
+
 	// Find events for approval
 	const approvalEvents = []
 	for(const role of user.roles) {

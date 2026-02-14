@@ -232,6 +232,9 @@ export async function APPROVE(user) {
 	// Lack of ACCESS permission denies APPROVE
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
+	// Cannot approve archived users
+	if(this.archived) return false
+
 	if(user.id == this.id) {
 		// Users without set age cannot approve themselves
 		if(this.age === null) return false
@@ -242,8 +245,8 @@ export async function APPROVE(user) {
 		return true
 	}
 	
-	// Parent can approve their children
-	if(user.children.hasID(this.id)) return true
+	// Parent can approve their children, unless they are adults
+	if(user.children.hasID(this.id) && (!this.age || this.age < Config.adultAge)) return true
 
 	return false
 }
