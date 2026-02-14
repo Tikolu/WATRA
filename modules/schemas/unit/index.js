@@ -106,7 +106,7 @@ export class UnitClass {
 				throw Error("Jednostka nie ma skonfigurowanych funkcji")
 			}
 			
-			const userAge = user.age ?? (user.isParent ? Config.adultAge : 0)
+			const userAge = user.age ?? (user.isParent ? Config.adultAge : null)
 			for(const roleConfig of roleOptions) {
 				if(userAge !== null) {
 					if(userAge < (roleConfig.minAge || 0)) continue
