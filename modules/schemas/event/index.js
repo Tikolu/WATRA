@@ -134,6 +134,38 @@ export class EventClass extends UnitClass {
 		}
 	}
 
+	/** Sets upper units of the event */
+	async setUpperUnits(units) {
+		if(!units.length) {
+			throw new Error("Akcja musi należeć do co najmniej jednej jednostki")
+		}
+		
+		// Add event to new upper units
+		for(const unit of units) {
+			// Ensure unit is not a subUnit of other units
+			if(await unit.traverse("subUnits").some(u => units.hasID(u.id))) {
+				throw new Error("Jednostka nadrzędna nie może być pod inną jednostką nadrzędną akcji")
+			}
+			if(this.upperUnits.hasID(unit.id)) continue
+			unit.events.push(this.id)
+			await unit.save()
+		}
+		
+		// Remove event from old upper units
+		await this.populate("upperUnits")
+		for(const upperUnit of this.upperUnits) {
+			if(units.hasID(upperUnit.id)) continue
+			upperUnit.events = upperUnit.events.filter(e => e != this.id)
+			await upperUnit.save()
+		}
+
+		this.upperUnits = units
+		await this.save()
+
+		// Re-calculate approvers
+		await this.calculateApprovers()
+	}
+
 	/** Invite unit to event */
 	async inviteUnit(unit, state="pending") {
 		// Remove existing invites
@@ -195,13 +227,8 @@ export class EventClass extends UnitClass {
 		}
 	}
 
-	/** Generates a list of approvers required for this event */
-	async calculateApprovers() {
-		await this.populate("roles")
-		let approverCandidates = []
-		const alternativeCandidates = []
-		
-		// Calculate org requirement for approvers
+	/** Calculates the org of this event */
+	async getOrg() {
 		await this.populate("upperUnits")
 		let eventOrg
 		for(const upperUnit of this.upperUnits) {
@@ -209,11 +236,20 @@ export class EventClass extends UnitClass {
 			if(!upperUnit.org) continue
 			// Clear event org if unit with other org is encountered
 			if(eventOrg && upperUnit.org != eventOrg) {
-				eventOrg = undefined
-				break
+				return null
 			}
 			eventOrg = upperUnit.org
 		}
+		return eventOrg
+	}
+
+	/** Generates a list of approvers required for this event */
+	async calculateApprovers() {
+		await this.populate("roles")
+		let approverCandidates = []
+		const alternativeCandidates = []
+		
+		const eventOrg = await this.getOrg()
 		
 		// Loop through all upper units
 		for await(const unit of this.traverse("upperUnits")) {

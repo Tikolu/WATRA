@@ -6,6 +6,7 @@ const eventTypes = {
 	"logout": "Wylogowano",
 	"login/accessCode": "Zalogowano przy użyciu kodu",
 	"login/verify": "Zalogowano przy użyciu klucza",
+	"login/getKeys": "Zalogowano",
 	"logError": "Error w przeglądarce",
 
 	"passkey/create": "Rozpoczęto tworzenie klucza",
@@ -49,7 +50,8 @@ const eventTypes = {
 	"event/*/file/*/delete": "Usunięto dokument z $EVENT",
 	"event/*/member/*/invite": "Zaproszono $USER na $EVENT",
 	"event/*/member/*/setParticipation": "Ustawiono uczestnictwo $USER na $EVENT",
-	"event/*/member/*/setRole": "Ustawiono funkcję $USER na $EVENT"
+	"event/*/member/*/setRole": "Ustawiono funkcję $USER na $EVENT",
+	"event/*/setUpperUnits": "Zmieniono jednostki nadrzędne $EVENT"
 }
 
 const types = {}

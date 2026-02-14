@@ -25,7 +25,15 @@
 		<%= $.targetEvent.displayName %>
 	<% } %>
 </h1>
-<p>(akcja w <%~ include("/templates/linkList", $.targetEvent.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)</p>
+<p>
+	(akcja w <%~ include("/templates/linkList", $.targetEvent.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>)
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<button opens-dialog="/events/<%= $.targetEvent.id %>/editUpperUnits">
+			<i>edit</i>
+			Zmień
+		</button>
+	<% } %>
+</p>
 
 <% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.dates.start < new Date()) { %>
 	<p class="warning">

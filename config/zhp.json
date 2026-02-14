@@ -38,8 +38,7 @@
 			],
 			"eventRules": {
 				"create": false,
-				"invite": false,
-				"link": false
+				"invite": false
 			}
 		},
 		"chorągiew": {
@@ -52,8 +51,7 @@
 			],
 			"eventRules": {
 				"create": true,
-				"invite": false,
-				"link": true
+				"invite": false
 			}
 		},
 		"hufiec": {
@@ -66,8 +64,7 @@
 			],
 			"eventRules": {
 				"create": true,
-				"invite": true,
-				"link": true
+				"invite": true
 			}
 		},
 		"ośrodek": {
@@ -76,8 +73,7 @@
 			"maxUpperUnits": 2,
 			"eventRules": {
 				"create": false,
-				"invite": false,
-				"link": false	
+				"invite": false
 			}
 		},
 		"gromada": {
@@ -145,8 +141,7 @@
 			],
 			"eventRules": {
 				"create": false,
-				"invite": true,
-				"link": false
+				"invite": true
 			}
 		},
 		"zastęp": {
@@ -164,8 +159,7 @@
 			],
 			"eventRules": {
 				"create": false,
-				"invite": true,
-				"link": false
+				"invite": true
 			}
 		},
 		"patrol": {

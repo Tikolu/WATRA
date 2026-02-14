@@ -1,0 +1,50 @@
+<%
+	$.id ||= "unit-picker"
+	$.fieldName ||= "unitID"
+	if(Array.isArray($.disabled)) $.disabled = unit => [...$.disabled].hasID(unit.id)
+	if(Array.isArray($.selected)) $.selected = unit => [...$.selected].hasID(unit.id)
+
+	$.graph ||= new Graph({members: $.units})
+%>
+
+<% function renderNode(node, root) { %>
+	<% if(!root) { %>
+		<details>
+			<summary>
+				<h3><%= node.unit?.displayName || "" %></h3>
+			</summary>
+	<% } %>
+	<% if(!$.filter || $.filter(node.unit)) { %>
+		<div class="entry-grid">
+			<div>
+				<div class="entry-header">
+					<input
+						type="<%= $.multiple ? "checkbox" : "radio" %>"
+						id="unit-<%= node.unit.id %>"
+						name="<%= $.fieldName %>"
+						value="<%= node.unit.id %>"
+						data-org="<%= node.unit.org %>"
+						<% if($.disabled && $.disabled(node.unit)) { %>
+							disabled
+						<% } %>
+						<% if($.selected && $.selected(node.unit)) { %>
+							checked
+						<% } %>
+					>
+					<label for="unit-<%= node.unit.id %>">
+						<h3><%= node.unit.displayName %></h3>
+					</label>
+				</div>
+			</div>
+		</div>
+	<% } %>
+	<% for(const subNode of node.subUnits || []) { %>
+		<% renderNode(subNode) %>
+	<% } %>
+	<% if(!root) { %>
+		</details>
+	<% } %>
+<% } %>
+<div class="unit-picker" id="<%= $.id %>">
+	<% renderNode($.graph, true) %>
+</div>

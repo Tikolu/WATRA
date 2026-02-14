@@ -1,0 +1,19 @@
+.unit-picker {
+	overflow-y: scroll;
+	margin-top: 0.5em;
+	flex: 1;
+}
+
+.unit-picker details:not(:first-child) {
+	margin-top: 0.5em;
+}
+
+.unit-picker .entry-header label {
+	width: 100%;
+}
+
+.unit-picker details::details-content {
+	margin-left: 0.3em;
+	padding-left: 0.7em;
+	border-left: 1px solid var(--secondary-text);
+}

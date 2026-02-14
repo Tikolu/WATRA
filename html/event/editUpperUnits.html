@@ -1,0 +1,30 @@
+<% layout("/layouts/dialog", {
+	scripts: ["unit/picker", "event/editUpperUnits"],
+	styles: ["unit/picker"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1>Zmiana jednostek nadrzędnych akcji</h1>
+<main>
+	<section class="fill-height">
+		<%~ include("/unit/templates/unitPicker", {
+			graph: $.graph,
+			multiple: true,
+			fieldName: "unitIDs",
+			selected: unit => $.targetEvent.upperUnits.hasID(unit.id),
+			filter: unit => unit.config.eventRules.create
+		}) %>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="event/[eventID]/setUpperUnits">
+		<i>check</i>
+		Zapisz
+	</button>
+</div>

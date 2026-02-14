@@ -273,9 +273,10 @@ export class UserClass {
 
 		// Remove graphs which are contained in other graphs
 		graphs = graphs.filter(graph => {
+			if(!graph) return false
 			for(const otherGraph of graphs) {
 				if(graph == otherGraph) continue
-				if(otherGraph.contains(graph)) return false
+				if(otherGraph?.contains(graph)) return false
 			}
 			return true
 		})
