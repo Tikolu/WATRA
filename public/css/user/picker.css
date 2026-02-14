@@ -10,6 +10,9 @@
 	width: 100%;
 	flex-wrap: wrap;
 	row-gap: 1em;
+
+	border-bottom: 1px solid var(--secondary-text);
+	padding-bottom: 0.5em;
 }
 
 .user-picker-search {

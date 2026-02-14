@@ -4,6 +4,22 @@
 	flex: 1;
 }
 
+.unit-picker-options {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	flex-wrap: wrap;
+	row-gap: 1em;
+
+	border-bottom: 1px solid var(--secondary-text);
+	padding-bottom: 0.5em;
+
+	div {
+		margin-left: auto;
+	}
+}
+
+
 .unit-picker details:not(:first-child) {
 	margin-top: 0.5em;
 }

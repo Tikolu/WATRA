@@ -6,6 +6,14 @@
 
 	$.graph ||= new Graph({members: $.units})
 %>
+<div class="unit-picker-options" id="<%= $.id %>-options">
+	<% if($.multiple) { %>
+		<div>
+			<input type="checkbox" id="<%= $.id %>-choose-all">
+			<label for="<%= $.id %>-choose-all">Wybierz wszystkie</label>
+		</div>
+	<% } %>
+</div>
 
 <% function renderNode(node, root) { %>
 	<% if(!root) { %>
