@@ -19,11 +19,8 @@ export default async function({user, targetUnit, users: userIDs}) {
 
 	// Get user's role in unit, unless user has SET_ROLE permission in an upperUnit
 	let userRole = await user.getRoleInUnit(targetUnit)
-	for await(const upperUnit of targetUnit.getUpperUnitsTree()) {
-		if(await user.checkPermission(upperUnit.PERMISSIONS.SET_ROLE)) {
-			userRole = null
-			break
-		}
+	if(await targetUnit.traverse("upperUnits").some(u => user.checkPermission(u.PERMISSIONS.SET_ROLE))) {
+		userRole = null
 	}
 
 	const rolesForRemoval = []

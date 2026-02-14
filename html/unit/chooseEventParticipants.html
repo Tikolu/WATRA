@@ -8,17 +8,19 @@
 }) %>
 <h1><%= $.targetUnit.displayName %></h1>
 <main>
-	<%~ include("/user/templates/userPicker", {
-		users: $.members,
-		selected: user => $.targetEvent.participants.hasID(user.id),
-		// Cannot invite user added to event from other unit
-		disabled: user => {
-			const participant = $.targetEvent.participants.id(user.id)
-			if(!participant) return
-			if(participant.originUnit?.id != $.targetUnit.id) return true
-		},
-		multiple: true
-	}) %>
+	<section>
+		<%~ include("/user/templates/userPicker", {
+			graph: $.graph,
+			multiple: true,
+			selected: user => $.targetEvent.participants.hasID(user.id),
+			// Cannot invite user added to event from other unit
+			disabled: user => {
+				const participant = $.targetEvent.participants.id(user.id)
+				if(!participant) return
+				if(participant.originUnit?.id != $.targetUnit.id) return true
+			},
+		}) %>
+	</section>
 </main>
 <hr>
 <p>Ilość wybranych uczestników: <span id="user-count">0</span></p>

@@ -7,9 +7,11 @@
 }) %>
 <h1>Zapraszanie kadry na <%= $.targetEvent.displayName %></h1>
 <main>
-	<%~ include("/user/templates/userPicker", {
-		users: $.users
-	}) %>
+	<section>
+		<%~ include("/user/templates/userPicker", {
+			graph: $.graph
+		}) %>
+	</section>
 </main>
 <hr>
 <div class="button-row">

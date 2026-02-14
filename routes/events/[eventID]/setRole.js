@@ -7,7 +7,6 @@ export default async function({user, targetEvent}) {
 	await user.checkPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
 	
 	const usersForAssignment = {}
-	const exclude = () => Object.values(usersForAssignment).flat()
 	// Get all participants
 	await targetEvent.populate({
 		"participants": "user",
@@ -28,13 +27,13 @@ export default async function({user, targetEvent}) {
 	for(const unit of targetEvent.upperUnits) {
 		if(!await user.hasRoleInUnits("manageUser", unit.traverse("upperUnits", {includeSelf: true}))) continue
 
-		// Add all direct members, excluding users already added
-		usersForAssignment[unit.displayName] = await unit.getMembers(exclude())
+		// Add all direct members
+		usersForAssignment[unit.displayName] = await unit.listMembers().toArray()
 
 		// Add all members of subUnits
 		await unit.populate("subUnits")
 		for(const subUnit of unit.subUnits) {
-			const subMembers = await Array.fromAsync(subUnit.getSubMembers(exclude()))
+			const subMembers = await subUnit.listMembers(true).toArray()
 			usersForAssignment[subUnit.displayName] = subMembers
 		}
 	}

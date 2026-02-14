@@ -22,17 +22,12 @@
 			</button>
 		</section>
 	<% } %>
-	<% if($.usersForLinking.length || $.action == "link") { %>
+	<% if($.graph.userCount || $.action == "link") { %>
 		<section id="link-section">
 			<h3>Dodaj istniejącego rodzica</h3>
 			<%~ include("/user/templates/userPicker", {
-				users: $.usersForLinking,
-				fieldName: "parentID",
-				sort: false,
-				description: u => {
-					if(!u.children.length) return ""
-					return `(${u.children.map(c => c.displayName).join(", ")})`
-				}
+				graph: $.graph,
+				fieldName: "parentID"
 			}) %>
 			<button id="link-parent-button" api="user/[userID]/parent/link" class="confirm">
 				<i>person_add</i>

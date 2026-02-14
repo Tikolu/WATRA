@@ -13,39 +13,28 @@
 	<%= $.targetUnit.displayName %> - Lista użytkowników
 </h1>
 <section>
-	<% if($.members.length) { %>
-		<% function displayUnit(unit, org) { %>
-			<% org ||= unit.org %>
-			<% const memberCount = unit.countMembers(true) %>
-			<% if(memberCount == 0) return %>
-			<% if(unit.id != $.targetUnit.id) { %>
-				<h3>
-					<a href="/units/<%= unit.id %><%= org != unit.org ? `?org=${org}` : "" %>"><%= unit.displayName %></a>
-					<% if(org && org != unit.org) { %>
-						<span>(z perspektywy: <%= Config.orgs[org]?.name || org %>)</span>
-					<% } %>
-				</h3>
-			<% } %>
-			<% if(unit.roles.length > 0) { %>
-				<div class="entry-grid">
-					<% for(const {user} of unit.roles) { %>
-						<% if(org && user.org != org) continue %>
-						<%~ include("/user/templates/userEntry.html", {
-							targetUser: user
-						}) %>
-					<% } %>
-				</div>
-			<% } %>
-			<% for(const subUnit of unit.orgSubUnits(org)) { %>
-				<div class="sub-unit">
-					<% displayUnit(subUnit, org) %>
-				</div>
-			<% } %>
+	<% function renderNode(node) { %>
+		<% if(node.unit.id != $.targetUnit.id) { %>
+			<h3>
+				<a href="/units/<%= node.unit.id %><%= node.org != node.unit.org ? `?org=${node.org}` : "" %>"><%= node.unit.displayName %></a>
+			</h3>
 		<% } %>
-		<% displayUnit($.targetUnit, $.orgContext) %>
-	<% } else { %>
-		<p>Brak użytkowników w tej jednostce.</p>
+		<% if(node.members.length > 0) { %>
+			<div class="entry-grid">
+				<% for(const member of node.members) { %>
+					<%~ include("/user/templates/userEntry.html", {
+						targetUser: member
+					}) %>
+				<% } %>
+			</div>
+		<% } %>
+		<% for(const subNode of node.subUnits) { %>
+			<div class="sub-unit">
+				<% renderNode(subNode) %>
+			</div>
+		<% } %>
 	<% } %>
+	<% renderNode($.graph) %>
 </section>
 
 <% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS) && $.targetUnit.archivedUsers?.length > 0) { %>

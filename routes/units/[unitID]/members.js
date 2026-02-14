@@ -1,10 +1,12 @@
 import html from "modules/html.js"
 
-export default async function({user, targetUnit, orgContext}) {
+export default async function({user, targetUnit}) {
 	await user.requirePermission(targetUnit.PERMISSIONS.ACCESS_MEMBERS)
 	
-	const members = await Array.fromAsync(targetUnit.getSubMembers())
+	// Generate graph
+	const graph = await targetUnit.getGraph()
 
+	// Load archived users
 	if(await user.checkPermission(targetUnit.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) {
 		await targetUnit.populate("archivedUsers")
 	}
@@ -12,7 +14,6 @@ export default async function({user, targetUnit, orgContext}) {
 	return html("unit/memberList", {
 		user,
 		targetUnit,
-		members,
-		orgContext
+		graph
 	})
 }

@@ -10,7 +10,7 @@
 	Mianowanie na funkcję
 </h1>
 <main>
-	<% if(Object.keys($.usersForAssignment).length) { %>
+	<% if($.graph.userCount) { %>
 		<section>
 			<h2>Wybierz funkcję</h2>
 			<form>
@@ -36,7 +36,7 @@
 		<section>
 			<h2>Wybierz użytkowników</h2>
 			<%~ include("/user/templates/userPicker", {
-				users: $.usersForAssignment,
+				graph: $.graph,
 				multiple: true
 			}) %>
 		</section>
@@ -50,7 +50,7 @@
 		<i>arrow_back</i>
 		Anuluj
 	</button>
-	<% if(Object.keys($.usersForAssignment).length) { %>
+	<% if($.graph.userCount) { %>
 		<button id="set-role-button" api="unit/[unitID]/member/setRole">
 			<i>check</i>
 			<span>Potwierdź mianowanie</span>

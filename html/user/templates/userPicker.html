@@ -1,7 +1,6 @@
 <%
 	$.id ||= "user-picker"
 	$.fieldName ||= "userID"
-	if(Array.isArray($.users)) $.users = {"": $.users}
 	if(Array.isArray($.disabled)) $.disabled = user => [...$.disabled].hasID(user.id)
 	if(Array.isArray($.selected)) $.selected = user => [...$.selected].hasID(user.id)
 %>
@@ -20,63 +19,58 @@
 		</div>
 	<% } %>
 </div>
-<div class="user-picker" id="<%= $.id %>">
-	<% for(const category in $.users) { %>
-		<% if(category) { %>
-			<details>
-				<summary>
-					<h3><%= category %></h3>
-				</summary>
-		<% } %>
-		<%
-			if($.sort !== false) {
-				$.users[category].sort((a, b) => {
-					const nameA = a.displayName?.toLowerCase() || ""
-					const nameB = b.displayName?.toLowerCase() || ""
-					return nameA.localeCompare(nameB)
-				})
-			}
-		%>
+
+<% function renderNode(node, root) { %>
+	<% if(!root) { %>
+		<details>
+			<summary>
+				<h3><%= node.unit.displayName %></h3>
+			</summary>
+	<% } %>
+	<% if(node.members.length > 0) { %>
 		<div class="entry-grid">
-			<% for(const user of $.users[category]) { %>
-				<% if($.filter && !$.filter(user)) continue %>
+			<% for(const member of node.members) { %>
 				<div>
 					<div class="entry-header">
 						<input
 							type="<%= $.multiple ? "checkbox" : "radio" %>"
-							id="user-<%= user.id %>"
+							id="user-<%= member.id %>"
 							name="<%= $.fieldName %>"
-							value="<%= user.id %>"
-							data-org="<%= user.org %>"
-							<% if($.disabled && $.disabled(user)) { %>
+							value="<%= member.id %>"
+							data-org="<%= member.org %>"
+							<% if($.disabled && $.disabled(member)) { %>
 								disabled
 							<% } %>
-							<% if($.selected && $.selected(user)) { %>
+							<% if($.selected && $.selected(member)) { %>
 								checked
 							<% } %>
 						>
-						<label for="user-<%= user.id %>">
-							<h3><%= user.displayName || "(użytkownik)" %></h3>
+						<label for="user-<%= member.id %>">
+							<h3><%= member.displayName || "(użytkownik)" %></h3>
 						</label>
 					</div>
-					<%
-						let description = user.description || $.description?.(user)
-					%>
-					<% if(description) { %>
+					<% if(member.description) { %>
 						<div class="entry-content">
-							<%= description %>
+							<%= member.description %>
 						</div>
 					<% } %>
 				</div>
 			<% } %>
 		</div>
-		<% if(category) { %>
-			</details>
-		<% } %>
 	<% } %>
-	<% if($.users.length == 0) { %>
+	<% for(const subNode of node.subUnits || []) { %>
+		<% renderNode(subNode) %>
+	<% } %>
+	<% if(!root) { %>
+		</details>
+	<% } %>
+<% } %>
+
+<div class="user-picker" id="<%= $.id %>">
+	<% if(!$.graph?.userCount) { %>
 		<p class="user-picker-error">Brak użytkowników</p>
 	<% } else { %>
+		<% renderNode($.graph, true) %>
 		<p class="user-picker-error" hidden>Brak wyników</p>
 	<% } %>
 </div>

@@ -8,27 +8,28 @@ export default async function({user, targetEvent}) {
 	const unitsTree = await user.listUnits(true).toArray()
 	const topUnit = unitsTree.at(-1)
 
-	const users = []
-	for await(const subUnit of topUnit.getSubUnitsTree()) {
-		await subUnit.populate("roles")
-		for(const role of subUnit.roles) {
-			// Display only public roles
-			if(!role.hasTag("public")) continue
-			// Skip duplicates
-			if(users.hasID(role.user.id)) continue
-			// Skip already added participants
-			if(targetEvent.participants.id(role.user.id)) continue
-			users.push(role.user.id)
-		}
-	}
+	// Generate graph
+	const graph = await topUnit.getGraph({
+		roleFilter: (unit, role) => user.checkPermission(unit.PERMISSIONS.CREATE_USER),
+		userFilter: async u => {
+			// Exclude users that are already invited
+			if(targetEvent.participants.hasID(u.id)) return false
 
-	// Load and sort users
-	await users.populate({}, {ref: "User"})
-	users.sort((a, b) => a.displayName.localeCompare(b.displayName))
+			// Include users with public role
+			await u.populate("roles")
+			for(const role of u.roles) {
+				if(role.hasTag("public")) return true
+			}
+
+			// Include users to which the user has access
+			return await user.checkPermission(u.PERMISSIONS.ACCESS)
+		},
+		sortMembers: true	
+	})
 
 	return html("event/inviteParticipants", {
 		user,
-		users,
-		targetEvent
+		targetEvent,
+		graph
 	})
 }

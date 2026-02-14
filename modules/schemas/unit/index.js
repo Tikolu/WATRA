@@ -4,6 +4,7 @@ import * as Text from "modules/text.js"
 import Role from "modules/schemas/role.js"
 
 import Config from "modules/config.js"
+import Graph from "./graph.js"
 
 export class UnitClass {
 	/* * Properties * */
@@ -305,8 +306,79 @@ export class UnitClass {
 		})
 	}
 
+	/** Generates an object graph of the unit's subUnits and members */
+	async getGraph(options={}) {
+		const {
+			org = this.org,
+			sortMembers = false,
+			userFilter,
+			unitFilter,
+			subUnitFilter,
+			processNodes
+		} = options
+
+		// Filter unit using custom function
+		if(unitFilter && !await unitFilter(this)) return
+
+		const graph = new Graph({
+			unit: this,
+			org
+		})
+
+		// Load members
+		if(userFilter !== false) {
+			graph.members.push(...await this.listMembers(false, org).toArray())
+		}
+
+		// Sort members using custom function
+		if(typeof sortMembers == "function") {
+			graph.members.sort(sortMembers)
+			
+		// Sort members by name
+		} else if(sortMembers) {
+			graph.members.sort((a, b) => {
+				const nameA = a.displayName?.toLowerCase() || ""
+				const nameB = b.displayName?.toLowerCase() || ""
+				return nameA.localeCompare(nameB)
+			})
+		}
+
+		// Recursively get subUnits
+		if(!subUnitFilter || !await subUnitFilter(this)) {
+			const subUnits = this.traverse("subUnits", {
+				depth: 1,
+				filter: org ? {org: {$in: [org, undefined]}} : undefined
+			})
+			for await(const subUnit of subUnits) {
+				const subGraph = await subUnit.getGraph({
+					org,
+					sortMembers,
+					userFilter,
+					unitFilter,
+					subUnitFilter,
+					processNodes
+				})
+				if(subGraph) graph.subUnits.push(subGraph)
+			}
+		}
+
+		// Run custom function
+		if(processNodes) await processNodes(graph)
+
+		// Filter members using custom function
+		if(userFilter && userFilter !== false) {
+			const newMembers = []
+			for(const member of graph.members) {
+				if(await userFilter(member)) newMembers.push(member)
+			}
+			graph.members = newMembers
+		}
+
+		return graph
+	}
+
 	/** Gets all events in all subUnits */
-	async * getSubUnitEvents(skipPast=false) {
+	async * listEvents(skipPast=false) {
 		for await(const subUnit of this.traverse("subUnits")) {
 			await subUnit.populate("events", {
 				filter: skipPast ? {"dates.end": {$gte: new Date()}} : undefined
@@ -315,7 +387,6 @@ export class UnitClass {
 				yield event
 			}
 		}
-		return count
 	}
 }
 

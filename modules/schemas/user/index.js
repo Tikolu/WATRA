@@ -8,6 +8,7 @@ import Log from "modules/schemas/log.js"
 
 import Config from "modules/config.js"
 import HTTPError from "modules/server/error.js"
+import Graph from "modules/schemas/unit/graph.js"
 
 import userMedical from "./medical.js"
 import userAuth from "./auth.js"
@@ -256,6 +257,33 @@ export class UserClass {
 				filter: this.org ? {org: {$in: [this.org, undefined]}} : undefined
 			})
 		}
+	}
+
+	/** Generates object graphs of the user's units and subUnits */
+	async getGraph(options={}) {
+		let graphs = []
+		
+		await this.populate({"roles": "unit"})
+		for(const role of this.roles) {
+			// Filter unit
+			if(options.roleFilter && !await options.roleFilter(role.unit, role)) continue
+
+			graphs.push(await role.unit.getGraph(options))
+		}
+
+		// Remove graphs which are contained in other graphs
+		graphs = graphs.filter(graph => {
+			for(const otherGraph of graphs) {
+				if(graph == otherGraph) continue
+				if(otherGraph.contains(graph)) return false
+			}
+			return true
+		})
+
+		if(graphs.length == 1) return graphs[0]
+		else return new Graph({
+			subUnits: graphs
+		})
 	}
 
 	/** Checks permission and returns the result. The result is cached for future calls */

@@ -168,7 +168,6 @@ if(!Config.event) {
 	throw new ConfigError("Missing event config")
 }
 Config.event.roles ||= []
-Config.event.topUnitTypes ||= Object.keys(Config.units)[0]
 
 // Ensure roles exist
 for(const roleName of Config.event.roles || []) {

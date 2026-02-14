@@ -22,8 +22,8 @@
 	margin: 2em 0;
 }
 
-.user-picker details:not(:first-child) {
-	margin-top: 1em
+.user-picker details {
+	margin-top: 0.5em;
 }
 
 .user-picker + button {
@@ -32,4 +32,10 @@
 
 .user-picker .entry-header label {
 	width: 100%;
+}
+
+.user-picker details::details-content {
+	margin-left: 0.3em;
+	padding-left: 0.7em;
+	border-left: 1px solid var(--secondary-text);
 }

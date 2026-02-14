@@ -66,7 +66,7 @@
 			],
 			"eventRules": {
 				"create": true,
-				"invite": false,
+				"invite": true,
 				"link": true
 			}
 		},
@@ -189,9 +189,6 @@
 			"opiekunAkcji",
 			"oboźny",
 			"kadraProgramowa"
-		],
-		"topUnitTypes": [
-			"ośrodek"
 		],
 		"approvalsRequired": 2
 	},
