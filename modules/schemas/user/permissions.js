@@ -135,10 +135,10 @@ export async function ADD_PARENT(user) {
 	// MANAGE permission grants ADD_PARENT
 	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
-	// Cannot add parents to user with existing, incomplete parent profiles
+	// Cannot add parents to user with existing unnamed parents
 	await this.populate("parents")
 	for(const parent of this.parents) {
-		if(!parent.profileComplete) return false
+		if(!parent.name.first || !parent.name.last) return false
 	}
 
 	// Cannot add parent to adult
