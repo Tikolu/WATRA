@@ -5,8 +5,14 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.SET_ROLE)
 
-	// Get user's role
-	const userRole = await user.getRoleInUnit(targetEvent)
+	// Get user's role in event, unless user has SET_ROLE permission in an upperUnit
+	let userRole = await user.getRoleInUnit(targetEvent)
+	for await(const upperUnit of targetEvent.traverse("upperUnits")) {
+		if(await user.checkPermission(upperUnit.PERMISSIONS.SET_ROLE)) {
+			userRole = null
+			break
+		}
+	}
 
 	// Get role config
 	let roleConfig

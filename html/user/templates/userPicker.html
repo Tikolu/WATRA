@@ -3,6 +3,8 @@
 	$.fieldName ||= "userID"
 	if(Array.isArray($.disabled)) $.disabled = user => [...$.disabled].hasID(user.id)
 	if(Array.isArray($.selected)) $.selected = user => [...$.selected].hasID(user.id)
+
+	$.graph ||= new Graph({members: $.users})
 %>
 <div class="user-picker-options" id="<%= $.id %>-options">
 	<input
@@ -24,7 +26,7 @@
 	<% if(!root) { %>
 		<details>
 			<summary>
-				<h3><%= node.unit.displayName %></h3>
+				<h3><%= node.unit?.displayName || "" %></h3>
 			</summary>
 	<% } %>
 	<% if(node.members.length > 0) { %>
