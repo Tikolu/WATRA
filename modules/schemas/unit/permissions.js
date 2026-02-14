@@ -111,8 +111,8 @@ export async function CREATE_EVENT(user) {
 	// Cannot create event in unit without "create" eventRule
 	if(!this.config.eventRules.create) return false
 
-	// "manageEvent" roles in this unit can create events
-	if(await user.hasRoleInUnits("manageEvent", this)) return true
+	// "manageEvent" roles in this unit and upper units can create events
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }

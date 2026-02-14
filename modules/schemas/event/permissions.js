@@ -48,8 +48,8 @@ export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// "manageEvent" roles in event and direct upperUnits can edit
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1, includeSelf: true}))) return true
+	// "manageEvent" roles in event and upperUnits can edit
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -62,8 +62,8 @@ export async function DELETE(user) {
 	// Cannot delete event with accepted participants
 	if(this.participants.some(p => p.state == "accepted")) return false
 	
-	// "manageEvent" roles in direct upperUnits can delete
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1}))) return true
+	// "manageEvent" roles in upperUnits can delete
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits"))) return true
 
 	return false
 }
@@ -79,8 +79,8 @@ export async function SET_ROLE(user) {
 	// "setRole" roles in this event can set roles
 	if(await user.hasRoleInUnits("setRole", this)) return true
 
-	// "manageEvent" roles in direct upperUnits can set roles
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1}))) return true
+	// "manageEvent" roles in upperUnits can set roles
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits"))) return true
 
 	return false
 }
@@ -90,8 +90,8 @@ export async function INVITE_PARTICIPANT(user) {
 	// Lack of EDIT permission denies INVITE_PARTICIPANT
 	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
 
-	// "manageEvent" roles in event and direct upper unit can invite units
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {depth: 1, includeSelf: true}))) return true
+	// "manageEvent" roles in event and upper units can invite units
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
