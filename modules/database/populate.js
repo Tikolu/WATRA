@@ -14,8 +14,10 @@ function createFakeDocument(model, id, placeholder=true) {
 
 export function isPopulated(object, filter) {
 	if(typeof object == "string") return false
-	if(filter && JSON.stringify(object?.$locals?.filteredBy) == JSON.stringify(filter)) return true
-	if(object?.$locals.unpopulatedPlaceholder) return false
+	if(object?.$locals?.unpopulatedPlaceholder) {
+		if(filter && JSON.stringify(object.$locals.filteredBy) == JSON.stringify(filter)) return true
+		else return false
+	}
 	return true
 }
 
@@ -111,7 +113,7 @@ class PopulationContext {
 						if(!newDocument) {
 							if(options?.placeholders === false) continue
 							if(options.log) logger.log(`Creating fake ${ref} ${subDocument.id}`)
-							newDocument = createFakeDocument(mongoose.model(ref), subDocument.id)
+							newDocument = createFakeDocument(mongoose.model(ref), subDocument.id, !!options.filter)
 							results[subDocument.id] = newDocument
 						}
 						newDocument.$__parent = document
@@ -193,7 +195,7 @@ export function populate(graph, options={}) {
 						if(!newDocument) {
 							if(options.placeholders === false) continue
 							if(options.log) logger.log(`Creating fake ${options.ref} ${subDocument.id}`)
-							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id)
+							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id, !!options.filter)
 							results[subDocument.id] = newDocument
 						}
 						newDocument.$locals.populationContext = populationContext
@@ -240,7 +242,7 @@ export function populate(graph, options={}) {
 						if(options.placeholders === false) continue
 						if(queryResults.some(r => r?.id == id)) continue
 						if(options.log) logger.log(`Creating fake ${model.modelName} ${id}`)
-						const fakeDocument = createFakeDocument(model, id)
+						const fakeDocument = createFakeDocument(model, id, !!options.filter)
 						queryResults.push(fakeDocument)
 					}
 					for(const doc of queryResults) {
