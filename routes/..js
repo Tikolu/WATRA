@@ -103,7 +103,8 @@ export default async function({user}) {
 			}
 		},
 		{
-			filter: {"dates.end": {$gte: new Date()}}			
+			filter: {"dates.end": {$gte: new Date()}},
+			placeholders: false			
 		}
 	)
 

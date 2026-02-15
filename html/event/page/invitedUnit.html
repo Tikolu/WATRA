@@ -1,6 +1,15 @@
 <% const invitedParticipants = $.unitInvite.state == "accepted" ? $.unitInvite.invitedParticipants.filter(p => $.targetEvent.roles.every(r => r.user.id != p.user.id)) : [] %>
 
-<div class="invited-unit<% if($.unitInvite.state == "declined") { %> faded<% } %>">
+<div
+	class="
+		invited-unit
+		<% if($.unitInvite.state == "declined" || 
+			($.unitInvite.state == "pending" && $.targetEvent.isPast)
+		) { %>
+			faded
+		<% } %>
+	"
+>
 	<h3><%= $.unitInvite.unit.displayName %></h3>
 
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
@@ -10,7 +19,11 @@
 			<% } else if($.unitInvite.state == "declined") { %>
 				<i>cancel</i> Odrzucono zaproszenie
 			<% } else if($.unitInvite.state == "pending") { %>
-				<i class="spin">progress_activity</i> Oczekiwana odpowiedź...
+				<% if($.targetEvent.isPast) { %>
+					<i>help</i> Brak odpowiedzi
+				<% } else { %>
+					<i class="spin">progress_activity</i> Oczekiwana odpowiedź...
+				<% } %>
 			<% } %>
 		</p>
 	<% } %>
@@ -25,7 +38,7 @@
 			<% } %>
 		<% } %>
 
-		<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
+		<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && !$.targetEvent.isPast) { %>
 			<% if($.unitInvite.state == "accepted") { %>
 				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
 					<i>group_add</i>

@@ -9,7 +9,8 @@ export default async function({user, targetEvent, unitIDs}) {
 	await units.populate({}, {ref: "Unit"})
 	
 	// Check permissions
-	for(const unit of units) {
+	await targetEvent.populate("upperUnits")
+	for(const unit of [...units, ...targetEvent.upperUnits]) {
 		if(!await user.checkPermission(unit.PERMISSIONS.CREATE_EVENT)) {
 			throw new HTTPError(403, `Brak dostępu do jednostki "${unit.displayName}"`)
 		}

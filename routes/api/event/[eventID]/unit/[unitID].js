@@ -10,6 +10,9 @@ export async function _open({user, targetEvent, unitID}) {
 	const targetUnit = await Unit.findById(unitID)
 	if(!targetUnit) throw new HTTPError(404, "Jednostka nie istnieje")
 
+	// Ensure event has not started
+	if(targetEvent.isPast) throw new HTTPError(400, "Akcja już się odbyła")
+
 	this.addRouteData({targetUnit})
 }
 

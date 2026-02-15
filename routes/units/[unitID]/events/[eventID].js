@@ -16,6 +16,9 @@ export async function _open({user, targetUnit, eventID}) {
 		throw new HTTPError(400, "Jednostka nie jest zaproszona na akcję")
 	}
 
+	// Ensure event has not started
+	if(targetEvent.isPast) throw new HTTPError(400, "Akcja już się odbyła")
+
 	this.addRouteData({targetEvent, targetInvitation})
 }
 

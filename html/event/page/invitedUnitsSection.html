@@ -37,11 +37,9 @@
 				<i>person_add_disabled</i>
 				<b>Zapisy są wyłączone</b>
 			</p>
-			<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+			<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && !$.targetEvent.isPast) { %>
 				<p>Uczestnicy będą mogli zapisać się na akcję po włączeniu zapisów przez komendanta.</p>
-				<% if(!$.targetEvent.isPast) { %>
-					<p>W międzyczasie możesz wybrać uczestników poniżej.</p>
-				<% } %>
+				<p>W międzyczasie możesz wybrać uczestników poniżej.</p>
 			<% } %>
 		</article>
 	<% } %>

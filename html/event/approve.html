@@ -7,17 +7,17 @@
 }) %>
 <h1>Zatwierdź akcję</h1>
 <main>
-	<% const md = $.targetEvent.missingDetails %>
-	<% if(md.length) { %>
-		<p class="warning">Nie można zatwierdzić akcji z brakującymi szczegółami</p>
-	<% } else { %>
-		<article>
+	<section>
+		<% const md = $.targetEvent.missingDetails %>
+		<% if(md.length) { %>
+			<p class="warning">Nie można zatwierdzić akcji z brakującymi szczegółami</p>
+		<% } else { %>
 			<p>Potwierdzam że zapoznałem się z planem i analizą ryzyka akcji i że dostałem wszystkie dokumenty niezbędne do ocenienia ryzyka. Zatwierdzam tą akcję wraz z ustaloną komendą i wyrażam zgodę aby się odbyła.</p>
-		</article>
-	<% } %>
-	<%~ include("/templates/signature", {
-		user: $.user
-	}) %>
+		<% } %>
+		<%~ include("/templates/signature", {
+			user: $.user
+		}) %>
+	</section>
 </main>
 <hr>
 <div class="button-row">

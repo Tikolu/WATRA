@@ -38,13 +38,15 @@ export default async function({user, targetUnit, orgContext}) {
 
 	// Load events for upcoming or ongoing events
 	await targetUnit.populate("events", {
-		filter: {"dates.end": {$gte: new Date()}}			
+		filter: {"dates.end": {$gte: new Date()}},
+		placeholders: false
 	})
 
 	// Load event invites for upcoming or ongoing events
 	if(user.hasPermission(targetUnit.PERMISSIONS.MANAGE_INVITES)) {
 		await targetUnit.populate("eventInvites", {
-			filter: {"dates.end": {$gte: new Date()}}			
+			filter: {"dates.end": {$gte: new Date()}},
+			placeholders: false
 		})
 	}
 
