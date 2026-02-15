@@ -635,9 +635,6 @@ const API = {
 
 			for(const formElement of elements) {
 				let elementValue = formElement.value
-				if(!elementValue && formElement.matches("[contenteditable]")) {
-					elementValue = formElement.innerText.trim()
-				}
 				
 				// Clear validity
 				formElement.classList.remove("invalid")
@@ -853,7 +850,7 @@ function processAPIAttributes() {
 		else if(element.matches("input")) event = "submit"
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
-		else if(element.matches("[contenteditable=plaintext-only]")) event = "blur"
+		else if(element.matches("[contenteditable=plaintext-only]")) event = "submit"
 		else {
 			console.warn("API attribute not supported for this element:\n", element)
 			continue
@@ -968,10 +965,18 @@ window.afterDataRefresh.push(processDialogOpeners)
 
 // Custom input fields
 function processCustomInputElements() {
-	for(const input of document.querySelectorAll("input")) {
+	for(const input of document.querySelectorAll("input, [contenteditable=plaintext-only]")) {
 		// Skip if input has already been modified
 		if(input.customised) continue
 		input.customised = true
+
+		// contenteditable value getter
+		if(input.contentEditable == "plaintext-only") {
+			Object.defineProperty(input, "value", {
+				get() { return this.innerText.replace(/(^\n|\n$)/, "") },
+				set(value) { this.innerText = value }
+			})
+		}
 		
 		input.initialValue = input.value
 		input.modified = false
@@ -979,7 +984,8 @@ function processCustomInputElements() {
 			input.modified = input.value != input.initialValue
 		})
 		input.addEventListener("keypress", event => {
-			if(event.key != "Enter") return
+			if(event.key != "Enter" && event.key != "\n") return
+			if(input.matches("p") && !event.ctrlKey) return
 			input.blur()
 		})
 		input.addEventListener("blur", event => {

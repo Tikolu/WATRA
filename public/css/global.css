@@ -191,6 +191,10 @@ label > * {
 	margin: 0;
 }
 
+label + textarea {
+	margin-top: 0.5em;
+}
+
 /* Input elements */
 
 input, select, textarea {
