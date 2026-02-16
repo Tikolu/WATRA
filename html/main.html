@@ -17,6 +17,8 @@
 	<% } %>
 </p>
 
+<h3>Czuwaj<%= $.user.name.first ? `, ${$.user.name.first}` : "" %>!</h3>
+
 <% if(Config.news.length > 0) { %>
 	<section>
 		<h2>

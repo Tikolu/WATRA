@@ -204,5 +204,11 @@
 				Dane oczekują na zatwierdzenie przez rodzica/opiekuna
 			<% } %>
 		</p>
+		<%  if($.targetUser.id == $.user.id) { %>
+			<article>
+				<p>Czuwaj<%= $.targetUser.name.first ? `, ${$.targetUser.name.first}` : "" %>!</p>
+				<p>Poproś rodzica o zatwierdzenie twoich danych.</p>
+			</article>
+		<% } %>
 	<% } %>
 </section>
