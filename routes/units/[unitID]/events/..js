@@ -10,7 +10,7 @@ export default async function({user, targetUnit}) {
 	await targetUnit.populate("eventInvites")
 
 	// Load all subUnit events
-	const subUnitEvents = []
+	let subUnitEvents = []
 	subUnitEvents.push(...await targetUnit.listEvents().toArray())
 	// Sort by date
 	subUnitEvents.sort((a, b) => {
@@ -18,6 +18,10 @@ export default async function({user, targetUnit}) {
 		const bDate = b.dates.start || 0
 		return aDate - bDate
 	})
+	// Remove duplicates
+	subUnitEvents = subUnitEvents.unique("id")
+	// Load upperUnits
+	await subUnitEvents.populate("upperUnits")
 
 	return html("unit/eventList", {
 		user,

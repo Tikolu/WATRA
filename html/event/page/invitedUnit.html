@@ -10,7 +10,9 @@
 		<% } %>
 	"
 >
-	<h3><%= $.unitInvite.unit.displayName %></h3>
+	<h3>
+		<a href="/units/<%= $.unitInvite.unit.id %>"><%= $.unitInvite.unit.displayName %></a>
+	</h3>
 
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
 		<p>

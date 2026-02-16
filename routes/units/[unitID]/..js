@@ -51,15 +51,19 @@ export default async function({user, targetUnit, orgContext}) {
 	}
 
 	// Load subUnit events for upcoming or ongoing events
-	const subUnitEvents = []
+	let subUnitEvents = []
 	if(user.hasPermission(targetUnit.PERMISSIONS.ACCESS_EVENTS)) {
 		subUnitEvents.push(...await targetUnit.listEvents(true).toArray())
+		// Remove duplicates
+		subUnitEvents = subUnitEvents.unique("id")
 		// Sort by date
 		subUnitEvents.sort((a, b) => {
 			const aDate = a.dates.start || 0
 			const bDate = b.dates.start || 0
 			return aDate - bDate
 		})
+		// Load upperUnits
+		await subUnitEvents.populate("upperUnits")
 	}
 	
 	return html("unit/page", {
