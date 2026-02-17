@@ -51,6 +51,13 @@
 	<%~ include("fileSection", $) %>
 <% } %>
 
+<% if($.user.hasPermission($.targetEvent.PERMISSIONS.MANAGE_FORMS)) { %>
+	<%~ include("/form/list", {
+		user: $.user,
+		targetUnit: $.targetEvent
+	}) %>
+<% } %>
+
 <% if(
 	($.targetEvent.roles.length > 0 && $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) ||
 	$.targetEvent.roles.some(role => role.hasTag("public")) ||
@@ -69,6 +76,13 @@
 
 <% if($.approvalParticipants?.length) { %>
 	<%~ include("participationSection", $) %>
+<% } %>
+
+<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.MANAGE_FORMS)) { %>
+	<%~ include("/form/list", {
+		user: $.user,
+		targetUnit: $.targetEvent
+	}) %>
 <% } %>
 
 <% if(

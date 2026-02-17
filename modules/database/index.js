@@ -229,6 +229,14 @@ mongoose.plugin(schema => schema.methods.traverse = async function * (path, opti
 	}
 })
 
+// Model name getter
+mongoose.plugin(schema => {
+	if(!schema.permissions) return
+	schema.virtual("modelName").get(function() {
+		return this.constructor.modelName
+	})
+})
+
 
 let readyCallbacks
 export const ready = new Promise((resolve, reject) => {

@@ -1,0 +1,8 @@
+<h3
+	id="<%= $.element.id %>"
+	class="form-element"
+	<% if($.editable) { %>
+		contenteditable="plaintext-only"
+		api="form/[formID]/element/<%= $.element.id %>/setText"
+	<% } %>
+><%= $.element.textContent %></h3>

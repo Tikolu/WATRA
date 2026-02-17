@@ -124,6 +124,21 @@ export default async function({user}) {
 		approvalEvents.push(...events)
 	}
 
+	// Find required forms, check permissions
+	const formUnits = []
+	for(const u of [user, ...user.children]) {
+		formUnits.push(...await u.listUnits(true).toArray())
+		formUnits.push(...u.eventInvites.filter(event => event.participants.id(u.id)?.state == "accepted"))
+	}
+	const forms = []
+	for(const unit of formUnits.unique("id")) {
+		await unit.loadFormsForUser(user)
+		for(const form of unit.forms) {
+			if(!form.$locals.requiredUserResponse) continue
+			forms.push(form)
+		}
+	}
+
 	// Check permissions
 	await user.checkPermission(user.PERMISSIONS.EDIT)
 	await user.checkPermission(user.PERMISSIONS.APPROVE)
@@ -136,6 +151,7 @@ export default async function({user}) {
 	
 	return html("main", {
 		user,
-		events
+		events,
+		forms
 	})
 }

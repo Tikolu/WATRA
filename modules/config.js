@@ -10,6 +10,7 @@ Config.tags = {
 	"editUnit": {},
 	"manageSubUnit": {},
 	"setRole": {},
+	"manageForms": {},
 
 	"accessUser": {},
 	"manageUser": {},

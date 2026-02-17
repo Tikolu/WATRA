@@ -1,0 +1,78 @@
+<% layout("/layouts/dialog", {
+	scripts: ["form/response", "signature"],
+	styles: ["signature"],
+	meta: {
+		formID: $.targetForm.id,
+		responseID: $.targetResponse.id
+	}
+}) %>
+<h1><%= $.targetForm.displayName %></h1>
+<main>
+	<section>
+		<form>
+			<label for="response-user">Odpowiedź za:</label>
+			<select
+				id="response-user"
+				api="form/[formID]/response/[responseID]/setUser"
+				name="responseUser"
+				required
+				<% if(!$.user.hasPermission($.targetResponse.PERMISSIONS.EDIT)) { %>
+					disabled
+				<% } %>
+			>
+				<% if(!$.user.hasPermission($.targetResponse.PERMISSIONS.EDIT)) { %>
+					<option value="<%= $.targetResponse.user.id %>" selected><%= $.targetResponse.user.displayName %></option>
+				<% } else { %>
+					<% for(const userOption of $.userOptions) { %>
+						<option
+							value="<%= userOption.id %>"
+							<% if($.targetResponse.user.id == userOption.id || $.userOptions.length == 1) { %>
+								selected
+							<% } %>
+						><%= userOption.displayName %></option>
+					<% } %>
+				<% } %>
+			</select>
+		</form>
+		<% if(!$.targetResponse.signature && $.targetResponse.id != "new") { %>
+			<article>
+				<p>
+					<i>info</i>
+					<b>Wersja robocza</b>
+				</p>
+				<p>Odpowiedź nie została jeszcze wysłana</p>
+			</article>
+		<% } %>
+	</section>
+	<section>
+		<% for(const element of $.targetForm.elements) { %>
+			<%~ include("element", {
+				element,
+				editable: false,
+				responding: $.user.hasPermission($.targetResponse.PERMISSIONS.EDIT),
+				response: $.targetResponse
+			}) %>
+		<% } %>
+	</section>
+	<% if($.targetResponse.signature || $.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
+		<section>
+			<%~ include("/templates/signature", {
+				user: $.user,
+				signature: $.targetResponse.signature
+			}) %>
+		</section>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Zamknij
+	</button>
+	<% if($.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
+		<button api="form/[formID]/response/[responseID]/submit">
+			<i>check</i>
+			<span>Wyślij</span>
+		</button>
+	<% } %>
+</div>

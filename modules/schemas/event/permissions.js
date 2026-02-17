@@ -114,3 +114,29 @@ export async function APPROVE(user) {
 	
 	return false
 }
+
+/** Accessing forms within the event */
+export async function ACCESS_FORMS(user) {
+	// Allow access by users who have accepted invitation to the event
+	if(this.participants.id(user.id)?.state == "accepted") return true
+
+	// Allow access by parent whose child have accepted invitation to the event
+	await user.populate("children")
+	for(const child of user.children) {
+		if(this.participants.id(child.id)?.state == "accepted") return true
+	}
+
+	// Allow access by users who have MANAGE_FORMS permission in the event
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE_FORMS)) return true
+
+	return false
+}
+
+/** Creating and managing forms within the event */
+export async function MANAGE_FORMS(user) {
+	// Lack of ACCESS permission denies MANAGE_FORMS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "manageForms" roles in this event and upper units can manage forms
+	if(await user.hasRoleInUnits("manageForms", this.traverse("upperUnits", {includeSelf: true}))) return true
+}

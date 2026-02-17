@@ -23,7 +23,7 @@ export default async function({user, targetUnit, orgContext}) {
 	await targetUnit.populate([
 		"roles",
 		"subUnits",
-		"upperUnits",
+		"upperUnits"
 	])
 	await targetUnit.populate(
 		{"roles": "user"},
@@ -65,6 +65,9 @@ export default async function({user, targetUnit, orgContext}) {
 		// Load upperUnits
 		await subUnitEvents.populate("upperUnits")
 	}
+
+	// Load forms
+	await targetUnit.loadFormsForUser(user)
 	
 	return html("unit/page", {
 		user,

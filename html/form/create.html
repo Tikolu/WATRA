@@ -1,0 +1,33 @@
+<% layout("/layouts/dialog", {
+	scripts: ["form/create"],
+	meta: {
+		type: $.targetUnit.modelName,
+		id: $.targetUnit.id
+	}
+}) %>
+<h1>Tworzenie formularza</h1>
+<main>
+	<section>
+		<form>
+			<label for="form-name-input">Tytuł formularza:</label>
+			<input
+				type="text"
+				id="form-name-input"
+				name="name"
+				autocomplete="off"
+				required
+			>
+		</form>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="form/create" class="confirm">
+		<i>add</i>
+		Utwórz formularz
+	</button>
+</div>

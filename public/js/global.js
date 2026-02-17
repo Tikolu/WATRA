@@ -601,6 +601,7 @@ const API = {
 			const formData = {}
 
 			handler.form ||= element?.getAttribute("form")
+			if(element?.matches("form")) handler.form ||= element
 			if(handler.form) {
 				// Find form container element
 				let formContainer
@@ -851,6 +852,7 @@ function processAPIAttributes() {
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
 		else if(element.matches("[contenteditable=plaintext-only]")) event = "submit"
+		else if(element.matches("form")) event = "change"
 		else {
 			console.warn("API attribute not supported for this element:\n", element)
 			continue

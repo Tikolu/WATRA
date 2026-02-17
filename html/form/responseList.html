@@ -1,0 +1,36 @@
+<section>
+	<h2>
+		<i>contract</i>
+		Odpowiedzi
+	</h2>
+	<% if($.responses.length) { %>
+		<div class="entry-grid">
+			<% for(const response of $.responses) { %>
+				<a opens-dialog="/forms/<%= $.targetForm.id %>/responses/<%= response.id %>">
+					<div class="entry-header">
+						<div class="entry-image">
+							<i>contract</i>
+						</div>
+						<div class="entry-title">
+							<h3><%= response.user?.displayName || "Odpowiedź" %></h3>
+							<p><%= datetime.format(response.date, "dd/MM/yyyy") %></p>
+						</div>
+					</div>
+					<% if(!response.submitted) { %>
+						<%~ include("/templates/entryContent", {
+							warnings: ["Odpowiedź nie wysłana"],
+						}) %>
+					<% } %>
+				</a>
+			<% } %>
+		</div>
+	<% } %>
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.RESPOND)) { %>
+		<div class="button-row">
+			<button opens-dialog="/forms/<%= $.targetForm.id %>/responses/new">
+				<i>add</i>
+				<span>Nowa odpowiedź</span>
+			</button>
+		</div>
+	<% } %>
+</section>

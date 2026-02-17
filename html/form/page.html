@@ -1,0 +1,61 @@
+<% layout("/layouts/main", {
+	title: $.targetForm.displayName,
+	scripts: ["form/page"],
+	styles: ["form/page"],
+	meta: {
+		formID: $.targetForm.id
+	}
+}) %>
+<h1 id="form-title">
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT)) { %>
+		<input
+			type="text"
+			name="name"
+			placeholder="Nazwa formularza"
+			autocomplete="off"
+			api="form/[formID]/update/name"
+			value="<%= $.targetForm.name || "" %>"
+			title="Zmień nazwę"
+		>
+	<% } else { %>
+		<%= $.targetForm.displayName %>
+	<% } %>
+</h1>
+
+<p>
+	(formularz w <a href="/<%= $.targetForm.unit.modelName == "Unit" ? "units" : "events" %>/<%= $.targetForm.unit.id %>"><%= $.targetForm.unit.displayName %></a>)
+</p>
+
+<div class="button-row">
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.DELETE)) { %>
+		<button id="delete-form-button" class="dangerous" api="form/[formID]/delete">
+			<i>delete</i>
+			<span>Usuń formularz</span>
+		</button>
+		<dialog id="delete-form-dialog">
+			<h1>Usunąć formularz <%= $.targetForm.displayName %>?</h1>
+			<p>Formularz i wszystkie odpowiedzi zostaną trwale usunięte.</p>
+			<div class="button-row">
+				<button>
+					<i>arrow_back</i>
+					Anuluj
+				</button>
+				<button class="dangerous" command>
+					<i>delete</i>
+					Usuń
+				</button>
+			</div>
+		</dialog>
+	<% } %>
+</div>
+
+<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT)) { %>
+	<%~ include("editor", $) %>
+<% } %>
+<% if($.user.hasPermission($.targetForm.PERMISSIONS.CONFIG)) { %>
+	<%~ include("config", $) %>
+<% } %>
+
+<% if($.responses.length || $.user.hasPermission($.targetForm.PERMISSIONS.RESPOND)) { %>
+	<%~ include("responseList", $) %>
+<% } %>

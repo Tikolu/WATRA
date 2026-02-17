@@ -24,7 +24,7 @@ html[theme^=light] {
 	--secondary-text: hsl(var(--hue), 10%, 30%);
 	--shadow: hsla(var(--hue), 20%, 10%, 0.4);
 	
-	--border-radius: 0.5em;
+	--border-radius: 0.5rem;
 	--highlight-brightness: 0.75;
 }
 
@@ -46,7 +46,7 @@ html[theme^=dark] {
 	--secondary-text: hsl(var(--hue), 10%, 65%);
 	--shadow: hsl(var(--hue), 5%, 5%);
 	
-	--border-radius: 0.5em;
+	--border-radius: 0.5rem;
 	--highlight-brightness: 2;
 }
 
@@ -206,7 +206,7 @@ input, select, textarea {
 	transition: outline 250ms, background-color 250ms;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus, select:focus, textarea:focus, [contenteditable]:focus {
 	outline: 1px solid var(--text);
 }
 
@@ -661,7 +661,7 @@ p > button {
 	margin-left: 0.5em;
 }
 
-p + p {
+p + p, article + p {
 	margin-top: -0.5em;
 }
 

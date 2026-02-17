@@ -205,7 +205,8 @@
 				"manageUser",
 				"manageEvent",
 				"manageEventInvite",
-				"accessActivity"
+				"accessActivity",
+				"manageForms"
 			]
 		},
 		"członekZarząduOkręgu": {
@@ -217,7 +218,8 @@
 				"manageUser",
 				"manageEvent",
 				"manageEventInvite",
-				"accessActivity"
+				"accessActivity",
+				"manageForms"
 			]
 		},
 
@@ -239,7 +241,8 @@
 				"manageEvent",
 				"manageEventInvite",
 				"approveEvent",
-				"accessActivity"
+				"accessActivity",
+				"manageForms"
 			]
 		},
 		"referent": {
@@ -274,7 +277,8 @@
 				"manageEvent",
 				"manageEventInvite",
 				"approveEvent",
-				"accessActivity"
+				"accessActivity",
+				"manageForms"
 			]
 		},
 
@@ -292,7 +296,8 @@
 				"manageUser",
 				"manageEvent",
 				"manageEventInvite",
-				"accessActivity"
+				"accessActivity",
+				"manageForms"
 			]
 		},
 
@@ -312,7 +317,8 @@
 				"manageUser",
 				"manageEvent",
 				"manageEventInvite",
-				"accessActivity"
+				"accessActivity",
+				"manageForms"
 			]
 		},
 		"przyboczny": {
@@ -417,7 +423,8 @@
 				
 				"manageEvent",
 				"setRole",
-				"accessUser"
+				"accessUser",
+				"manageForms"
 			]
 		},
 		"oboźny": {

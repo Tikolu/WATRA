@@ -1,0 +1,40 @@
+<section>
+	<h2><i>settings</i> Ustawienia formularza</h2>
+	<form api="form/[formID]/update/config">
+		<input
+			type="checkbox"
+			name="enabled"
+			id="form-enabled"
+			<% if($.targetForm.config.enabled) { %>
+				checked
+			<% } %>
+		>
+		<label for="form-enabled">Formularz włączony</label>
+		
+		<input
+			type="checkbox"
+			name="requireResponse"
+			id="form-require-response"
+			<% if($.targetForm.config.requireResponse) { %>
+				checked
+			<% } %>
+			<% if(!$.targetForm.config.enabled) { %>
+				disabled
+			<% } %>
+		>
+		<label for="form-require-response">Odpowiedź wymagana</label>
+		
+		<input
+			type="checkbox"
+			name="multipleResponses"
+			id="form-multiple-responses"
+			<% if($.targetForm.config.multipleResponses) { %>
+				checked
+			<% } %>
+			<% if(!$.targetForm.config.enabled) { %>
+				disabled
+			<% } %>
+		>
+		<label for="form-multiple-responses">Wielokrotne odpowiedzi</label>
+	</form>
+</section>

@@ -96,6 +96,9 @@ export default async function({user, targetEvent}) {
 	}
 	await files.populate("file", {ref: "File", select: "name"})
 
+	// Load forms
+	await targetEvent.loadFormsForUser(user)
+
 	return html("event/page/main", {
 		user,
 		targetEvent,

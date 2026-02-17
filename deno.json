@@ -1,5 +1,5 @@
 {
-	"version": "2.3.8",
+	"version": "2.4.0",
 	"permissions": {
 		"default": {
 			"net": ["localhost:27017", "localhost:8080"],
@@ -19,6 +19,7 @@
 		"modules/schemas/user": "./modules/schemas/user/index.js",
 		"modules/schemas/unit": "./modules/schemas/unit/index.js",
 		"modules/schemas/event": "./modules/schemas/event/index.js",
+		"modules/schemas/form": "./modules/schemas/form/index.js",
 
 		"mongoose": "npm:mongoose@9.0.0",
 		"sift": "npm:sift",

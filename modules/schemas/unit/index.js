@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import * as Text from "modules/text.js"
 
 import Role from "modules/schemas/role.js"
+import Form from "modules/schemas/form"
 
 import Config from "modules/config.js"
 import Graph from "./graph.js"
@@ -59,6 +60,12 @@ export class UnitClass {
 		{
 			type: String,
 			ref: "User"
+		}
+	]
+	forms = [
+		{
+			type: String,
+			ref: "Form"
 		}
 	]
 
@@ -388,6 +395,31 @@ export class UnitClass {
 				yield event
 			}
 		}
+	}
+
+	/** Loads all forms and calculates state for a user */
+	async loadFormsForUser(user) {
+		await this.populate({"forms": "unit"}, {known: [this]})
+
+		// Check form permissions and response counts
+		for(const form of this.forms) {
+			if(!form.unit) continue
+			
+			await user.checkPermission(form.PERMISSIONS.ACCESS)
+			await user.checkPermission(form.PERMISSIONS.RESPOND)
+			
+			if(!user.hasPermission(form.PERMISSIONS.ACCESS) || !form.config.requireResponse) continue
+			
+			// Determine if response is required
+			const userOptions = await form.getResponseUserOptions(user)
+			const responses = await form.getUserResponses(
+				userOptions,
+				{submitted: true}
+			)
+			form.$locals.requiredUserResponse = userOptions.some(u => !responses.find(r => r.user.id == u.id))
+		}
+
+		return this.forms
 	}
 }
 

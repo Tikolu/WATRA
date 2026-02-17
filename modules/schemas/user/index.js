@@ -372,6 +372,11 @@ export class UserClass {
 	async verifySignature(signature) {
 		if(!signature) throw Error("Podpis jest wymagany")
 		
+		// Check signature structure
+		if(!Object.keys(signature).equals(["name", "time", "sign"])) {
+			throw Error("Nieprawidłowa struktura podpisu")
+		}
+		
 		// Verify server signature
 		const serverSignature = signature.sign
 		delete signature.sign

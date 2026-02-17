@@ -17,7 +17,7 @@ html:has(section.fill-height) {
 		
 		display: flex;
 		flex-direction: column;
-		overflow: auto;
+		overflow: hidden auto;
 	}
 }
 
@@ -51,13 +51,14 @@ main {
 	height: 100%;
 	max-width: none;
 	margin: 0;
+	overflow-x: hidden;
 
 	animation: enable-scroll 500ms;
 }
 
 @keyframes enable-scroll {
 	from { overflow: hidden }
-	to { overflow: auto }
+	to { overflow: hidden auto }
 }
 
 main > * {

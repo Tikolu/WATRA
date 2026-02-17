@@ -1,0 +1,44 @@
+<section>
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT)) { %>
+		<h2><i>edit</i> Edycja formularza</h2>
+		<hr>
+	<% } else { %>
+		<h2><i>checklist</i> ...</h2>
+	<% } %>
+	<div id="form-editor">
+		<% for(const element of $.targetForm.elements) { %>
+			<%~ include("element", {
+				element,
+				editable: $.user.hasPermission($.targetForm.PERMISSIONS.EDIT)
+			}) %>
+		<% } %>
+	</div>
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT)) { %>
+		<div class="button-row">
+			<button api="form/[formID]/element/add?type=title">
+				<i>text_fields</i>
+				<span>Dodaj nagłówek</span>
+			</button>
+			<button api="form/[formID]/element/add?type=description">
+				<i>format_align_left</i>
+				<span>Dodaj opis</span>
+			</button>
+			<button api="form/[formID]/element/add?type=text">
+				<i>text_fields_alt</i>
+				<span>Dodaj pole tekstowe</span>
+			</button>
+			<button api="form/[formID]/element/add?type=choice" disabled>
+				<i>format_list_bulleted</i>
+				<span>Dodaj wybór</span>
+			</button>
+			<button api="form/[formID]/element/add?type=file" disabled>
+				<i>upload_file</i>
+				<span>Dodaj plik</span>
+			</button>
+			<button api="form/[formID]/element/add?type=payment" disabled>
+				<i>payments</i>
+				<span>Dodaj płatność</span>
+			</button>
+		</div>
+	<% } %>
+</section>

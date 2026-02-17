@@ -56,6 +56,8 @@ function processSignatureElements() {
 		}
 		
 		slider.onpointerdown = () => {
+			document.activeElement?.blur()
+			
 			if(signature.classList.contains("loading")) return
 			if(signature.classList.contains("complete")) return
 			if(signature.classList.contains("disabled")) return

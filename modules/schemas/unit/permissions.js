@@ -150,3 +150,36 @@ export async function SET_ROLE(user) {
 
 	return false
 }
+
+/** Accessing forms within the unit */
+export async function ACCESS_FORMS(user) {
+	// Lack of ACCESS permission denies ACCESS_FORMS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// MANAGE_FORMS permission implies ACCESS_FORMS
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE_FORMS, true)) return true
+
+	// Allow access by users who belongs to the unit
+	for await(const unit of user.listUnits(true)) {
+		if(this.id == unit.id) return true
+	}
+
+	// Allow access by parent whose child belongs to the unit
+	await user.populate("children")
+	for(const child of user.children) {
+		for await(const unit of child.listUnits(true)) {
+			if(this.id == unit.id) return true
+		}
+	}
+
+	return false
+}
+
+/** Creating and managing forms within the unit */
+export async function MANAGE_FORMS(user) {
+	// Lack of ACCESS permission denies MANAGE_FORMS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "manageForms" roles in this unit and upper units can manage forms
+	if(await user.hasRoleInUnits("manageForms", this.traverse("upperUnits", {includeSelf: true}))) return true
+}

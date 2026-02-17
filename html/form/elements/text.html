@@ -1,0 +1,18 @@
+<label
+	for="<%= $.element.id %>"
+	class="form-element"
+	<% if($.editable) { %>
+		contenteditable="plaintext-only"
+		api="form/[formID]/element/<%= $.element.id %>/setText"
+	<% } %>
+><%= $.element.textContent %></label>
+<textarea
+	id="<%= $.element.id %>"
+	class="form-element"
+	placeholder="(tekst)"
+	<% if($.responding) { %>
+		api="form/[formID]/response/[responseID]/element/<%= $.element.id %>/update"
+	<% } else { %>
+		disabled
+	<% } %>
+><%= $.response?.getElement($.element.id) || "" %></textarea>
