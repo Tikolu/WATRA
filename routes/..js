@@ -104,7 +104,7 @@ export default async function({user}) {
 		},
 		{
 			filter: {"dates.end": {$gte: new Date()}},
-			placeholders: false			
+			placeholders: false
 		}
 	)
 
@@ -122,6 +122,35 @@ export default async function({user}) {
 			"approvers.role": role.id
 		})
 		approvalEvents.push(...events)
+	}
+
+	const eventOptions = [
+		...user.eventInvites,
+		...user.children.flatMap(c => c.eventInvites),
+		...approvalEvents
+	].unique("id")
+
+	const events = []
+	for(const event of eventOptions) {
+		// Get invite states for user and their children
+		const inviteStates = [user, ...user.children].map(u => {
+			return event.participants.id(u.id)?.state
+		})
+
+		// Get approval state for user (if they are an approver)
+		const approvalState = event.getApprover(user)?.approved
+
+		// Skip event for non participant approvers who have approved
+		if(approvalState === true && !inviteStates.length) continue
+
+		// Skip event when registration is closed and user is not a participant or approver
+		if(approvalState !== false && !event.registrationOpen && !inviteStates.includes("accepted")) continue
+
+		events.push({
+			event,
+			inviteStates,
+			approvalState
+		})
 	}
 
 	// Find required forms, check permissions
@@ -142,12 +171,6 @@ export default async function({user}) {
 	// Check permissions
 	await user.checkPermission(user.PERMISSIONS.EDIT)
 	await user.checkPermission(user.PERMISSIONS.APPROVE)
-
-	const events = [
-		...user.eventInvites,
-		...user.children.flatMap(c => c.eventInvites),
-		...approvalEvents
-	].unique("id")
 	
 	return html("main", {
 		user,

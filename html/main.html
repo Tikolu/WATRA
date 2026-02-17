@@ -119,16 +119,7 @@
 			Akcje
 		</h2>
 		<div class="entry-grid">
-			<% for(const event of $.events) { %>
-				<%
-					const inviteStates = [$.user, ...$.user.children].map(u => {
-						if(!event.registrationOpen) return null
-						return event.participants.id(u.id)?.state
-					})
-					const approvalState = event.getApprover($.user)?.approved
-
-					if(approvalState === true && !inviteStates.length) continue
-				%>
+			<% for(const {event, inviteStates, approvalState} of $.events) { %>
 				<%~ include("event/templates/eventEntry", {
 					targetEvent: event,
 					warnings: Array.conditional(
