@@ -182,7 +182,7 @@ export class EventClass extends UnitClass {
 
 		this.upperUnits = units
 
-		// Check for org mismatch within invited units
+		// Check for org mismatch within invited units and participants
 		const eventOrg = await this.getOrg()
 		if(eventOrg) {
 			await this.populate({"invitedUnits": "unit"})
@@ -190,6 +190,12 @@ export class EventClass extends UnitClass {
 				if(invite.state == "declined") continue
 				if(invite.unit.org && invite.unit.org != eventOrg) {
 					throw new HTTPError(400, "Na akcję zaproszona jest jednostka z innej organizacji")
+				}
+			}
+			await this.populate({"participants": "user"})
+			for(const participant of this.participants) {
+				if(participant.user.org && participant.user.org != eventOrg) {
+					throw new HTTPError(400, "Na akcję zaproszony jest uczestnik z innej organizacji")
 				}
 			}
 		}
