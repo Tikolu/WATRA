@@ -35,7 +35,7 @@
 	<% } %>
 </p>
 
-<% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.isPast) { %>
+<% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.isPast && !$.targetEvent.approvalState) { %>
 	<article class="warning">
 		<p>
 			<i>warning</i>

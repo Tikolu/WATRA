@@ -43,7 +43,7 @@ export default async function({user, targetEvent}) {
 		if(await user.checkPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) {
 			await targetEvent.populate(
 				{"participants": "user"},
-				{select: "name"}
+				{select: ["name", "signature"]}
 			)
 		}
 	}
