@@ -21,7 +21,7 @@
 	) %>
 
 	<% if(warnings.length) { %>
-		<div class="warning">
+		<article class="warning">
 			<p>
 				<i>warning</i>
 				Nie można zatwierdzić akcji z brakującymi szczegółami:
@@ -31,7 +31,7 @@
 					<li><%= warning %></li>
 				<% } %>
 			</ul>
-		</div>
+		</article>
 
 	<% } else if($.targetEvent.approvers.length == 0) { %>
 		<p class="warning">

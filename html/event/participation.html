@@ -15,7 +15,7 @@
 	<% let canParticipate = true %>
 	<% if(!$.targetInvitation.user.confirmed) { %>
 		<% canParticipate = false %>
-		<p class="warning"><i>warning</i> Zatwierdź dane na profilu uczestnika, aby potwierdzić udział w akcji.</p>
+		<p class="warning"><i>warning</i> Zatwierdź dane <a href="/users/<%= $.targetInvitation.user.id %>">na profilu uczestnika</a>, aby potwierdzić udział w akcji.</p>
 	<% } %>
 	<% if(canParticipate) { %>
 		<section>

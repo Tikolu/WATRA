@@ -12,6 +12,9 @@
 						targetUser: role.user,
 						description: role.displayName,
 						showState: $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS),
+						warnings: Array.conditional(
+							$.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) && !role.user.confirmed, "Niezatwierdzone dane"
+						),
 						...$
 					}) %>
 				<% } %>
@@ -20,6 +23,9 @@
 				<% for(const participant of directParticipants) { %>
 					<%~ include("participant", {
 						targetUser: participant.user,
+						warnings: Array.conditional(
+							!participant.user.confirmed, "Niezatwierdzone dane"
+						),
 						...$
 					}) %>
 				<% } %>

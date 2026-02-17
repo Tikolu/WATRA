@@ -99,7 +99,14 @@
 					(<%= categories[state].length %>)
 				</h4>
 				<% for(const invite of categories[state]) { %>
-					<%~ include("participant", {targetUser: invite.user, ...$}) %>
+					<%~ include("participant", {
+						targetUser: invite.user,
+						warnings: Array.conditional(
+							!invite.user.confirmed, "Niezatwierdzone dane",
+							state == "pending" && invite.user.archived, "Profil zarchiwizowany"
+						),
+						...$
+					}) %>
 				<% } %>
 				<hr class="grid-break">
 			<% } %>

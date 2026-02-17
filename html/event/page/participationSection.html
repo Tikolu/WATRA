@@ -5,7 +5,7 @@
 	</h2>
 	<div class="entry-grid">
 		<% for(const userInvite of $.approvalParticipants) { %>
-			<% if(userInvite.state == "pending" && $.targetEvent.registrationOpen) continue %>
+			<% if(userInvite.state == "pending" && !$.targetEvent.registrationOpen) continue %>
 			<div>
 				<div class="entry-title">
 					<h3><%= userInvite.user.displayName %></h3>
