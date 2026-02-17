@@ -245,8 +245,11 @@ export async function APPROVE(user) {
 		return true
 	}
 	
-	// Parent can approve their children, unless they are adults
-	if(user.children.hasID(this.id) && (!this.age || this.age < Config.adultAge)) return true
+	// Parent can approve their children, unless they are adults and have signed in
+	if(user.children.hasID(this.id)) {
+		if(this.age > Config.adultAge && this.auth?.lastLogin) return false
+		return true
+	}
 
 	return false
 }
