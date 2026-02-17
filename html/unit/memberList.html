@@ -14,6 +14,7 @@
 </h1>
 <section>
 	<% function renderNode(node) { %>
+		<% if(!node.members.length && !node.subUnits.length) return %>
 		<% if(node.unit.id != $.targetUnit.id) { %>
 			<h3>
 				<a href="/units/<%= node.unit.id %><%= node.org != node.unit.org ? `?org=${node.org}` : "" %>"><%= node.unit.displayName %></a>
