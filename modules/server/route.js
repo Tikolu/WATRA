@@ -47,7 +47,10 @@ class Route {
 			let routeModule
 			try {
 				routeModule = await import(this.modulePath)
-			} catch {
+			} catch(error) {
+				if(!error.message.startsWith("Module not found")) {
+					throw error
+				}
 				routeModule = {}
 			}
 
@@ -141,8 +144,12 @@ class Route {
 		// Route is a directory or module
 		} else {
 			// If an "_open" function exists, run it
-			await this.loadSubRoutes()
-			await this.subRoutes._open?.execute(routingContext)
+			try {
+				await this.loadSubRoutes()
+				await this.subRoutes._open?.execute(routingContext)
+			} catch(error) {
+				routingContext.handleError(error)
+			}
 
 			// Stop processing if error occurred or response is closed
 			if(routingContext.lastError || !routingContext.response.open) {
