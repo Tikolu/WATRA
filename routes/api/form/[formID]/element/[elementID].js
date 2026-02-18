@@ -11,8 +11,9 @@ export async function _open({user, targetForm, elementID}) {
 	this.addRouteData({targetElement})
 }
 
-export function setText({text, targetElement}) {
-	targetElement.text = text
+export function update({value, targetElement}) {
+	targetElement.value = value
+	targetElement.markModified("value")
 }
 
 export function remove({targetElement}) {

@@ -183,6 +183,7 @@ processDefaultRole(Config.event)
 // Other defaults
 Config.news ||= []
 Config.passkeyRequired ??= true
+Config.paymentCurrency ||= "EUR"
 
 
 export default Config

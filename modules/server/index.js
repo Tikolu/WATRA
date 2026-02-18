@@ -17,6 +17,7 @@ const cspDirectives = [
 	"font-src https://fonts.gstatic.com",
 	"img-src 'self' data: https://api.qrserver.com",
 	"form-action 'self'",
+	"frame-src 'self' https://checkout.stripe.com"
 ].join("; ")
 
 const logger = new Logger("Server", 34)

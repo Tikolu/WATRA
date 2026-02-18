@@ -1,0 +1,35 @@
+<div class="form-payment-container">
+	<% if($.editable) { %>
+		<input
+			type="number"
+			min="0"
+			step="0.10"
+			value="<%= $.element.value.toFixed(2) %>"
+			id="<%= $.element.id %>"
+			api="form/[formID]/element/<%= $.element.id %>/update"
+		>
+		<span><%= Config.paymentCurrency %></span>
+	<% } else { %>
+		<h3><%= $.element.value.toFixed(2) %> <%= Config.paymentCurrency %></h3>
+	<% } %>
+	<% const elementValue = $.response?.getElement($.element.id) || {} %>
+	<% if(elementValue.state == "paid") { %>
+		<p>
+			<i>check_circle</i>
+			Zapłacono
+		</p>
+	<% } else { %>
+		<div class="button-row">
+			<button
+				<% if($.responding) { %>
+					api="form/[formID]/response/[responseID]/payment/start"
+				<% } else { %>
+					disabled
+				<% } %>
+			>
+				<i>payment</i>
+				<span>Zapłać</span>
+			</button>
+		</div>
+	<% } %>
+</div>

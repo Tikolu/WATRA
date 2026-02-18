@@ -3,10 +3,10 @@
 	class="form-element"
 	<% if($.editable) { %>
 		contenteditable="plaintext-only"
-		api="form/[formID]/element/<%= $.element.id %>/setText"
+		api="form/[formID]/element/<%= $.element.id %>/update"
 	<% } %>
 >
-	<%_ for(const line of $.element.textContent.split("\n")) { _%>
+	<%_ for(const line of $.element.value.split("\n")) { _%>
 		<%_= line %><br>
 	<%_ } _%>
 </p>

@@ -3,6 +3,6 @@
 	class="form-element"
 	<% if($.editable) { %>
 		contenteditable="plaintext-only"
-		api="form/[formID]/element/<%= $.element.id %>/setText"
+		api="form/[formID]/element/<%= $.element.id %>/update"
 	<% } %>
-><%= $.element.textContent %></h3>
+><%= $.element.value %></h3>

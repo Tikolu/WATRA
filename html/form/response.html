@@ -1,6 +1,6 @@
 <% layout("/layouts/dialog", {
 	scripts: ["form/response", "signature"],
-	styles: ["signature"],
+	styles: ["form", "signature"],
 	meta: {
 		formID: $.targetForm.id,
 		responseID: $.targetResponse.id
@@ -16,7 +16,7 @@
 				api="form/[formID]/response/[responseID]/setUser"
 				name="responseUser"
 				required
-				<% if(!$.user.hasPermission($.targetResponse.PERMISSIONS.EDIT)) { %>
+				<% if(!$.user.hasPermission($.targetResponse.PERMISSIONS.EDIT) || $.targetForm.elements.find(e => e.type == "payment" && $.targetResponse.getElement(e.id)?.state == "paid")) { %>
 					disabled
 				<% } %>
 			>

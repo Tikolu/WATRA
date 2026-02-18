@@ -17,6 +17,14 @@ API.registerHandler("form/[formID]/response/[responseID]/setUser", {
 	after: updateResponseID
 })
 
+API.registerHandler("form/[formID]/response/[responseID]/payment/start", {
+	progressText: "Przekierowywanie do strony płatności...",
+	after: response => {
+		window.top.location.href = response.url
+		dialog.fullClose()
+	}
+})
+
 API.registerHandler("form/[formID]/response/[responseID]/submit", {
 	form: main,
 	before: () => {

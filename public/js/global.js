@@ -914,7 +914,9 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 		processDialogOpeners()
 	}
 
-	if(open) dialog.result()
+	if(open) {
+		sleep(100).then(() => dialog.result())
+	}
 	return dialog
 }
 
@@ -1211,6 +1213,9 @@ function processMetaTags() {
 }
 processMetaTags()
 window.afterDataRefresh.push(processMetaTags)
+
+// Parse URL parameters
+document.location.params = new URLSearchParams(document.location.search)
 
 // Prevent frames
 if(window.top != window && !document.body.classList.contains("allow-frames")) {

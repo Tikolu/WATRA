@@ -32,6 +32,7 @@ export async function _open({user, targetForm, responseID}) {
 
 export function _exit({targetResponse}) {
 	return {
-		responseID: targetResponse.id
+		responseID: targetResponse?.id,
+		...this.lastOutput
 	}
 }

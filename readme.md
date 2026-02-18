@@ -11,6 +11,9 @@
 	- Create events, invite units and members
 	- Event participation registration
 	- Event approval
+- Forms
+	- Create custom forms for units and events
+	- Collect form responses and payments from users
 - Configurability
 	- Configurable unit types
 	- Configurable role types and permissions
@@ -35,12 +38,16 @@ Create a `.env` file in the project root directory with the following variables:
 - Set `SERVER_PRIVATE_KEY` to a long, randomly generated string. This key is used by the server to sign authentication token cookies.
 - If MongoDB is running on a different server, set the `MONGO_URI` here. The default value is `mongodb://localhost:27017`.
 - If you want to enable HTTPS, set the paths to your certificate and key files here (`HTTPS_CERT_PATH` and `HTTPS_KEY_PATH`).
+- To enable Stripe payments, set your Stripe secret key in the `STRIPE_SECRET_KEY` variable.
 > [!WARNING]
 > It is crucial that the `.env` file and its contents are kept secret. Exposing these values will immediately compromise the security of WATRA and place all data at risk.
 
 ### deno.json file
-By default, Deno permissions are configured to only allow connections to `localhost` (ports `8080` and `27017`). If you want to host WATRA on a different host/port, or connect to a remote MongoDB server, update these values accordingly in the `deno.json` file.
-Similarly, if using HTTPS, add read permissions for the certificate and key files here.
+By default, Deno permissions are configured to only allow connections to `localhost` (ports `8080` and `27017`), and to only allow access to a very limited set of directories. These permissions are defined in the `deno.json` file. You may need to modify these permissions if:
+- You want to host WATRA on a different host/port
+- Your MongoDB server is running on another server
+- When using HTTPS, add read permissions for the certificate and key files
+- If using Stripe, add network permissions for `api.stripe.com:443`
 
 ### Config files
 Any JSON files in the `config` directory will be loaded by the server on startup. You can customise unit types, role types and permissions here.

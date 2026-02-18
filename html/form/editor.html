@@ -35,10 +35,12 @@
 				<i>upload_file</i>
 				<span>Dodaj plik</span>
 			</button>
-			<button api="form/[formID]/element/add?type=payment" disabled>
-				<i>payments</i>
-				<span>Dodaj płatność</span>
-			</button>
+			<% if(Config.stripeEnabled) { %>
+				<button api="form/[formID]/element/add?type=payment">
+					<i>payments</i>
+					<span>Dodaj płatność</span>
+				</button>
+			<% } %>
 		</div>
 	<% } %>
 </section>

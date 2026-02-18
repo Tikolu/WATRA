@@ -9,8 +9,28 @@ const elementTypes = {
 	},
 	text: {
 		name: "Pole tekstowe",
-		validate(value) {
+		input(value) {
 			return typeof value == "string"
+		}
+	},
+	payment: {
+		name: "Płatność",
+		create(form, element) {
+			for(const formElement of form.elements) {
+				if(formElement == element) continue
+				if(formElement.type == "payment") throw new Error("W formularzu jest już element płatności")
+			}
+		},
+		setValue(value) {
+			value = Number(value)
+			if(isNaN(value) || value <= 0) throw new Error("Nieprawidłowa kwota")
+			return Math.round(value * 100) / 100
+		},
+		getValue(value) {
+			return value || 0
+		},
+		submit(value) {
+			if(value?.state != "paid") throw new Error("Dokonaj płatności, aby wysłać formularz")
 		}
 	}
 }
@@ -32,22 +52,29 @@ export default class {
 		required: true
 	}
 
-	text = {
-		type: String,
-		trim: true
+	value = {
+		type: {},
+		set: function(value) {
+			if(this.config.setValue) return this.config.setValue(value)
+			else return value
+		},
+		get: function(value) {
+			if(this.config.getValue) return this.config.getValue(value)
+			else return value || elementTypes[this.type]?.name || this.type
+		}
 	}
 
 	/* * Getters * */
 
-	get textContent() {
-		return this.text || elementTypes[this.type]?.name || this.types
+	get config() {
+		return elementTypes[this.type]
 	}
 
 	/* * Methods * */
 
-	/** Checks a value against the element's validator */
-	validateValue(value) {
-		const validator = elementTypes[this.type]?.validate
+	/** Checks input against the element's validator */
+	validateInput(value) {
+		const validator = this.config?.input
 		if(!validator) return false
 		return validator(value)
 	}

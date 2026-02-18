@@ -14,10 +14,9 @@ API.registerHandler("form/[formID]/element/add", {
 	successText: "Dodano element"
 })
 
-API.registerHandler("form/[formID]/element/[elementID]/setText", {
-	valueKey: "text",
-	validate: (data, element) => {		
-		if(!data.text.trim()) return {
+API.registerHandler("form/[formID]/element/[elementID]/update", {
+	validate: (data, element) => {
+		if(!data.value.trim()) return {
 			api: `form/[formID]/element/${element.id || element.htmlFor}/remove`,
 			progressText: "Usuwanie...",
 			successText: "Usunięto element"
@@ -31,3 +30,13 @@ API.registerHandler("form/[formID]/update/config", {
 	progressText: "Zapisywanie ustawień...",
 	successText: "Zapisano ustawienia"
 })
+
+
+// Get response ID from URL
+const selectedResponseID = document.location.params.get("response")
+if(selectedResponseID) {
+	// Open response dialog
+	createURLDialog(`/forms/${META.formID}/responses/${selectedResponseID}`, true)
+	// Remove parameter from URL
+	history.replaceState(null, null, window.location.pathname)
+}

@@ -3,9 +3,9 @@
 	class="form-element"
 	<% if($.editable) { %>
 		contenteditable="plaintext-only"
-		api="form/[formID]/element/<%= $.element.id %>/setText"
+		api="form/[formID]/element/<%= $.element.id %>/update"
 	<% } %>
-><%= $.element.textContent %></label>
+><%= $.element.value %></label>
 <textarea
 	id="<%= $.element.id %>"
 	class="form-element"

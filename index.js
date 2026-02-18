@@ -34,6 +34,10 @@ if(!args.db) {
 	Deno.exit(1)
 }
 
+// Initialise Stripe API
+if(Deno.env.get("STRIPE_API_KEY")) import("modules/integrations/stripe.js")
+
+
 // Start server
 if(args.host && args.port) {
 	server.start({
