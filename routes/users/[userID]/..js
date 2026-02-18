@@ -30,6 +30,11 @@ export default async function({user, targetUser}) {
 	
 	if(user.id == targetUser.id) {
 		await targetUser.auth.populate("keys")
+
+		// Check child permissions
+		for(const child of targetUser.children) {
+			await user.checkPermission(child.PERMISSIONS.APPROVE)
+		}
 	}
 
 	return html("user/page/main", {user, targetUser})

@@ -43,7 +43,7 @@
 								<i>warning</i>
 								Ustaw datę urodzin aby kontynuować
 							</p>
-						<% } else if(userInvite.user.age === null || userInvite.user.age > Config.adultAge) { %>
+						<% } else if(userInvite.user.isAdult !== false) { %>
 							<p>Odpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
 						<% } else { %>
 							<p>Odpowiedź oczekiwana od rodzica/opiekuna</p>

@@ -48,7 +48,7 @@ export class UserClass {
 			if(!value) return true
 			
 			// Enforce parents to be adults
-			if(this.isParent && this.age < Config.adultAge) {
+			if(this.isParent && this.isAdult === false) {
 				throw Error("Rodzic / opiekun musi być osobą pełnoletnią")
 			}
 
@@ -200,6 +200,12 @@ export class UserClass {
 		if(this.roles.length > 0) return this.confirmed
 		// Users without roles require no missing details
 		else return this.missingDetails.length == 0
+	}
+
+	/** Checks if the user is an adult, returns undefined if age is not known */
+	get isAdult() {
+		if(this.age === null) return undefined
+		return this.age >= Config.adultAge
 	}
 
 	/* * Methods * */

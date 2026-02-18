@@ -131,7 +131,7 @@
 		<% if($.targetUser.parents.length > 0) { %>
 			<article>
 				<h3>
-					<% if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) { %>
+					<% if($.targetUser.isAdult) { %>
 						Kontakty alarmowe
 					<% } else { %>
 						Rodzice / opiekunowie

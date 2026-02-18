@@ -29,7 +29,7 @@ export default async function({user, targetUser, action}) {
 			// Skip self
 			if(u.id == targetUser.id) return false
 			// Skip users which are not adults
-			if(u.age !== null && u.age < Config.adultAge) return false
+			if(u.isAdult === false) return false
 			// Skip users who are already parents of user
 			if(targetUser.parents.some(parent => parent.id == u.id)) return false
 

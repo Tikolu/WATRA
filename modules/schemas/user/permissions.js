@@ -50,6 +50,7 @@ export async function ACCESS(user) {
 
 	// Parent can access other parents of their children
 	for(const child of this.children) {
+		if(child.isAdult) continue
 		if(user.children.hasID(child.id)) return true
 	}
 
@@ -95,9 +96,16 @@ export async function EDIT(user) {
 		if(this.age === null) return true
 		if(this.age >= Config.adultAge || 0) return true
 		// if(this.parents?.length == 0) return true
+	}
 
-	// Parent can edit their children
-	} else if(user.children.hasID(this.id)) return true
+	// Parent can edit their children, unless they are adults and have signed in
+	if(user.children.hasID(this.id)) {
+		if(this.isAdult && this.auth?.lastLogin) return false
+		return true
+	}
+
+	// Adult child can edit their parents, unless they have signed in
+	if(user.isAdult && this.children.hasID(user.id) && !this.auth?.lastLogin) return true
 
 	// Parent can edit other parents of their children
 	for(const child of this.children) {
@@ -127,13 +135,10 @@ export async function ADD_PARENT(user) {
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
 	// Non-adults cannot add parents to themselves
-	if(user.id == this.id && this.age !== null && this.age < Config.adultAge) return false
+	if(user.id == this.id) return user.isAdult
 
 	// Cannot add parent to confirmed user
 	if(this.confirmed) return false
-
-	// MANAGE permission grants ADD_PARENT
-	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	// Cannot add parents to user with existing unnamed parents
 	await this.populate("parents")
@@ -141,8 +146,8 @@ export async function ADD_PARENT(user) {
 		if(!parent.name.first || !parent.name.last) return false
 	}
 
-	// Cannot add parent to adult
-	if(this.age !== null && this.age >= Config.adultAge) return false
+	// MANAGE permission grants ADD_PARENT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	// Parents can add other parents
 	if(this.parents.hasID(user.id)) return true
@@ -177,6 +182,9 @@ export async function DELETE(user) {
 			if(await user.checkPermission(child.PERMISSIONS.MANAGE)) return true
 		}
 	}
+
+	// Adult child can delete their parents, unless they have signed in
+	if(user.isAdult && this.children.hasID(user.id) && !this.auth?.lastLogin) return true
 
 	// MANAGE permission grants DELETE, if the user has only one role
 	if(this.roles.length <= 1 && await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
@@ -239,7 +247,7 @@ export async function APPROVE(user) {
 		// Users without set age cannot approve themselves
 		if(this.age === null) return false
 		// Non-adults cannot approve themselves
-		if(this.age < Config.adultAge) return false
+		if(!this.isAdult) return false
 		// Users without roles cannot approve themselves
 		if(this.roles.length == 0) return false
 		return true
@@ -247,7 +255,7 @@ export async function APPROVE(user) {
 	
 	// Parent can approve their children, unless they are adults and have signed in
 	if(user.children.hasID(this.id)) {
-		if(this.age > Config.adultAge && this.auth?.lastLogin) return false
+		if(this.isAdult && this.auth?.lastLogin) return false
 		return true
 	}
 
@@ -307,7 +315,7 @@ export async function ADD_AS_PARENT(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// Non-adults cannot be added as parents
-	if(this.age !== null && this.age < Config.adultAge) return false
+	if(this.isAdult === false) return false
 
 	// Can add other parents of their children
 	await this.populate("children")

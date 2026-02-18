@@ -5,11 +5,19 @@
 		userID: $.targetUser.id
 	}
 }) %>
-<h1><%= $.targetUser.displayName %> - Dodawanie rodzica</h1>
+<% if($.targetUser.isAdult) { %>
+	<h1><%= $.targetUser.displayName %> - Dodawanie kontaktu alarmowego</h1>
+<% } else { %>
+	<h1><%= $.targetUser.displayName %> - Dodawanie rodzica</h1>
+<% } %>
 <main>
 	<% if($.action != "link") { %>
 		<section id="create-section">
-			<h3>Utwórz nowego rodzica</h3>
+			<% if($.targetUser.isAdult) { %>
+				<h3>Utwórz nowy kontakt alarmowy</h3>
+			<% } else { %>
+				<h3>Utwórz nowego rodzica</h3>
+			<% } %>
 			<form id="create-parent">
 				<label for="parent-first-name-input">Imię:</label>
 				<input type="text" id="parent-first-name-input" name="firstName" autocomplete="off">
@@ -18,20 +26,32 @@
 			</form>
 			<button id="create-parent-button" api="user/[userID]/parent/create" class="confirm">
 				<i>person_add</i>
-				Utwórz rodzica
+				<% if($.targetUser.isAdult) { %>
+					Utwórz kontakt alarmowy
+				<% } else { %>
+					Utwórz rodzica
+				<% } %>
 			</button>
 		</section>
 	<% } %>
 	<% if($.graph.userCount || $.action == "link") { %>
 		<section id="link-section" class="fill-height">
-			<h3>Dodaj istniejącego rodzica</h3>
+			<% if($.targetUser.isAdult) { %>
+				<h3>Dodaj istniejący kontakt alarmowy</h3>
+			<% } else { %>
+				<h3>Dodaj istniejącego rodzica</h3>
+			<% } %>
 			<%~ include("/user/templates/userPicker", {
 				graph: $.graph,
 				fieldName: "parentID"
 			}) %>
 			<button id="link-parent-button" api="user/[userID]/parent/link" class="confirm">
 				<i>person_add</i>
-				Dodaj rodzica
+				<% if($.targetUser.isAdult) { %>
+					Dodaj kontakt alarmowy
+				<% } else { %>
+					Dodaj rodzica
+				<% } %>
 			</button>
 		</section>
 	<% } %>

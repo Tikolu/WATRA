@@ -49,7 +49,7 @@
 				if($.targetUser.isParent) return false
 				if($.targetUser.id == $.user.id) return false
 				if($.targetUser.parents.hasID($.user.id)) return false
-				if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) return false
+				if($.targetUser.isAdult) return false
 				return true
 			})()
 		%>
@@ -108,7 +108,9 @@
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
 		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
 			<i>delete</i>
-			<% if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
+			<% if($.targetUser.children.every(child => child.isAdult)) { %>
+				Usuń kontakt alarmowy
+			<% } else if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
 				Usuń rodzica
 			<% } else { %>
 				Usuń użytkownika
@@ -150,7 +152,11 @@
 				<% child.defaultName = "(podopieczny)" %>
 				<%~ include("/user/templates/userEntry", {
 					targetUser: child,
-					warnings: $.user.id == $.targetUser.id && !child.confirmed ? ["Zatwierdź dane podopiecznego"] : []
+					warnings: (
+						$.user.id == $.targetUser.id &&
+						!child.confirmed &&
+						$.user.hasPermission(child.PERMISSIONS.APPROVE)
+					) ? ["Zatwierdź dane podopiecznego"] : []
 				}) %>
 			<% } %>
 		</div>
@@ -159,7 +165,7 @@
 	<section>
 		<h2>
 			<i>supervisor_account</i>
-			<% if($.targetUser.age !== null && $.targetUser.age >= Config.adultAge) { %>
+			<% if($.targetUser.isAdult) { %>
 				Kontakty alarmowe
 			<% } else { %>
 				Rodzice / opiekunowie
@@ -174,7 +180,11 @@
 		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
 			<button id="add-parent-button" opens-dialog="/users/<%= $.targetUser.id %>/addParent">
 				<i>person_add</i>
-				<span>Dodaj rodzica / opiekuna</span>
+				<% if($.targetUser.isAdult) { %>
+					Dodaj kontakt alarmowy
+				<% } else { %>
+					Dodaj rodzica / opiekuna
+				<% } %>
 			</button>
 		<% } %>
 	</section>

@@ -36,7 +36,7 @@ export async function link({user, targetUser, parentID}) {
 		throw new HTTPError(400, "Podany użytkownik jest już rodzicem tego użytkownika.")
 	}
 	// Ensure parent is adult
-	if(parentUser.age !== null && parentUser.age < Config.adultAge) {
+	if(parentUser.isAdult === false) {
 		throw new HTTPError(400, "Podany użytkownik nie jest osobą dorosłą.")
 	}
 	// Ensure user has permission to link this parent
