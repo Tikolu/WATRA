@@ -36,13 +36,13 @@ export class FormResponseClass {
 	}
 
 	/* * Methods * */
-	async updateElement(element, value) {
+	async updateElement(element, value, validate=true) {
 		await this.populate("form")
 
 		const formElement = this.form.elements.id(element.id)
 		if(!formElement) throw new Error("Element nie istnieje")
 
-		if(!formElement.validateValue(value)) throw new Error("Nieprawidłowa wartość")
+		if(validate && !formElement.validateInput(value)) throw new Error("Nieprawidłowa wartość")
 		
 		this.elements ||= {}
 		this.elements[element.id] = value
@@ -54,7 +54,7 @@ export class FormResponseClass {
 	}
 
 	getElement(elementID) {
-		return this.elements?.[elementID] || ""
+		return this.elements?.[elementID]
 	}
 
 	async submit(user, signature) {
@@ -68,6 +68,11 @@ export class FormResponseClass {
 				check: true
 			})
 			if(existing) throw new Error("Odpowiedź została już wysłana")
+		}
+
+		// Run element submit validators
+		for(const element of this.form.elements) {
+			element.config.submit?.(this.getElement(element.id))
 		}
 
 		// Verify signature
@@ -113,12 +118,6 @@ schema.permissions = {
 		// Lack of ACCESS permission denies EDIT permission
 		if(!await user.checkPermission(this.form.PERMISSIONS.ACCESS)) return false
 		
-		// Check if user can respond to form
-		if(!await user.checkPermission(this.form.PERMISSIONS.RESPOND)) return false
-
-		// Check if user can respond to form
-		if(!await user.checkPermission(this.form.PERMISSIONS.RESPOND)) return false
-		
 		// Cannot edit submitted response
 		if(this.submitted) return false
 
@@ -128,6 +127,10 @@ schema.permissions = {
 	async SUBMIT(user) {
 		// Lack of EDIT permission denies SUBMIT permission
 		if(!await user.checkPermission(this.PERMISSIONS.EDIT)) return false
+
+		// Cannot submit to disabled form
+		await this.populate("form")
+		if(!this.form.config.enabled) return false
 
 		// APPROVE permission on user grants SUBMIT permission
 		await this.populate("user")

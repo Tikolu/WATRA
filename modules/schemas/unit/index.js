@@ -411,12 +411,7 @@ export class UnitClass {
 			if(!user.hasPermission(form.PERMISSIONS.ACCESS) || !form.config.requireResponse) continue
 			
 			// Determine if response is required
-			const userOptions = await form.getResponseUserOptions(user)
-			const responses = await form.getUserResponses(
-				userOptions,
-				{submitted: true}
-			)
-			form.$locals.requiredUserResponse = userOptions.some(u => !responses.find(r => r.user.id == u.id))
+			form.$locals.requiredUserResponses = await form.getResponseUserOptions(user, true, true)
 		}
 
 		return this.forms

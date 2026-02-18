@@ -163,7 +163,7 @@ export default async function({user}) {
 	for(const unit of formUnits.unique("id")) {
 		await unit.loadFormsForUser(user)
 		for(const form of unit.forms) {
-			if(!form.$locals.requiredUserResponse) continue
+			if(!form.$locals.requiredUserResponses?.length) continue
 			forms.push(form)
 		}
 	}

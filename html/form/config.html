@@ -37,4 +37,7 @@
 		>
 		<label for="form-multiple-responses">Wielokrotne odpowiedzi</label>
 	</form>
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT) && $.targetForm.config.enabled) { %>
+		<p class="warning"><i>warning</i> Edycja elementów formularza przestanie być możliwa po zebraniu pierwszej odpowiedzi.</p>
+	<% } %>
 </section>

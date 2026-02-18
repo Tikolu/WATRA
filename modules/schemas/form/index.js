@@ -51,13 +51,16 @@ export class FormClass {
 		}
 
 		this.elements.push(element)
-		await this.save()
+		const newElement = this.elements.at(-1)
 
-		return this.elements.at(-1)
+		newElement.config.create?.(this, newElement)
+		
+		await this.save()
+		return newElement
 	}
 
 	/** Returns users for which a user can submit a response */
-	async getResponseUserOptions(user) {
+	async getResponseUserOptions(user, required=false, submitted=false) {
 		let users = []
 
 		if(this.eventForm) {
@@ -86,10 +89,19 @@ export class FormClass {
 			}
 		}
 
-		// Check for response limit
-		if(!this.config.multipleResponses) {
-			const existing = await this.getUserResponses(users, {submitted: true})
-			users = users.filter(u => existing.every(r => r.user.id != u.id))
+		if(!this.config.multipleResponses || required) {
+			const existing = await this.getUserResponses(users, {submitted})
+			
+			// Form does not allow multiple responses - filter out users that already have a response
+			if(!this.config.multipleResponses) {
+				users = users.filter(u => existing.every(r => r.user.id != u.id))
+			}
+
+			// Required mode - return only user that do not have a response
+			if(required) {
+				users = users.filter(u => !existing.some(r => r.user.id == u.id))
+			}
+
 		}
 
 		return users

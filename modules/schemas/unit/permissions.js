@@ -157,7 +157,7 @@ export async function ACCESS_FORMS(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// MANAGE_FORMS permission implies ACCESS_FORMS
-	if(await user.checkPermission(this.PERMISSIONS.MANAGE_FORMS, true)) return true
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE_FORMS)) return true
 
 	// Allow access by users who belongs to the unit
 	for await(const unit of user.listUnits(true)) {
