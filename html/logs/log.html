@@ -33,17 +33,22 @@
 
 			<% if($.targetLog.targetUser) { %>
 				<dt>Użytkownik</dt>
-				<dd><%= $.targetLog.targetUser.id %> (<a href="/users/<%= $.targetLog.targetUser.id %>"><%= $.targetLog.targetUser.displayName %></a>)</dd>
+				<dd><a href="/users/<%= $.targetLog.targetUser.id %>"><%= $.targetLog.targetUser.displayName %></a> (<%= $.targetLog.targetUser.id %>)</dd>
 			<% } %>
 
 			<% if($.targetLog.targetUnit) { %>
 				<dt>Jednostka</dt>
-				<dd><%= $.targetLog.targetUnit.id %> (<a href="/units/<%= $.targetLog.targetUnit.id %>"><%= $.targetLog.targetUnit.name %></a>)</dd>
+				<dd><a href="/units/<%= $.targetLog.targetUnit.id %>"><%= $.targetLog.targetUnit.name %></a> (<%= $.targetLog.targetUnit.id %>)</dd>
 			<% } %>
 
 			<% if($.targetLog.targetEvent) { %>
 				<dt>Akcja</dt>
-				<dd><%= $.targetLog.targetEvent.id %> (<a href="/events/<%= $.targetLog.targetEvent.id %>"><%= $.targetLog.targetEvent.name %></a>)</dd>
+				<dd><a href="/events/<%= $.targetLog.targetEvent.id %>"><%= $.targetLog.targetEvent.name %></a> (<%= $.targetLog.targetEvent.id %>)</dd>
+			<% } %>
+
+			<% if($.targetLog.targetForm) { %>
+				<dt>Formularz</dt>
+				<dd><a href="/forms/<%= $.targetLog.targetForm.id %>"><%= $.targetLog.targetForm.name %></a> (<%= $.targetLog.targetForm.id %>)</dd>
 			<% } %>
 		</dl>
 	</section>

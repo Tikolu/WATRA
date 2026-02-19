@@ -3,7 +3,9 @@ body {
 	align-items: safe center;
 
 	min-height: 100vh;
-	padding: 2em 0;
+	padding-top: 2em;
+	padding-bottom: 4em;
+	box-sizing: border-box;
 }
 
 main {

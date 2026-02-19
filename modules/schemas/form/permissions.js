@@ -31,7 +31,7 @@ export async function EDIT(user) {
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
 	// Cannot edit form with responses
-	const responseCount = await FormResponse.countDocuments({form: this.id})
+	const responseCount = await FormResponse.countDocuments({form: this.id, signature: {$ne: null}})
 	if(responseCount > 0) return false
 
 	// MANAGE_FORMS permission in the form's unit allows editing

@@ -22,4 +22,7 @@ export function remove({targetElement}) {
 
 export async function _exit({targetForm}) {	
 	await targetForm.save()
+
+	// Disable logging
+	this.logging.disabled = true
 }

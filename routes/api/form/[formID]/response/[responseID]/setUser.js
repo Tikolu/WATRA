@@ -28,4 +28,7 @@ export default async function({user, targetForm, targetResponse, responseUser}) 
 	// Set response user
 	targetResponse.user = responseUser.id
 	await targetResponse.save()
+
+	// Disable logging
+	this.logging.disabled = true
 }

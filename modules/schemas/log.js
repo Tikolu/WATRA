@@ -15,7 +15,7 @@ const eventTypes = {
 
 	"user/*/update/*": "Zaktualizowano dane użytkownika $USER",
 	"user/*/accessCode/generate": "Wygenerowano kod rejestracyjny dla $USER",
-	"user/*/delete": "Usunięto $USER",
+	"user/*/delete": "Usunięto użytkownika",
 	"user/*/confirm": "Zatwierdzono dane $USER",
 	"user/*/unconfirm": "Cofnięto zatwierdzenie danych $USER",
 	"user/*/parent/create": "Utworzono rodzica dla $USER",
@@ -40,7 +40,7 @@ const eventTypes = {
 	"unit/*/event/*/setParticipants": "Ustawiono uczestników z $UNIT na $EVENT",
 
 	"event/*/update/*": "Zaktualizowano dane akcji $EVENT",
-	"event/*/delete": "Usunięto akcję $EVENT",
+	"event/*/delete": "Usunięto akcję",
 	"event/*/approval/approve": "Zatwierdzono $EVENT",
 	"event/*/approval/unapprove": "Cofnięto zatwierdzenie $EVENT",
 	"event/*/unit/*/invite": "Zaproszono $UNIT na $EVENT",
@@ -53,6 +53,12 @@ const eventTypes = {
 	"event/*/setUpperUnits": "Zmieniono jednostki nadrzędne $EVENT",
 	"event/*/registration/enable": "Włączono zapisy na $EVENT",
 	"event/*/registration/disable": "Wyłączono zapisy na $EVENT",
+
+	"form/create": "Utworzono formularz $FORM",
+	"form/*/delete": "Usunięto formularz",
+	"form/*/update/*": "Zmieniono ustawienia formularza $FORM",
+	"form/*/response/*/payment/start": "Rozpoczęto płatność za formularz $FORM",
+	"form/*/response/*/submit": "Wysłano odpowiedź na formularz $FORM"
 }
 
 const types = {}
@@ -76,10 +82,11 @@ export class LogClass {
 		return date.toString(36)
 	}
 
-	static formatDescription(description, targetUser, targetUnit, targetEvent) {
+	static formatDescription(description, targetUser, targetUnit, targetEvent, targetForm) {
 		description = description.replace("$USER", targetUser || "(użytkownik)")
 		description = description.replace("$UNIT", targetUnit || "(jednostka)")
 		description = description.replace("$EVENT", targetEvent || "(akcja)")
+		description = description.replace("$FORM", targetForm || "(formularz)")
 
 		return description
 	}
@@ -115,6 +122,11 @@ export class LogClass {
 		ref: "Event"
 	}
 
+	targetForm = {
+		type: String,
+		ref: "Form"
+	}
+
 	data = {}
 
 	ip = String
@@ -148,7 +160,8 @@ export class LogClass {
 		if(text) return LogClass.formatDescription(text,
 			this.targetUser?.displayName || this.targetUser,
 			this.targetUnit?.displayName || this.targetUnit,
-			this.targetEvent?.displayName || this.targetEvent
+			this.targetEvent?.displayName || this.targetEvent,
+			this.targetForm?.displayName || this.targetForm
 		)
 		
 		// Fallback to event type
@@ -160,13 +173,12 @@ const schema = mongoose.Schema.fromClass(LogClass)
 
 schema.permissions = {
 	async ACCESS(user) {
-		await this.populate(["targetUser", "targetUnit", "targetEvent", "user"], {placeholders: false})
+		const fields = ["user", "targetUser", "targetUnit", "targetEvent", "targetForm"]
 		
-		if(this.user && await user.checkPermission(this.user.PERMISSIONS.ACCESS)) return true
-		
-		if(this.targetUser && await user.checkPermission(this.targetUser.PERMISSIONS.ACCESS)) return true
-		if(this.targetUnit && await user.checkPermission(this.targetUnit.PERMISSIONS.ACCESS)) return true
-		if(this.targetEvent && await user.checkPermission(this.targetEvent.PERMISSIONS.ACCESS)) return true
+		for(const field of fields) {
+			await this.populate(field, {placeholders: false})
+			if(this[field] && await user.checkPermission(this[field].PERMISSIONS.ACCESS)) return true
+		}
 		
 		return false
 	}

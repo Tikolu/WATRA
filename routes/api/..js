@@ -55,6 +55,7 @@ export async function _exit({user}) {
 				targetUser: this.routeData.targetUser,
 				targetUnit: this.routeData.targetUnit,
 				targetEvent: this.routeData.targetEvent,
+				targetForm: this.routeData.targetForm,
 				data: this.logging.noOutput ? undefined : output
 			}
 		)

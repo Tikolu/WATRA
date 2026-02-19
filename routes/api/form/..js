@@ -34,6 +34,11 @@ export async function create({user, type, id, name}) {
 	await targetUnit.save()
 	await form.save()
 
+	this.addRouteData({
+		targetForm: form,
+		[`target${type}`]: targetUnit
+	})
+
 	return {
 		formID: form.id
 	}

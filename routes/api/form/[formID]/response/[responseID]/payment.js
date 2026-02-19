@@ -73,6 +73,9 @@ export async function start({user, targetForm, targetResponse}) {
 		expires: new Date(response.expires_at * 1000)
 	}, false)
 	
+	// Prevent logging of payment details
+	this.logging.noOutput = true
+	
 	return {
 		url: response.url
 	}
