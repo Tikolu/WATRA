@@ -104,13 +104,24 @@ export default async function({user}) {
 		},
 		{
 			filter: {"dates.end": {$gte: new Date()}},
-			placeholders: false
+			placeholders: false,
+			// select:
 		}
 	)
 
 	// Check child permissions
 	for(const child of user.children) {
 		await user.checkPermission(child.PERMISSIONS.APPROVE)
+	}
+
+	// Check unit event invites
+	for(const role of user.roles) {
+		if(!role.hasTag("manageEventInvite")) continue
+		await role.unit.populate("eventInvites", {
+			filter: {"dates.end": {$gte: new Date()}},
+			placeholders: false,
+			select: "invitedUnits"
+		})
 	}
 
 	// Find events for approval
@@ -143,8 +154,11 @@ export default async function({user}) {
 		// Skip event for non participant approvers who have approved
 		if(approvalState === true && !inviteStates.length) continue
 
-		// Skip event when registration is closed and user is not a participant or approver
-		if(approvalState !== false && !event.registrationOpen && !inviteStates.includes("accepted")) continue
+		// Skip event when registration is closed and user is not a participant, approver or has role in event
+		if(approvalState !== false && !event.registrationOpen && !inviteStates.includes("accepted")) {
+			await event.populate("roles")
+			if(!event.roles.some(r => r.user.id == user.id)) continue
+		}
 
 		events.push({
 			event,

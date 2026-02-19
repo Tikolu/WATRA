@@ -80,10 +80,15 @@
 		</h2>
 		<div class="entry-grid">
 			<% for(const role of $.user.roles) { %>
+				<% 
+					const unitEventInvite = role.hasTag("manageEventInvite") &&
+						role.unit.eventInvites.some(event => event.invitedUnits.id(role.unit.id)?.state == "pending")
+				%>
 				<%~ include("unit/templates/unitEntry", {
 					targetUnit: role.unit,
 					warnings: Array.conditional(
-						!role.unit.name, "Ustaw nazwę jednostki"
+						!role.unit.name, "Ustaw nazwę jednostki",
+						unitEventInvite, "Oczekujące zaproszenia na akcje"
 					)
 				}) %>
 			<% } %>
@@ -123,8 +128,8 @@
 				<%~ include("event/templates/eventEntry", {
 					targetEvent: event,
 					warnings: Array.conditional(
-						inviteStates.includes("pending"), "Oczekiwana odpowiedź",
-						approvalState === false, event.isPast ? "Akcja nie została zatwierdzona" : "Oczekiwane zatwierdzenie"
+						inviteStates.includes("pending") && event.registrationOpen, "Oczekiwana odpowiedź",
+						approvalState === false, event.isPast ? "Akcja nie została zatwierdzona" : "Oczekujące zatwierdzenie"
 					)
 				}) %>
 			<% } %>
