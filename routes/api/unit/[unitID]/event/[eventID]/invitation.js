@@ -1,16 +1,5 @@
 import HTTPError from "modules/server/error.js"
 
-export async function accept({targetEvent, targetInvitation}) {
-	// Accept invite
-	targetInvitation.state = "accepted"
-
-	await targetEvent.save()
-
-	return {
-		invitationState: targetInvitation.state
-	}
-}
-
 export async function decline({targetUnit, targetEvent, targetInvitation}) {
 	// Cannot decline if participants
 	if(targetInvitation.invitedParticipants.filter(p => p.state == "accepted").length > 0) {

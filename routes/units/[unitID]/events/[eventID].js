@@ -24,7 +24,7 @@ export async function _open({user, targetUnit, eventID}) {
 
 export async function chooseParticipants({user, targetUnit, targetEvent, targetInvitation}) {
 	// Check unit invitation state
-	if(targetInvitation.state != "accepted") throw new HTTPError("Zaproszenie jednostki na akcję nie zostało zaakceptowane")
+	if(targetInvitation.state == "declined") throw new HTTPError("Jednostka odrzuciła zaproszenie na akcję")
 
 	// Get event org
 	const eventOrg = await targetEvent.getOrg()

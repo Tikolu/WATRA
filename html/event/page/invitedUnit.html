@@ -1,4 +1,8 @@
-<% const invitedParticipants = $.unitInvite.state == "accepted" ? $.unitInvite.invitedParticipants.filter(p => $.targetEvent.roles.every(r => r.user.id != p.user.id)) : [] %>
+<%
+	const invitedParticipants = $.unitInvite.state == "accepted" ?
+		$.unitInvite.invitedParticipants.filter(p => $.targetEvent.roles.every(r => r.user.id != p.user.id)) :
+		[]
+%>
 
 <div
 	class="
@@ -32,7 +36,10 @@
 
 	<div class="button-row">
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
-			<% if($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") { %>
+			<% if(
+				($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") &&
+				!$.targetEvent.participants.some(p => p.originUnit.id == $.unitInvite.id && p.state == "accepted")
+			) { %>
 				<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
 					<i>undo</i>
 					<span>Cofnij zaproszenie</span>
@@ -51,14 +58,16 @@
 					<% } %>
 				</button>
 			<% } else if($.unitInvite.state == "pending") { %>
-				<button api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/accept">
+				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
 					<i>check</i>
 					<span>Zaakceptuj</span>
 				</button>
-				<button class="dangerous" api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/decline">
-					<i>close</i>
-					<span>Odrzuć</span>
-				</button>
+				<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+					<button class="dangerous" api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/decline">
+						<i>close</i>
+						<span>Odrzuć</span>
+					</button>
+				<% } %>
 			<% } %>
 		<% } %>
 	</div>

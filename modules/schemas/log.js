@@ -36,7 +36,6 @@ const eventTypes = {
 	"unit/*/subUnit/link": "Dodano jednostkę do $UNIT",
 	"unit/*/subUnit/*/remove": "Usunięto jednostkę z $UNIT",
 	"unit/*/event/create": "Utworzono akcję w $UNIT",
-	"unit/*/event/*/invitation/accept": "Zaakceptowano zaproszenie $UNIT na $EVENT",
 	"unit/*/event/*/invitation/decline": "Odrzucono zaproszenie $UNIT na $EVENT",
 	"unit/*/event/*/setParticipants": "Ustawiono uczestników z $UNIT na $EVENT",
 

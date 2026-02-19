@@ -18,9 +18,7 @@ export default class {
 		const targetEvent = this.parent()
 		
 		// Ensure invitation has been accepted
-		if(this.state != "accepted") {
-			throw new HTTPError(400, "Zaproszenie na akcję nie zostało zaakceptowane")
-		}
+		if(this.state == "declined") throw new HTTPError(400, "Zaproszenie na akcję zostało odrzucone")
 
 		const eventOrg = await targetEvent.getOrg()
 		
@@ -52,6 +50,11 @@ export default class {
 
 			await participant.uninvite()
 		}
+
+		const hasParticipants = targetEvent.participants.some(p => p.originUnit.id == this.unit.id)
+		if(!hasParticipants && this.state == "pending") throw new HTTPError(400, "Wybierz uczestników, aby zaakceptować zaproszenie")
+		
+		this.state = hasParticipants ? "accepted" : "pending"
 
 		await targetEvent.save()
 	}

@@ -41,5 +41,10 @@ export async function invite({user, targetEvent, targetUnit}) {
 }
 
 export async function uninvite({user, targetEvent, targetUnit}) {
+	// Ensure unit has no accepted participants
+	if(targetEvent.participants.some(p => p.originUnit.id == targetUnit.id && p.state == "accepted")) {
+		throw new HTTPError(400, "Z tej jednostki zapisano już uczestników na akcję")
+	}
+	
 	await targetEvent.uninviteUnit(targetUnit)
 }
