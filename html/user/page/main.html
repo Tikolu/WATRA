@@ -207,18 +207,14 @@
 	</section>
 <% } %>
 
-<% if(!blockAccess && $.targetUser.eventRoles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+<% if(!blockAccess && $.eventRoles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
 		<i>hiking</i>
 			Funkcje w akcjach
 		</h2>
 		<div class="entry-grid">
-			<% for(const role of $.targetUser.eventRoles) { %>
-				<%
-					const inviteState = role.unit.participants.id($.targetUser.id)?.state
-					if(inviteState != "accepted") continue
-				%>
+			<% for(const role of $.eventRoles) { %>
 				<%~ include("/event/templates/eventEntry.html", {
 					targetEvent: role.unit,
 					content: Text.capitalise(role.displayName)
@@ -228,19 +224,14 @@
 	</section>
 <% } %>
 
-<% if(!blockAccess && $.targetUser.eventInvites.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+<% if(!blockAccess && $.eventInvites.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
 		<i>hiking</i>
 			Zaproszenia na akcje
 		</h2>
 		<div class="entry-grid">
-			<% for(const event of $.targetUser.eventInvites) { %>
-				<%
-					const inviteState = event.participants.id($.targetUser.id)?.state
-					if(inviteState == "accepted" && $.targetUser.eventRoles.some(role => role.unit.id == event.id)) continue
-					if(inviteState == "pending" && !event.registrationOpen) continue
-				%>
+			<% for(const {event, inviteState} of $.eventInvites) { %>
 				<%~ include("/event/templates/eventEntry.html", {
 					targetEvent: event,
 					content: ({

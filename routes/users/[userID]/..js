@@ -37,5 +37,26 @@ export default async function({user, targetUser}) {
 		}
 	}
 
-	return html("user/page/main", {user, targetUser})
+	// Process event roles and invites
+	const eventRoles = []
+	for(const role of targetUser.eventRoles) {
+		const inviteState = role.unit.participants.id(targetUser.id)?.state
+		if(inviteState != "accepted") continue
+		eventRoles.push(role)
+	}
+
+	const eventInvites = []
+	for(const event of targetUser.eventInvites) {
+		const inviteState = event.participants.id(targetUser.id)?.state
+		if(inviteState == "accepted" && targetUser.eventRoles.some(role => role.unit.id == event.id)) continue
+		if(inviteState == "pending" && !event.registrationOpen) continue
+		eventInvites.push({event, inviteState})
+	}
+
+	return html("user/page/main", {
+		user,
+		targetUser,
+		eventRoles,
+		eventInvites
+	})
 }

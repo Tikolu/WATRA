@@ -51,7 +51,7 @@ export default class {
 			await participant.uninvite()
 		}
 
-		const hasParticipants = targetEvent.participants.some(p => p.originUnit.id == this.unit.id)
+		const hasParticipants = targetEvent.participants.some(p => p.originUnit?.id == this.unit.id)
 		if(!hasParticipants && this.state == "pending") throw new HTTPError(400, "Wybierz uczestników, aby zaakceptować zaproszenie")
 		
 		this.state = hasParticipants ? "accepted" : "pending"
@@ -83,6 +83,6 @@ export default class {
 	/** List of participants invited from this unit */
 	get invitedParticipants() {
 		const targetEvent = this.parent()
-		return targetEvent.participants.filter(p => p.originUnit == this.unit.id)
+		return targetEvent.participants.filter(p => p.originUnit?.id == this.unit.id)
 	}
 }
