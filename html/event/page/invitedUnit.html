@@ -38,7 +38,7 @@
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
 			<% if(
 				($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") &&
-				!$.targetEvent.participants.some(p => p.originUnit.id == $.unitInvite.id && p.state == "accepted")
+				!$.targetEvent.participants.some(p => p.originUnit?.id == $.unitInvite.id && p.state == "accepted")
 			) { %>
 				<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
 					<i>undo</i>
