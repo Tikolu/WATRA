@@ -2,6 +2,7 @@ import FormResponse from "modules/schemas/form/response.js"
 
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
+import Config from "modules/config.js"
 
 export async function _open({user, targetForm, responseID}) {
 	// Get user options for submitting

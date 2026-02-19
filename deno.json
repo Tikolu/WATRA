@@ -2,7 +2,7 @@
 	"version": "2.4.0",
 	"permissions": {
 		"default": {
-			"net": ["localhost:27017", "localhost:8080"],
+			"net": ["localhost:27017", "localhost:8080", "api.stripe.com:443"],
 			"read": ["config", "html", "import", "modules", "public", "routes"],
 			"sys": ["osRelease"],
 			"env": true
