@@ -1,7 +1,15 @@
+body {
+	display: flex;
+	align-items: safe center;
+
+	min-height: 100vh;
+	padding: 2em 0;
+}
+
 main {
 	width: 30em;
 	max-width: 80%;
-	margin: 5em auto;
+	margin: auto;
 
 	background-color: var(--surface-1);
 	border-radius: var(--border-radius);

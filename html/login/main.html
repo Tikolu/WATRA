@@ -91,5 +91,5 @@
 
 <% if(Config.contactEmail) { %>
 	<hr>
-	<p>Problemy z logowaniem? Skontaktuj się <b><%= Config.contactEmail %></b></p>
+	<p>Problemy z logowaniem? Skontaktuj się <b><a href="mailto:<%= Config.contactEmail %>"><%= Config.contactEmail %></a></b></p>
 <% } %>

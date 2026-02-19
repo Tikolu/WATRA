@@ -8,8 +8,8 @@ export class FormClass {
 	/* * Static properties * */
 	
 	static defaultElements = [
-		{type: "title", text: "Nagłówek (kliknij, aby edytować)"},
-		{type: "description", text: "Opis (usuń cały tekst, aby usunąć element)"},
+		{type: "title", value: "Nagłówek (kliknij, aby edytować)"},
+		{type: "description", value: "Opis (usuń cały tekst, aby usunąć element)"},
 	]
 	
 	/* * Properties * */
