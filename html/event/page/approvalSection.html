@@ -44,11 +44,7 @@
 			<% for(const approver of $.targetEvent.approvers || []) { %>
 				<div>
 					<div class="entry-title">
-						<h3>
-							<a href="/users/<%= approver.role.user.id %>">
-								<%= approver.role.user.displayName %>
-							</a>
-						</h3>
+						<h3><%= approver.role.user.displayName %></h3>
 						<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
 					</div>
 					<div class="entry-content">

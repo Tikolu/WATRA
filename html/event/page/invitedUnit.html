@@ -14,15 +14,11 @@
 		<% } %>
 	"
 >
-	<h3>
-		<a href="/units/<%= $.unitInvite.unit.id %>"><%= $.unitInvite.unit.displayName %></a>
-	</h3>
+	<h3><%= $.unitInvite.unit.displayName %></h3>
 
-	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
+	<% if($.unitInvite.state != "accepted" && ($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES))) { %>
 		<p>
-			<% if($.unitInvite.state == "accepted") { %>
-				<i>check</i> Zaakceptowano zaproszenie
-			<% } else if($.unitInvite.state == "declined") { %>
+			<% if($.unitInvite.state == "declined") { %>
 				<i>cancel</i> Odrzucono zaproszenie
 			<% } else if($.unitInvite.state == "pending") { %>
 				<% if($.targetEvent.isPast) { %>
@@ -79,46 +75,36 @@
 			$.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
 		)
 	) { %>
-		<hr>
-		<div class="entry-grid">
-			<%
-				const categories = {
-					accepted: [],
-					pending: [],
-					declined: []
-				}
-				for(const participant of invitedParticipants) {
-					categories[participant.state].push(participant)
-				}
-			%>
+		<%
+			const categories = {
+				pending: 0,
+				accepted: 0,
+				declined: 0
+			}
+			for(const participant of invitedParticipants) {
+				categories[participant.state] += 1
+			}
+		%>
+		<dl>
 			<% for(const state in categories) { %>
-				<% if(categories[state].length == 0) continue %>
-				<h4>
+				<% if(categories[state] == 0) continue %>
+				<dt>
 					<% if(state == "accepted") { %>
 						<i>check_circle</i> Zaakceptowano
 					<% } else if(state == "pending") { %>
 						<% if($.targetEvent.registrationOpen) { %>
 							<i class="spin">progress_activity</i> Oczekiwana odpowiedź
+						<% } else if($.targetEvent.isPast) { %>
+							<i>help</i> Brak odpowiedzi
 						<% } else { %>
-							<i>person_add</i> Dodani do akcji
+							<i>person_add</i> Wybrani z jednostki
 						<% } %>
 					<% } else if(state == "declined") { %>
 						<i>cancel</i> Odrzucono
 					<% } %>
-					(<%= categories[state].length %>)
-				</h4>
-				<% for(const invite of categories[state]) { %>
-					<%~ include("participant", {
-						targetUser: invite.user,
-						warnings: Array.conditional(
-							!invite.user.confirmed, "Niezatwierdzone dane",
-							state == "pending" && invite.user.archived, "Profil zarchiwizowany"
-						),
-						...$
-					}) %>
-				<% } %>
-				<hr class="grid-break">
+				</dt>
+				<dd><%= categories[state] %></dd>
 			<% } %>
-		</div>
+		</dl>
 	<% } %>
 </div>

@@ -1,0 +1,18 @@
+#participant-list {
+	padding-bottom: 2em;
+
+	.entry-content {
+		margin-top: 0.5em;
+	}
+}
+
+@media (min-width: 45em) {
+	#participant-list > a {
+		display: flex;
+		justify-content: space-between;
+
+		.entry-content, .entry-content p {
+			margin-top: 0;
+		}
+	}
+}

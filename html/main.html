@@ -17,7 +17,11 @@
 	<% } %>
 </p>
 
-<h3>Czuwaj<%= $.user.name.first ? `, ${$.user.name.first}` : "" %>!</h3>
+<% if($.user.name.first) { %>
+	<h3>Czuwaj, <a href="/users/<%= $.user.id %>"><%= $.user.name.first %></a>!</h3>
+<% } else { %>
+	<h3>Czuwaj!</h3>
+<% } %>
 
 <% if(Config.news.length > 0) { %>
 	<section>

@@ -8,24 +8,33 @@
 			Uczestniczące jednostki
 		<% } %>
 	</h2>
+
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || $.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MANAGE_INVITES))) { %>
+		<a href="/events/<%= $.targetEvent.id %>/participants" class="subheading">
+			Lista uczestników
+			<i>chevron_right</i>
+		</a>
+	<% } %>
+	
 	<div class="button-row">
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteUnits">
 				<i>group_add</i>
 				Zaproś jednostki
 			</button>
-			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-				<% if($.targetEvent.registrationOpen) { %>
-					<button api="event/[eventID]/registration/disable">
-						<i>person_add_disabled</i>
-						Wyłącz zapisy
-					</button>
-				<% } else if(!$.targetEvent.isPast) { %>
-					<button api="event/[eventID]/registration/enable">
-						<i>person_add</i>
-						Włącz zapisy
-					</button>
-				<% } %>
+		<% } %>
+			
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+			<% if($.targetEvent.registrationOpen) { %>
+				<button api="event/[eventID]/registration/disable">
+					<i>person_add_disabled</i>
+					Wyłącz zapisy
+				</button>
+			<% } else if(!$.targetEvent.isPast) { %>
+				<button api="event/[eventID]/registration/enable">
+					<i>person_add</i>
+					Włącz zapisy
+				</button>
 			<% } %>
 		<% } %>
 	</div>
