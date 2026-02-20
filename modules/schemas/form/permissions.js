@@ -10,17 +10,20 @@ export async function ACCESS(user) {
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
 	await this.populate("unit")
-	// ACCESS_FORMS permission in the form's unit allows accessing the form
-	if(await user.checkPermission(this.unit.PERMISSIONS.ACCESS_FORMS)) return true
+	// MANAGE_FORMS permission in the form's unit allows accessing the form
+	if(await user.checkPermission(this.unit.PERMISSIONS.MANAGE_FORMS)) return true
 
 	// If form is disabled, only allow access for users with responses to it
 	if(!this.config.enabled) {
-		const existingReponse = await this.getUserResponses(
+		const existingResponse = await this.getUserResponses(
 			await this.getResponseUserOptions(user),
 			{check: true}
 		)
-		if(!existingReponse) return false
+		if(!existingResponse) return false
 	}
+
+	// ACCESS_FORMS permission in the form's unit allows accessing the form
+	if(await user.checkPermission(this.unit.PERMISSIONS.ACCESS_FORMS)) return true
 
 	return false
 }

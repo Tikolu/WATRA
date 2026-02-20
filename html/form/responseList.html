@@ -27,7 +27,7 @@
 	<% } %>
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.RESPOND)) { %>
 		<div class="button-row">
-			<button opens-dialog="/forms/<%= $.targetForm.id %>/responses/new">
+			<button id="new-response-button" opens-dialog="/forms/<%= $.targetForm.id %>/responses/new">
 				<i>add</i>
 				<span>Nowa odpowiedź</span>
 			</button>

@@ -39,4 +39,14 @@ if(selectedResponseID) {
 	createURLDialog(`/forms/${META.formID}/responses/${selectedResponseID}`, true)
 	// Remove parameter from URL
 	history.replaceState(null, null, window.location.pathname)
+
+// Auto open response dialog when opening form for the first time
+} else {
+	const config = document.getElementById("config-section")
+	const response = document.querySelector(".entry-grid a")
+	const newResponseButton = document.getElementById("new-response-button")
+	
+	if(newResponseButton && !config && !response) {
+		sleep(100).then(() => newResponseButton.click())
+	}
 }
