@@ -3,6 +3,22 @@
 		<i>contract</i>
 		Odpowiedzi
 	</h2>
+	<% if($.user.hasPermission($.targetForm.PERMISSIONS.ACCESS_RESPONSES)) { %>
+		<article>
+			<dl>
+				<% if($.counts.required > 0) { %>
+					<dt><i class="spin">progress_activity</i> Oczekiwane:</dt>
+					<dd><%= $.counts.required %></dd>
+				<% } %>
+				<% if($.counts.drafts > 0) { %>
+					<dt><i>edit_note</i> Wersje robocze:</dt>
+					<dd><%= $.counts.drafts %></dd>
+				<% } %>
+				<dt><i>check_circle</i> Przesłane:</dt>
+				<dd><%= $.counts.submitted %></dd>
+			</dl>
+		</article>
+	<% } %>
 	<% if($.responses.length) { %>
 		<div class="entry-grid">
 			<% for(const response of $.responses) { %>

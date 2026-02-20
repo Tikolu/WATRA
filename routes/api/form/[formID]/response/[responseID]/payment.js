@@ -70,6 +70,9 @@ export async function start({user, targetForm, targetResponse}) {
 		mode: "payment",
 		success_url: `https://${Config.host}/forms/${targetForm.id}/responses/${targetResponse.id}/payment?status=success&session={CHECKOUT_SESSION_ID}`,
 		cancel_url: `https://${Config.host}/forms/${targetForm.id}/responses/${targetResponse.id}/payment?status=cancel`,
+		adaptive_pricing: {
+			enabled: false
+		},
 		payment_intent_data: {
 			description: `${targetResponse.user.displayName} - ${targetForm.displayName}`,
 			metadata: {

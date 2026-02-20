@@ -56,6 +56,6 @@
 	<%~ include("config", $) %>
 <% } %>
 
-<% if($.responses.length || $.user.hasPermission($.targetForm.PERMISSIONS.RESPOND)) { %>
+<% if($.responses.length || $.user.hasPermission($.targetForm.PERMISSIONS.RESPOND) || $.user.hasPermission($.targetForm.PERMISSIONS.ACCESS_RESPONSES)) { %>
 	<%~ include("responseList", $) %>
 <% } %>
