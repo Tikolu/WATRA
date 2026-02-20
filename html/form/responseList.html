@@ -1,6 +1,6 @@
 <section>
 	<h2>
-		<i>contract</i>
+		<i>assignment</i>
 		Odpowiedzi
 	</h2>
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.ACCESS_RESPONSES)) { %>
@@ -25,7 +25,11 @@
 				<a opens-dialog="/forms/<%= $.targetForm.id %>/responses/<%= response.id %>">
 					<div class="entry-header">
 						<div class="entry-image">
-							<i>contract</i>
+							<% if(response.submitted) { %>
+								<i>assignment</i>
+							<% } else { %>
+								<i>edit_note</i>
+							<% } %>
 						</div>
 						<div class="entry-title">
 							<h3><%= response.user?.displayName || "Odpowiedź" %></h3>
