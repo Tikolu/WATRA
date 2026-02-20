@@ -79,7 +79,7 @@ export async function payment({user, targetForm, targetResponse, status, session
 		
 		const stripeSession = await stripeAPI(`checkout/sessions/${session}`)
 		const referenceID = `watra_${targetForm.id}_${targetResponse.id}_${targetResponse.user.id}`
-		if(stripeSession.client_reference_id != referenceID) {
+		if(stripeSession.client_reference_id !== referenceID || stripeSession.status != "complete") {
 			throw new HTTPError(400, "Nieprawidłowa sesja płatności")
 		}
 		

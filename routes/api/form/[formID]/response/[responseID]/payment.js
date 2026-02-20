@@ -6,6 +6,7 @@ export async function start({user, targetForm, targetResponse}) {
 	if(!Config.stripeEnabled) {
 		throw new HTTPError(400, "Płatności nie są obsługiwane")
 	}
+	const { stripeAPI } = await import("modules/integrations/stripe.js")
 	
 	// Check permissions
 	await user.requirePermission(targetResponse.PERMISSIONS.EDIT)
@@ -14,12 +15,35 @@ export async function start({user, targetForm, targetResponse}) {
 	const paymentElement = targetForm.elements.find(e => e.type == "payment")
 	if(!paymentElement) throw new HTTPError(400, "Formularz nie obsługuje płatności")
 
+	// Generate payment reference ID
+	const referenceID = `watra_${targetForm.id}_${targetResponse.id}_${targetResponse.user.id}`
+	
 	// Find value of payment element
 	const elementValue = targetResponse.getElement(paymentElement.id) || {}
 	if(elementValue.state == "paid") throw new HTTPError(400, "Płatność została już dokonana")
-	if(elementValue.url && elementValue?.expires > new Date()) {
-		return {
-			url: elementValue.url
+	if(elementValue.id) {
+		// Load session details from Stripe
+		const stripeSession = await stripeAPI(`checkout/sessions/${elementValue.id}`)
+		if(stripeSession.client_reference_id !== referenceID) {
+			throw new HTTPError(400, "Nieprawidłowa sesja płatności")
+		}
+
+		// Session is completed, update response and return
+		if(stripeSession.status == "complete") {
+			await targetResponse.updateElement(paymentElement, {
+				state: "paid"
+			}, false)
+
+			return {
+				state: "paid"
+			}
+		}
+
+		// Session is open, return URL
+		else if(stripeSession.status == "open") {
+			return {
+				url: elementValue.url
+			}
 		}
 	}
 
@@ -28,7 +52,6 @@ export async function start({user, targetForm, targetResponse}) {
 	await targetForm.populate("unit")
 
 	// Start Stripe payment process
-	const referenceID = `watra_${targetForm.id}_${targetResponse.id}_${targetResponse.user.id}`
 	const stripeOptions = {
 		client_reference_id: referenceID,
 		line_items: [
@@ -60,9 +83,7 @@ export async function start({user, targetForm, targetResponse}) {
 	}
 
 	if(user.email) stripeOptions.customer_email = user.email
-
-	const { stripeAPI } = await import("modules/integrations/stripe.js")
-
+	
 	const response = await stripeAPI("checkout/sessions", stripeOptions)
 
 	// Save URL and expiration date to payment element

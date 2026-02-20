@@ -20,8 +20,14 @@ API.registerHandler("form/[formID]/response/[responseID]/setUser", {
 API.registerHandler("form/[formID]/response/[responseID]/payment/start", {
 	progressText: "Przekierowywanie do strony płatności...",
 	after: response => {
-		window.top.location.href = response.url
-		dialog.fullClose()
+		if(response.url) {
+			window.top.location.href = response.url
+			dialog.fullClose()
+		} else {
+			if(response.state == "paid") Popup.success("Zapłacono")
+			else Popup.error("Błąd podczas inicjowania płatności")
+			document.location.reload()
+		}
 	}
 })
 
