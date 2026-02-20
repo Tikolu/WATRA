@@ -10,7 +10,7 @@ if(window.newsList) {
 
 		// Add to seen
 		Local.seenNews.push(newsID)
-		sleep(500).then(() => news.click())
+		sleep(100).then(() => news.click())
 		break
 	}
 }
