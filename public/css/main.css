@@ -11,6 +11,14 @@ header {
 
 	white-space: nowrap;
 
+	a {
+		color: var(--text);
+		text-decoration: none;
+
+		&:hover, &:focus-visible {
+			color: var(--secondary-text);
+		}
+	}
 
 	& #user-profile-link {
 		border-left: 1px solid var(--secondary-text);
@@ -34,8 +42,8 @@ header {
 		}
 
 		& a {
+			
 			&#title {
-				text-decoration: none;
 				margin-left: 0.25em;
 			}
 			

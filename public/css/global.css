@@ -22,6 +22,7 @@ html[theme^=light] {
 
 	--text: hsl(var(--hue), 50%, 10%);
 	--secondary-text: hsl(var(--hue), 10%, 30%);
+	--link-text: hsl(var(--hue), 40%, 30%);
 	--shadow: hsla(var(--hue), 20%, 10%, 0.4);
 	
 	--border-radius: 0.5rem;
@@ -44,6 +45,7 @@ html[theme^=dark] {
 
 	--text: hsl(var(--hue), 30%, 90%);
 	--secondary-text: hsl(var(--hue), 10%, 65%);
+	--link-text: hsl(var(--hue), 30%, 70%);
 	--shadow: hsl(var(--hue), 5%, 5%);
 	
 	--border-radius: 0.5rem;
@@ -81,8 +83,8 @@ html {
 }
 
 ::selection {
-	background-color: var(--secondary-text);
-	color: var(--surface-1);
+	background-color: var(--link-text);
+	color: var(--surface-2);
 }
 
 
@@ -119,6 +121,10 @@ i.spin {
 	animation: spin 1s infinite linear;
 	transform-origin: 50% 48%; /* prevents wobble */
 	scale: 0.9;
+}
+
+i.spin, :has(> i.spin) {
+	overflow: hidden;
 }
 
 
@@ -350,21 +356,23 @@ h1 + h2 {
 	margin-top: -0.5em;
 }
 
-a, a[opens-dialog] {
-	color: var(--text);
+a {
+	color: var(--link-text);
+	text-decoration: underline;
+	text-decoration-color: transparent;
+
 	outline: none;
 	cursor: pointer;
-	text-decoration: underline;
-	transition: color 250ms;
+	transition: color 250ms, text-decoration-color 500ms;
+
+	&:hover, &:focus-visible {
+		color: var(--link-text);
+		text-decoration-color: var(--link-text);
+	}
 }
 
 a:has(button) {
 	text-decoration: none;
-}
-
-a:not(:has(button)):hover,
-a:not(:has(button)):focus-visible {
-	color: var(--secondary-text);
 }
 
 hr {
@@ -377,7 +385,6 @@ hr {
 
 details > summary {
 	cursor: pointer;
-	text-decoration: underline;
 	transition: color 250ms;
 }
 
@@ -451,6 +458,7 @@ p.warning, p.info {
 
 .subheading {
 	display: block;
+	width: fit-content;
 	margin-top: -1em;
 	margin-bottom: 1em;
 }
@@ -546,10 +554,8 @@ p.warning, p.info {
 			white-space: nowrap;
 		}
 
-		& > .entry-content {
-			& > :last-child {
-				margin-bottom: 0;
-			}
+		:last-child, & > .entry-content > :last-child {
+			margin-bottom: 0;
 		}
 
 		& > label {
@@ -558,6 +564,7 @@ p.warning, p.info {
 	}
 
 	& > a {
+		color: var(--text);
 		background-color: var(--surface-4);
 		transition: box-shadow 250ms;
 		
