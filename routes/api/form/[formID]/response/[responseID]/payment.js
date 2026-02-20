@@ -65,11 +65,12 @@ export async function start({user, targetForm, targetResponse}) {
 					unit_amount: paymentElement.value * 100
 				},
 				quantity: 1
-			},
+			}
 		],
 		mode: "payment",
 		success_url: `https://${Config.host}/forms/${targetForm.id}/responses/${targetResponse.id}/payment?status=success&session={CHECKOUT_SESSION_ID}`,
 		cancel_url: `https://${Config.host}/forms/${targetForm.id}/responses/${targetResponse.id}/payment?status=cancel`,
+		allow_promotion_codes: true,
 		adaptive_pricing: {
 			enabled: false
 		},
