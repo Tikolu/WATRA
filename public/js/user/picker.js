@@ -11,7 +11,7 @@ for(const userPicker of document.querySelectorAll(".user-picker")) {
 	const userPickerSearch = document.getElementById(`${userPicker.id}-search`)
 	const chooseAll = document.getElementById(`${userPicker.id}-choose-all`)
 	chooseAll?.globalCheckbox(userPicker)
-
+	
 	userPickerSearch.oninput = () => {
 		const searchTerms = cleanString(userPickerSearch.value).split(" ")
 		let resultCount = 0
@@ -47,5 +47,33 @@ for(const userPicker of document.querySelectorAll(".user-picker")) {
 		group.ontoggle = () => {
 			chooseAll?.calculateState()
 		}
+	}
+
+	// User count and limit
+	const userCount = document.querySelector(`#${userPicker.id}-count span`)
+	if(userCount) {
+		const limit = Number(userPicker.dataset.limit)
+		const options = [...userPicker.querySelectorAll("input:not(:disabled)")]
+		
+		userPicker.addEventListener("change", () => {
+			userPicker.count = options.filter(option => option.checked).unique("value").length
+			userCount.innerText = userPicker.count
+
+			if(userPicker.count >= limit) {
+				for(const option of options) {
+					if(option.checked) continue
+
+					option.disabled = true
+					option.classList.add("temp-disabled")
+				}
+			} else {
+				for(const option of options) {
+					if(!option.classList.contains("temp-disabled")) continue
+					
+					option.disabled = false
+					option.classList.remove("temp-disabled")
+				}
+			}
+		})
 	}
 }

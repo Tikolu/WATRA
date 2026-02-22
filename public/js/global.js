@@ -99,6 +99,27 @@ function fileToBase64(file) {
 	})
 }
 
+// Function for getting unique items from an array
+Object.defineProperty(Array.prototype, "unique", {
+	value: function(key, returnValues=false) {
+		const output = []
+		for(const item of this) {
+			if(key === undefined) {
+				if(output.includes(item)) {
+					continue
+				}
+			} else if(returnValues) {
+				if(output.includes(item[key])) continue
+			} else if(output.find(i => i[key] === item[key])) {
+				continue
+			}
+			output.push(returnValues ? item[key] : item)
+		}
+
+		return output
+	}
+})
+
 // Channel for communicating with other tabs
 if(window == window.top) {
 	window.addEventListener("pageshow", () => {

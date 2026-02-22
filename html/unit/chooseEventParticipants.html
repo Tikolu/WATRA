@@ -18,12 +18,12 @@
 				const participant = $.targetEvent.participants.id(user.id)
 				if(!participant) return
 				if(participant.originUnit?.id != $.targetUnit.id) return true
-			}
+			},
+			limit: $.targetEvent.limit.perUnit
 		}) %>
 	</section>
 </main>
 <hr>
-<p>Ilość wybranych uczestników: <span id="user-count">0</span></p>
 <div class="button-row">
 	<button>
 		<i>arrow_back</i>

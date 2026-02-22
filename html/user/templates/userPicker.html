@@ -68,7 +68,13 @@
 	<% } %>
 <% } %>
 
-<div class="user-picker" id="<%= $.id %>">
+<div
+	class="user-picker"
+	id="<%= $.id %>"
+	<% if($.limit) { %>
+		data-limit="<%= $.limit %>"
+	<% } %>
+>
 	<% if(!$.graph?.userCount) { %>
 		<p class="user-picker-error">Brak użytkowników</p>
 	<% } else { %>
@@ -76,3 +82,13 @@
 		<p class="user-picker-error" hidden>Brak wyników</p>
 	<% } %>
 </div>
+
+<% if($.multiple) { %>
+	<p class="user-picker-count" id="<%= $.id %>-count">
+		Wybrano:
+		<span>0</span>
+		<% if($.limit) { %>
+			/ <%= $.limit %>
+		<% } %>
+	</p>
+<% } %>
