@@ -1,0 +1,65 @@
+<% layout("/layouts/dialog", {
+	scripts: ["event/participationSettings"],
+	styles: ["event/participationSettings"],
+	meta: {
+		eventID: $.targetEvent.id
+	}
+}) %>
+<h1 id="event-title"><i>manage_accounts</i> Ustawienia zapisów na <%= $.targetEvent.displayName %></h1>
+
+<main>
+	<section>
+		<h2>Zapisy</h2>
+		<% if($.targetEvent.remainingSpaces == 0) { %>
+			<p class="warning"><i>warning</i> Osiągnięto limit uczestników</p>
+		<% } else if($.targetEvent.isPast) { %>
+			<p class="warning"><i>warning</i> Akcja już się zaczęła lub zakończyła</p>
+		<% } else { %>
+			<form>
+				<input
+					type="checkbox"
+					id="registration-open"
+					<% if($.targetEvent.reg) { %>
+						checked
+					<% } %>
+					api="event/[eventID]/registration"
+				>
+				<label for="registration-open">Zapisy włączone</label>
+			</form>
+		<% } %>
+	</section>
+
+	<section id="event-limits">
+		<h2>Liczba uczestników</h2>
+		<form>
+			<label for="total-limit">Limit akcji</label>
+			<input
+				type="number"
+				id="total-limit"
+				name="total"
+				min="0"
+				placeholder="(bez limitu)"
+				value="<%= $.targetEvent.limit.total || "" %>"
+				api="event/[eventID]/update/limits"
+			>
+
+			<label for="unit-limit">Limit na jednostkę</label>
+			<input
+				type="number"
+				id="unit-limit"
+				name="perUnit"
+				min="0"
+				placeholder="(bez limitu)"
+				value="<%= $.targetEvent.limit.perUnit || "" %>"
+				api="event/[eventID]/update/limits"
+			>
+		</form>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button class="confirm">
+		<i>check</i>
+		Gotowe
+	</button>
+</div>

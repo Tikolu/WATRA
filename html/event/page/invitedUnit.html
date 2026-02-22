@@ -19,12 +19,12 @@
 	<% if($.unitInvite.state != "accepted" && ($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES))) { %>
 		<p>
 			<% if($.unitInvite.state == "declined") { %>
-				<i>cancel</i> Odrzucono zaproszenie
+				<i>close</i> Odrzucono zaproszenie
 			<% } else if($.unitInvite.state == "pending") { %>
 				<% if($.targetEvent.isPast) { %>
-					<i>help</i> Brak odpowiedzi
+					<i>question_mark</i> Brak odpowiedzi
 				<% } else { %>
-					<i class="spin">progress_activity</i> Oczekiwana odpowiedź...
+					<i class="spin">progress_activity</i> Zaproszono...
 				<% } %>
 			<% } %>
 		</p>
@@ -90,17 +90,15 @@
 				<% if(categories[state] == 0) continue %>
 				<dt>
 					<% if(state == "accepted") { %>
-						<i>check_circle</i> Zaakceptowano
+						<i>check</i> Zaakceptowano
 					<% } else if(state == "pending") { %>
 						<% if($.targetEvent.registrationOpen) { %>
 							<i class="spin">progress_activity</i> Oczekiwana odpowiedź
-						<% } else if($.targetEvent.isPast) { %>
-							<i>help</i> Brak odpowiedzi
 						<% } else { %>
-							<i>person_add</i> Wybrani z jednostki
+							<i>question_mark</i> Brak odpowiedzi
 						<% } %>
 					<% } else if(state == "declined") { %>
-						<i>cancel</i> Odrzucono
+						<i>close</i> Odrzucono
 					<% } %>
 				</dt>
 				<dd><%= categories[state] %></dd>

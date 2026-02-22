@@ -7,9 +7,3 @@ API.registerHandler("unit/[unitID]/event/[eventID]/setParticipants", {
 		return true
 	}
 })
-
-userPicker.onchange = () => {
-	const checked = main.querySelectorAll(".user-picker input:checked:not(:disabled)")
-	userCount.innerText = checked.length
-}
-userPicker.onchange()

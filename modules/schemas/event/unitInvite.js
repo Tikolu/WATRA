@@ -22,6 +22,11 @@ export default class {
 
 		const eventOrg = await targetEvent.getOrg()
 		
+		// Check limits
+		if(targetEvent.limit.perUnit && participantIDs.length > targetEvent.limit.perUnit) {
+			throw new HTTPError(400, "Przekroczono limit uczestników")
+		}
+		
 		await this.populate("unit")
 		const members = this.unit.listMembers(true)
 		const participants = []

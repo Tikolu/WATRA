@@ -55,3 +55,15 @@ export async function location({targetEvent, location}) {
 		location: targetEvent.location
 	}
 }
+
+export async function limits({targetEvent, total, perUnit}) {
+	total ||= undefined
+	perUnit ||= undefined
+	
+	targetEvent.limit = {total, perUnit}
+	await targetEvent.save()
+
+	return {
+		limits: targetEvent.limit
+	}
+}

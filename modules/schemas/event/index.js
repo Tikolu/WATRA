@@ -91,6 +91,19 @@ export class EventClass extends UnitClass {
 	participants = [participant]
 	approvers = [approver]
 
+	limit = {
+		total: {
+			type: Number,
+			min: 1,
+			validator: Number.isInteger
+		},
+		perUnit: {
+			type: Number,
+			min: 1,
+			validator: Number.isInteger
+		}
+	}
+
 
 	/* * Getters * */
 
@@ -126,7 +139,15 @@ export class EventClass extends UnitClass {
 	get registrationOpen() {
 		if(!this.reg) return false
 		if(this.isPast) return false
+		if(!this.remainingSpaces) return false
 		return true
+	}
+
+	/** Check if participant limit is exceeded */
+	get remainingSpaces() {
+		if(!this.limit.total) return Infinity
+		const participantCount = this.participants.filter(p => p.state == "accepted").length
+		return this.limit.total - participantCount + this.roles.length
 	}
 
 	/** Checks if the event starts in the past */
@@ -249,9 +270,8 @@ export class EventClass extends UnitClass {
 	/** Sets registration open state */
 	async setRegistrationState(value) {
 		if(value) {
-			if(this.isPast) {
-				throw new HTTPError(400, "Nie można otworzyć zapisów na akcję, która już się rozpoczęła")
-			}
+			if(this.isPast) throw new HTTPError(400, "Nie można otworzyć zapisów na akcję, która już się rozpoczęła")
+			if(!this.remainingSpaces) throw new HTTPError(400, "Osiągnięto limit uczestników, nie można otworzyć zapisów")
 			this.reg = true
 		} else {
 			this.reg = false

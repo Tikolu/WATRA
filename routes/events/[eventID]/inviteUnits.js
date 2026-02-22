@@ -2,10 +2,16 @@ import html from "modules/html.js"
 import Config from "modules/config.js"
 import Unit from "modules/schemas/unit"
 import Graph from "modules/schemas/unit/graph.js"
+import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetEvent}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
+
+	// Check event details
+	if(targetEvent.missingDetails.length > 0) {
+		throw new HTTPError(400, "Uzupełnij szczegóły akcji, aby zaprosić jednostki")
+	}
 	
 	// Get top unit
 	const units = await targetEvent.traverse("upperUnits").toArray()

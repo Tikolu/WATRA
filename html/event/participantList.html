@@ -60,11 +60,7 @@
 					<% if(participant.state == "accepted") { %>
 						<i>check_circle</i> Zaakceptowano
 					<% } else if(participant.state == "pending") { %>
-						<% if($.targetEvent.registrationOpen) { %>
-							<i class="spin">progress_activity</i> Oczekiwana odpowiedź
-						<% } else { %>
-							<i>person_add</i> Wybrano z jednostki
-						<% } %>
+						<i>question_mark</i> Brak odpowiedzi
 					<% } else if(participant.state == "declined") { %>
 						<i>cancel</i> Odrzucono
 					<% } %>

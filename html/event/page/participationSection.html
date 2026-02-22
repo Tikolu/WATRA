@@ -3,6 +3,11 @@
 		<i>mark_email_read</i>
 		Uczestnictwo
 	</h2>
+	<% if($.targetEvent.remainingSpaces != Infinity && ($.targetEvent.remainingSpaces == 0 || $.targetEvent.registrationOpen)) { %>
+		<article>
+			<p>Dostępna ilość miejsc: <%= $.targetEvent.remainingSpaces %></p>
+		</article>
+	<% } %>
 	<div class="entry-grid">
 		<% for(const userInvite of $.approvalParticipants) { %>
 			<% if(userInvite.state == "pending" && !$.targetEvent.registrationOpen) continue %>
@@ -11,10 +16,11 @@
 					<h3><%= userInvite.user.displayName %></h3>
 					<p>
 						<% if(userInvite.state == "pending") { %>
-							<i>help</i>
 							<% if($.targetEvent.registrationOpen) { %>
+								<i>question_mark</i>
 								Brak odpowiedzi
 							<% } else { %>
+								<i class="spin">progress_activity</i>
 								Oczekiwana odpowiedź...
 							<% } %>
 						<% } else if(userInvite.state == "accepted") { %>

@@ -25,17 +25,10 @@
 		<% } %>
 			
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-			<% if($.targetEvent.registrationOpen) { %>
-				<button api="event/[eventID]/registration/disable">
-					<i>person_add_disabled</i>
-					Wyłącz zapisy
-				</button>
-			<% } else if(!$.targetEvent.isPast) { %>
-				<button api="event/[eventID]/registration/enable">
-					<i>person_add</i>
-					Włącz zapisy
-				</button>
-			<% } %>
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/participationSettings">
+				<i>manage_accounts</i>
+				Ustawienia zapisów
+			</button>
 		<% } %>
 	</div>
 	<% if(!$.targetEvent.registrationOpen &&
