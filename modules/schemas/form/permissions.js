@@ -10,14 +10,15 @@ export async function ACCESS(user) {
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
 	await this.populate("unit")
+
 	// MANAGE_FORMS permission in the form's unit allows accessing the form
 	if(await user.checkPermission(this.unit.PERMISSIONS.MANAGE_FORMS)) return true
 
-	// If form is disabled, only allow access for users with responses to it
-	if(!this.config.enabled) {
+	// If user cannot submit responses, only allow access if they have already submitted a response
+	if(!await user.checkPermission(this.PERMISSIONS.RESPOND)) {
 		const existingResponse = await this.getUserResponses(
-			await this.getResponseUserOptions(user),
-			{check: true}
+			await user.getControlledProfiles(),
+			{check: true, orSubmittedBy: user}
 		)
 		if(!existingResponse) return false
 	}
@@ -88,10 +89,7 @@ export async function DELETE(user) {
 export async function RESPOND(user) {
 	// Lack of ACCESS permission denies RESPOND
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
-
-	// Cannot respond to disabled forms
-	if(!this.config.enabled) return false
-
+	
 	// Cannot respond if no response user options are available
 	const userOptions = await this.getResponseUserOptions(user)
 	if(userOptions.length == 0) return false

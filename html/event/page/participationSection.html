@@ -49,10 +49,12 @@
 								<i>warning</i>
 								Ustaw datę urodzin aby kontynuować
 							</p>
-						<% } else if(userInvite.user.isAdult !== false) { %>
-							<p>Odpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
-						<% } else { %>
-							<p>Odpowiedź oczekiwana od rodzica/opiekuna</p>
+						<% } else if(userInvite.state == "pending") { %>
+							<% if(userInvite.user.isAdult !== false) { %>
+								<p>Odpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
+							<% } else { %>
+								<p>Odpowiedź oczekiwana od rodzica/opiekuna</p>
+							<% } %>
 						<% } %>
 					</div>
 				<% } %>

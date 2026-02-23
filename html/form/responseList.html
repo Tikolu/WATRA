@@ -7,14 +7,20 @@
 		<article>
 			<dl>
 				<% if($.counts.required > 0) { %>
-					<dt><i class="spin">progress_activity</i> Oczekiwane:</dt>
+					<dt>
+						<% if($.targetForm.config.enabled) { %>
+							<i class="spin">progress_activity</i> Oczekiwane:
+						<% } else { %>
+							<i>question_mark</i> Brakujące:
+						<% } %>
+					</dt>
 					<dd><%= $.counts.required %></dd>
 				<% } %>
 				<% if($.counts.drafts > 0) { %>
 					<dt><i>edit_note</i> Wersje robocze:</dt>
 					<dd><%= $.counts.drafts %></dd>
 				<% } %>
-				<dt><i>check_circle</i> Przesłane:</dt>
+				<dt><i>check</i> Przesłane:</dt>
 				<dd><%= $.counts.submitted %></dd>
 			</dl>
 		</article>

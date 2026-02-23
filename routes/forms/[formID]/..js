@@ -36,23 +36,34 @@ export default async function({user, targetForm}) {
 		}
 
 		// Get count of required responses
-		if(targetForm.config.requireResponse && targetForm.eventForm) {
-			counts.required = targetForm.unit.participants.filter(p => p.state == "accepted").length
-			counts.required -= counts.submitted + counts.drafts
+		if(targetForm.config.requireResponse) {
+			let requiredUsers = []
+			if(targetForm.eventForm) {
+				requiredUsers = targetForm.unit.participants.filter(p => p.state == "accepted")
+			} else {
+				requiredUsers = await targetForm.unit.listMembers(true).toArray()
+				requiredUsers = requiredUsers.unique()
+			}
+
+			// Filter out users which have already submitted (or have draft) response
+			requiredUsers = requiredUsers.filter(u => !responses.some(r => r.user.id == u.id))
+
+			// Filter out users that are not in the target group
+			if(targetForm.targetGroup.mode == "include") {
+				requiredUsers = requiredUsers.filter(u => targetForm.targetGroup.users.includes(u.id))
+			} else if(targetForm.targetGroup.mode == "exclude") {
+				requiredUsers = requiredUsers.filter(u => !targetForm.targetGroup.users.includes(u.id))
+			}
+			
+			counts.required = requiredUsers.length
 			if(counts.required < 0) counts.required = 0
 		}
 
 	} else {
-		// Get responses of user and children for which user has APPROVE permission
+		// Get responses of all controlled profiles
 		await user.populate("children")
-		const responseUsers = [user, ...user.children.filter(child => user.checkPermission(child.PERMISSIONS.APPROVE))]
-		responses = await FormResponse.find({
-			form: targetForm.id,
-			$or: [
-				{user: responseUsers.map(user => user.id)},
-				{submittedBy: user.id}
-			]
-		})
+		const responseUsers = await user.getControlledProfiles()
+		responses = await targetForm.getUserResponses(responseUsers, {orSubmittedBy: user})
 		await responses.populate("user", {known: responseUsers})
 	}
 

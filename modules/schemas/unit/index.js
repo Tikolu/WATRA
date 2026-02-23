@@ -411,7 +411,7 @@ export class UnitClass {
 			if(!user.hasPermission(form.PERMISSIONS.ACCESS) || !form.config.requireResponse) continue
 			
 			// Determine if response is required
-			form.$locals.requiredUserResponses = await form.getResponseUserOptions(user, true, true)
+			form.$locals.requiredUserResponses = await form.getResponseUserOptions(user, true)
 		}
 
 		return this.forms

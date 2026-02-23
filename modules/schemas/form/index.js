@@ -34,6 +34,18 @@ export class FormClass {
 		multipleResponses: Boolean
 	}
 
+	targetGroup = {
+		mode: {
+			type: String,
+			enum: ["include", "exclude"],
+			default: "exclude"
+		},
+		users: [{
+			type: String,
+			ref: "User"
+		}]
+	}
+
 	
 	/** * Getters * */
 
@@ -60,37 +72,37 @@ export class FormClass {
 	}
 
 	/** Returns users for which a user can submit a response */
-	async getResponseUserOptions(user, required=false, submitted=false) {
+	async getResponseUserOptions(user, required=false) {
 		let users = []
 
+		// If form is within an event, return controlled profiles which have accepted participation
 		if(this.eventForm) {
-			if(this.unit.participants.id(user.id)?.state == "accepted") users.push(user)
-
-			await user.populate("children")
-			for(const child of user.children) {
-				if(this.unit.participants.id(child.id)?.state == "accepted") users.push(child)
+			for(const u of await user.getControlledProfiles()) {
+				if(this.unit.participants.id(u.id)?.state != "accepted") continue
+				users.push(u)
 			}
 
+		// If form is within a unit, return controlled profiles which are in the unit
 		} else {
-			for await(const unit of user.listUnits(true)) {
-				if(this.unit.id != unit.id) continue
-				users.push(user)
-				break
-			}
-			
-			await user.populate("children")
-			for(const child of user.children) {
-				if(!await user.checkPermission(child.PERMISSIONS.APPROVE)) continue
-				for await(const unit of child.listUnits(true)) {
+			for(const u of await user.getControlledProfiles()) {
+				for await(const unit of u.listUnits(true)) {
 					if(this.unit.id != unit.id) continue
-					users.push(child)
+					users.push(u)
 					break
 				}
 			}
 		}
 
+		// Filter out users that are not in the target group
+		if(this.targetGroup.mode == "include") {
+			users = users.filter(u => this.targetGroup.users.includes(u.id))
+		} else if(this.targetGroup.mode == "exclude") {
+			users = users.filter(u => !this.targetGroup.users.includes(u.id))
+		}
+
+		// If form does not allow multiple responses, filter out users that already have a response
 		if(!this.config.multipleResponses || required) {
-			const existing = await this.getUserResponses(users, {submitted})
+			const existing = await this.getUserResponses(users, {submitted: required})
 			
 			// Form does not allow multiple responses - filter out users that already have a response
 			if(!this.config.multipleResponses) {
@@ -117,7 +129,14 @@ export class FormClass {
 
 		const query = {form: this.id}
 		if(options.submitted) query.signature = {$ne: null}
-		query.user = users.map(u => u.id)
+		if(options.orSubmittedBy) {
+			query.$or = [
+				{user: users.map(u => u.id)},
+				{submittedBy: options.orSubmittedBy.id}
+			]
+		} else {
+			query.user = users.map(u => u.id)
+		}
 		
 		return await FormResponse[operation](query)
 	}

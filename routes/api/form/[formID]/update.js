@@ -26,3 +26,19 @@ export async function config({user, targetForm, enabled, multipleResponses, requ
 
 	return targetForm.config
 }
+
+export async function targetGroup({user, targetForm, mode, userIDs}) {
+	// Check permissions
+	await user.requirePermission(targetForm.PERMISSIONS.CONFIG)
+	
+	const users = Array.create(userIDs).unique()
+	
+	targetForm.targetGroup = {
+		mode,
+		users
+	}
+
+	await targetForm.save()
+
+	return targetForm.targetGroup
+}

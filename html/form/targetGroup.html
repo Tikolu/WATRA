@@ -1,0 +1,49 @@
+<% layout("/layouts/dialog", {
+	scripts: ["user/picker", "form/targetGroup"],
+	styles: ["user/picker"],
+	meta: {
+		formID: $.targetForm.id
+	}
+}) %>
+<h1>
+	<i>manage_accounts</i>
+	<%= $.targetForm.displayName %> - Grupa docelowa
+</h1>
+<main>
+	<section>
+		<form>
+			<input type="radio" name="mode" id="mode-exclude" value="exclude"
+				<% if($.targetForm.targetGroup.mode == "exclude") { %>
+					checked
+				<% } %>
+			>
+			<label for="mode-exclude">Wszyscy oprócz wybranych użytkowników</label>
+
+			<input type="radio" name="mode" id="mode-include" value="include"
+				<% if($.targetForm.targetGroup.mode == "include") { %>
+					checked
+				<% } %>
+			>
+			<label for="mode-include">Tylko wybrani użytkownicy</label>
+		</form>
+	</section>
+	<section class="fill-height">
+		<%~ include("/user/templates/userPicker", {
+			users: $.users,
+			graph: $.graph,
+			selected: $.targetForm.targetGroup.users,
+			multiple: true
+		}) %>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<i>arrow_back</i>
+		Anuluj
+	</button>
+	<button api="form/[formID]/update/targetGroup">
+		<i>check</i>
+		<span>Zapisz</span>
+	</button>
+</div>

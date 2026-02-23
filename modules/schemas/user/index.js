@@ -293,6 +293,19 @@ export class UserClass {
 		})
 	}
 
+	/** Returns profiles within a user's control */
+	async getControlledProfiles(approve=false) {
+		await this.populate("children")
+		
+		const users = []
+		for(const user of [this, ...this.children]) {
+			if(user.id != this.id && user.isAdult && user.auth?.lastLogin) continue
+			if(approve && !await this.checkPermission(user.PERMISSIONS.APPROVE)) continue
+			users.push(user)
+		}
+		return users
+	}
+
 	/** Checks permission and returns the result. The result is cached for future calls */
 	async checkPermission(permission, fromCache=false) {
 		if(!(permission instanceof Function)) {

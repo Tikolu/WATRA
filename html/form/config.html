@@ -1,5 +1,11 @@
 <section id="config-section">
 	<h2><i>settings</i> Ustawienia formularza</h2>
+	<div class="button-row">
+		<button opens-dialog="/forms/<%= $.targetForm.id %>/targetGroup">
+			<i>manage_accounts</i>
+			Edytuj grupę docelową
+		</button>
+	</div>
 	<form api="form/[formID]/update/config">
 		<input
 			type="checkbox"
