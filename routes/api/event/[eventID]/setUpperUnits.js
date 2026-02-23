@@ -5,7 +5,7 @@ export default async function({user, targetEvent, unitIDs}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
 
-	const units = unitIDs.unique()
+	const units = Array.create(unitIDs).unique()
 	await units.populate({}, {ref: "Unit"})
 	
 	// Check permissions

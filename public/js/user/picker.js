@@ -55,7 +55,7 @@ for(const userPicker of document.querySelectorAll(".user-picker")) {
 		const limit = Number(userPicker.dataset.limit)
 		const options = [...userPicker.querySelectorAll("input:not(:disabled)")]
 		
-		userPicker.addEventListener("change", () => {
+		userPicker.updateCount = () => {
 			userPicker.count = options.filter(option => option.checked).unique("value").length
 			userCount.innerText = userPicker.count
 
@@ -74,6 +74,8 @@ for(const userPicker of document.querySelectorAll(".user-picker")) {
 					option.classList.remove("temp-disabled")
 				}
 			}
-		})
+		}
+		userPicker.addEventListener("change", userPicker.updateCount)
+		userPicker.updateCount()
 	}
 }

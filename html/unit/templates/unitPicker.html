@@ -1,8 +1,10 @@
 <%
 	$.id ||= "unit-picker"
-	$.fieldName ||= "unitID"
-	if(Array.isArray($.disabled)) $.disabled = unit => [...$.disabled].hasID(unit.id)
-	if(Array.isArray($.selected)) $.selected = unit => [...$.selected].hasID(unit.id)
+	$.fieldName ||= $.multiple ? "unitIDs" : "unitID"
+
+	const createFilter = array => unit => [...array].hasID(unit.id)
+	if(Array.isArray($.disabled)) $.disabled = createFilter($.disabled)
+	if(Array.isArray($.selected)) $.selected = createFilter($.selected)
 
 	$.graph ||= new Graph({members: $.units})
 %>
@@ -22,7 +24,7 @@
 				<h3><%= node.unit?.displayName || "" %></h3>
 			</summary>
 	<% } %>
-	<% if(!$.filter || $.filter(node.unit)) { %>
+	<% if(node.unit && (!$.filter || $.filter(node.unit))) { %>
 		<div class="entry-grid">
 			<div>
 				<div class="entry-header">

@@ -1,21 +1,20 @@
 import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
 
-export default async function({user, targetUnit, users: userIDs, roleType}) {
+export default async function({user, targetUnit, userIDs, roleType}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.SET_ROLE)
+
+	const users = Array.create(userIDs).unique()
 	
-	if(!userIDs?.length) {
+	if(!users.length) {
 		throw new HTTPError(400, "Nie wybrano użytkowników")
 	}
 
-	const users = userIDs.unique()
-	await users.populate({}, {ref: "User"})
-	for(const id of userIDs) {
-		if(!users.hasID(id)) {
-			throw new HTTPError(404, "Użytkownik nie istnieje")
-		}
-	}
+	await users.populate({}, {
+		ref: "User",
+		placeholders: new HTTPError(404, "Użytkownik nie istnieje")
+	})
 
 	// Get role config
 	const roleConfig = Config.roles[roleType]
@@ -74,7 +73,7 @@ export default async function({user, targetUnit, users: userIDs, roleType}) {
 
 
 	return {
-		userIDs,
+		userIDs: users.map(u => u.id),
 		roleType
 	}
 }

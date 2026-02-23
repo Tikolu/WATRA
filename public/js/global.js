@@ -70,7 +70,7 @@ Object.defineProperty(HTMLElement.prototype, "parentElementChain", {
 
 // Create array function 
 Array.create = value => {
-	if(Array.isArray(value)) return value
+	if(Array.isArray(value)) return [...value]
 	if(!value) return []
 	return [value]
 }
@@ -661,7 +661,7 @@ const API = {
 				// Clear validity
 				formElement.classList.remove("invalid")
 
-				if(formElement.matches("[type=checkbox], [type=radio]")) {
+				if(formElement.type == "checkbox" || formElement.type == "radio") {
 					// Default value for checkboxes
 					if(formElement.checked) {
 						if(!formElement.hasAttribute("value")) elementValue = true
@@ -718,6 +718,11 @@ const API = {
 						formData[valueKey] = [formData[valueKey]]
 					}
 					formData[valueKey].push(elementValue)
+
+				// If element has "multiple" attribute, turn value into an array
+				} else if(formElement.hasAttribute("multiple")) {
+					formData[valueKey] = [elementValue]
+					
 				} else {
 					formData[valueKey] = elementValue
 				}

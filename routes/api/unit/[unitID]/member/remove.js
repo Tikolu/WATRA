@@ -1,21 +1,20 @@
 import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
 
-export default async function({user, targetUnit, users: userIDs}) {
+export default async function({user, targetUnit, userIDs}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.SET_ROLE, "Brak dostępu do jednostki")
-		
-	if(!userIDs?.length) {
+
+	const users = Array.create(userIDs).unique()
+	
+	if(!users.length) {
 		throw new HTTPError(400, "Nie wybrano użytkowników")
 	}
 
-	const users = userIDs.unique()
-	await users.populate({}, {ref: "User"})
-	for(const id of userIDs) {
-		if(!users.hasID(id)) {
-			throw new HTTPError(404, "Użytkownik nie istnieje")
-		}
-	}
+	await users.populate({}, {
+		ref: "User",
+		placeholders: new HTTPError(404, "Użytkownik nie istnieje")
+	})
 
 	// Get user's role in unit, unless user has SET_ROLE permission in an upperUnit
 	let userRole = await user.getRoleInUnit(targetUnit)

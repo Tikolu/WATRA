@@ -111,7 +111,8 @@ class PopulationContext {
 						}
 						let newDocument = results[subDocument.id]
 						if(!newDocument) {
-							if(options?.placeholders === false) continue
+							if(options.placeholders === false) continue
+							if(options.placeholders instanceof Error) throw options.placeholders
 							if(options.log) logger.log(`Creating fake ${ref} ${subDocument.id}`)
 							newDocument = createFakeDocument(mongoose.model(ref), subDocument.id, !!options.filter)
 							results[subDocument.id] = newDocument
@@ -194,6 +195,7 @@ export function populate(graph, options={}) {
 						let newDocument = results[subDocument.id]
 						if(!newDocument) {
 							if(options.placeholders === false) continue
+							if(options.placeholders instanceof Error) throw options.placeholders
 							if(options.log) logger.log(`Creating fake ${options.ref} ${subDocument.id}`)
 							newDocument = createFakeDocument(mongoose.model(options.ref), subDocument.id, !!options.filter)
 							results[subDocument.id] = newDocument
@@ -241,6 +243,7 @@ export function populate(graph, options={}) {
 					for(const id of queryIDs) {
 						if(options.placeholders === false) continue
 						if(queryResults.some(r => r?.id == id)) continue
+						if(options.placeholders instanceof Error) throw options.placeholders
 						if(options.log) logger.log(`Creating fake ${model.modelName} ${id}`)
 						const fakeDocument = createFakeDocument(model, id, !!options.filter)
 						queryResults.push(fakeDocument)
@@ -275,7 +278,7 @@ export function populate(graph, options={}) {
 			loopCount += 1
 		}
 
-	} else return new Promise(resolve => {
+	} else return new Promise((resolve, reject) => {
 		let loopCount = 1
 		function asyncLoop() {
 			const loopResult = loop.call(documentContext.document, loopCount)
@@ -283,7 +286,7 @@ export function populate(graph, options={}) {
 				loopResult.then(() => {
 					loopCount += 1
 					asyncLoop()
-				})
+				}).catch(err => reject(err))
 			} else if(loopResult) {
 				loopCount += 1
 				asyncLoop()

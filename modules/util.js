@@ -27,6 +27,14 @@ Array.conditional = (...values) => {
 }
 
 
+/** Create array function */
+Array.create = value => {
+	if(Array.isArray(value)) return [...value]
+	if(!value) return []
+	return [value]
+}
+
+
 /** Function for getting unique items from an array */
 Object.defineProperty(Array.prototype, "unique", {
 	value: function(key, returnValues=false) {

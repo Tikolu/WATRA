@@ -11,7 +11,6 @@
 		<%~ include("/unit/templates/unitPicker", {
 			graph: $.graph,
 			multiple: true,
-			fieldName: "unitIDs",
 			selected: unit => $.targetEvent.upperUnits.hasID(unit.id),
 			filter: unit => unit.config.eventRules.create
 		}) %>

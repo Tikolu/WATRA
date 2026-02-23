@@ -22,11 +22,6 @@ export default class {
 
 		const eventOrg = await targetEvent.getOrg()
 		
-		// Check limits
-		if(targetEvent.limit.perUnit && participantIDs.length > targetEvent.limit.perUnit) {
-			throw new HTTPError(400, "Przekroczono limit uczestników")
-		}
-		
 		await this.populate("unit")
 		const members = this.unit.listMembers(true)
 		const participants = []
@@ -40,7 +35,14 @@ export default class {
 			if(eventOrg && participant.org && participant.org != eventOrg) {
 				throw new HTTPError(400, "Nie można dodać uczestnika z innej organizacji.")
 			}
+			// Skip if user already added
+			if(targetEvent.participants.some(p => p.user.id == participant.id)) continue
 			participants.push(participant)
+		}
+		
+		// Check limits
+		if(targetEvent.limit.perUnit && participants.length > targetEvent.limit.perUnit) {
+			throw new HTTPError(400, "Przekroczono limit uczestników")
 		}
 
 		// Add new participants

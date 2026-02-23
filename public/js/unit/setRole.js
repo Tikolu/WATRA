@@ -2,9 +2,8 @@ API.registerHandler("unit/[unitID]/member/setRole", {
 	form: main,
 	progressText: "Mianowanie na funkcję...",
 	successText: "Zapisano",
-	validate: data => {		
-		data.users = Array.create(data.userID)
-		if(!data.users.length) {
+	validate: data => {
+		if(!data.userIDs.length) {
 			throw new Error("Nie wybrano użytkowników")
 		}
 		if(!data.roleType) {

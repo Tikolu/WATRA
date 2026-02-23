@@ -1,8 +1,10 @@
 <%
 	$.id ||= "user-picker"
-	$.fieldName ||= "userID"
-	if(Array.isArray($.disabled)) $.disabled = user => [...$.disabled].hasID(user.id)
-	if(Array.isArray($.selected)) $.selected = user => [...$.selected].hasID(user.id)
+	$.fieldName ||= $.multiple ? "userIDs" : "userID"
+
+	const createFilter = array => user => [...array].hasID(user.id)
+	if(Array.isArray($.disabled)) $.disabled = createFilter($.disabled)
+	if(Array.isArray($.selected)) $.selected = createFilter($.selected)
 
 	$.graph ||= new Graph({members: $.users})
 %>

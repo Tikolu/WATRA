@@ -4,21 +4,20 @@ import Config from "modules/config.js"
 
 import User from "modules/schemas/user"
 
-export default async function({user, targetUnit, users: userIDs, moveUser}) {
+export default async function({user, targetUnit, userIDs, moveUser}) {
 	// Check permissions
 	await user.requirePermission(targetUnit.PERMISSIONS.CREATE_USER)
 
-	if(!userIDs?.length) {
+	const users = Array.create(userIDs).unique()
+	
+	if(!users.length) {
 		throw new HTTPError(400, "Nie wybrano użytkowników")
 	}
 
-	const users = userIDs.unique()
-	await users.populate({}, {ref: "User"})
-	for(const id of userIDs) {
-		if(!users.hasID(id)) {
-			throw new HTTPError(404, "Użytkownik nie istnieje")
-		}
-	}
+	await users.populate({}, {
+		ref: "User",
+		placeholders: new HTTPError(404, "Użytkownik nie istnieje")
+	})
 	
 	const members = targetUnit.listMembers()
 	const newRoles = []
@@ -74,6 +73,6 @@ export default async function({user, targetUnit, users: userIDs, moveUser}) {
 	}
 
 	return {
-		userIDs
+		userIDs: users.map(u => u.id)
 	}
 }
