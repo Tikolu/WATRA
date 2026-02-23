@@ -36,8 +36,8 @@ export default async function * ({user}) {
 			yield {
 				event: "update",
 				data: {
-					type: result.ns.coll,
-					id: result.documentKey._id
+					type: result.ns?.coll,
+					id: result.documentKey?._id
 				}
 			}
 			continue
