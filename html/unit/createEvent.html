@@ -14,8 +14,8 @@
 			type="date"
 			id="event-start-date"
 			name="startDate"
-			min="<%= datetime.format(new Date(), "yyyy-MM-dd") %>"
-			max="<%= MAX_DATE %>"
+			min="<%= formatDate() %>"
+			max="<%= formatDate(MAX_DATE) %>"
 			required
 		>
 		<label for="event-end-date">Data zakończenia:</label>
@@ -23,8 +23,8 @@
 			type="date"
 			id="event-end-date"
 			name="endDate"
-			min="<%= datetime.format(new Date(), "yyyy-MM-dd") %>"
-			max="<%= MAX_DATE %>"
+			min="<%= formatDate() %>"
+			max="<%= formatDate(MAX_DATE) %>"
 			required
 		>
 	</form>

@@ -41,8 +41,8 @@ export async function dates({targetEvent, startDate, startTime, endDate, endTime
 
 
 	return {
-		startDate: targetEvent.dates.start ? datetime.format(targetEvent.dates.start, "yyyy-MM-dd") : undefined,
-		endDate: targetEvent.dates.end ? datetime.format(targetEvent.dates.end, "yyyy-MM-dd") : undefined
+		startDate: targetEvent.dates.start ? formatDate(targetEvent.dates.start) : undefined,
+		endDate: targetEvent.dates.end ? formatDate(targetEvent.dates.end) : undefined
 	}
 }
 

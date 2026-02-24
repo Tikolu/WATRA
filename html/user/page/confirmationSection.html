@@ -81,7 +81,7 @@
 
 				<% if($.targetUser.dateOfBirth) { %>
 					<dt>Data urodzenia:</dt>
-					<dd><%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %> (<%= $.targetUser.age %> lat)</dd>
+					<dd><%= formatDate($.targetUser.dateOfBirth) %> (<%= $.targetUser.age %> lat)</dd>
 				<% } else if(missingDetails.includes("dob")) { %>
 					<% confirmationAllowed = false %>
 					<dt>Data urodzenia:</dt>

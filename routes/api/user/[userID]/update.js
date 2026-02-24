@@ -27,7 +27,7 @@ export async function dateOfBirth({targetUser, date}) {
 
 	if(targetUser.dateOfBirth) {
 		return {
-			date: datetime.format(targetUser.dateOfBirth, "yyyy-MM-dd"),
+			date: formatDate(targetUser.dateOfBirth),
 			age: targetUser.age
 		}
 	}

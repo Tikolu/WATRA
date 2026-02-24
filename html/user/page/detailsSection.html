@@ -31,10 +31,10 @@
 				<label for="date-of-birth-input">Data urodzenia:</label>
 				<input
 					type="date" id="date-of-birth-input"
-					min="<%= MIN_DATE %>"
-					max="<%= datetime.format(new Date, "yyyy-MM-dd") %>"
+					min="<%= formatDate(MIN_DATE) %>"
+					max="<%= formatDate() %>"
 					<% if($.targetUser.dateOfBirth) { %>
-						value="<%= datetime.format($.targetUser.dateOfBirth, "yyyy-MM-dd") %>"
+						value="<%= formatDate($.targetUser.dateOfBirth) %>"
 					<% } %>
 					api="user/[userID]/update/dateOfBirth"
 					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : " disabled" %>

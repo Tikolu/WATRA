@@ -13,10 +13,20 @@
 <div id="activity-filters" class="vertical-split">
 	<form>
 		<label for="filter-start">Od:</label>
-		<input type="datetime-local" id="filter-start" value="<%= datetime.format(new Date($.start), "yyyy-MM-dd'T'HH:mm") %>">
+		<input
+			type="datetime-local"
+			id="filter-start"
+			min="<%= formatDate(MIN_DATE) %>"
+			max="<%= formatDate(MAX_DATE) %>"
+			value="<%= datetime.format(new Date($.start), "yyyy-MM-dd'T'HH:mm") %>"
+		>
 
 		<label for="filter-end">Do:</label>
-		<input type="datetime-local" id="filter-end"
+		<input
+			type="datetime-local"
+			id="filter-end"
+			min="<%= formatDate(MIN_DATE) %>"
+			max="<%= formatDate(MAX_DATE) %>"
 			<% if($.end) { %>
 				value="<%= datetime.format(new Date($.end), "yyyy-MM-dd'T'HH:mm") %>"
 			<% } %>

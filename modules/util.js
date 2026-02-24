@@ -1,9 +1,15 @@
 import "modules/generator.js"
+import * as datetime from "jsr:@std/datetime"
 
 /** Global date limits */
-globalThis.MIN_DATE = "1800-01-01"
-globalThis.MAX_DATE = (new Date().getFullYear() + 100) + "-01-01"
+globalThis.MIN_DATE = new Date("1907-08-01")
+globalThis.MAX_DATE = new Date((new Date().getFullYear() + 100), 11, 31)
 
+/** Timezone agnostic date formatter */
+globalThis.formatDate = date => {
+	date ||= new Date
+	return datetime.format(date, "yyyy-MM-dd", {timeZone: "UTC"})
+}
 
 /** Function for checking if an object is empty */
 Object.isEmpty = object => {
