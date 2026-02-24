@@ -9,7 +9,6 @@ export default async function({user, targetUnit, start, end, direct, type}) {
 
 	// Default values
 	start ||= Date.now() - 24 * 60 * 60 * 1000 // 24 hours ago
-	end ||= Date.now()
 	const directOnly = direct == "true"
 
 	// Load unit members
@@ -21,9 +20,10 @@ export default async function({user, targetUnit, start, end, direct, type}) {
 		],
 		_id: {
 			$gte: Log.dateToID(start),
-			$lte: Log.dateToID(end)
 		}
 	}
+	if(end) query._id.$lte = Log.dateToID(end)
+	
 	if(!directOnly) {
 		const memberIDs = members.map(m => m.id)
 		query.$or.push(
