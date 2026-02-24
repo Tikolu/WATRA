@@ -210,7 +210,19 @@ input, select, textarea {
 	outline: 1px solid transparent;
 	outline-offset: -1px;
 	transition: outline 250ms, background-color 250ms;
+
+	&[data-after-text] {
+		position: relative;
+		&::after {
+			position: absolute;
+			top: 0.5em;
+			right: 0.5em;
+		}
+	}
 }
+
+[data-before-text]::before { content: attr(data-before-text); }
+[data-after-text]::after { content: attr(data-after-text); }
 
 input:focus, select:focus, textarea:focus, [contenteditable]:focus {
 	outline: 1px solid var(--text);

@@ -35,6 +35,9 @@
 					max="<%= formatDate() %>"
 					<% if($.targetUser.dateOfBirth) { %>
 						value="<%= formatDate($.targetUser.dateOfBirth) %>"
+						<% if(!$.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+							data-after-text="(<%= $.targetUser.age %> lat)"
+						<% } %>
 					<% } %>
 					api="user/[userID]/update/dateOfBirth"
 					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : " disabled" %>
