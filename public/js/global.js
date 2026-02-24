@@ -718,10 +718,6 @@ const API = {
 						formData[valueKey] = [formData[valueKey]]
 					}
 					formData[valueKey].push(elementValue)
-
-				// If element has "multiple" attribute, turn value into an array
-				} else if(formElement.hasAttribute("multiple")) {
-					formData[valueKey] = [elementValue]
 					
 				} else {
 					formData[valueKey] = elementValue

@@ -8,6 +8,7 @@ const eventTypes = {
 	"login/verify": "Zalogowano przy użyciu klucza",
 	"login/getKeys": "Zalogowano",
 	"logError": "Error w przeglądarce",
+	"report/submit": "Przesłano opinię",
 
 	"passkey/create": "Rozpoczęto tworzenie klucza",
 	"passkey/save": "Zapisano klucz",

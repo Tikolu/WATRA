@@ -6,7 +6,9 @@ const allowedFileTypes = [
 	"image/jpeg"
 ]
 
-export async function submit({message, attachments=[]}) {
+export async function submit({user, message, attachments=[]}) {
+	if(!user) throw new HTTPError(403)
+	
 	if(attachments.length > 4) {
 		throw new Error("Limit 4 załączników")
 	}
@@ -26,4 +28,9 @@ export async function submit({message, attachments=[]}) {
 	}
 
 	await report.save()
+
+	return {
+		message,
+		files: report.files.map(f => f.id)
+	}
 }
