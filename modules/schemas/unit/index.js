@@ -218,7 +218,7 @@ export class UnitClass {
 	}
 
 	/** Lists all members in the unit */
-	async * listMembers(recursive=false, org) {
+	async * listMembers(recursive=false, org=this.org) {
 		const units = this.traverse("subUnits", {
 			includeSelf: true,
 			depth: recursive ? undefined : 0,

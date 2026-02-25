@@ -1,0 +1,206 @@
+<% $.title ||= "Lista użytkowników" %>
+<% layout("/layouts/main", {
+	title: $.title,
+	styles: ["user/list"],
+	scripts: ["user/list"],
+	meta: {
+		exportName: `${$.targetUnit.displayName}_${$.title}`,
+		[$.targetUnit.modelName == "Unit" ? "unitID" : "eventID"]: $.targetUnit.id
+	},
+	navPath: {
+		[$.targetUnit.displayName]: `/${$.targetUnit.modelName == "Unit" ? "units" : "events"}/${$.targetUnit.id}`
+	}
+}) %>
+<h1>
+	<i>person</i>
+	<%= $.targetUnit.displayName %> - <%= $.title %>
+</h1>
+
+<div class="button-row">
+	<button opens-dialog="filter-options"><i>filter_list</i> Filtruj</button>
+	<button opens-dialog="column-options"><i>view_column</i> Wybierz dane</button>
+	<button id="export-button"
+		<% if(!$.users.length) { %>
+			disabled
+		<% } %>
+	><i>download</i> Eksportuj</button>
+	<button id="print-button"
+		<% if(!$.users.length) { %>
+			disabled
+		<% } %>
+	><i>print</i> Drukuj</button>
+</div>
+
+<dialog id="filter-options">
+	<h1><i>filter_list</i> Filtrowanie użytkowników</h1>
+	<main>
+		<% for(const category of $.filterCategories) { %>
+			<section>
+				<% if(category.name) { %>
+					<h3>
+						<% if(category.icon) { %>
+							<i><%= category.icon %></i>
+						<% } %>
+						<%= category.name %>
+					</h3>
+				<% } %>
+				<form>
+					<% for(const filter of category.filters) { %>
+						<label for="<%= filter.id %>-filter"><%= filter.name %></label>
+						<% if(filter.type == "number" || filter.type == "age") { %>
+							<div class="number-filter">
+								<select name="<%= filter.id %>" id="<%= filter.id %>-operation">
+									<option value="equal"<% if(filter.value?.[0] == "equal") { %> selected<% } %>>&equals;</option>
+									<option value="greater"<% if(filter.value?.[0] == "greater") { %> selected<% } %>>&gt;</option>
+									<option value="less"<% if(filter.value?.[0] == "less") { %> selected<% } %>>&lt;</option>
+								</select>
+								<input
+									id="<%= filter.id %>-filter"
+									name="<%= filter.id %>"
+									type="number"
+									placeholder="(wartość)"
+									<% if(filter.value?.[1] !== undefined) { %>
+										value="<%= filter.value[1] %>"
+									<% } %>
+									<% if(filter.min !== undefined) { %>
+										min="<%= filter.min %>"
+									<% } %>
+									<% if(filter.max !== undefined) { %>
+										max="<%= filter.max %>"
+									<% } %>
+								>
+							</div>
+							<% if(filter.type == "age") { %>
+								<label for="<%= filter.id %>-date">W dniu</label>
+								<input
+									id="<%= filter.id %>-date"
+									name="<%= filter.id %>"
+									type="date"
+									min="<%= formatDate(MIN_DATE) %>"
+									max="<%= formatDate(MAX_DATE) %>"
+									value="<%= formatDate(filter.value?.[2] || $.targetUnit.dates?.start || new Date) %>"
+								>
+							<% } %>
+						<% } else if(filter.type == "select") { %>
+							<select id="<%= filter.id %>-filter" name="<%= filter.id %>">
+								<% if(filter.options?.length && !filter.default) { %>
+									<option value>(wszystkie wartości)</option>
+								<% } %>
+								<% for(const option of filter.options || []) { %>
+									<option value="<%= option.value %>"
+										<% if(filter.value == option.value) { %>selected<% } %>
+									><%= option.name %></option>
+								<% } %>
+							</select>
+						<% } else if(filter.type == "checkbox") { %>
+							<input
+								id="<%= filter.id %>-filter"
+								name="<%= filter.id %>"
+								type="checkbox"
+								value="true"
+								<% if(filter.value) { %>
+									checked
+								<% } %>
+							>
+						<% } %>
+					<% } %>
+				</form>
+			</section>
+		<% } %>
+	</main>
+	<hr>
+	<div class="button-row">
+		<button><i>arrow_back</i> Anuluj</button>
+		<button id="confirm-filters-button"><i>check</i> Zastosuj filtry</button>
+	</div>
+</dialog>
+
+<% if($.filterError) { %>
+	<p class="warning"><i>error</i> <%= $.filterError %></p>
+<% } else { %>
+	<p>
+		<em>Ilość wyników: <%= $.users.length %></em>
+	</p>
+<% } %>
+
+<dialog id="column-options">
+	<h1><i>view_column</i> Wybieranie danych</h1>
+	<main>
+		<% for(const category of $.columnCategories) { %>
+			<section>
+				<% if(category.name) { %>
+					<h3>
+						<% if(category.icon) { %>
+							<i><%= category.icon %></i>
+						<% } %>
+						<%= category.name %>
+					</h3>
+				<% } %>
+				<form>
+					<% for(const column of category.columns) { %>
+						<input
+							type="checkbox"
+							id="<%= column.id %>-column"
+							name="<%= column.id %>"
+							<% if(column.selected) { %>
+								checked
+							<% } %>
+						>
+						<label for="<%= column.id %>-column">
+							<%= column.name %>
+						</label>
+					<% } %>
+				</form>
+			</section>
+		<% } %>
+	</main>
+	<hr>
+	<div class="button-row">
+		<button><i>arrow_back</i> Anuluj</button>
+		<button id="confirm-columns-button"><i>check</i> Wybierz</button>
+	</div>
+</dialog>
+
+<section id="table-container">
+	<table id="user-table">
+		<thead>
+			<tr>
+				<th hidden>
+					<input type="checkbox">
+				</th>
+				<th>Imię</th>
+				<% for(const column of $.columnCategories.flatMap(c => c.columns)) { %>
+					<% if(!column.selected) continue %>
+					<th><%= column.name %></th>
+				<% } %>
+			</tr>
+		</thead>
+		<tbody>
+			<% for(const user of $.users) { %>
+				<tr>
+					<td hidden>
+						<input type="checkbox">
+					</td>
+					<td>
+						<a href="/users/<%= user.id %>"><%= user.displayName %></a>
+					</td>
+					<% for(const column of $.columnCategories.flatMap(c => c.columns)) { %>
+						<% if(!column.selected) continue %>
+						<td>
+							<% if(column.value) { %>
+								<%= column.value(user) || "" %>
+							<% } else { %>
+								<%~ include(`columns/${column.template || column.id}`, {user, column}) %>
+							<% } %>
+						</td>
+					<% } %>
+				</tr>
+			<% } %>
+			<% if(!$.users.length) { %>
+				<tr>
+					<td></td>
+				</tr>
+			<% } %>
+		</tbody>
+	</table>
+</section>

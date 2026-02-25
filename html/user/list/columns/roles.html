@@ -1,0 +1,9 @@
+<% if($.user.roles.length) { %>
+	<ul>
+		<% for(const role of $.user.roles) { %>
+			<li>
+				<%= role.displayName %> w <a href="/units/<%= role.unit.id %>"><%= role.unit.displayName %></a>
+			</li>
+		<% } %>
+	</ul>
+<% } %>	

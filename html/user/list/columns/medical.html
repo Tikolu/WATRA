@@ -1,0 +1,8 @@
+<% if($.user.medical.entries.length) { %>
+	<ul>
+		<% for(const entry of $.user.medical.entries) { %>
+			<li><%= entry.title %></li>
+		<% } %>
+	</ul>
+	<a href="/users/<%= $.user.id %>/medical" class="details-link"><i>medical_information</i> Szczegóły</a>
+<% } %>

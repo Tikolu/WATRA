@@ -1,4 +1,78 @@
-#user-list a {
-	display: block;
-	border: 1px solid black;
+body main {
+	max-width: unset;
+}
+
+#filter-options, #column-options {
+	width: 25em;
+}
+
+.number-filter {
+	display: flex;
+	gap: 0.5em;
+
+	select, input {
+		width: 6.5em;
+	}
+}
+
+#table-container {
+	padding: 0;
+	overflow: auto;
+}
+
+#user-table {
+	background-color: var(--surface-1);
+	border-radius: 0.5em;
+	border-collapse: collapse;
+	width: 100%;
+
+	thead {
+		background-color: var(--surface-3);
+	}
+
+	tbody tr:nth-child(even) {
+		background-color: var(--surface-2);
+	}
+
+	th, td {
+		white-space: nowrap;
+		padding: 0.5em;
+		text-align: left;
+		vertical-align: top;
+
+		&:first-child {
+			width: 1.5em;
+		}
+
+		* {
+			margin: 0;
+		}
+
+		ul {
+			padding-left: 1.5em;
+		}
+
+		.details-link {
+			display: block;
+			margin-top: 0.5em;
+		}
+	}
+}
+
+@media print {
+	#table-container {
+		overflow: visible;
+		
+		th, td {
+			white-space: nowrap;
+		}
+		
+		td {
+			border-top: 1px solid var(--surface-4);
+		}
+
+		.details-link {
+			display: none !important;
+		}
+	}
 }

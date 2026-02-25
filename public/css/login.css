@@ -6,18 +6,18 @@ body {
 	padding-top: 2em;
 	padding-bottom: 4em;
 	box-sizing: border-box;
-}
 
-main {
-	width: 30em;
-	max-width: 80%;
-	margin: auto;
+	& > main {
+		width: 30em;
+		max-width: 80%;
+		margin: auto;
 
-	background-color: var(--surface-1);
-	border-radius: var(--border-radius);
-	padding: 1em;
+		background-color: var(--surface-1);
+		border-radius: var(--border-radius);
+		padding: 1em;
 
-	display: none;
+		display: none;
+	}
 }
 
 /* test for CSS nesting support */

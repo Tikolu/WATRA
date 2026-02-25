@@ -28,6 +28,19 @@ body {
 	margin: 0;
 	padding: 0.5em;
 	box-sizing: border-box;
+
+	& > main {
+		display: flex;
+		flex-direction: column;
+		
+		padding: 0;
+		height: 100%;
+		max-width: none;
+		margin: 0;
+		overflow-x: hidden;
+
+		animation: enable-scroll 500ms;
+	}
 }
 
 body h1 {
@@ -41,19 +54,6 @@ body h2 {
 
 body > .button-row:last-child button:first-child:not(.confirm) {
 	margin-right: auto;
-}
-
-main {
-	display: flex;
-	flex-direction: column;
-	
-	padding: 0;
-	height: 100%;
-	max-width: none;
-	margin: 0;
-	overflow-x: hidden;
-
-	animation: enable-scroll 500ms;
 }
 
 @keyframes enable-scroll {

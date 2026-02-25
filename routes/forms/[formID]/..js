@@ -49,11 +49,7 @@ export default async function({user, targetForm}) {
 			requiredUsers = requiredUsers.filter(u => !responses.some(r => r.user.id == u.id))
 
 			// Filter out users that are not in the target group
-			if(targetForm.targetGroup.mode == "include") {
-				requiredUsers = requiredUsers.filter(u => targetForm.targetGroup.users.includes(u.id))
-			} else if(targetForm.targetGroup.mode == "exclude") {
-				requiredUsers = requiredUsers.filter(u => !targetForm.targetGroup.users.includes(u.id))
-			}
+			requiredUsers = requiredUsers.filter(targetForm.userFilter)
 			
 			counts.required = requiredUsers.length
 			if(counts.required < 0) counts.required = 0

@@ -10,7 +10,7 @@
 	</h2>
 
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || $.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MANAGE_INVITES))) { %>
-		<a href="/events/<%= $.targetEvent.id %>/participants" class="subheading">
+		<a href="/events/<%= $.targetEvent.id %>/users" class="subheading">
 			Lista uczestników
 			<i>chevron_right</i>
 		</a>

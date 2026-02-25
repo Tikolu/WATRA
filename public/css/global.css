@@ -63,13 +63,13 @@ body {
 	font-family: Lato, sans-serif;
 	color: var(--text);
 	margin: 0;
-}
 
-main {
-	max-width: 60em;
-	padding: 0 1em;
-	margin: 0 auto;
-	overflow-x: auto;
+	& > main {
+		max-width: 60em;
+		padding: 0 1em;
+		margin: 0 auto;
+		overflow-x: auto;
+	}
 }
 
 
@@ -85,6 +85,34 @@ html {
 ::selection {
 	background-color: var(--link-text);
 	color: var(--surface-2);
+}
+
+[hidden] {
+	display: none !important;
+}
+
+@media print {
+	body {
+		font-size: 0.8em;
+
+		& > main {
+			max-width: unset;
+			padding: 0;
+
+			h1:first-child {
+				margin-top: 0 !important;
+			}
+		}
+	}
+	
+	header, .button-row {
+		display: none !important;
+	}
+
+	a {
+		text-decoration: none;
+		color: var(--text) !important;
+	}
 }
 
 
@@ -153,6 +181,10 @@ form input, form select {
 
 form input:only-child, form select:only-child {
 	grid-column: 1 / -1;
+}
+
+form input[type=checkbox] + label, form input[type=radio] + label {
+	margin-left: 0;
 }
 
 div.vertical-split > form {
@@ -315,6 +347,11 @@ h1 > img {
 
 select option {
 	background-color: var(--surface-1);
+	color: var(--text);
+}
+
+select option[value=""], select:has(option[value=""]:checked) {
+	color: var(--secondary-text);
 }
 
 /* Buttons */
@@ -659,6 +696,10 @@ section {
 	&.highlight {
 		animation: highlight 250ms 500ms 2 alternate;
 	}
+
+	& + section {
+		margin-top: 0;
+	}
 }
 
 article {
@@ -698,6 +739,7 @@ article :last-child, article:last-child {
 
 dialog, .popup {
 	max-width: min(80%, 50em);
+	max-height: 85%;
 	position: fixed;
 	inset: 0;
 	margin: auto !important;
@@ -729,6 +771,10 @@ dialog .button-row {
 
 dialog .button-row button:first-child:not(:only-child) {
 	margin-right: auto;
+}
+
+dialog > main {
+	overflow: auto;
 }
 
 .popup {
@@ -809,7 +855,6 @@ dialog iframe {
 dialog.frame {
 	width: min(90%, 35em);
 	height: 10em;
-	max-height: 85%;
 	max-width: unset;
 	padding: 0.5em;
 	transition: width 250ms, height 250ms;

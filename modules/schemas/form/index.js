@@ -54,6 +54,20 @@ export class FormClass {
 		return this.name || "(formularz bez nazwy)"
 	}
 
+	/** Returns a filtering function for users in the target group */
+	get userFilter() {
+		const targetGroup = this.targetGroup
+		return function(user) {
+			if(user.$locals?.participant?.state && user.$locals?.participant?.state != "accepted") return false
+			
+			if(targetGroup.mode == "include") {
+				return targetGroup.users.hasID(user.id)
+			} else if(targetGroup.mode == "exclude") {
+				return !targetGroup.users.hasID(user.id)
+			}
+		}
+	}
+
 	/* * Methods * */
 
 	/** Adds an element to the form */
@@ -94,11 +108,7 @@ export class FormClass {
 		}
 
 		// Filter out users that are not in the target group
-		if(this.targetGroup.mode == "include") {
-			users = users.filter(u => this.targetGroup.users.includes(u.id))
-		} else if(this.targetGroup.mode == "exclude") {
-			users = users.filter(u => !this.targetGroup.users.includes(u.id))
-		}
+		users = users.filter(this.userFilter)
 
 		// If form does not allow multiple responses, filter out users that already have a response
 		if(!this.config.multipleResponses || required) {
@@ -121,7 +131,7 @@ export class FormClass {
 
 	/** Returns user's responses to this form */
 	async getUserResponses(users, options = {}) {
-		if(!Array.isArray(users)) users = [users]
+		if(users && !Array.isArray(users)) users = [users]
 
 		let operation = "find"
 		if(options.check) operation = "findOne"
@@ -134,7 +144,7 @@ export class FormClass {
 				{user: users.map(u => u.id)},
 				{submittedBy: options.orSubmittedBy.id}
 			]
-		} else {
+		} else if(users) {
 			query.user = users.map(u => u.id)
 		}
 		
