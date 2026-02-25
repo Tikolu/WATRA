@@ -54,6 +54,7 @@ html[theme^=dark] {
 
 .watra-logo {
 	filter: hue-rotate(calc(var(--hue) - 100deg));
+	user-select: none;
 }
 
 
@@ -751,6 +752,11 @@ article :first-child {
 
 article :last-child, article:last-child {
 	margin-bottom: 0;
+}
+
+article.disabled {
+	color: var(--secondary-text);
+	opacity: 0.5;
 }
 
 

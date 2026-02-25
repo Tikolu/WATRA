@@ -1,5 +1,5 @@
 <% layout("/layouts/dialog", {
-	scripts: ["event/participation", "signature"],
+	scripts: ["signature", "event/participation"],
 	styles: ["signature"],
 	meta: {
 		eventID: $.targetEvent.id
@@ -44,6 +44,14 @@
 				</label>
 			</form>
 		</section>
+		<article id="participation-text">
+			<p>
+				Podpisując się poniżej, udzielasz zgody na udział <%= $.targetInvitation.user.displayName %> w akcji <%= $.targetEvent.displayName %>. W przypadku rezygnacji z udziału, zobowiązujesz się do zmienienia swojego wyboru powyżej.
+			</p>
+			<p>
+				Oświadczasz, że wszystkie dane na profilu <a href="/users/<%= $.targetInvitation.user.id %>"><%= $.targetInvitation.user.displayName %></a> (w tym dane kontaktowe i wymagania medyczne/dietetyczne) są poprawne i aktualne. Jeśli danę ulegną zmianie, zobowiązujesz się do niezwłocznego zaktualizowania ich na profilu uczestnika. Wyrażasz zgodę na dostęp do tych danych dla organizatorów akcji, w celach zapewnienia bezpieczeństwa.
+			</p>
+		</article>
 		<%~ include("/templates/signature", {
 			user: $.user
 		}) %>

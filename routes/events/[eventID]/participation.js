@@ -28,6 +28,6 @@ export default async function({user, targetEvent, participant: targetUserID}) {
 	return html("event/participation", {
 		user,
 		targetEvent,
-		targetInvitation,
+		targetInvitation
 	})
 }

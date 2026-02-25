@@ -11,7 +11,7 @@ export default async function({user, targetEvent, targetUser, participation, sig
 	if(typeof participation != "boolean") throw new HTTPError(400)
 
 	// Verify signature
-	await user.verifySignature(signature)
+	if(participation) await user.verifySignature(signature)
 
 	// Set participation state
 	await targetInvitation.setState(participation ? "accepted" : "declined")

@@ -13,7 +13,12 @@ API.registerHandler("event/[eventID]/member/[memberID]/setParticipation", {
 })
 
 main.onchange = () => {
-	signature.classList.remove("disabled")
 	signature.reset()
+
+	const participating = participationChoiceYes.checked
+	
+	participationText.classList.toggle("disabled", !participating)
+	signature.classList.toggle("disabled", !participating)
+	signature.required = participating	
 }
-if(window.signature) signature.classList.add("disabled")
+if(window.signature) main.onchange()
