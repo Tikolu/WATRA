@@ -7,7 +7,6 @@
 	border-radius: var(--border-radius);
 	padding: 1em;
 	box-sizing: border-box;
-	overflow: hidden;
 	transition: background-color 250ms;
 
 	h3 {
@@ -141,6 +140,8 @@
 	}
 
 	.signature-info {
+		overflow: hidden;
+		white-space: nowrap;
 		animation: fade-in 250ms;
 		
 		h3 {
