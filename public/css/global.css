@@ -80,6 +80,7 @@ html {
 	overflow-x: hidden;
 	scrollbar-color: var(--secondary-text) var(--surface-2);
 	-webkit-tap-highlight-color: transparent;
+	cursor: default;
 }
 
 ::selection {
@@ -219,6 +220,10 @@ textarea {
 	resize: none;
 }
 
+input, textarea {
+	cursor: text;
+}
+
 label {
 	overflow: hidden;
 	vertical-align: middle;
@@ -263,6 +268,15 @@ input:focus, select:focus, textarea:focus, [contenteditable]:focus {
 input:disabled, select:disabled, textarea:disabled {
 	background-color: var(--surface-2);
 	color: var(--secondary-text);
+	cursor: default;
+}
+
+select {
+	cursor: pointer;
+}
+
+select:disabled {
+	cursor: not-allowed;
 }
 
 input.invalid, select.invalid {
@@ -283,10 +297,11 @@ input[type=checkbox], input[type=radio] {
 	width: 1.5em;
 	margin: 0;
 	flex-shrink: 0;
-}
-
-input[type=checkbox] + label, input[type=radio] + label {
-	margin-left: 0.5em;
+	cursor: pointer;
+	
+	& + label {
+		margin-left: 0.5em;
+	}
 }
 
 input[type=checkbox]:focus, input[type=radio]:focus {
@@ -297,8 +312,12 @@ input[type=checkbox]:focus-visible, input[type=radio]:focus-visible {
 	outline: 1px solid var(--text);
 }
 
-input[type=checkbox]:disabled + label, input[type=radio]:disabled + label {
-	color: var(--secondary-text);
+input[type=checkbox]:disabled, input[type=radio]:disabled {
+	cursor: not-allowed;
+	
+	& + label {
+		color: var(--secondary-text);
+	}
 }
 
 input[type=file] {
