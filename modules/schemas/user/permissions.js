@@ -40,12 +40,15 @@ export async function ACCESS(user) {
 		}
 	}
 
-	// Users with "accessUser" role in events in which user is a participant can access
-	await this.populate("eventInvites")
-	for(const event of this.eventInvites) {
-		const invite = event.participants.id(this.id)
-		if(invite?.state != "accepted") continue
-		if(await user.hasRoleInUnits("accessUser", event)) return true
+	// Users with "accessUser" role in events in which user (or their child) is a participant can access
+	await this.populate("children")
+	for(const u of [this, ...this.children]) {
+		await u.populate("eventInvites")
+		for(const event of u.eventInvites) {
+			const invite = event.participants.id(u.id)
+			if(invite?.state != "accepted") continue
+			if(await user.hasRoleInUnits("accessUser", event)) return true
+		}
 	}
 
 	// Parent can access other parents of their children

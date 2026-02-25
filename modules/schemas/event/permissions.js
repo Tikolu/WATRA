@@ -20,10 +20,10 @@ export async function ACCESS(user) {
 	// "manageEvent" roles in event and upperUnit can access
 	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
-	// "manageEventInvite" roles in any invited unit can access
+	// "manageEventInvite" roles in any invited unit (or upper units) can access
 	await this.populate({"invitedUnits": "unit"})
 	for(const i of this.invitedUnits) {
-		if(await user.hasRoleInUnits("manageEventInvite", i.unit)) return true
+		if(await user.hasRoleInUnits("manageEventInvite", i.unit.traverse("upperUnits", {includeSelf: true}))) return true
 	}
 
 	return false
@@ -34,8 +34,8 @@ export async function ACCESS_PARTICIPANTS(user) {
 	// Lack of ACCESS permission denies ACCESS_PARTICIPANTS
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// "accessUser" roles in event can access participants
-	if(await user.hasRoleInUnits("accessUser", this)) return true
+	// "accessUser" roles in event and upper units can access participants
+	if(await user.hasRoleInUnits("accessUser", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	// Approvers can access participants
 	if(await user.checkPermission(this.PERMISSIONS.APPROVE)) return true

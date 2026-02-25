@@ -11,6 +11,7 @@ export async function _open({user, targetForm, responseID}) {
 	let targetResponse
 	if(responseID == "new") {
 		// Check permissions
+		if(userOptions.length == 0) throw new HTTPError(403)
 		await user.requirePermission(targetForm.PERMISSIONS.RESPOND)
 		
 		// Create new response and save to DB

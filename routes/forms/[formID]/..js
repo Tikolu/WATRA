@@ -59,7 +59,18 @@ export default async function({user, targetForm}) {
 		// Get responses of all controlled profiles
 		await user.populate("children")
 		const responseUsers = await user.getControlledProfiles()
+
+		// Get responses of participants from invited units where user has "manageEventInvite" role
+		if(targetForm.eventForm) {
+			await targetForm.unit.populate({"invitedUnits": "unit"})
+			for(const i of targetForm.unit.invitedUnits) {
+				if(!await user.hasRoleInUnits("manageEventInvite", i.unit.traverse("upperUnits", {includeSelf: true}))) continue
+				responseUsers.push(...i.invitedParticipants.map(p => p.user))
+			}
+		}
+
 		responses = await targetForm.getUserResponses(responseUsers, {orSubmittedBy: user})
+		
 		await responses.populate("user", {known: responseUsers})
 	}
 

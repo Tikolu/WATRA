@@ -10,6 +10,7 @@ export async function _open({user, targetForm, responseID}) {
 
 		// Get user options for submitting
 		const userOptions = await targetForm.getResponseUserOptions(user)
+		if(userOptions.length == 0) throw new HTTPError(403)
 
 		// Create new response and save to DB
 		targetResponse = new FormResponse({

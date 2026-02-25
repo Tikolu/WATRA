@@ -14,6 +14,14 @@ export async function ACCESS(user) {
 	// MANAGE_FORMS permission in the form's unit allows accessing the form
 	if(await user.checkPermission(this.unit.PERMISSIONS.MANAGE_FORMS)) return true
 
+	// "manageEventInvite" roles in any invited unit (or upper unit) can access form
+	if(this.eventForm) {
+		await this.unit.populate({"invitedUnits": "unit"})
+		for(const i of this.unit.invitedUnits) {
+			if(await user.hasRoleInUnits("manageEventInvite", i.unit.traverse("upperUnits", {includeSelf: true}))) return true
+		}
+	}
+
 	// If user cannot submit responses, only allow access if they have already submitted a response
 	if(!await user.checkPermission(this.PERMISSIONS.RESPOND)) {
 		const existingResponse = await this.getUserResponses(

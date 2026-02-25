@@ -88,6 +88,7 @@ export class FormClass {
 	/** Returns users for which a user can submit a response */
 	async getResponseUserOptions(user, required=false) {
 		let users = []
+		if(!this.config.enabled) return users
 
 		// If form is within an event, return controlled profiles which have accepted participation
 		if(this.eventForm) {

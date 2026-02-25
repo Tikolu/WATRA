@@ -109,6 +109,15 @@ schema.permissions = {
 		await this.populate("user")
 		if(await user.checkPermission(this.user.PERMISSIONS.APPROVE)) return true
 
+		// User can access responses of users from invited units in which they have "manageEventInvite" role
+		if(this.form.eventForm) {
+			await this.form.populate({"unit": {"invitedUnits": "unit"}})
+			for(const i of this.form.unit.invitedUnits) {
+				if(!await user.hasRoleInUnits("manageEventInvite", i.unit.traverse("upperUnits", {includeSelf: true}))) continue
+				if(i.invitedParticipants.some(p => p.user.id == this.user.id)) return true
+			}
+		}
+
 		return false
 	},
 
@@ -117,6 +126,9 @@ schema.permissions = {
 		
 		// Lack of ACCESS permission denies EDIT permission
 		if(!await user.checkPermission(this.form.PERMISSIONS.ACCESS)) return false
+		
+		// Cannot edit if form is disabled
+		if(!this.form.config.enabled) return false
 		
 		// Cannot edit submitted response
 		if(this.submitted) return false
