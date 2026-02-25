@@ -16,7 +16,23 @@ export default async function({user, targetEvent, targetUser, participation, sig
 	// Set participation state
 	await targetInvitation.setState(participation ? "accepted" : "declined")
 
+	// Check for required forms
+	const requiredForms = []
+	if(participation) {
+		await targetEvent.populate("forms")
+		for(const form of targetEvent.forms) {
+			if(!form.config.enabled || !form.config.requireResponse) continue
+			if(!form.userFilter(targetUser)) continue
+			const existing = await form.getUserResponses(targetUser, {check: true})
+			if(!existing || !existing.submitted) requiredForms.push({
+				form: form.id,
+				draft: existing?.id || undefined
+			})
+		}
+	}
+
 	return {
-		participation
+		participation,
+		requiredFormResponses: requiredForms.length ? requiredForms : undefined
 	}
 }

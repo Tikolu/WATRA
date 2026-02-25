@@ -9,6 +9,11 @@ API.registerHandler("event/[eventID]/member/[memberID]/setParticipation", {
 		}
 		data.participation = data.participation == "yes"
 		return true
+	},
+	after: response => {
+		if(!response.requiredFormResponses?.length) return
+		const formResponse = response.requiredFormResponses[0]
+		window.top.createURLDialog(`/forms/${formResponse.form}/responses/${formResponse.draft || "new"}`, true)
 	}
 })
 
