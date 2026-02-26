@@ -94,6 +94,11 @@ html {
 }
 
 @media print {
+	* {
+		color: black !important;
+		background-color: white !important;
+	}
+		
 	body {
 		font-size: 0.8em;
 
@@ -109,11 +114,6 @@ html {
 	
 	header, .button-row {
 		display: none !important;
-	}
-
-	a {
-		text-decoration: none;
-		color: var(--text) !important;
 	}
 }
 
