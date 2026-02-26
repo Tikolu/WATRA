@@ -962,7 +962,9 @@ function processDialogOpeners() {
 	window.dialogOpeners = []
 	
 	for(const element of document.querySelectorAll("[opens-dialog]")) {
-		element.onclick = async () => {
+		element.onclick = async event => {
+			event.preventDefault()
+			
 			const dialogID = element.getAttribute("opens-dialog")
 
 			// URL mode

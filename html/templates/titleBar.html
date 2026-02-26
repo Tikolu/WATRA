@@ -28,6 +28,7 @@
 	<a
 		<% if($.user) { %>
 			opens-dialog="/users/switcher"
+			href="/users/<%= $.user.id %>"
 		<% } else { %>
 			href="/login"
 		<% } %>
