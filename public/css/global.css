@@ -343,8 +343,10 @@ h1 > input, h2 > input {
 	background-color: transparent;
 	padding: 0;
 	width: unset;
+	max-width: 100%;
 	height: unset;
 	field-sizing: content;
+	text-overflow: ellipsis;
 	font-size: inherit;
 	font-weight: inherit;
 	transition: padding 250ms, background-color 250ms;
