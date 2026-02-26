@@ -3,42 +3,46 @@
 		<i>draft</i>
 		Dokumenty
 	</h2>
-	<div class="entry-grid">
-	<% for(const file of $.files) { %>
-		<div>
-			<h3><%= file.file.name %></h3>
-			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-				<p>
-					<% if(file.access == "owner") { %>
-						Dostępny dla komendy i zatwierdzających
-					<% } else if(file.access == "role") { %>
-						Dostępny dla kadry i zatwierdzających
-					<% } else if(file.access == "participant") { %>
-						Dostępny dla kadry i uczestników
+	<% if($.files.length > 0) { %>
+		<div class="entry-grid">
+			<% for(const file of $.files) { %>
+				<div>
+					<h3><%= file.file.name %></h3>
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+						<p>
+							<% if(file.access == "owner") { %>
+								Dostępny dla komendy i zatwierdzających
+							<% } else if(file.access == "role") { %>
+								Dostępny dla kadry i zatwierdzających
+							<% } else if(file.access == "participant") { %>
+								Dostępny dla kadry i uczestników
+							<% } %>
+						</p>
 					<% } %>
-				</p>
-			<% } %>
-			<div class="button-row">
-				<button href="<%= file.file.url %>" target="_blank">
-					<i>file_open</i>
-					Otwórz
-				</button>
-				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-					<button
-						class="dangerous"
-						api="event/<%= $.targetEvent.id %>/file/<%= file.id %>/delete"
-						<% if($.targetEvent.approvalState) { %>
-							disabled
+					<div class="button-row">
+						<button href="<%= file.file.url %>" target="_blank">
+							<i>file_open</i>
+							Otwórz
+						</button>
+						<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+							<button
+								class="dangerous"
+								api="event/<%= $.targetEvent.id %>/file/<%= file.id %>/delete"
+								<% if($.targetEvent.approvalState) { %>
+									disabled
+								<% } %>
+							>
+								<i>delete</i>
+								Usuń z akcji
+							</button>
 						<% } %>
-					>
-						<i>delete</i>
-						Usuń z akcji
-					</button>
-				<% } %>
-			</div>
+					</div>
+				</div>
+			<% } %>
 		</div>
+	<% } else { %>
+		<p>Załącz dokumenty, które mogą być przydatne dla zatwierdzających, kadry lub uczestników.</p>
 	<% } %>
-	</div>
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<div class="button-row">
 			<button

@@ -22,6 +22,15 @@
 					}) %>
 				<% } %>
 			</div>
+		<% } else { %>
+			<p>
+				Utwórz formularz, aby zbierać informacje, zgody lub płatności od
+				<% if($.targetUnit?.modelName == "Event") { %>
+					uczestników akcji.
+				<% } else { %>
+					członków jednostki.
+				<% } %>
+			</p>
 		<% } %>
 		<% if($.targetUnit && $.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_FORMS)) { %>
 			<div class="button-row">
