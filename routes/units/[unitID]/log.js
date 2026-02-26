@@ -10,9 +10,7 @@ export default async function({user, targetUnit, start, end, direct, type}) {
 	// Default values
 	start ||= Date.now() - 24 * 60 * 60 * 1000 // 24 hours ago
 	const directOnly = direct == "true"
-
-	// Load unit members
-	const members = await targetUnit.listMembers(true).toArray()
+	
 	// Load logs
 	const query = {
 		$or: [
@@ -25,10 +23,24 @@ export default async function({user, targetUnit, start, end, direct, type}) {
 	if(end) query._id.$lte = Log.dateToID(end)
 	
 	if(!directOnly) {
-		const memberIDs = members.map(m => m.id)
+		// Load unit members, archived members and parents
+		const members = new Set()
+		for await(const unit of targetUnit.traverse("subUnits", {includeSelf: true})) {
+			await unit.populate({
+				"roles": "user",
+				"archivedUsers": {}
+			})
+			for(const u of [...unit.roles.map(r => r.user), ...unit.archivedUsers]) {
+				members.add(u.id)
+				for(const parent of u.parents || []) {
+					members.add(parent.id)
+				}
+			}
+		}
+
 		query.$or.push(
-			{user: {$in: memberIDs}},
-			{targetUser: {$in: memberIDs}}
+			{user: {$in: [...members]}},
+			{targetUser: {$in: [...members]}}
 		)
 	}
 	if(type) {
