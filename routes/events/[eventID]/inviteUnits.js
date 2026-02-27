@@ -1,7 +1,7 @@
 import html from "modules/html.js"
 import Config from "modules/config.js"
 import Unit from "modules/schemas/unit"
-import Graph from "modules/schemas/unit/graph.js"
+import UnitTree from "modules/schemas/unit/tree.js"
 import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetEvent}) {
@@ -20,8 +20,8 @@ export default async function({user, targetEvent}) {
 	// Get event org
 	const eventOrg = await targetEvent.getOrg()
 
-	// Generate graph
-	const graph = await topUnit?.getGraph({
+	// Generate tree
+	const tree = await topUnit?.getTree({
 		userFilter: false,
 		unitFilter: unit => {
 			// Skip units in different org
@@ -30,11 +30,11 @@ export default async function({user, targetEvent}) {
 			return unit.config.eventRules.invite || unit.subUnits.length
 		},
 		subUnitFilter: unit => targetEvent.invitedUnits.find(i => i.unit.id == unit.id)
-	}) || new Graph()
+	}) || new UnitTree()
 
 	return html("event/inviteUnits", {
 		user,
 		targetEvent,
-		graph
+		tree
 	})
 }

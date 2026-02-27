@@ -29,8 +29,8 @@ export async function chooseParticipants({user, targetUnit, targetEvent, targetI
 	// Get event org
 	const eventOrg = await targetEvent.getOrg()
 
-	// Generate graph
-	const graph = await targetUnit.getGraph({
+	// Generate tree
+	const tree = await targetUnit.getTree({
 		userFilter: user => {
 			// Only add users from the same org as the event
 			if(!eventOrg || !user.org) return true
@@ -43,6 +43,6 @@ export async function chooseParticipants({user, targetUnit, targetEvent, targetI
 		targetUnit,
 		targetEvent,
 		targetInvitation,
-		graph
+		tree
 	})
 }

@@ -8,7 +8,7 @@ import Log from "modules/schemas/log.js"
 
 import Config from "modules/config.js"
 import HTTPError from "modules/server/error.js"
-import Graph from "modules/schemas/unit/graph.js"
+import UnitTree from "modules/schemas/unit/tree.js"
 
 import userMedical from "./medical.js"
 import userAuth from "./auth.js"
@@ -265,31 +265,31 @@ export class UserClass {
 		}
 	}
 
-	/** Generates object graphs of the user's units and subUnits */
-	async getGraph(options={}) {
-		let graphs = []
+	/** Generates object trees of the user's units and subUnits */
+	async getTree(options={}) {
+		let trees = []
 		
 		await this.populate({"roles": "unit"})
 		for(const role of this.roles) {
 			// Filter unit
 			if(options.roleFilter && !await options.roleFilter(role.unit, role)) continue
 
-			graphs.push(await role.unit.getGraph(options))
+			trees.push(await role.unit.getTree(options))
 		}
 
-		// Remove graphs which are contained in other graphs
-		graphs = graphs.filter(graph => {
-			if(!graph) return false
-			for(const otherGraph of graphs) {
-				if(graph == otherGraph) continue
-				if(otherGraph?.contains(graph)) return false
+		// Remove trees which are contained in other trees
+		trees = trees.filter(tree => {
+			if(!tree) return false
+			for(const otherTree of trees) {
+				if(tree == otherTree) continue
+				if(otherTree?.contains(tree)) return false
 			}
 			return true
 		})
 
-		if(graphs.length == 1) return graphs[0]
-		else return new Graph({
-			subUnits: graphs
+		if(trees.length == 1) return trees[0]
+		else return new UnitTree({
+			subUnits: trees
 		})
 	}
 

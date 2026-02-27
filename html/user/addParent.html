@@ -34,7 +34,7 @@
 			</button>
 		</section>
 	<% } %>
-	<% if($.graph.userCount || $.action == "link") { %>
+	<% if($.tree.userCount || $.action == "link") { %>
 		<section id="link-section" class="fill-height">
 			<% if($.targetUser.isAdult) { %>
 				<h3>Dodaj istniejący kontakt alarmowy</h3>
@@ -42,7 +42,7 @@
 				<h3>Dodaj istniejącego rodzica</h3>
 			<% } %>
 			<%~ include("/user/templates/userPicker", {
-				graph: $.graph,
+				tree: $.tree,
 				fieldName: "parentID"
 			}) %>
 			<button id="link-parent-button" api="user/[userID]/parent/link" class="confirm">

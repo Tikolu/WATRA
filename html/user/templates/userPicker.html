@@ -6,7 +6,7 @@
 	if(Array.isArray($.disabled)) $.disabled = createFilter($.disabled)
 	if(Array.isArray($.selected)) $.selected = createFilter($.selected)
 
-	$.graph ||= new Graph({members: $.users})
+	$.tree ||= new UnitTree({members: $.users})
 %>
 <div class="user-picker-options" id="<%= $.id %>-options">
 	<input
@@ -77,10 +77,10 @@
 		data-limit="<%= $.limit %>"
 	<% } %>
 >
-	<% if(!$.graph?.userCount) { %>
+	<% if(!$.tree?.userCount) { %>
 		<p class="user-picker-error">Brak użytkowników</p>
 	<% } else { %>
-		<% renderNode($.graph, true) %>
+		<% renderNode($.tree, true) %>
 		<p class="user-picker-error" hidden>Brak wyników</p>
 	<% } %>
 </div>

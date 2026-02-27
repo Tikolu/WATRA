@@ -1,13 +1,13 @@
 import html from "modules/html.js"
 import Config from "modules/config.js"
-import Graph from "modules/schemas/unit/graph.js"
+import UnitTree from "modules/schemas/unit/tree.js"
 
 export default async function({user, targetUser, action}) {
 	// Check for permissions
 	await user.requirePermission(targetUser.PERMISSIONS.ADD_PARENT)
 
-	// Generate graph
-	const graph = await user.getGraph({
+	// Generate tree
+	const tree = await user.getTree({
 		roleFilter: (unit, role) => role.hasTag("manageSubUnit"),
 		processNodes: async node => {
 			// Add user's parents
@@ -19,7 +19,7 @@ export default async function({user, targetUser, action}) {
 			}
 			
 			if(parents.length) {
-				node.subUnits.push(new Graph({
+				node.subUnits.push(new UnitTree({
 					unit: {displayName: "Rodzice"},
 					members: parents
 				}))
@@ -53,14 +53,14 @@ export default async function({user, targetUser, action}) {
 		for(const parent of child.parents) {
 			if(parent.id == user.id) continue
 			parent.description = `(${parent.children.map(c => c.displayName).join(", ")})`
-			graph.members.push(parent)
+			tree.members.push(parent)
 		}
 	}
 
 	return html("user/addParent", {
 		user,
 		targetUser,
-		graph,
+		tree,
 		action
 	})
 }

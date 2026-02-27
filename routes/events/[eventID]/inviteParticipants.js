@@ -8,8 +8,8 @@ export default async function({user, targetEvent}) {
 	const unitsTree = await user.listUnits(true).toArray()
 	const topUnit = unitsTree.at(-1)
 
-	// Generate graph
-	const graph = await topUnit.getGraph({
+	// Generate tree
+	const tree = await topUnit.getTree({
 		roleFilter: (unit, role) => user.checkPermission(unit.PERMISSIONS.CREATE_USER),
 		userFilter: async u => {
 			// Exclude users that are already invited
@@ -30,6 +30,6 @@ export default async function({user, targetEvent}) {
 	return html("event/inviteParticipants", {
 		user,
 		targetEvent,
-		graph
+		tree
 	})
 }

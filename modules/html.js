@@ -5,14 +5,14 @@ import * as Text from "modules/text.js"
 
 import Config from "modules/config.js"
 import Event from "modules/schemas/event"
-import Graph from "modules/schemas/unit/graph.js"
+import UnitTree from "modules/schemas/unit/tree.js"
 
 const etaImports = {
 	Base64,
 	Text,
 	datetime,
 	Config,
-	Graph
+	UnitTree
 }
 
 const eta = new Eta({

@@ -5,7 +5,7 @@ import Role from "modules/schemas/role.js"
 import Form from "modules/schemas/form"
 
 import Config from "modules/config.js"
-import Graph from "./graph.js"
+import UnitTree from "./tree.js"
 
 export class UnitClass {
 	/* * Properties * */
@@ -313,8 +313,8 @@ export class UnitClass {
 		})
 	}
 
-	/** Generates an object graph of the unit's subUnits and members */
-	async getGraph(options={}) {
+	/** Generates an object tree of the unit's subUnits and members */
+	async getTree(options={}) {
 		const {
 			org = this.org,
 			sortMembers = false,
@@ -327,23 +327,23 @@ export class UnitClass {
 		// Filter unit using custom function
 		if(unitFilter && !await unitFilter(this)) return
 
-		const graph = new Graph({
+		const tree = new UnitTree({
 			unit: this,
 			org
 		})
 
 		// Load members
 		if(userFilter !== false) {
-			graph.members.push(...await this.listMembers(false, org).toArray())
+			tree.members.push(...await this.listMembers(false, org).toArray())
 		}
 
 		// Sort members using custom function
 		if(typeof sortMembers == "function") {
-			graph.members.sort(sortMembers)
+			tree.members.sort(sortMembers)
 			
 		// Sort members by name
 		} else if(sortMembers) {
-			graph.members.sort((a, b) => {
+			tree.members.sort((a, b) => {
 				const nameA = a.displayName?.toLowerCase() || ""
 				const nameB = b.displayName?.toLowerCase() || ""
 				return nameA.localeCompare(nameB)
@@ -357,7 +357,7 @@ export class UnitClass {
 				filter: org ? {org: {$in: [org, undefined]}} : undefined
 			})
 			for await(const subUnit of subUnits) {
-				const subGraph = await subUnit.getGraph({
+				const subTree = await subUnit.getTree({
 					org,
 					sortMembers,
 					userFilter,
@@ -365,23 +365,23 @@ export class UnitClass {
 					subUnitFilter,
 					processNodes
 				})
-				if(subGraph) graph.subUnits.push(subGraph)
+				if(subTree) tree.subUnits.push(subTree)
 			}
 		}
 
 		// Run custom function
-		if(processNodes) await processNodes(graph)
+		if(processNodes) await processNodes(tree)
 
 		// Filter members using custom function
 		if(userFilter && userFilter !== false) {
 			const newMembers = []
-			for(const member of graph.members) {
+			for(const member of tree.members) {
 				if(await userFilter(member)) newMembers.push(member)
 			}
-			graph.members = newMembers
+			tree.members = newMembers
 		}
 
-		return graph
+		return tree
 	}
 
 	/** Gets all events in all subUnits */

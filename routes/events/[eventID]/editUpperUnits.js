@@ -11,8 +11,8 @@ export default async function({user, targetEvent}) {
 		}
 	}
 	
-	// Generate graph
-	const graph = await user.getGraph({
+	// Generate tree
+	const tree = await user.getTree({
 		userFilter: false,
 		roleFilter: (unit, role) => role.hasTag("manageEvent"),
 		unitFilter: unit => unit.config.eventRules.create || unit.subUnits.length
@@ -20,6 +20,6 @@ export default async function({user, targetEvent}) {
 	
 	return html("event/editUpperUnits", {
 		targetEvent,
-		graph
+		tree
 	})
 }

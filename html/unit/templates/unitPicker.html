@@ -6,7 +6,7 @@
 	if(Array.isArray($.disabled)) $.disabled = createFilter($.disabled)
 	if(Array.isArray($.selected)) $.selected = createFilter($.selected)
 
-	$.graph ||= new Graph({members: $.units})
+	$.tree ||= new UnitTree({members: $.units})
 %>
 <div class="unit-picker-options" id="<%= $.id %>-options">
 	<% if($.multiple) { %>
@@ -56,5 +56,5 @@
 	<% } %>
 <% } %>
 <div class="unit-picker" id="<%= $.id %>">
-	<% renderNode($.graph, true) %>
+	<% renderNode($.tree, true) %>
 </div>

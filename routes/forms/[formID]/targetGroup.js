@@ -5,7 +5,7 @@ export default async function({user, targetForm}) {
 	// Check permissions
 	await user.requirePermission(targetForm.PERMISSIONS.CONFIG)
 
-	let users, graph
+	let users, tree
 	await targetForm.populate("unit")
 
 	// Get users from event form
@@ -13,15 +13,15 @@ export default async function({user, targetForm}) {
 		users = targetForm.unit.participants.filter(p => p.state == "accepted").map(p => p.user)
 		await users.populate({}, {ref: "User"})
 
-	// Get graph from unit form
+	// Get tree from unit form
 	} else {
-		graph = await targetForm.unit.getGraph()
+		tree = await targetForm.unit.getTree()
 	}
 
 	return html("form/targetGroup", {
 		user,
 		targetForm,
 		users,
-		graph
+		tree
 	})
 }

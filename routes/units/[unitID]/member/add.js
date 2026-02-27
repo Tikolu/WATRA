@@ -1,6 +1,6 @@
 import html from "modules/html.js"
 import Config from "modules/config.js"
-import Graph from "modules/schemas/unit/graph.js"
+import UnitTree from "modules/schemas/unit/tree.js"
 
 export default async function({user, targetUnit}) {
 
@@ -9,8 +9,8 @@ export default async function({user, targetUnit}) {
 	
 	const directMembers = await targetUnit.listMembers(false).toArray()
 	
-	// Generate graph
-	const graph = await user.getGraph({
+	// Generate tree
+	const tree = await user.getTree({
 		roleFilter: (unit, role) => user.checkPermission(unit.PERMISSIONS.CREATE_USER),
 		userFilter: user => directMembers.every(m => m.id != user.id),
 		processNodes: async node => {
@@ -26,7 +26,7 @@ export default async function({user, targetUnit}) {
 			}
 			
 			if(parents.length) {
-				node.subUnits.push(new Graph({
+				node.subUnits.push(new UnitTree({
 					unit: {displayName: "Rodzice"},
 					members: parents
 				}))
@@ -37,6 +37,6 @@ export default async function({user, targetUnit}) {
 
 	return html("unit/member/add", {
 		targetUnit,
-		graph
+		tree
 	})
 }

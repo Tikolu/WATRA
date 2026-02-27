@@ -9,7 +9,7 @@
 <main>
 	<section class="fill-height">
 		<%~ include("/unit/templates/unitPicker", {
-			graph: $.graph,
+			tree: $.tree,
 			multiple: true,
 			selected: unit => $.targetEvent.upperUnits.hasID(unit.id),
 			filter: unit => unit.config.eventRules.create

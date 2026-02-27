@@ -10,7 +10,7 @@
 <main>
 	<section class="fill-height">
 		<%~ include("/user/templates/userPicker", {
-			graph: $.graph,
+			tree: $.tree,
 			multiple: true,
 			selected: user => $.targetEvent.participants.hasID(user.id),
 			// Cannot invite user added to event from other unit

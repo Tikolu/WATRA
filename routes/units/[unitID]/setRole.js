@@ -24,8 +24,8 @@ export default async function({user, targetUnit, orgContext}) {
 		roleOptions.push(roleID)
 	}
 
-	// Generate graph
-	const graph = await targetUnit.getGraph({
+	// Generate tree
+	const tree = await targetUnit.getTree({
 		sortMembers: true
 	})
 	
@@ -33,6 +33,6 @@ export default async function({user, targetUnit, orgContext}) {
 		user,
 		targetUnit,
 		roleOptions,
-		graph
+		tree
 	})
 }
