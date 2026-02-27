@@ -14,8 +14,7 @@
 						showState: $.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS),
 						warnings: Array.conditional(
 							$.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) && !role.user.confirmed, "Niezatwierdzone dane"
-						),
-						...$
+						)
 					}) %>
 				<% } %>
 			<% } %>
@@ -25,8 +24,7 @@
 						targetUser: participant.user,
 						warnings: Array.conditional(
 							!participant.user.confirmed, "Niezatwierdzone dane"
-						),
-						...$
+						)
 					}) %>
 				<% } %>
 			<% } %>

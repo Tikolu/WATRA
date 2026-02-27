@@ -26,7 +26,9 @@
 
 <% if($.targetUnit.upperUnits?.length > 0) { %>
 	<p>
-		<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])) %>
+		<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", {
+			links: $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])
+		}) %>
 		<% if($.targetUnit.org && $.targetUnit.upperUnits.some(u => u.org != $.targetUnit.org)) { %>
 			(<%= Config.orgs[$.targetUnit.org]?.name || $.targetUnit.org %>)
 		<% } %>
