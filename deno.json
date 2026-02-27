@@ -10,7 +10,7 @@
 	},
 	"tasks": {
 		"watra": "deno --permission-set=default --env-file --no-prompt index.js",
-		"watra-dev": "deno --inspect --watch --permission-set=default --env-file --no-prompt index.js --development"
+		"watra-dev": "deno --inspect --watch-hmr --permission-set=default --env-file --no-prompt index.js --development"
 	},
 	"imports": {
 		"modules/": "./modules/",
