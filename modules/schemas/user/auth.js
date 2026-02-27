@@ -1,4 +1,4 @@
-import * as webauthn from "jsr:@simplewebauthn/server"
+import * as webauthn from "webauthn"
 import { Buffer } from "node:buffer"
 import randomID from "modules/randomID.js"
 

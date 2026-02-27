@@ -21,11 +21,14 @@
 		"modules/schemas/event": "./modules/schemas/event/index.js",
 		"modules/schemas/form": "./modules/schemas/form/index.js",
 
-		"mongoose": "npm:mongoose@9.0.0",
+		"mongoose": "npm:mongoose",
+		"eta": "jsr:@bgub/eta",
 		"sift": "npm:sift",
 		"cli": "jsr:@std/cli",
 		"csv": "jsr:@std/csv",
 		"mime": "npm:mime",
+		"datetime": "jsr:@std/datetime",
+		"webauthn": "jsr:@simplewebauthn/server",
 		"aaguid.json": "https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/refs/heads/main/aaguid.json"
 	},
 	"lint": {

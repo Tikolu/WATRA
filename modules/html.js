@@ -1,5 +1,5 @@
-import { Eta } from "jsr:@eta-dev/eta"
-import * as datetime from "jsr:@std/datetime"
+import { Eta } from "eta"
+import * as datetime from "datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
 

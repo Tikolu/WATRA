@@ -1,4 +1,4 @@
-import * as datetime from "jsr:@std/datetime"
+import * as datetime from "datetime"
 import * as Text from "modules/text.js"
 import HTTPError from "modules/server/error.js"
 

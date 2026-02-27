@@ -1,5 +1,5 @@
 import "modules/generator.js"
-import * as datetime from "jsr:@std/datetime"
+import * as datetime from "datetime"
 
 /** Global date limits */
 globalThis.MIN_DATE = new Date("1907-08-01")

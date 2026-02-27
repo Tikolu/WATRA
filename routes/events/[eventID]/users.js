@@ -1,6 +1,6 @@
 import html from "modules/html.js"
 import HTTPError from "modules/server/error.js"
-import * as datetime from "jsr:@std/datetime"
+import * as datetime from "datetime"
 import Config from "modules/config.js"
 
 import * as Text from "modules/text.js"

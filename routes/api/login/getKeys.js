@@ -1,7 +1,7 @@
 import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
 import User from "modules/schemas/user"
-import * as webauthn from "jsr:@simplewebauthn/server"
+import * as webauthn from "webauthn"
 
 export default async function({userID}) {
 	let user

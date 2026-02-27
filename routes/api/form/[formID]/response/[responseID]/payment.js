@@ -1,5 +1,5 @@
 import Config from "modules/config.js"
-import * as datetime from "jsr:@std/datetime"
+import * as datetime from "datetime"
 import HTTPError from "modules/server/error.js"
 
 export async function start({user, targetForm, targetResponse}) {

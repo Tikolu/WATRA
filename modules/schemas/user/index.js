@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import * as Text from "modules/text.js"
-import * as datetime from "jsr:@std/datetime"
+import * as datetime from "datetime"
 
 import Role from "modules/schemas/role.js"
 import Event from "modules/schemas/event"

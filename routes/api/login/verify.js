@@ -1,4 +1,4 @@
-import * as webauthn from "jsr:@simplewebauthn/server"
+import * as webauthn from "webauthn"
 
 import HTTPError from "modules/server/error.js"
 import User from "modules/schemas/user"

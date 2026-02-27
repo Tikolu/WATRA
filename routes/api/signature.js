@@ -1,5 +1,5 @@
-import * as webauthn from "jsr:@simplewebauthn/server"
-import * as datetime from "jsr:@std/datetime"
+import * as webauthn from "webauthn"
+import * as datetime from "datetime"
 
 import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"

@@ -1,4 +1,4 @@
-import * as datetime from "jsr:@std/datetime"
+import * as datetime from "datetime"
 
 export async function _open({user, targetEvent}) {
 	// Check permissions
