@@ -37,9 +37,13 @@ h1 {
 	max-width: 20em;
 }
 
-#medical-categories dialog form {
-	row-gap: 0.25em;
-	grid-template-columns: 1fr;
+#medical-categories dialog {
+	width: 30em;
+	
+	form {
+		row-gap: 0.25em;
+		grid-template-columns: 1fr;
+	}
 }
 
 #medical-categories .vertical-split textarea {

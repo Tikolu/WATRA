@@ -89,20 +89,22 @@
 			</section>
 			<dialog id="add-other-<%= category.id %>">
 				<h1><%= category.other %></h1>
-				<form>
-					<label for="<%= category.id %>-other-name">Nazwa:</label>
-					<input
-						type="text"
-						id="<%= category.id %>-other-name"
-						name="element"
-						autocomplete="off"
-						maxlength="30"
-						required>
-					<label for="<%= category.id %>-other-symptoms"><%= category.symptoms.heading %>:</label>
-					<textarea id="<%= category.id %>-other-symptoms" name="symptoms" placeholder="<%= category.symptoms.placeholder %>"></textarea>
-					<label for="<%= category.id %>-other-solutions"><%= category.solutions.heading %>:</label>
-					<textarea id="<%= category.id %>-other-solutions" name="solutions" placeholder="<%= category.solutions.placeholder %>"></textarea>
-				</form>
+				<section>
+					<form>
+						<label for="<%= category.id %>-other-name">Nazwa:</label>
+						<input
+							type="text"
+							id="<%= category.id %>-other-name"
+							name="element"
+							autocomplete="off"
+							maxlength="30"
+							required>
+						<label for="<%= category.id %>-other-symptoms"><%= category.symptoms.heading %>:</label>
+						<textarea id="<%= category.id %>-other-symptoms" name="symptoms" placeholder="<%= category.symptoms.placeholder %>"></textarea>
+						<label for="<%= category.id %>-other-solutions"><%= category.solutions.heading %>:</label>
+						<textarea id="<%= category.id %>-other-solutions" name="solutions" placeholder="<%= category.solutions.placeholder %>"></textarea>
+					</form>
+				</section>
 				<hr>
 				<div class="button-row">
 					<button>
