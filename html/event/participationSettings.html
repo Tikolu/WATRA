@@ -39,7 +39,7 @@
 				name="total"
 				min="0"
 				placeholder="(bez limitu)"
-				value="<%= $.targetEvent.limit.total || "" %>"
+				value="<%= $.targetEvent.limit.total ?? "" %>"
 				api="event/[eventID]/update/limits"
 			>
 
@@ -50,7 +50,7 @@
 				name="perUnit"
 				min="0"
 				placeholder="(bez limitu)"
-				value="<%= $.targetEvent.limit.perUnit || "" %>"
+				value="<%= $.targetEvent.limit.perUnit ?? "" %>"
 				api="event/[eventID]/update/limits"
 			>
 		</form>

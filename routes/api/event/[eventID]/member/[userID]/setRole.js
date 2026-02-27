@@ -31,7 +31,7 @@ export default async function({user, targetEvent, targetUser, roleType}) {
 	}
 
 	// User can only set their own role if they have a "setRole" role in an upper unit
-	if(user.id == targetUser.id && !await user.hasRoleInUnits("setRole", targetEvent.traverse("upperUnits"))) {
+	if(user.id == targetUser.id && userRole) {
 		throw new HTTPError(400, "Nie można zmienić własnej funkcji")
 	}
 

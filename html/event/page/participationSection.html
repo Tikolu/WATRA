@@ -3,62 +3,77 @@
 		<%~ icon`mark_email_read` %>
 		Uczestnictwo
 	</h2>
-	<% if($.targetEvent.remainingSpaces != Infinity && ($.targetEvent.remainingSpaces == 0 || $.targetEvent.registrationOpen)) { %>
-		<article>
-			<p>Dostępna ilość miejsc: <%= $.targetEvent.remainingSpaces %></p>
-		</article>
-	<% } %>
-	<div class="entry-grid">
-		<% for(const userInvite of $.approvalParticipants) { %>
-			<% if(userInvite.state == "pending" && !$.targetEvent.registrationOpen) continue %>
-			<div>
-				<div class="entry-title">
-					<h3><%= userInvite.user.displayName %></h3>
-					<p>
-						<% if(userInvite.state == "pending") { %>
-							<% if($.targetEvent.registrationOpen) { %>
-								<%~ icon`question_mark` %>
-								Brak odpowiedzi
-							<% } else { %>
-								<%~ icon`progress_activity` %>
-								Oczekiwana odpowiedź...
-							<% } %>
-						<% } else if(userInvite.state == "accepted") { %>
-							<%~ icon`check_circle` %>
-							Zaakceptowano
-						<% } else if(userInvite.state == "declined") { %>
-							<%~ icon`cancel` %>
-							Odrzucono
-						<% } %>
-					</p>
-				</div>
-				<% if(!$.targetEvent.isPast) { %>
-					<div class="entry-content">
-						<% if($.user.hasPermission(userInvite.user.PERMISSIONS.APPROVE)) { %>
-							<div class="button-row">
-								<button opens-dialog="/events/<%= $.targetEvent.id %>/participation?participant=<%= userInvite.user.id %>">
-									<% if(userInvite.state == "pending") { %>
-										Odpowiedz
-									<% } else { %>
-										Zmień odpowiedź
-									<% } %>
-								</button>
-							</div>
-						<% } else if(userInvite.user.id == $.user.id && userInvite.user.age === null) { %>
-							<p class="warning">
-								<%~ icon`warning` %>
-								Ustaw datę urodzin aby kontynuować
-							</p>
-						<% } else if(userInvite.state == "pending") { %>
-							<% if(userInvite.user.isAdult !== false) { %>
-								<p>Odpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
-							<% } else { %>
-								<p>Odpowiedź oczekiwana od rodzica/opiekuna</p>
-							<% } %>
-						<% } %>
-					</div>
-				<% } %>
-			</div>
+	<% if($.targetEvent.remainingSpaces != Infinity && !$.targetEvent.isPast &&
+		!$.approvalParticipants.length || $.approvalParticipants.some(p => p.state != "accepted")
+	) { %>
+		<% if($.targetEvent.remainingSpaces === 0) { %>
+			<article class="warning">
+				<p>
+					<%~ icon`cancel` %>
+					<b>Brak dostępnych miejsc</b>
+				</p>
+			</article>
+		<% } else { %>
+			<article>
+				<p>
+					<%~ icon`info` %>
+					Dostępna ilość miejsc: <%= $.targetEvent.remainingSpaces %>
+				</p>
+			</article>
 		<% } %>
-	</div>
+	<% } %>
+	<% if($.approvalParticipants?.length) { %>
+		<div class="entry-grid">
+			<% for(const userInvite of $.approvalParticipants) { %>
+				<div>
+					<div class="entry-title">
+						<h3><%= userInvite.user.displayName %></h3>
+						<p>
+							<% if(userInvite.state == "pending") { %>
+								<% if($.targetEvent.registrationOpen) { %>
+									<%~ icon`progress_activity` %>
+									Oczekiwana odpowiedź...
+								<% } else { %>
+									<%~ icon`question_mark` %>
+									Brak odpowiedzi
+								<% } %>
+							<% } else if(userInvite.state == "accepted") { %>
+								<%~ icon`check_circle` %>
+								Zaakceptowano
+							<% } else if(userInvite.state == "declined") { %>
+								<%~ icon`cancel` %>
+								Odrzucono
+							<% } %>
+						</p>
+					</div>
+					<% if(!$.targetEvent.isPast && ((userInvite.state != "accepted" && $.targetEvent.registrationOpen) || userInvite.state == "accepted")) { %>
+						<div class="entry-content">
+							<% if($.user.hasPermission(userInvite.user.PERMISSIONS.APPROVE)) { %>
+								<div class="button-row">
+									<button opens-dialog="/events/<%= $.targetEvent.id %>/participation?participant=<%= userInvite.user.id %>">
+										<% if(userInvite.state == "pending") { %>
+											Odpowiedz
+										<% } else { %>
+											Zmień odpowiedź
+										<% } %>
+									</button>
+								</div>
+							<% } else if(userInvite.user.id == $.user.id && userInvite.user.age === null) { %>
+								<p class="warning">
+									<%~ icon`warning` %>
+									Ustaw datę urodzin aby kontynuować
+								</p>
+							<% } else if(userInvite.state == "pending") { %>
+								<% if(userInvite.user.isAdult !== false) { %>
+									<p>Odpowiedź oczekiwana od użytkownika <%= userInvite.user.displayName %></p>
+								<% } else { %>
+									<p>Odpowiedź oczekiwana od rodzica/opiekuna</p>
+								<% } %>
+							<% } %>
+						</div>
+					<% } %>
+				</div>
+			<% } %>
+		</div>
+	<% } %>
 </section>

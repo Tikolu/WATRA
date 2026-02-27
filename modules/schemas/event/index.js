@@ -94,12 +94,12 @@ export class EventClass extends UnitClass {
 	limit = {
 		total: {
 			type: Number,
-			min: 1,
+			min: 0,
 			validator: Number.isInteger
 		},
 		perUnit: {
 			type: Number,
-			min: 1,
+			min: 0,
 			validator: Number.isInteger
 		}
 	}
@@ -139,15 +139,15 @@ export class EventClass extends UnitClass {
 	get registrationOpen() {
 		if(!this.reg) return false
 		if(this.isPast) return false
-		if(!this.remainingSpaces) return false
+		if(this.remainingSpaces === 0) return false
 		return true
 	}
 
 	/** Check if participant limit is exceeded */
 	get remainingSpaces() {
-		if(!this.limit.total) return Infinity
+		if(this.limit.total === undefined) return Infinity
 		const participantCount = this.participants.filter(p => p.state == "accepted").length
-		return this.limit.total - participantCount + this.roles.length
+		return Math.max(0, this.limit.total - participantCount + this.roles.length)
 	}
 
 	/** Checks if the event starts in the past */
