@@ -5,7 +5,7 @@
 	</h1>
 
 	<section>
-		<h2><i>assignment</i> Szczegóły</h2>
+		<h2><%~ icon`assignment` %> Szczegóły</h2>
 		<dl>
 			<dt>Data</dt>
 			<dd><%= datetime.format($.targetLog.time, "dd/MM/yyyy HH:mm:ss") %></dd>
@@ -26,7 +26,7 @@
 	</section>
 
 	<section>
-		<h2><i>explosion</i> Wydarzenie</h2>
+		<h2><%~ icon`explosion` %> Wydarzenie</h2>
 		<dl>
 			<dt>ID</dt>
 			<dd><%= $.targetLog.eventType %></dd>
@@ -55,7 +55,7 @@
 
 	<% if($.targetLog.data) { %>
 		<section>
-			<h2><i>data_object</i> Dane</h2>
+			<h2><%~ icon`data_object` %> Dane</h2>
 			<pre><%= JSON.stringify($.targetLog.data, null, 2) %></pre>
 		</section>
 	<% } %>
@@ -63,7 +63,7 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Zamknij
 	</button>
 </div>

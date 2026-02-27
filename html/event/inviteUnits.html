@@ -18,22 +18,22 @@
 					<% const unitInvite = $.targetEvent.invitedUnits.find(i => i.unit == node.unit.id) %>
 					<p>
 						<% if(unitInvite?.state == "accepted") { %>
-							<i>check</i> Zaakceptowano
+							<%~ icon`check` %> Zaakceptowano
 						<% } else if(unitInvite?.state == "declined") { %>
-							<i>close</i> Odrzucono
+							<%~ icon`close` %> Odrzucono
 						<% } else if(unitInvite?.state == "pending") { %>
-							<i class="spin">progress_activity</i> Oczekiwana odpowiedź...
+							<%~ icon`progress_activity` %> Oczekiwana odpowiedź...
 						<% } %>
 					</p>
 					<div class="button-row">
 						<% if(unitInvite?.state == "pending" || unitInvite?.state == "accepted") { %>
 							<button class="dangerous" api="event/[eventID]/unit/<%= node.unit.id %>/uninvite">
-								<i>undo</i>
+								<%~ icon`undo` %>
 								<span>Cofnij zaproszenie</span>
 							</button>
 						<% } else { %>
 							<button api="event/[eventID]/unit/<%= node.unit.id %>/invite">
-								<i>group_add</i>
+								<%~ icon`group_add` %>
 								<span>Zaproś <% if(unitInvite?.state == "declined") { %>ponownie<% } else { %><%= node.unit.displayName %><% } %></span>
 							</button>
 						<% } %>
@@ -61,7 +61,7 @@
 <hr>
 <div class="button-row">
 	<button class="confirm">
-		<i>check</i>
+		<%~ icon`check` %>
 		Gotowe
 	</button>
 </div>

@@ -15,7 +15,7 @@
 	<% const elementValue = $.response?.getElement($.element.id) || {} %>
 	<% if(elementValue.state == "paid") { %>
 		<p>
-			<i>check_circle</i>
+			<%~ icon`check_circle` %>
 			Zapłacono
 		</p>
 	<% } else { %>
@@ -27,7 +27,7 @@
 					disabled
 				<% } %>
 			>
-				<i>payment</i>
+				<%~ icon`payment` %>
 				<span>Zapłać</span>
 			</button>
 		</div>

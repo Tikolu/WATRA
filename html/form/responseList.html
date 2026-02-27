@@ -1,6 +1,6 @@
 <section>
 	<h2>
-		<i>assignment</i>
+		<%~ icon`assignment` %>
 		Odpowiedzi
 	</h2>
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.ACCESS_RESPONSES)) { %>
@@ -9,18 +9,18 @@
 				<% if($.counts.required > 0) { %>
 					<dt>
 						<% if($.targetForm.config.enabled) { %>
-							<i class="spin">progress_activity</i> Oczekiwane:
+							<%~ icon`progress_activity` %> Oczekiwane:
 						<% } else { %>
-							<i>question_mark</i> Brakujące:
+							<%~ icon`question_mark` %> Brakujące:
 						<% } %>
 					</dt>
 					<dd><%= $.counts.required %></dd>
 				<% } %>
 				<% if($.counts.drafts > 0) { %>
-					<dt><i>edit_note</i> Wersje robocze:</dt>
+					<dt><%~ icon`edit_note` %> Wersje robocze:</dt>
 					<dd><%= $.counts.drafts %></dd>
 				<% } %>
-				<dt><i>check</i> Przesłane:</dt>
+				<dt><%~ icon`check` %> Przesłane:</dt>
 				<dd><%= $.counts.submitted %></dd>
 			</dl>
 		</article>
@@ -32,9 +32,9 @@
 					<div class="entry-header">
 						<div class="entry-image">
 							<% if(response.submitted) { %>
-								<i>assignment</i>
+								<%~ icon`assignment` %>
 							<% } else { %>
-								<i>edit_note</i>
+								<%~ icon`edit_note` %>
 							<% } %>
 						</div>
 						<div class="entry-title">
@@ -54,7 +54,7 @@
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.RESPOND)) { %>
 		<div class="button-row">
 			<button id="new-response-button" opens-dialog="/forms/<%= $.targetForm.id %>/responses/new">
-				<i>add</i>
+				<%~ icon`add` %>
 				<span>Nowa odpowiedź</span>
 			</button>
 		</div>

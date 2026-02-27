@@ -6,7 +6,7 @@
 	}
 }) %>
 <h1>
-	<i>add_moderator</i>
+	<%~ icon`add_moderator` %>
 	Mianowanie na funkcję
 </h1>
 <main>
@@ -47,12 +47,12 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 	<% if($.tree.userCount) { %>
 		<button id="set-role-button" api="unit/[unitID]/member/setRole">
-			<i>check</i>
+			<%~ icon`check` %>
 			<span>Potwierdź mianowanie</span>
 		</button>
 	<% } %>

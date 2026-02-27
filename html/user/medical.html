@@ -10,7 +10,7 @@
 	}
 }) %>
 <h1>
-	<i>medical_information</i>
+	<%~ icon`medical_information` %>
 	<%= $.targetUser.displayName %> - dane medyczne
 </h1>
 <% if($.editable) { %>
@@ -82,7 +82,7 @@
 				</form>
 				<% if($.editable) { %>
 					<button id="<%= category.id %>-other-button" opens-dialog="add-other-<%= category.id %>">
-						<i>add</i>
+						<%~ icon`add` %>
 						<%= category.other %>
 					</button>
 				<% } %>
@@ -108,11 +108,11 @@
 				<hr>
 				<div class="button-row">
 					<button>
-						<i>arrow_back</i>
+						<%~ icon`arrow_back` %>
 						Anuluj
 					</button>
 					<button api="user/[userID]/medical/add?category=<%= category.id %>" form="add-other-<%= category.id %>">
-						<i>add</i>
+						<%~ icon`add` %>
 						Dodaj
 					</button>
 				</div>

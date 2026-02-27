@@ -1,6 +1,6 @@
 <section>
 	<h2>
-		<i>article_person</i>
+		<%~ icon`article_person` %>
 		Kadra
 	</h2>
 	<% const directParticipants = $.targetEvent.participants.filter(p => !p.originUnit && !$.targetEvent.roles.some(r => r.user.id == p.user.id)) %>
@@ -33,13 +33,13 @@
 	<div class="button-row">
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/setRole">
-				<i>add_moderator</i>
+				<%~ icon`add_moderator` %>
 				<span>Mianuj na funkcję</span>
 			</button>
 		<% } %>
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteParticipants">
-				<i>person_add</i>
+				<%~ icon`person_add` %>
 				Zaproś kadrę
 			</button>
 		<% } %>

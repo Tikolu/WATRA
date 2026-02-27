@@ -12,7 +12,7 @@
 			for(const entry in $.navPath) {
 				const link = $.navPath[entry]
 				%>
-					<i>arrow_right</i>
+					<%~ icon`arrow_right` %>
 					<% if(link) { %>
 						<a href="<%= link %>"><%= entry %></a>
 					<% } else { %>
@@ -34,7 +34,7 @@
 		<% } %>
 			id="user-profile-link"
 	>
-		<i>person</i>
+		<%~ icon`person` %>
 		<span><%_= $.user?.name.first || "" _%></span>
 	</a>
 </header>

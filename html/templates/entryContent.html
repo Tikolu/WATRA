@@ -4,7 +4,7 @@
 			<p><%= $.content %></p>
 		<% } %>
 		<% for(const warning of $.warnings || []) { %>
-			<p class="warning"><i>warning</i> <%= warning %></p>
+			<p class="warning"><%~ icon`warning` %> <%= warning %></p>
 		<% } %>
 	</div>
 <% } %>

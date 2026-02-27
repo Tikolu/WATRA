@@ -12,7 +12,7 @@
 %>
 
 <h1 id="user-title">
-	<i>person</i>
+	<%~ icon`person` %>
 	<%= $.targetUser.displayName %>
 </h1>
 <% if($.targetUser.roles.length > 0 && ($.targetUser.org || $.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG))) { %>
@@ -22,7 +22,7 @@
 <% if($.targetUser.archived) { %>
 	<article>
 		<p>
-			<b><i>archive</i> Profil zarchiwizowany</b><br>
+			<b><%~ icon`archive` %> Profil zarchiwizowany</b><br>
 			<% if($.targetUser.id == $.user.id || $.user.children.some(child => child.id == $.targetUser.id)) { %>
 				Skontaktuj się z przełożonym aby odblokować profil.
 			<% } %>
@@ -33,13 +33,13 @@
 <div class="button-row">
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
 		<button href="/users/<%= $.targetUser.id %>/log">
-			<i>history</i>
+			<%~ icon`history` %>
 			Log aktywności
 		</button>
 	<% } %>
 	<% if($.user.id == $.targetUser.id) { %>
 		<button id="logout-button" api="logout">
-			<i>logout</i>
+			<%~ icon`logout` %>
 			Wyloguj
 		</button>
 	<% } %>
@@ -61,18 +61,18 @@
 				opens-dialog="/users/<%= $.targetUser.id %>/accessCode"
 			<% } %>
 		>
-			<i>password</i>
+			<%~ icon`password` %>
 			Wygeneruj kod rejestracyjny
 		</button>
 		<% if(showAccessCodeWarning) { %>
 			<dialog id="access-code-warning-dialog">
 				<h1>
-					<i>warning</i>
+					<%~ icon`warning` %>
 					Kod dla profilu <%= $.targetUser.displayName %>
 				</h1>
 				<article class="warning">
 					<p>
-						<i>warning</i>
+						<%~ icon`warning` %>
 						<b>Uwaga - Kod nie umożliwi dostępu do profilu rodzica / opiekuna</b>
 					</p>
 					<p>Kod umożliwi dostęp tylko do profilu <%= $.targetUser.displayName %>.</p>
@@ -81,11 +81,11 @@
 				<p>Na pewno kontynuować z wygenerowaniem kodu?</p>
 				<div class="button-row">
 					<button>
-						<i>arrow_back</i>
+						<%~ icon`arrow_back` %>
 						Anuluj
 					</button>
 					<button opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
-						<i>password</i>
+						<%~ icon`password` %>
 						Kontynuuj
 					</button>
 				</div>
@@ -95,19 +95,19 @@
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ARCHIVE)) { %>
 		<% if($.targetUser.archived) { %>
 			<button id="unarchive-user-button" api="user/[userID]/unarchive">
-				<i>unarchive</i>
+				<%~ icon`unarchive` %>
 				Cofnij archiwizację
 			</button>
 		<% } else { %>
 			<button id="archive-user-button" api="user/[userID]/archive">
-				<i>archive</i>
+				<%~ icon`archive` %>
 				Archiwizuj użytkownika
 			</button>
 		<% } %>
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
 		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
-			<i>delete</i>
+			<%~ icon`delete` %>
 			<% if($.targetUser.children.every(child => child.isAdult)) { %>
 				Usuń kontakt alarmowy
 			<% } else if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
@@ -121,11 +121,11 @@
 			<p>Użytkownik i wszystkie jego dane zostaną trwale usunięte.</p>
 			<div class="button-row">
 				<button>
-					<i>arrow_back</i>
+					<%~ icon`arrow_back` %>
 					Anuluj
 				</button>
 				<button class="dangerous" command>
-					<i>delete</i>
+					<%~ icon`delete` %>
 					Usuń
 				</button>
 			</div>
@@ -144,7 +144,7 @@
 <% if(!blockAccess && $.targetUser.isParent) { %>
 	<section>
 		<h2>
-			<i>supervisor_account</i>
+			<%~ icon`supervisor_account` %>
 			Podopieczni
 		</h2>
 		<div id="child-list" class="entry-grid">
@@ -164,7 +164,7 @@
 <% } else if(!blockAccess && ($.targetUser.parents.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT))) { %>
 	<section>
 		<h2>
-			<i>supervisor_account</i>
+			<%~ icon`supervisor_account` %>
 			<% if($.targetUser.isAdult) { %>
 				Kontakty alarmowe
 			<% } else { %>
@@ -179,7 +179,7 @@
 		</div>
 		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
 			<button id="add-parent-button" opens-dialog="/users/<%= $.targetUser.id %>/addParent">
-				<i>person_add</i>
+				<%~ icon`person_add` %>
 				<% if($.targetUser.isAdult) { %>
 					Dodaj kontakt alarmowy
 				<% } else { %>
@@ -193,7 +193,7 @@
 <% if(!blockAccess && $.targetUser.roles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
-			<i>groups</i>
+			<%~ icon`groups` %>
 			Funkcje w jednostkach
 		</h2>
 		<div class="entry-grid">
@@ -210,7 +210,7 @@
 <% if(!blockAccess && $.eventRoles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
-		<i>hiking</i>
+		<%~ icon`hiking` %>
 			Funkcje w akcjach
 		</h2>
 		<div class="entry-grid">
@@ -227,7 +227,7 @@
 <% if(!blockAccess && $.eventInvites.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
-		<i>hiking</i>
+		<%~ icon`hiking` %>
 			Zaproszenia na akcje
 		</h2>
 		<div class="entry-grid">

@@ -1,8 +1,8 @@
 <section id="config-section">
-	<h2><i>settings</i> Ustawienia formularza</h2>
+	<h2><%~ icon`settings` %> Ustawienia formularza</h2>
 	<div class="button-row">
 		<button opens-dialog="/forms/<%= $.targetForm.id %>/targetGroup">
-			<i>manage_accounts</i>
+			<%~ icon`manage_accounts` %>
 			Edytuj grupę docelową
 		</button>
 	</div>
@@ -44,6 +44,6 @@
 		<label for="form-multiple-responses">Wielokrotne odpowiedzi</label>
 	</form>
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT) && $.targetForm.config.enabled) { %>
-		<p class="warning"><i>warning</i> Edycja elementów formularza przestanie być możliwa po zebraniu pierwszej odpowiedzi.</p>
+		<p class="warning"><%~ icon`warning` %> Edycja elementów formularza przestanie być możliwa po zebraniu pierwszej odpowiedzi.</p>
 	<% } %>
 </section>

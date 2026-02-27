@@ -23,10 +23,11 @@
 	<h3>Czuwaj!</h3>
 <% } %>
 
+
 <% if(Config.news.length > 0) { %>
 	<section>
 		<h2>
-			<i>news</i>
+			<%~ icon`news` %>
 			Ogłoszenia
 		</h2>
 		<div class="entry-grid" id="news-list">
@@ -34,7 +35,7 @@
 				<a opens-dialog="/news/<%= newsEntry.id %>" data-auto-open="<%= newsEntry.autoOpen || "never" %>" data-id="<%= newsEntry.id %>">
 					<div class="entry-header">
 						<div class="entry-image">
-							<i>news</i>
+							<%~ icon`news` %>
 						</div>
 						<div class="entry-title">
 							<h3><%= newsEntry.title %></h3>
@@ -53,14 +54,14 @@
 	<% if(blockAccess) { %>
 		<article>
 			<p>
-				<b><i>info</i> Witamy na platformie WATRA!</b><br>
+				<b><%~ icon`info` %> Witamy na platformie WATRA!</b><br>
 				Pierwszy krok - aby odblokować wszystkie funkcje systemu, dodaj klucz dostępu do swojego profilu poniżej.
 			</p>
 		</article>
 	<% } %>
 	<section>
 		<h2>
-			<i>person</i>
+			<%~ icon`person` %>
 			Twój profil
 		</h2>
 		<div class="entry-grid medium">
@@ -79,7 +80,7 @@
 <% if($.user.roles.length > 0) { %>
 	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
-			<i>groups</i>
+			<%~ icon`groups` %>
 			Jednostki
 		</h2>
 		<div class="entry-grid">
@@ -103,7 +104,7 @@
 <% if($.user.children.length > 0) { %>
 	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
-			<i>supervisor_account</i>
+			<%~ icon`supervisor_account` %>
 			Podopieczni
 		</h2>
 		<div class="entry-grid">
@@ -124,7 +125,7 @@
 <% if($.events.length) { %>
 	<section<% if(blockAccess) { %> class="disabled"<% } %>>
 		<h2>
-			<i>hiking</i>
+			<%~ icon`hiking` %>
 			Akcje
 		</h2>
 		<div class="entry-grid">

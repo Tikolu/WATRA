@@ -1,14 +1,14 @@
 <section>
 	<h2>
-		<i>gavel</i>
+		<%~ icon`gavel` %>
 		Zatwierdzenie
 	</h2>
 
 	<article>
 		<% if($.targetEvent.approvalState) { %>
-			<p><i>check_circle</i> Akcja zatwierdzona</p>
+			<p><%~ icon`check_circle` %> Akcja zatwierdzona</p>
 		<% } else { %>
-			<p><i>cancel</i> Akcja nie jest zatwierdzona!</p>
+			<p><%~ icon`cancel` %> Akcja nie jest zatwierdzona!</p>
 		<% } %>
 	</article>
 
@@ -23,7 +23,7 @@
 	<% if(warnings.length) { %>
 		<article class="warning">
 			<p>
-				<i>warning</i>
+				<%~ icon`warning` %>
 				Nie można zatwierdzić akcji z brakującymi szczegółami:
 			</p>
 			<ul class="warning-list">
@@ -35,7 +35,7 @@
 
 	<% } else if($.targetEvent.approvers.length == 0) { %>
 		<p class="warning">
-			<i>warning</i>
+			<%~ icon`warning` %>
 			Brak zatwierdzających
 		</p>
 		
@@ -50,25 +50,25 @@
 					<div class="entry-content">
 						<% if(approver.approved) { %>
 							<p>
-								<i>check</i>Zatwierdzono<br>
+								<%~ icon`check` %>Zatwierdzono<br>
 								<small><%= datetime.format(approver.approvedAt, "dd-MM-yyyy HH:mm") %></small>
 							</p>
 						<% } else if($.targetEvent.isPast) { %>
-							<p><i>close</i>Nie zatwierdzono</p>
+							<p><%~ icon`close` %>Nie zatwierdzono</p>
 						<% } else if(approver.role.user.id != $.user.id) { %>
-							<p><i class="spin">progress_activity</i>Oczekiwane zatwierdzenie...</p>
+							<p><%~ icon`progress_activity` %>Oczekiwane zatwierdzenie...</p>
 						<% } %>
 					
 						<% if(approver.role.user.id == $.user.id && $.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE)) { %>
 							<div class="button-row">
 								<% if(approver.approved) { %>
 									<button api="event/[eventID]/approval/unapprove" class="dangerous">
-										<i>undo</i>
+										<%~ icon`undo` %>
 										<span>Cofnij zatwierdzenie</span>
 									</button>
 								<% } else { %>
 									<button opens-dialog="/events/<%= $.targetEvent.id %>/approve">
-										<i>check</i>
+										<%~ icon`check` %>
 										<span>Zatwierdź</span>
 									</button>
 								<% } %>

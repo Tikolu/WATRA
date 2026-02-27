@@ -43,7 +43,7 @@ function processSignatureElements() {
 			signature.insertAdjacentHTML("afterbegin", `
 				<div class="signature-info">
 					<h3>
-						<i>check</i>
+						<i>&#xe5ca;</i>
 						Podpisano
 					</h3>
 					<p>${verificationResponse.signature.name}<br>${verificationResponse.displayTime}</p>

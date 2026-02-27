@@ -7,33 +7,33 @@
 }) %>
 <main>
 	<h1>
-		<i>person</i>
+		<%~ icon`person` %>
 		<%= $.user.displayName %>
 	</h1>
 	<% if($.user.auth.keys.length == 0) { %>
 		<p class="warning">
-			<i>warning</i>
+			<%~ icon`warning` %>
 			Nie dodano klucza dostępu - profil nie jest zabezpieczony!
 		</p>
 	<% } %>
 	<div class="button-row">
 		<button href="/users/<%= $.user.id %>">
-			<i>person</i>
+			<%~ icon`person` %>
 			<span>Profil</span>
 		</button>
 		<button api="logout">
-			<i>logout</i>
+			<%~ icon`logout` %>
 			<span>Wyloguj</span>
 		</button>
 		<button id="feedbackButton">
-			<i>feedback</i>
+			<%~ icon`feedback` %>
 			<span>Wyślij opinię</span>
 		</button>
 	</div>
 	<% if($.savedUsers.length) { %>
 		<section>
 			<h2>
-				<i>switch_account</i>
+				<%~ icon`switch_account` %>
 				Inni użytkownicy
 			</h2>
 			<div class="entry-grid narrow">
@@ -41,7 +41,7 @@
 					<div>
 						<div class="entry-header">
 							<div class="entry-image">
-								<i>person</i>
+								<%~ icon`person` %>
 							</div>
 							<div class="entry-title">
 								<h3><%= user.displayName %></h3>
@@ -49,7 +49,7 @@
 						</div>
 						<div class="entry-content button-row">
 							<button api="login/getKeys?userID=<%= user.id %>">
-								<i>login</i>
+								<%~ icon`login` %>
 								<span>Zaloguj</span>
 							</button>
 						</div>
@@ -61,7 +61,7 @@
 
 	<section>
 		<h2>
-			<i>settings</i>
+			<%~ icon`settings` %>
 			Ustawienia
 		</h2>
 		<form>
@@ -84,7 +84,7 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Zamknij
 	</button>
 </div>

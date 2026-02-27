@@ -38,7 +38,7 @@
 			<% if($.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
 				<article class="warning">
 					<p>
-						<i>warning</i>
+						<%~ icon`warning` %>
 						<b>Odpowiedź nie wysłana</b>
 					</p>
 					<p>Podpisz się pod odpowiedzią i kliknij "Wyślij" aby ją wysłać</p>
@@ -46,7 +46,7 @@
 			<% } else { %>
 				<article>
 					<p>
-						<i>info</i>
+						<%~ icon`info` %>
 						<b>Wersja robocza</b>
 					</p>
 					<p>Odpowiedź nie została jeszcze wysłana</p>
@@ -76,12 +76,12 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Zamknij
 	</button>
 	<% if($.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
 		<button api="form/[formID]/response/[responseID]/submit">
-			<i>check</i>
+			<%~ icon`check` %>
 			<span>Wyślij</span>
 		</button>
 	<% } %>

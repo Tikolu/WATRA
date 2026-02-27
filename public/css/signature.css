@@ -56,7 +56,7 @@
 
 			i::after {
 				display: block;	
-				content: "arrow_forward";
+				content: "\e5c8";
 			}
 		}
 
@@ -99,7 +99,7 @@
 		pointer-events: none;
 
 		i::after {
-			content: "progress_activity";
+			content: "\e9d0";
 			animation: spin 1s infinite linear;
 		}
 	}
@@ -167,7 +167,7 @@
 
 			i::after {
 				display: block;	
-				content: "close";
+				content: "\e5cd";
 			}
 		}
 	}

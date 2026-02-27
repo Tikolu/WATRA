@@ -5,7 +5,7 @@
 	}
 }) %>
 <h1>
-	<i>delete</i>
+	<%~ icon`delete` %>
 	Usuwanie jednostki
 </h1>
 <main>
@@ -29,7 +29,7 @@
 			</select>
 		</form>
 		<button class="confirm" api="unit/[unitID]/subUnit/[subUnitID]/remove">
-			<i>delete</i>
+			<%~ icon`delete` %>
 			Usuń z jednostki
 		</button>
 		<hr>
@@ -37,13 +37,13 @@
 	<h2>Trwale usuń <%= $.targetUnit.displayName %></h1>
 	<p>Jednostka i wszystkie związane z nią dane zostaną trwale usunięte. Zawarte jednostki i użytkownicy zostaną przeniesieni do <%= $.targetUnit.upperUnits.map(j => j.displayName).join(", ") %>.</p>
 	<button class="dangerous confirm" api="unit/[unitID]/delete">
-		<i>delete</i>
+		<%~ icon`delete` %>
 		Trwale usuń jednostkę
 	</button>
 </main>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 </div>

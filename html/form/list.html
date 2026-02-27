@@ -4,7 +4,7 @@
 <% if($.forms.length > 0 || ($.targetUnit && $.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_FORMS))) { %>
 	<section>
 		<h2>
-			<i>ballot</i>
+			<%~ icon`ballot` %>
 			Formularze
 		</h2>
 		<% if($.forms.length > 0) { %>
@@ -35,7 +35,7 @@
 		<% if($.targetUnit && $.user.hasPermission($.targetUnit.PERMISSIONS.MANAGE_FORMS)) { %>
 			<div class="button-row">
 				<button opens-dialog="/forms/create?type=<%= $.targetUnit.modelName %>&id=<%= $.targetUnit.id %>">
-					<i>add</i>
+					<%~ icon`add` %>
 					Utwórz formularz
 				</button>
 			</div>

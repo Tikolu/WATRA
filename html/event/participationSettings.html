@@ -5,15 +5,15 @@
 		eventID: $.targetEvent.id
 	}
 }) %>
-<h1 id="event-title"><i>manage_accounts</i> Ustawienia zapisów na <%= $.targetEvent.displayName %></h1>
+<h1 id="event-title"><%~ icon`manage_accounts` %> Ustawienia zapisów na <%= $.targetEvent.displayName %></h1>
 
 <main>
 	<section>
 		<h2>Zapisy</h2>
 		<% if($.targetEvent.remainingSpaces == 0) { %>
-			<p class="warning"><i>warning</i> Osiągnięto limit uczestników</p>
+			<p class="warning"><%~ icon`warning` %> Osiągnięto limit uczestników</p>
 		<% } else if($.targetEvent.isPast) { %>
-			<p class="warning"><i>warning</i> Akcja już się zaczęła lub zakończyła</p>
+			<p class="warning"><%~ icon`warning` %> Akcja już się zaczęła lub zakończyła</p>
 		<% } else { %>
 			<form>
 				<input
@@ -59,7 +59,7 @@
 <hr>
 <div class="button-row">
 	<button class="confirm">
-		<i>check</i>
+		<%~ icon`check` %>
 		Gotowe
 	</button>
 </div>

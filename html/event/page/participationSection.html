@@ -1,6 +1,6 @@
 <section>
 	<h2>
-		<i>mark_email_read</i>
+		<%~ icon`mark_email_read` %>
 		Uczestnictwo
 	</h2>
 	<% if($.targetEvent.remainingSpaces != Infinity && ($.targetEvent.remainingSpaces == 0 || $.targetEvent.registrationOpen)) { %>
@@ -17,17 +17,17 @@
 					<p>
 						<% if(userInvite.state == "pending") { %>
 							<% if($.targetEvent.registrationOpen) { %>
-								<i>question_mark</i>
+								<%~ icon`question_mark` %>
 								Brak odpowiedzi
 							<% } else { %>
-								<i class="spin">progress_activity</i>
+								<%~ icon`progress_activity` %>
 								Oczekiwana odpowiedź...
 							<% } %>
 						<% } else if(userInvite.state == "accepted") { %>
-							<i>check_circle</i>
+							<%~ icon`check_circle` %>
 							Zaakceptowano
 						<% } else if(userInvite.state == "declined") { %>
-							<i>cancel</i>
+							<%~ icon`cancel` %>
 							Odrzucono
 						<% } %>
 					</p>
@@ -46,7 +46,7 @@
 							</div>
 						<% } else if(userInvite.user.id == $.user.id && userInvite.user.age === null) { %>
 							<p class="warning">
-								<i>warning</i>
+								<%~ icon`warning` %>
 								Ustaw datę urodzin aby kontynuować
 							</p>
 						<% } else if(userInvite.state == "pending") { %>

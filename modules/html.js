@@ -2,6 +2,7 @@ import { Eta } from "eta"
 import * as datetime from "datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
+import { iconSymbol } from "material-symbols-codepoints"
 
 import Config from "modules/config.js"
 import Event from "modules/schemas/event"
@@ -12,7 +13,12 @@ const etaImports = {
 	Text,
 	datetime,
 	Config,
-	UnitTree
+	UnitTree,
+	icon: icon => {
+		const attr = icon == "progress_activity" ?
+			" class =\"spin\"" : ""
+		return `<i${attr}>${iconSymbol(icon)}</i>`
+	}
 }
 
 const eta = new Eta({

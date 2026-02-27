@@ -25,7 +25,7 @@
 				<input type="text" id="parent-last-name-input" name="lastName" autocomplete="off">
 			</form>
 			<button id="create-parent-button" api="user/[userID]/parent/create" class="confirm">
-				<i>person_add</i>
+				<%~ icon`person_add` %>
 				<% if($.targetUser.isAdult) { %>
 					Utwórz kontakt alarmowy
 				<% } else { %>
@@ -46,7 +46,7 @@
 				fieldName: "parentID"
 			}) %>
 			<button id="link-parent-button" api="user/[userID]/parent/link" class="confirm">
-				<i>person_add</i>
+				<%~ icon`person_add` %>
 				<% if($.targetUser.isAdult) { %>
 					Dodaj kontakt alarmowy
 				<% } else { %>
@@ -59,7 +59,7 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 </div>

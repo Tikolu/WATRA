@@ -5,7 +5,7 @@
 	}
 }) %>
 <h1>
-	<i>person_add</i>
+	<%~ icon`person_add` %>
 	Tworzenie nowego użytkownika
 </h1>
 <main>
@@ -73,7 +73,7 @@
 			<label for="direct-access">Dostęp bezpośredni (bez profilu rodzica / opiekuna)</label>
 		</form>
 		<button api="unit/[unitID]/member/create" class="confirm">
-			<i>person_add</i>
+			<%~ icon`person_add` %>
 			<span>Utwórz użytkownika</span>
 		</button>
 	</section>
@@ -81,7 +81,7 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 </div>

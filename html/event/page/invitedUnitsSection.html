@@ -1,10 +1,10 @@
 <section>
 	<h2>
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
-			<i>person</i>
+			<%~ icon`person` %>
 			Uczestnicy
 		<% } else { %>
-			<i>groups</i>
+			<%~ icon`groups` %>
 			Uczestniczące jednostki
 		<% } %>
 	</h2>
@@ -12,21 +12,21 @@
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) || $.targetEvent.invitedUnits.some(i => $.user.hasPermission(i.unit.PERMISSIONS.MANAGE_INVITES))) { %>
 		<a href="/events/<%= $.targetEvent.id %>/users" class="subheading">
 			Lista uczestników
-			<i>chevron_right</i>
+			<%~ icon`chevron_right` %>
 		</a>
 	<% } %>
 	
 	<div class="button-row">
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/inviteUnits">
-				<i>group_add</i>
+				<%~ icon`group_add` %>
 				Zaproś jednostki
 			</button>
 		<% } %>
 			
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			<button opens-dialog="/events/<%= $.targetEvent.id %>/participationSettings">
-				<i>manage_accounts</i>
+				<%~ icon`manage_accounts` %>
 				Ustawienia zapisów
 			</button>
 		<% } %>
@@ -36,7 +36,7 @@
 	) { %>
 		<article>
 			<p>
-				<i>person_add_disabled</i>
+				<%~ icon`person_add_disabled` %>
 				<b>Zapisy są wyłączone</b>
 			</p>
 			<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && !$.targetEvent.isPast) { %>

@@ -1,6 +1,6 @@
 <section id="event-documents">
 	<h2>
-		<i>draft</i>
+		<%~ icon`draft` %>
 		Dokumenty
 	</h2>
 	<% if($.files.length > 0) { %>
@@ -21,7 +21,7 @@
 					<% } %>
 					<div class="button-row">
 						<button href="<%= file.file.url %>" target="_blank">
-							<i>file_open</i>
+							<%~ icon`file_open` %>
 							Otwórz
 						</button>
 						<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
@@ -32,7 +32,7 @@
 									disabled
 								<% } %>
 							>
-								<i>delete</i>
+								<%~ icon`delete` %>
 								Usuń z akcji
 							</button>
 						<% } %>
@@ -51,7 +51,7 @@
 					disabled
 				<% } %>
 			>
-				<i>note_add</i>
+				<%~ icon`note_add` %>
 				Dodaj dokument
 			</button>
 		</div>

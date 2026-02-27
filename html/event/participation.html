@@ -15,7 +15,7 @@
 	<% let canParticipate = true %>
 	<% if(!$.targetInvitation.user.confirmed) { %>
 		<% canParticipate = false %>
-		<p class="warning"><i>warning</i> Zatwierdź dane <a href="/users/<%= $.targetInvitation.user.id %>">na profilu uczestnika</a>, aby potwierdzić udział w akcji.</p>
+		<p class="warning"><%~ icon`warning` %> Zatwierdź dane <a href="/users/<%= $.targetInvitation.user.id %>">na profilu uczestnika</a>, aby potwierdzić udział w akcji.</p>
 	<% } %>
 	<% if(canParticipate) { %>
 		<section>
@@ -56,14 +56,14 @@
 			user: $.user
 		}) %>
 		<button class="confirm" api="event/[eventID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
-			<i>check</i>
+			<%~ icon`check` %>
 			Potwierdź
 		</button>
 	<% } %>
 </main>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 </div>

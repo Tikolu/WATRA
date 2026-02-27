@@ -12,34 +12,34 @@
 	}
 }) %>
 <h1>
-	<i>person</i>
+	<%~ icon`person` %>
 	<%= $.targetUnit.displayName %> - <%= $.title %>
 </h1>
 
 <div class="button-row">
-	<button opens-dialog="filter-options"><i>filter_list</i> Filtruj</button>
-	<button opens-dialog="column-options"><i>view_column</i> Wybierz dane</button>
+	<button opens-dialog="filter-options"><%~ icon`filter_list` %> Filtruj</button>
+	<button opens-dialog="column-options"><%~ icon`view_column` %> Wybierz dane</button>
 	<button id="export-button"
 		<% if(!$.users.length) { %>
 			disabled
 		<% } %>
-	><i>download</i> Eksportuj</button>
+	><%~ icon`download` %> Eksportuj</button>
 	<button id="print-button"
 		<% if(!$.users.length) { %>
 			disabled
 		<% } %>
-	><i>print</i> Drukuj</button>
+	><%~ icon`print` %> Drukuj</button>
 </div>
 
 <dialog id="filter-options">
-	<h1><i>filter_list</i> Filtrowanie użytkowników</h1>
+	<h1><%~ icon`filter_list` %> Filtrowanie użytkowników</h1>
 	<main>
 		<% for(const category of $.filterCategories) { %>
 			<section>
 				<% if(category.name) { %>
 					<h3>
 						<% if(category.icon) { %>
-							<i><%= category.icon %></i>
+							<%~ icon(category.icon) %>
 						<% } %>
 						<%= category.name %>
 					</h3>
@@ -110,13 +110,13 @@
 	</main>
 	<hr>
 	<div class="button-row">
-		<button><i>arrow_back</i> Anuluj</button>
-		<button id="confirm-filters-button"><i>check</i> Zastosuj filtry</button>
+		<button><%~ icon`arrow_back` %> Anuluj</button>
+		<button id="confirm-filters-button"><%~ icon`check` %> Zastosuj filtry</button>
 	</div>
 </dialog>
 
 <% if($.filterError) { %>
-	<p class="warning"><i>error</i> <%= $.filterError %></p>
+	<p class="warning"><%~ icon`error` %> <%= $.filterError %></p>
 <% } else { %>
 	<p>
 		<em>Ilość wyników: <%= $.users.length %></em>
@@ -124,14 +124,14 @@
 <% } %>
 
 <dialog id="column-options">
-	<h1><i>view_column</i> Wybieranie danych</h1>
+	<h1><%~ icon`view_column` %> Wybieranie danych</h1>
 	<main>
 		<% for(const category of $.columnCategories) { %>
 			<section>
 				<% if(category.name) { %>
 					<h3>
 						<% if(category.icon) { %>
-							<i><%= category.icon %></i>
+							<%~ icon(category.icon) %>
 						<% } %>
 						<%= category.name %>
 					</h3>
@@ -156,8 +156,8 @@
 	</main>
 	<hr>
 	<div class="button-row">
-		<button><i>arrow_back</i> Anuluj</button>
-		<button id="confirm-columns-button"><i>check</i> Wybierz</button>
+		<button><%~ icon`arrow_back` %> Anuluj</button>
+		<button id="confirm-columns-button"><%~ icon`check` %> Wybierz</button>
 	</div>
 </dialog>
 

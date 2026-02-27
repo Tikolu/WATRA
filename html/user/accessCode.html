@@ -3,7 +3,7 @@
 	scripts: ["user/accessCode"]
 }) %>
 <h1>
-	<i>password</i>
+	<%~ icon`password` %>
 	Kod rejestracyjny
 </h1>
 <main>
@@ -30,12 +30,12 @@
 			<% accessCodeContainer($.targetUser.auth.formattedAccessCode) %>
 		<% } %>
 	</section>
-	<p><i>info</i> Kody rejestracyjne są ważne przez 5 minut.</p>
+	<p><%~ icon`info` %> Kody rejestracyjne są ważne przez 5 minut.</p>
 </main>
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Zamknij
 	</button>
 </div>

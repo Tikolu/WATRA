@@ -7,7 +7,7 @@
 %>
 <div>
 	<h3>
-		<i>calendar_today</i>
+		<%~ icon`calendar_today` %>
 		<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.length == 0) { %>
 			Data
 		<% } else { %>

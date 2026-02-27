@@ -38,13 +38,13 @@
 <div class="button-row">
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
 		<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">
-			<i>delete</i>
+			<%~ icon`delete` %>
 			<span>Usuń jednostkę</span>
 		</button>
 	<% } %>
 	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ACTIVITY)) { %>
 		<button id="activity-log-button" href="/units/<%= $.targetUnit.id %>/log">
-			<i>history</i>
+			<%~ icon`history` %>
 			<span>Log aktywności</span>
 		</button>
 	<% } %>
@@ -58,14 +58,14 @@
 ) { %>
 	<section>
 		<h2>
-			<i>person</i>
+			<%~ icon`person` %>
 			Użytkownicy
 		</h2>
 		<% if(
 			($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 0) ||
 			($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS) && $.targetUnit.archivedUsers?.length > 0)
 		) { %>
-			<a href="/units/<%= $.targetUnit.id %>/users<%= orgParam %>" class="subheading">Lista użytkowników<i>chevron_right</i></a>
+			<a href="/units/<%= $.targetUnit.id %>/users<%= orgParam %>" class="subheading">Lista użytkowników<%~ icon`chevron_right` %></a>
 		<% } %>
 		<% if($.targetUnit.roles?.length > 0) { %>
 			<div id="unit-member-list" class="entry-grid">
@@ -96,17 +96,17 @@
 		<div class="button-row">
 			<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_USER)) { %>
 				<button opens-dialog="/units/<%= $.targetUnit.id %>/member/create<%= orgParam %>">
-					<i>person_add</i>
+					<%~ icon`person_add` %>
 					<span>Utwórz użytkownika</span>
 				</button>
 				<button opens-dialog="/units/<%= $.targetUnit.id %>/member/add<%= orgParam %>">
-					<i>person_search</i>
+					<%~ icon`person_search` %>
 					<span>Dodaj istniejących</span>
 				</button>
 			<% } %>
 			<% if($.user.hasPermission($.targetUnit.PERMISSIONS.SET_ROLE)) { %>
 				<button opens-dialog="/units/<%= $.targetUnit.id %>/setRole<%= orgParam %>">
-					<i>add_moderator</i>
+					<%~ icon`add_moderator` %>
 					<span>Mianuj na funkcję</span>
 				</button>
 			<% } %>
@@ -117,7 +117,7 @@
 <% if($.targetUnit.subUnits?.length > 0 || $.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 	<section>
 		<h2>
-			<i>groups</i>
+			<%~ icon`groups` %>
 			Jednostki
 		</h2>
 		<% if($.targetUnit.subUnits?.length > 0) { %>
@@ -148,7 +148,7 @@
 		<% } %>
 		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ADD_SUBUNIT)) { %>
 			<button id="add-sub-unit-button" opens-dialog="/units/<%= $.targetUnit.id %>/addSubUnit<%= orgParam %>">
-				<i>add</i>
+				<%~ icon`add` %>
 				<span>Dodaj jednostkę</span>
 			</button>
 		<% } %>
@@ -160,10 +160,10 @@
 ) { %>
 	<section>
 		<h2>
-			<i>hiking</i>
+			<%~ icon`hiking` %>
 			Akcje
 		</h2>
-		<a href="/units/<%= $.targetUnit.id %>/events" class="subheading">Wszystkie akcje<i>chevron_right</i></a>
+		<a href="/units/<%= $.targetUnit.id %>/events" class="subheading">Wszystkie akcje<%~ icon`chevron_right` %></a>
 		<% if($.targetUnit.events.length) { %>
 			<div id="unit-event-list" class="entry-grid">
 				<% for(const event of $.targetUnit.events) { %>
@@ -176,7 +176,7 @@
 		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.CREATE_EVENT)) { %>
 			<div class="button-row">
 				<button id="create-event-button" opens-dialog="/units/<%= $.targetUnit.id %>/createEvent">
-					<i>add</i>
+					<%~ icon`add` %>
 					<span>Utwórz akcję</span>
 				</button>
 			</div>

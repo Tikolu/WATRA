@@ -15,14 +15,14 @@
 <% } %>
 
 <button id="login-button" class="important" api="login/getKeys">
-	<i>passkey</i>
+	<%~ icon`passkey` %>
 	Zaloguj
 </button>
 
 <% if($.savedUsers && $.savedUsers.length > 0) { %>
 	<section>
 		<h2>
-			<i>history</i>
+			<%~ icon`history` %>
 			Ostatnie logowania
 		</h2>
 		<div class="entry-grid">
@@ -30,7 +30,7 @@
 				<div>
 					<div class="entry-header">
 						<div class="entry-image">
-							<i>person</i>
+							<%~ icon`person` %>
 						</div>
 						<div class="entry-title">
 							<h3><%= user.displayName %></h3>
@@ -38,11 +38,11 @@
 					</div>
 					<div class="entry-content button-row">
 						<button api="login/getKeys?userID=<%= user.id %>" class="important">
-							<i>login</i>
+							<%~ icon`login` %>
 							<span>Zaloguj</span>
 						</button>
 						<button api="logout?remove=<%= user.id %>" class="dangerous"<% if(user.auth.keys.length == 0) { %> data-warning<% } %>>
-							<i>close</i>
+							<%~ icon`close` %>
 							<span>Usuń z listy</span>
 						</button>
 					</div>
@@ -56,11 +56,11 @@
 			<p>Użytkownik nie posiada kluczy dostępu - po usunięcu z listy, konieczne będzie uzyskanie nowego kodu, aby się zalogować.</p>
 			<div class="button-row">
 				<button>
-					<i>arrow_back</i>
+					<%~ icon`arrow_back` %>
 					Anuluj
 				</button>
 				<button class="dangerous" command>
-					<i>delete</i>
+					<%~ icon`delete` %>
 					Usuń z listy
 				</button>
 			</div>
@@ -70,7 +70,7 @@
 
 <section>
 	<h2>
-		<i>person_add</i>
+		<%~ icon`person_add` %>
 		Nowy użytkownik
 	</h2>
 	<form>

@@ -5,7 +5,7 @@
 <a href="/units/<%= $.targetUnit.id %><%= $.org ? `?org=${$.org}` : "" %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
 	<div class="entry-header">
 		<div class="entry-image">
-			<i>groups</i>
+			<%~ icon`groups` %>
 		</div>
 		<div class="entry-title">
 			<h3><%= $.targetUnit.displayName %></h3>

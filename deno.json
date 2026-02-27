@@ -29,6 +29,7 @@
 		"mime": "npm:mime",
 		"datetime": "jsr:@std/datetime",
 		"webauthn": "jsr:@simplewebauthn/server",
+		"material-symbols-codepoints": "jsr:@tikolu/material-symbols-codepoints",
 		"aaguid.json": "https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/refs/heads/main/aaguid.json"
 	},
 	"lint": {

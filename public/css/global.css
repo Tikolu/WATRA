@@ -61,7 +61,7 @@ html[theme^=dark] {
 /* Content layout */
 
 body {
-	font-family: Lato, sans-serif;
+	font-family: Lato, "Trebuchet MS", sans-serif;
 	color: var(--text);
 	margin: 0;
 
@@ -334,7 +334,8 @@ input[type=file]::file-selector-button {
 }
 
 input[type=file]::before {
-	content: "upload_file";
+	content: "\e9fc";
+	vertical-align: bottom;
 	margin-right: 0.5em;
 	font-family: "Material Symbols Sharp", blank;
 }
@@ -1004,7 +1005,7 @@ body.unload::after {
 	right: 0;
 	text-align: center;
 	font-family: "Material Symbols Sharp", blank;
-	content: "progress_activity";
+	content: "\e9d0";
 	font-size: 2em;
 	cursor: progress;
 	animation: spin 1s infinite linear, fade-in 1s 1s backwards;

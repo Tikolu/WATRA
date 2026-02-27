@@ -1,10 +1,10 @@
 <section>
 	<h2>
-		<i>info</i>
+		<%~ icon`info` %>
 		Szczegóły akcji
 	</h2>
 	<h3>
-		<i>assignment</i>
+		<%~ icon`assignment` %>
 		Opis akcji
 	</h3>
 	<textarea
@@ -24,7 +24,7 @@
 		<% if($.targetEvent.location || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			<div>
 				<h3>
-					<i>distance</i>
+					<%~ icon`distance` %>
 					Lokalizacja
 				</h3>
 				<form>
@@ -47,22 +47,22 @@
 	<div class="button-row">
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.approvalState) { %>
 			<button id="unlock-editing-button" opens-dialog="edit-event-dialog">
-				<i>edit</i>
+				<%~ icon`edit` %>
 				Edytuj szczegóły
 			</button>
 			<dialog id="edit-event-dialog">
 				<h1>
-					<i>edit</i>
+					<%~ icon`edit` %>
 					Edytowanie szczegółów
 				</h1>
 				<p><b>Akcja jest zatwierdzona</b> - jakakolwiek zmiana do szczegółów lub dokumentów sprawi że akcja będzie wymagała ponownego zatwierdzenia.</p>
 				<div class="button-row">
 					<button>
-						<i>arrow_back</i>
+						<%~ icon`arrow_back` %>
 						Anuluj
 					</button>
 					<button id="confirm-unlock-editing-button">
-						<i>edit</i>
+						<%~ icon`edit` %>
 						Edytuj
 					</button>
 				</div>
@@ -70,7 +70,7 @@
 		<% } %>
 		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.DELETE)) { %>
 			<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
-				<i>delete</i>
+				<%~ icon`delete` %>
 				Usuń akcję
 			</button>
 			<dialog id="delete-event-dialog">
@@ -78,11 +78,11 @@
 				<p>Akcja i wszystkie związane z nią dane zostaną trwale usunięte.</p>
 				<div class="button-row">
 					<button>
-						<i>arrow_back</i>
+						<%~ icon`arrow_back` %>
 						Anuluj
 					</button>
 					<button class="dangerous" command>
-						<i>delete</i>
+						<%~ icon`delete` %>
 						Usuń
 					</button>
 				</div>

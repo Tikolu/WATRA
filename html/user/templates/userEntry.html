@@ -5,7 +5,7 @@
 <a href="/users/<%= $.targetUser.id %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
 	<div class="entry-header">
 		<div class="entry-image">
-			<i>person</i>
+			<%~ icon`person` %>
 		</div>
 		<div class="entry-title">
 			<h3><%= $.targetUser.displayName || "(użytkownik)" %></h3>

@@ -19,12 +19,12 @@
 	<% if($.unitInvite.state != "accepted" && ($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES))) { %>
 		<p>
 			<% if($.unitInvite.state == "declined") { %>
-				<i>close</i> Odrzucono zaproszenie
+				<%~ icon`close` %> Odrzucono zaproszenie
 			<% } else if($.unitInvite.state == "pending") { %>
 				<% if($.targetEvent.isPast) { %>
-					<i>question_mark</i> Brak odpowiedzi
+					<%~ icon`question_mark` %> Brak odpowiedzi
 				<% } else { %>
-					<i class="spin">progress_activity</i> Zaproszono...
+					<%~ icon`progress_activity` %> Zaproszono...
 				<% } %>
 			<% } %>
 		</p>
@@ -37,7 +37,7 @@
 				!$.targetEvent.participants.some(p => p.originUnit?.id == $.unitInvite.id && p.state == "accepted")
 			) { %>
 				<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
-					<i>undo</i>
+					<%~ icon`undo` %>
 					<span>Cofnij zaproszenie</span>
 				</button>
 			<% } %>
@@ -46,7 +46,7 @@
 		<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && !$.targetEvent.isPast) { %>
 			<% if($.unitInvite.state == "accepted") { %>
 				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
-					<i>group_add</i>
+					<%~ icon`group_add` %>
 					<% if(invitedParticipants.length > 0) { %>
 						<span>Edytuj uczestników</span>
 					<% } else { %>
@@ -55,12 +55,12 @@
 				</button>
 			<% } else if($.unitInvite.state == "pending") { %>
 				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
-					<i>check</i>
+					<%~ icon`check` %>
 					<span>Zaakceptuj</span>
 				</button>
 				<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
 					<button class="dangerous" api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/decline">
-						<i>close</i>
+						<%~ icon`close` %>
 						<span>Odrzuć</span>
 					</button>
 				<% } %>
@@ -90,15 +90,15 @@
 				<% if(categories[state] == 0) continue %>
 				<dt>
 					<% if(state == "accepted") { %>
-						<i>check</i> Zaakceptowano
+						<%~ icon`check` %> Zaakceptowano
 					<% } else if(state == "pending") { %>
 						<% if($.targetEvent.registrationOpen) { %>
-							<i class="spin">progress_activity</i> Oczekiwana odpowiedź
+							<%~ icon`progress_activity` %> Oczekiwana odpowiedź
 						<% } else { %>
-							<i>question_mark</i> Brak odpowiedzi
+							<%~ icon`question_mark` %> Brak odpowiedzi
 						<% } %>
 					<% } else if(state == "declined") { %>
-						<i>close</i> Odrzucono
+						<%~ icon`close` %> Odrzucono
 					<% } %>
 				</dt>
 				<dd><%= categories[state] %></dd>

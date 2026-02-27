@@ -29,7 +29,7 @@
 <div class="button-row">
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.DELETE)) { %>
 		<button id="delete-form-button" class="dangerous" api="form/[formID]/delete">
-			<i>delete</i>
+			<%~ icon`delete` %>
 			<span>Usuń formularz</span>
 		</button>
 		<dialog id="delete-form-dialog">
@@ -37,11 +37,11 @@
 			<p>Formularz i wszystkie odpowiedzi zostaną trwale usunięte.</p>
 			<div class="button-row">
 				<button>
-					<i>arrow_back</i>
+					<%~ icon`arrow_back` %>
 					Anuluj
 				</button>
 				<button class="dangerous" command>
-					<i>delete</i>
+					<%~ icon`delete` %>
 					Usuń
 				</button>
 			</div>

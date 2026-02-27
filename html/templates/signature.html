@@ -3,7 +3,7 @@
 %> 
 <% if(passkeyRequired) { %>
 	<p class="warning">
-		<i>warning</i>
+		<%~ icon`warning` %>
 		Dodaj klucz dostępu do profilu, aby umożliwić podpisywanie
 	</p>
 <% } %>
@@ -14,14 +14,14 @@
 	<% if($.signature) { %>
 		<div class="signature-info">
 			<h3>
-				<i>check</i>
+				<%~ icon`check` %>
 				Podpisano
 			</h3>
 			<p><%= $.signature.name %><br><%= datetime.format($.signature.time, "dd/MM/yyyy HH:mm") %></p>
 		</div>
 	<% } else { %>
 		<h3>
-			<i>stylus</i>
+			<%~ icon`stylus` %>
 			Podpis
 		</h3>
 		<div class="signature-slider-container">

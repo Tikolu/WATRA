@@ -31,7 +31,7 @@
 	}) %>)
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.upperUnits.every(u => $.user.hasPermission(u.PERMISSIONS.ACCESS_EVENTS))) { %>
 		<button opens-dialog="/events/<%= $.targetEvent.id %>/editUpperUnits">
-			<i>edit</i>
+			<%~ icon`edit` %>
 			Zmień
 		</button>
 	<% } %>
@@ -40,7 +40,7 @@
 <% if(($.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) && $.targetEvent.isPast && !$.targetEvent.approvalState) { %>
 	<article class="warning">
 		<p>
-			<i>warning</i>
+			<%~ icon`warning` %>
 			<b>Uwaga!</b>
 		</p>
 		<p>Akcja nie jest zatwierdzona i nie może się odbyć!</p>

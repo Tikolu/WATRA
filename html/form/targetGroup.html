@@ -6,7 +6,7 @@
 	}
 }) %>
 <h1>
-	<i>manage_accounts</i>
+	<%~ icon`manage_accounts` %>
 	<%= $.targetForm.displayName %> - Grupa docelowa
 </h1>
 <main>
@@ -39,11 +39,11 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 	<button api="form/[formID]/update/targetGroup">
-		<i>check</i>
+		<%~ icon`check` %>
 		<span>Zapisz</span>
 	</button>
 </div>

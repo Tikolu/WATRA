@@ -22,12 +22,12 @@
 <hr>
 <div class="button-row">
 	<button>
-		<i>arrow_back</i>
+		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
 	<% if(!md.length) { %>
 		<button api="event/[eventID]/approval/approve">
-			<i>check</i>
+			<%~ icon`check` %>
 			<span>Zatwierdź</span>
 		</button>
 	<% } %>

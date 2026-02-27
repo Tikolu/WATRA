@@ -1,11 +1,11 @@
 <section>
 	<h2>
-		<i>medical_information</i>
+		<%~ icon`medical_information` %>
 		Dane medyczne
 	</h2>			
 	<% if(!$.targetUser.medical.complete) { %>
 		<p class="warning">
-			<i>warning</i>
+			<%~ icon`warning` %>
 			Brakuje informacji
 		</p>
 	<% } else if($.targetUser.medical.entries.length == 0) { %>
@@ -31,7 +31,7 @@
 	<% if($.targetUser.medical.entries.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
 		<div class="button-row">
 			<button href="/users/<%= $.targetUser.id %>/medical">
-				<i>medical_information</i>
+				<%~ icon`medical_information` %>
 				<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
 					Edytuj dane medyczne
 				<% } else { %>

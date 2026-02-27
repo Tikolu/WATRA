@@ -6,7 +6,7 @@
 	<% } %>
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG)) { %>
 		<button opens-dialog="change-org-dialog">
-			<i>edit</i>
+			<%~ icon`edit` %>
 			<% if($.targetUser.org) { %>
 				Zmień
 			<% } else { %>
@@ -19,7 +19,7 @@
 <% if($.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG)) { %>
 	<dialog id="change-org-dialog">
 		<h1>
-			<i>edit</i>
+			<%~ icon`edit` %>
 			<% if($.targetUser.org) { %>
 				Zmień organizację użytkownika
 			<% } else { %>
@@ -42,11 +42,11 @@
 		</section>
 		<div class="button-row">
 			<button>
-				<i>arrow_back</i>
+				<%~ icon`arrow_back` %>
 				Anuluj
 			</button>
 			<button api="user/[userID]/update/org" command>
-				<i>edit</i>
+				<%~ icon`edit` %>
 				<% if($.targetUser.org) { %>
 					Zmień
 				<% } else { %>

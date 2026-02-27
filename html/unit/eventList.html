@@ -9,13 +9,13 @@
 	}
 }) %>
 <h1>	
-	<i>hiking</i>
+	<%~ icon`hiking` %>
 	<%= $.targetUnit.displayName %> - Lista akcji
 </h1>
 
 <section>
 	<h2>
-		<i>hiking</i>
+		<%~ icon`hiking` %>
 		Akcje
 	</h2>
 	<% if($.targetUnit.events.length) { %>
@@ -35,7 +35,7 @@
 
 <section>
 	<h2>
-		<i>hiking</i>
+		<%~ icon`hiking` %>
 		Zaproszenia na akcje
 	</h2>
 	<% const eventInvites = $.targetUnit.eventInvites.filter(e => !$.targetUnit.events.hasID(e.id)) %>
@@ -72,7 +72,7 @@
 
 <section>
 	<h2>
-		<i>hiking</i>
+		<%~ icon`hiking` %>
 		Akcje jednostek
 	</h2>
 	<% if($.subUnitEvents.length) { %>
