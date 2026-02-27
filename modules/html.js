@@ -22,7 +22,8 @@ const eta = new Eta({
 	functionHeader: `for(const importName in $?.ETA_IMPORTS) {
 		globalThis[importName] = $.ETA_IMPORTS[importName]
 	}`,
-	debug: true
+	debug: true,
+	rmWhitespace: true
 })
 
 /**

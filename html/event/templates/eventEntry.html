@@ -11,8 +11,7 @@
 				<% } else if($.targetEvent.length === 0) { %>
 					<%= datetime.format($.targetEvent.dates.start, "dd/MM/yyyy") %>
 				<% } else if($.targetEvent.length > 0) { %>
-					<%= datetime.format($.targetEvent.dates.start, "dd/MM") %>
-					do
+					<%= datetime.format($.targetEvent.dates.start, "dd/MM") %> do
 					<%= datetime.format($.targetEvent.dates.end, "dd/MM") %>
 				<% } %>
 			</p>
