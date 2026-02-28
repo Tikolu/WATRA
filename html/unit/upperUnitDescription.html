@@ -4,7 +4,7 @@
 			links: $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])
 		}) %>
 		<% if($.targetUnit.org && $.targetUnit.upperUnits.some(u => u.org != $.targetUnit.org)) { %>
-			(<%= Config.orgs[$.targetUnit.org]?.name || $.targetUnit.org %>)
+			&#x20;(<%= Config.orgs[$.targetUnit.org]?.name || $.targetUnit.org %>)
 		<% } %>
 	</p>
 <% } %>
