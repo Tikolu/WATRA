@@ -16,57 +16,61 @@
 >
 	<h3><%= $.unitInvite.unit.displayName %></h3>
 
-	<% if($.unitInvite.state != "accepted" && ($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES))) { %>
-		<p>
-			<% if($.unitInvite.state == "declined") { %>
-				<%~ icon`close` %> Odrzucono zaproszenie
-			<% } else if($.unitInvite.state == "pending") { %>
-				<% if($.targetEvent.isPast) { %>
-					<%~ icon`question_mark` %> Brak odpowiedzi
-				<% } else { %>
-					<%~ icon`progress_activity` %> Zaproszono...
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
+		<% if($.unitInvite.state != "accepted") { %>
+			<p>
+				<% if($.unitInvite.state == "declined") { %>
+					<%~ icon`close` %> Odrzucono zaproszenie
+				<% } else if($.unitInvite.state == "pending") { %>
+					<% if($.targetEvent.isPast) { %>
+						<%~ icon`question_mark` %> Brak odpowiedzi
+					<% } else { %>
+						<%~ icon`progress_activity` %> Zaproszono...
+					<% } %>
 				<% } %>
-			<% } %>
-		</p>
-	<% } %>
-
-	<div class="button-row">
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
-			<% if(
-				($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") &&
-				!$.targetEvent.participants.some(p => p.originUnit?.id == $.unitInvite.id && p.state == "accepted")
-			) { %>
-				<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
-					<%~ icon`undo` %>
-					<span>Cofnij zaproszenie</span>
-				</button>
-			<% } %>
+			</p>
 		<% } %>
 
-		<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && !$.targetEvent.isPast) { %>
-			<% if($.unitInvite.state == "accepted") { %>
-				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
-					<%~ icon`group_add` %>
-					<% if(invitedParticipants.length > 0) { %>
-						<span>Edytuj uczestników</span>
-					<% } else { %>
-						<span>Dodaj uczestników</span>
-					<% } %>
-				</button>
-			<% } else if($.unitInvite.state == "pending") { %>
-				<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
-					<%~ icon`check` %>
-					<span>Zaakceptuj</span>
-				</button>
-				<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
-					<button class="dangerous" api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/decline">
-						<%~ icon`close` %>
-						<span>Odrzuć</span>
+		<div class="button-row">
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+				<% if(
+					($.unitInvite.state == "pending" || $.unitInvite.state == "accepted") &&
+					!$.targetEvent.participants.some(p => p.originUnit?.id == $.unitInvite.id && p.state == "accepted")
+				) { %>
+					<button class="dangerous" api="event/[eventID]/unit/<%= $.unitInvite.unit.id %>/uninvite">
+						<%~ icon`undo` %>
+						<span>Cofnij zaproszenie</span>
 					</button>
 				<% } %>
 			<% } %>
-		<% } %>
-	</div>
+
+			<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && !$.targetEvent.isPast) { %>
+				<% if($.unitInvite.state == "accepted") { %>
+					<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
+						<%~ icon`group_add` %>
+						<% if(invitedParticipants.length > 0) { %>
+							<span>Edytuj uczestników</span>
+						<% } else { %>
+							<span>Dodaj uczestników</span>
+						<% } %>
+					</button>
+				<% } else if($.unitInvite.state == "pending") { %>
+					<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
+						<%~ icon`check` %>
+						<span>Zaakceptuj</span>
+					</button>
+					<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT)) { %>
+						<button class="dangerous" api="unit/<%= $.unitInvite.unit.id %>/event/[eventID]/invitation/decline">
+							<%~ icon`close` %>
+							<span>Odrzuć</span>
+						</button>
+					<% } %>
+				<% } %>
+			<% } %>
+		</div>
+	<% } else { %>
+		<%~ include("/unit/upperUnitDescription", {targetUnit: $.unitInvite.unit}) %>
+	<% } %>
 		
 	<% if(
 		invitedParticipants.length &&
