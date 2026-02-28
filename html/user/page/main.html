@@ -108,7 +108,7 @@
 	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
 		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
 			<%~ icon`delete` %>
-			<% if($.targetUser.children.every(child => child.isAdult)) { %>
+			<% if($.targetUser.children.length > 0 && $.targetUser.children.every(child => child.isAdult)) { %>
 				Usuń kontakt alarmowy
 			<% } else if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
 				Usuń rodzica
