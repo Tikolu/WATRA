@@ -154,11 +154,8 @@ export default async function({user}) {
 		// Skip event for non participant approvers who have approved
 		if(approvalState === true && !inviteStates.length) continue
 
-		// If registration is closed, skip event if user is not a participant, approver and has no role in event
-		if(approvalState !== false && !inviteStates.includes("accepted") && !event.reg) {
-			await event.populate("roles")
-			if(!event.roles.some(r => r.user.id == user.id)) continue
-		}
+		// If registration is closed, skip event if user is not an approver and declined participation
+		if(approvalState !== false && event.registrationClosed && inviteStates.every(s => !s || s == "declined")) continue
 
 		events.push({
 			event,
