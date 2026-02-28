@@ -101,7 +101,11 @@
 						<%~ icon`close` %> Odrzucono
 					<% } %>
 				</dt>
-				<dd><%= categories[state] %></dd>
+				<dd>
+					<a href="/events/<%= $.targetEvent.id %>/users?participation=<%= state %>&unit=<%= $.unitInvite.id %>">
+						<%= categories[state] %>
+					</a>
+				</dd>
 			<% } %>
 		</dl>
 	<% } %>

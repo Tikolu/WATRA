@@ -14,14 +14,26 @@
 							<%~ icon`question_mark` %> Brakujące:
 						<% } %>
 					</dt>
-					<dd><%= $.counts.required %></dd>
+					<dd>
+						<a href="<%= $.targetForm.unit.rootUrl %>/users?form.<%= $.targetForm.id %>.response=required">
+							<%= $.counts.required %>
+						</a>
+					</dd>
 				<% } %>
 				<% if($.counts.drafts > 0) { %>
 					<dt><%~ icon`edit_note` %> Wersje robocze:</dt>
-					<dd><%= $.counts.drafts %></dd>
+					<dd>
+						<a href="<%= $.targetForm.unit.rootUrl %>/users?form.<%= $.targetForm.id %>.response=draft">
+							<%= $.counts.drafts %>
+						</a>
+					</dd>
 				<% } %>
 				<dt><%~ icon`check` %> Przesłane:</dt>
-				<dd><%= $.counts.submitted %></dd>
+				<dd>
+					<a href="<%= $.targetForm.unit.rootUrl %>/users?form.<%= $.targetForm.id %>.response=submitted">
+						<%= $.counts.submitted %>
+					</a>
+				</dd>
 			</dl>
 		</article>
 	<% } %>

@@ -6,6 +6,8 @@
 		formID: $.targetForm.id
 	}
 }) %>
+<% $.targetForm.unit.rootUrl = `/${$.targetForm.unit.modelName == "Unit" ? "units" : "events"}/${$.targetForm.unit.id}` %>
+
 <h1 id="form-title">
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.EDIT)) { %>
 		<input
@@ -23,7 +25,7 @@
 </h1>
 
 <p>
-	(formularz w <a href="/<%= $.targetForm.unit.modelName == "Unit" ? "units" : "events" %>/<%= $.targetForm.unit.id %>"><%= $.targetForm.unit.displayName %></a>)
+	(formularz w <a href="<% $.targetForm.unit.rootUrl %>"><%= $.targetForm.unit.displayName %></a>)
 </p>
 
 <div class="button-row">

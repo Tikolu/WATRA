@@ -75,19 +75,22 @@ export class FormFilterCategory extends FilterCategory {
 					name: `Odpowiedź`,
 					options: [
 						{value: "submitted", name: "Wysłana"},
-						{value: "required", name: "Oczekiwana"}
+						{value: "required", name: "Oczekiwana"},
+						{value: "draft", name: "Wersja robocza"}
 					],
 					async callback(user) {
 						if(!this.value) return true
 
 						// Load all responses
-						form.$locals.responses ||= await form.getUserResponses(null, {submitted: true})
-						const hasResponse = form.$locals.responses.some(r => r.user.id == user.id)
+						form.$locals.responses ||= await form.getUserResponses(null)
+						const response = form.$locals.responses.find(r => r.user.id == user.id)
 						if(this.value == "submitted") {
-							return hasResponse
+							return response?.submitted
+						} else if(this.value == "draft") {
+							return response && !response.submitted
 						} else if(this.value == "required") {
 							if(!form.config.requireResponse) return false
-							if(hasResponse) return false
+							if(response) return false
 							return form.userFilter(user)
 						}
 					}
@@ -220,12 +223,14 @@ export class FormColumnCategory extends ColumnCategory {
 					id: `form.${form.id}.response`,
 					name: `Odpowiedź na "${form.displayName}"`,
 					async process() {
-						form.$locals.responses ||= await form.getUserResponses(null, {submitted: true})
+						form.$locals.responses ||= await form.getUserResponses(null)
 					},
 					value(targetUser) {
 						const response = form.$locals.responses.find(r => r.user.id == targetUser.id)
 						if(response?.submitted) {
 							return "Wysłana"
+						} else if(response) {
+							return "Wersja robocza"
 						} else if(
 							form.config.requireResponse &&
 							form.userFilter(targetUser)
