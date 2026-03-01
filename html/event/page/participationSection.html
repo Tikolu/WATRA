@@ -4,7 +4,7 @@
 		Uczestnictwo
 	</h2>
 	<% if($.targetEvent.remainingSpaces != Infinity && !$.targetEvent.isPast &&
-		!$.approvalParticipants.length || $.approvalParticipants.some(p => p.state != "accepted")
+		(!$.approvalParticipants.length || $.approvalParticipants.some(p => p.state != "accepted"))
 	) { %>
 		<% if($.targetEvent.remainingSpaces === 0) { %>
 			<article class="warning">

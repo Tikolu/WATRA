@@ -19,6 +19,8 @@
 	}
 }
 
-.invited-unit hr {
-	margin: 1em 0;
+.invited-unit {
+	h3 + p {
+		margin: 0;
+	}
 }
