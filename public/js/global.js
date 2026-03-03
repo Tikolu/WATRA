@@ -222,7 +222,7 @@ const Popup = window.top.Popup || {
 		popup.closePromise = new Promise(resolve => {
 			// Wait for animation to finish before removing
 			popup.close = async () => {
-				popup.classList.add("closing")
+				popup.hidden = true
 				await sleep(250)
 				popup.remove()
 				resolve(true)

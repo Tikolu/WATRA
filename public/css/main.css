@@ -76,7 +76,7 @@ header {
 }
 
 /* transitions */
-main > * {
+main > *:not(dialog) {
 	opacity: 1;
 	transition: 350ms opacity, 350ms scale;
 }

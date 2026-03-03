@@ -82,6 +82,7 @@ html {
 	scrollbar-color: var(--secondary-text) var(--surface-2);
 	-webkit-tap-highlight-color: transparent;
 	cursor: default;
+	interpolate-size: allow-keywords;
 }
 
 ::selection {
@@ -472,6 +473,16 @@ details > summary > * {
 details:not([open]) > summary > .close-text { display: none }
 details[open] > summary > .open-text { display: none }
 
+details::details-content {
+	transition: height 250ms, content-visibility 250ms allow-discrete;
+	height: 0;
+	overflow: hidden;
+}
+
+details[open]::details-content {
+	height: auto;
+}
+
 dl {
 	display: grid;
 	grid-template-columns: max-content 1fr;
@@ -767,6 +778,7 @@ article.disabled {
 /* Dialogs and popups */
 
 dialog, .popup {
+	display: flex;
 	max-width: min(80%, 50em);
 	max-height: 85%;
 	position: fixed;
@@ -782,10 +794,34 @@ dialog, .popup {
 	border: none;
 
 	box-shadow: 0 0 0.25em var(--shadow);
+
+	transition:	opacity, scale, width, height, bottom,
+				overlay allow-discrete, display allow-discrete;
+	transition-duration: 250ms;
+	
+	@starting-style {
+		opacity: 0;
+		scale: 0.95;
+	}
+}
+
+dialog:not([open]), .popup[hidden] {
+	display: none;
+	opacity: 0;
+	scale: 0.95;
 }
 
 dialog::backdrop {
-	background-color: #0006
+	background-color: transparent;
+	transition: background-color 250ms, display 250ms allow-discrete;
+}
+
+dialog[open]::backdrop {
+	background-color: #0006;
+
+	@starting-style {
+		background-color: transparent;
+	}
 }
 
 dialog > h1:first-child {
@@ -812,9 +848,9 @@ dialog > main {
 	min-height: 1em;
 	top: unset;
 	bottom: 2em;
+	display: flex;
 	flex-direction: row;
 	align-items: center;
-	transition: bottom 100ms;
 
 	background-color: var(--surface-2);
 
@@ -845,19 +881,6 @@ dialog > main {
 	margin-right: 0;
 }
 
-dialog[open], .popup:popover-open  {
-	animation: popup-show 250ms forwards;
-	display: flex;
-}
-
-dialog:not([open]), .popup.closing {
-	animation: popup-hide 250ms forwards;
-}
-
-.popup::backdrop {
-	display: none;
-}
-
 body:has(dialog[open]) .popup button {
 	display: none;
 }
@@ -886,7 +909,6 @@ dialog.frame {
 	height: 10em;
 	max-width: unset;
 	padding: 0.5em;
-	transition: width 250ms, height 250ms;
 
 	& > i.spin {
 		margin: auto;
@@ -916,60 +938,10 @@ dialog:focus-visible {
 }
 
 /* Page data refresh animations */
-.removing { animation: element-shrink 250ms forwards }
-.adding { animation: element-grow 250ms }
 .fade-out { animation: fade-out 250ms forwards linear }
 .fade-in { animation: fade-in 250ms linear }
 
 /* Animations */
-
-@keyframes popup-show {
-	from {
-		opacity: 0;
-		scale: 0.8;
-		display: none;
-	}
-	to {
-		opacity: 1;
-		scale: 1;
-		display: flex;
-	}
-}
-
-@keyframes popup-hide {
-	from {
-		opacity: 1;
-		scale: 1;
-		display: flex;
-	}
-	to {
-		opacity: 0;
-		scale: 0.8;
-		display: none;
-	}
-}
-
-@keyframes element-grow {
-	from {
-		opacity: 0;
-		scale: 0.8;
-	}
-	to {
-		opacity: 1;
-		scale: 1;
-	}
-}
-
-@keyframes element-shrink {
-	from {
-		opacity: 1;
-		scale: 1;
-	}
-	to {
-		opacity: 0;
-		scale: 0.8;
-	}
-}
 
 @keyframes fade-in {
 	from { opacity: 0 }
@@ -997,6 +969,30 @@ dialog:focus-visible {
 	to {
 		filter: brightness(var(--highlight-brightness))
 	}
+}
+
+/* Animate hideable elements */
+.hideable, .adding, .removing {
+	transition: opacity 250ms, scale 250ms, height 250ms, margin 250ms, padding 250ms,
+				display 250ms allow-discrete !important;
+
+	@starting-style {
+		scale: 0.8;
+		opacity: 0;
+		height: 0;
+		overflow: hidden;
+		padding: 0;
+		margin: -0.5em;
+	}
+}
+
+.hideable[hidden], .removing {
+	scale: 0.8;
+	opacity: 0;
+	height: 0;
+	overflow: hidden;
+	padding: 0;
+	margin: -0.5em;
 }
 
 body.unload::after {
