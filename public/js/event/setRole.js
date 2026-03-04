@@ -1,11 +1,8 @@
-API.registerHandler("event/[eventID]/member/[userID]/setRole", {
+API.registerHandler("event/[eventID]/member/setRole", {
 	form: main,
 	progressText: "Zapisywanie...",
 	successText: "Zapisano",
-	validate: data => {		
-		if(!data.userID) {
-			throw new Error("Nie wybrano użytkownika")
-		}
+	validate: data => {
 		if(!data.roleType) {
 			throw new Error("Nie wybrano funkcji")
 		}

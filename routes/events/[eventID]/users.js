@@ -36,6 +36,7 @@ export default async function({user, targetEvent}) {
 			!await user.checkPermission(invitedUnit.unit.PERMISSIONS.MANAGE_INVITES)) continue
 		unitOptions.push(invitedUnit.unit)
 	}
+	if(unitOptions.length == 0) throw new HTTPError(403)
 
 	// Create filters
 	const filterCategories = [

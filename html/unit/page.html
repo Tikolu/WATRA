@@ -52,10 +52,7 @@
 			<%~ icon`person` %>
 			Użytkownicy
 		</h2>
-		<% if(
-			($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS) && $.targetUnit.subUnits?.length > 0) ||
-			($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS) && $.targetUnit.archivedUsers?.length > 0)
-		) { %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS)) { %>
 			<a href="/units/<%= $.targetUnit.id %>/users<%= orgParam %>" class="subheading">Lista użytkowników<%~ icon`chevron_right` %></a>
 		<% } %>
 		<% if($.targetUnit.roles?.length > 0) { %>

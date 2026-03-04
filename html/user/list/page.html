@@ -161,12 +161,54 @@
 	</div>
 </dialog>
 
+<section id="user-actions" class="hideable" hidden>
+	<p>Wybrano: <span id="user-count">0</span></p>
+	<div class="button-row">
+		<% if($.targetUnit.modelName == "Event") { %>
+			<button opens-dialog="remove-user-from-event"><%~ icon`person_remove` %> Usuń z akcji</button>
+			<button opens-dialog="remove-user-participation"><%~ icon`mail_off` %> Cofnij zapis</button>
+		<% } %>
+	</div>
+</section>
+
+<% if($.targetUnit.modelName == "Event") { %>
+	<dialog id="remove-user-from-event">
+		<h1><%~ icon`person_remove` %> Usuwanie uczestników z akcji</h1>
+		<p>Usunąć wybranych uczestników z tej akcji?</p>
+		<p>Uczestnicy stracą dostęp do akcji oraz możliwość uczestniczenia.</p>
+		<hr>
+		<div class="button-row">
+			<button><%~ icon`arrow_back` %> Anuluj</button>
+			<button class="dangerous" api="event/<%= $.targetUnit.id %>/member/uninvite">
+				<%~ icon`person_remove` %> Usuń z akcji
+			</button>
+		</div>
+	</dialog>
+
+	<dialog id="remove-user-participation">
+		<h1><%~ icon`mail_off` %> Cofnięcie zapisu</h1>
+		<p>Cofnąć zapis wybranych uczestników?</p>
+		<p>Jeśli zapisy są otwarte, uczestnicy będą mogli ponownie zapisać się na akcję.</p>
+		<hr>
+		<div class="button-row">
+			<button><%~ icon`arrow_back` %> Anuluj</button>
+			<button api="event/<%= $.targetUnit.id %>/member/setParticipation">
+				<%~ icon`mail_off` %> Cofnij zapis
+			</button>
+		</div>
+	</dialog>
+<% } %>
+
 <section id="table-container">
 	<table id="user-table">
 		<thead>
 			<tr>
-				<th hidden>
-					<input type="checkbox">
+				<th
+					<% if($.targetUnit.modelName != "Event") { %>
+						hidden
+					<% } %>
+				>
+					<input type="checkbox" id="select-all-checkbox">
 				</th>
 				<th>Imię</th>
 				<% for(const column of $.columnCategories.flatMap(c => c.columns)) { %>
@@ -178,8 +220,12 @@
 		<tbody>
 			<% for(const user of $.users) { %>
 				<tr>
-					<td hidden>
-						<input type="checkbox">
+					<td
+						<% if($.targetUnit.modelName != "Event") { %>
+							hidden
+						<% } %>
+					>
+						<input type="checkbox" name="userIDs" value="<%= user.id %>">
 					</td>
 					<td>
 						<a href="/users/<%= user.id %>"><%= user.displayName %></a>

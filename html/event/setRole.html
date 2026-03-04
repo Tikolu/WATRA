@@ -26,9 +26,6 @@
 							<%= role.name[$.targetEvent.upperUnits[0].org] || role.name["default"] %>
 						</option>
 					<% } %>
-					<option value="remove">
-						(usuń z akcji)
-					</option>
 				</select>
 			</form>
 		</section>
@@ -37,6 +34,7 @@
 			<h2>Wybierz użytkownika</h2>
 			<%~ include("/user/templates/userPicker", {
 				users: $.participants,
+				multiple: true
 			}) %>
 		</section>
 	<% } else { %>
@@ -50,7 +48,7 @@
 		Anuluj
 	</button>
 	<% if($.participants.length) { %>
-		<button id="set-role-button" api="event/[eventID]/member/[userID]/setRole">
+		<button id="set-role-button" api="event/[eventID]/member/setRole">
 			<%~ icon`check` %>
 			<span>Potwierdź mianowanie</span>
 		</button>

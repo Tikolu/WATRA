@@ -1,4 +1,4 @@
-API.registerHandler("event/[eventID]/member/[memberID]/setParticipation", {
+API.registerHandler("event/[eventID]/member/setParticipation", {
 	form: main,
 	progressText: "Zapisywanie...",
 	successText: "Zapisano",
@@ -7,7 +7,6 @@ API.registerHandler("event/[eventID]/member/[memberID]/setParticipation", {
 			Popup.error("Wybierz opcję")
 			return false
 		}
-		data.participation = data.participation == "yes"
 		return true
 	},
 	after: response => {

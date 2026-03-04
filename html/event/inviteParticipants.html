@@ -9,7 +9,10 @@
 <main>
 	<section class="fill-height">
 		<%~ include("/user/templates/userPicker", {
-			tree: $.tree
+			tree: $.tree,
+			multiple: true,
+			disabled: u => $.targetEvent.participants.hasID(u.id),
+			selected: u => $.targetEvent.participants.hasID(u.id)
 		}) %>
 	</section>
 </main>
@@ -19,7 +22,7 @@
 		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
-	<button api="event/[eventID]/member/[userID]/invite">
+	<button api="event/[eventID]/member/invite">
 		<%~ icon`check` %>
 		Zaproś
 	</button>

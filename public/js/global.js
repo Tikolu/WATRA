@@ -1154,7 +1154,6 @@ function processCustomIDs() {
 	for(const element of document.querySelectorAll("[id]")) {
 		const replacer = r => r.toUpperCase().replace("-", "")
 		const id = element.id.replaceAll(/-\w/g, replacer)
-		if(window[id]) continue
 		window[id] = element
 	}
 	window["main"] ||= document.querySelector("main")

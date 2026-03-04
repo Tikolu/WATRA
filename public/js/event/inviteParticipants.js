@@ -1,4 +1,4 @@
-API.registerHandler("event/[eventID]/member/[userID]/invite", {
+API.registerHandler("event/[eventID]/member/invite", {
 	form: main,
 	progressText: "Zapraszanie...",
 	successText: "Zaproszono"

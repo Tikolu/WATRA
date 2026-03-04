@@ -99,6 +99,17 @@ export async function INVITE_PARTICIPANT(user) {
 	return false
 }
 
+/** Uninviting participants from the event */
+export async function EDIT_PARTICIPANTS(user) {
+	// Lack of ACCESS permission denies EDIT_PARTICIPANTS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "manageEvent" roles in event and upper units can edit participants
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
+
+	return false
+}
+
 /** Approving the event */
 export async function APPROVE(user) {
 	// Lack of ACCESS permission denies APPROVE

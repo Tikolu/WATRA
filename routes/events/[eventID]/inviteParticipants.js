@@ -12,9 +12,6 @@ export default async function({user, targetEvent}) {
 	const tree = await topUnit.getTree({
 		roleFilter: (unit, role) => user.checkPermission(unit.PERMISSIONS.CREATE_USER),
 		userFilter: async u => {
-			// Exclude users that are already invited
-			if(targetEvent.participants.hasID(u.id)) return false
-
 			// Include users with public role
 			await u.populate("roles")
 			for(const role of u.roles) {

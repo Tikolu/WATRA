@@ -39,10 +39,24 @@ async function updateState() {
 	await refreshPageData()
 
 	progressMessage.close()
+
+	initialiseCheckboxes()
 }
 
 confirmFiltersButton.onclick = updateState
 confirmColumnsButton.onclick = updateState
+
+function initialiseCheckboxes() {
+	selectAllCheckbox.globalCheckbox(userTable)
+
+	// Show actions when checkbox is checked
+	userTable.onchange = event => {
+		userActions.hidden = !selectAllCheckbox.checked && !selectAllCheckbox.indeterminate
+		const checked = userTable.querySelectorAll("tbody :checked")
+		userCount.innerText = checked.length
+	}
+}
+initialiseCheckboxes()
 
 function toggleTableLinks(show) {
 	for(const link of userTable.querySelectorAll(".details-link")) link.hidden = !show
@@ -76,3 +90,21 @@ exportButton.onclick = () => {
 printButton.onclick = async () => {
 	window.print()
 }
+
+
+API.registerHandler("event/[eventID]/member/uninvite", {
+	form: userTable,
+	progressText: "Usuwanie użytkowników z akcji...",
+	successText: "Usunięto użytkowników z akcji"
+})
+
+
+API.registerHandler("event/[eventID]/member/setParticipation", {
+	validate: data => {
+		data.participation = "pending"
+		return true
+	},
+	form: userTable,
+	progressText: "Cofanie zapisów...",
+	successText: "Cofnięto zapis uczestników"
+})

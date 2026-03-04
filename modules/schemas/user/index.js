@@ -330,7 +330,7 @@ export class UserClass {
 
 	/** Checks permission and throws a 403 error if denied */
 	async requirePermission(permission, message) {
-		if(await this.checkPermission(permission)) return
+		if(permission && await this.checkPermission(permission)) return
 		throw new HTTPError(403, message)
 	}
 

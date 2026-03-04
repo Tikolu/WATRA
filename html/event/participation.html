@@ -2,7 +2,8 @@
 	scripts: ["signature", "event/participation"],
 	styles: ["signature"],
 	meta: {
-		eventID: $.targetEvent.id
+		eventID: $.targetEvent.id,
+		userIDs: [$.targetInvitation.user.id]
 	}
 }) %>
 <h1>
@@ -20,7 +21,7 @@
 	<% if(canParticipate) { %>
 		<section>
 			<form>
-				<input type="radio" name="participation" id="participation-choice-yes" value="yes"
+				<input type="radio" name="participation" id="participation-choice-yes" value="accepted"
 					<%= $.targetInvitation.state == "accepted" ? "checked" : "" %>
 				>
 				<label for="participation-choice-yes">
@@ -31,7 +32,7 @@
 					<% } %>
 					udział
 				</label>
-				<input type="radio" name="participation" id="participation-choice-no" value="no"
+				<input type="radio" name="participation" id="participation-choice-no" value="declined"
 					<%= $.targetInvitation.state == "declined" ? "checked" : "" %>
 				>
 				<label for="participation-choice-no">
@@ -55,7 +56,7 @@
 		<%~ include("/templates/signature", {
 			user: $.user
 		}) %>
-		<button class="confirm" api="event/[eventID]/member/<%= $.targetInvitation.user.id %>/setParticipation">
+		<button class="confirm" api="event/[eventID]/member/setParticipation">
 			<%~ icon`check` %>
 			Potwierdź
 		</button>
