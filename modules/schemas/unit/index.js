@@ -444,6 +444,16 @@ schema.beforeDelete = async function() {
 	
 	if(this.upperUnits.length == 0) throw Error("Nie można usunąć jednostki bez jednostek nadrzędnych")
 
+	// Prevent deletion if unit has members
+	if(this.roles.length) throw Error("Przenieś członków jednostki przed usunięciem")
+
+	// Prevent deletion if unit has subUnits
+	if(this.subUnits.length) throw Error("Przenieś podjednostki przed usunięciem")
+
+	// Prevent deletion if unit has events
+	if(this.events.length) throw Error("Przenieś wyjazdy jednostki przed usunięciem")
+	if(this.eventInvites.length) throw Error("Cofnij zaproszenia na wyjazdy jednostki przed usunięciem")
+
 	// Add all members to upper unit
 	for(const role of this.roles) {
 		// Determine upper unit
