@@ -1,6 +1,7 @@
 import html from "modules/html.js"
 
 import * as Text from "modules/text.js"
+import Config from "modules/config.js"
 
 import {
 	FilterCategory,
@@ -14,7 +15,6 @@ import {
 	loadFilterValues,
 	loadColumnValues
 } from "modules/userTable.js"
-import Config from "modules/config.js";
 
 
 export default async function({user, targetUnit}) {
@@ -31,13 +31,13 @@ export default async function({user, targetUnit}) {
 			icon: "user_attributes",
 			filters: [
 				{
-					id: "archived",
+					id: "state",
 					name: "Stan użytkownika",
 					options: [
-						{value: "archived", name: "Zarchiwizowani"},
-						{value: "active", name: "Aktywni"}
+						{value: "active", name: "Aktywni"},
+						{value: "unconfirmed", name: "Niezatwierdzeni"},
+						{value: "archived", name: "Zarchiwizowani"}
 					],
-					default: "active",
 					async verify(value) {
 						// Load archived users
 						if(value != "active") {
@@ -49,8 +49,10 @@ export default async function({user, targetUnit}) {
 						return value
 					},
 					callback(targetUser) {
-						if(this.value == "archived") return targetUser.archived
-						else if(this.value == "active") return !targetUser.archived
+						if(!this.value) return true
+						else if(this.value == "archived") return targetUser.archived
+						else if(this.value == "unconfirmed") return !targetUser.archived && !targetUser.confirmed
+						else if(this.value == "active") return !targetUser.archived && targetUser.confirmed
 					}
 				}
 			]
@@ -77,9 +79,9 @@ export default async function({user, targetUnit}) {
 	const users = []
 	if(!filterError) {
 		// Skip loading in archived mode
-		const allUsers = filterCategories[1].filters[0].value == "active" ?
-			await targetUnit.listMembers(true).toArray() :
-			archivedUsers
+		const allUsers = filterCategories[1].filters[0].value == "archived" ?
+			archivedUsers :
+			await targetUnit.listMembers(true).toArray()
 
 		for(const user of allUsers.unique("id")) {
 			let filtered = false
@@ -114,6 +116,18 @@ export default async function({user, targetUnit}) {
 		}),
 		...targetUnit.forms.map(form => new FormColumnCategory(form))
 	]
+
+	// Insert state column
+	columnCategories[0].columns.unshift({
+		id: "state",
+		name: "Stan użytkownika",
+		default: true,
+		value(u) {
+			if(u.archived) return "Zarchiwizowany"
+			else if(!u.confirmed) return "Niezatwierdzony"
+			else return "Aktywny"
+		}
+	})
 
 	// Insert org column
 	if(!targetUnit.org) {
