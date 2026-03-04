@@ -57,11 +57,7 @@ export default async function({user, targetUnit, orgContext}) {
 		// Remove duplicates
 		subUnitEvents = subUnitEvents.unique("id")
 		// Sort by date
-		subUnitEvents.sort((a, b) => {
-			const aDate = a.dates.start || 0
-			const bDate = b.dates.start || 0
-			return aDate - bDate
-		})
+		subUnitEvents.sort((a, b) => a.dates.start - b.dates.start)
 		// Load upperUnits
 		await subUnitEvents.populate("upperUnits")
 	}

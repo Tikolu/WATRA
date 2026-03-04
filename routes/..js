@@ -167,6 +167,9 @@ export default async function({user}) {
 		})
 	}
 
+	// Sort events by date
+	events.sort((a, b) => a.event.dates.start - b.event.dates.start)
+
 	// Find required forms, check permissions
 	const formUnits = []
 	for(const u of [user, ...user.children]) {

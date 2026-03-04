@@ -130,11 +130,22 @@
 		</h2>
 		<div class="entry-grid">
 			<% for(const {event, inviteStates, approvalState} of $.events) { %>
+				<% 
+					let eventApprovalWarning
+					if(approvalState === false) {
+						if(event.isPast) {
+							eventApprovalWarning = "Akcja nie została zatwierdzona"
+						} else if(event.dates.start - Date.now() < datetime.WEEK) {
+							eventApprovalWarning = "Oczekujące zatwierdzenie"
+						}
+					}
+				%>
+			
 				<%~ include("event/templates/eventEntry", {
 					targetEvent: event,
 					warnings: Array.conditional(
 						inviteStates.includes("pending") && event.registrationOpen, "Oczekiwana odpowiedź",
-						approvalState === false, event.isPast ? "Akcja nie została zatwierdzona" : "Oczekujące zatwierdzenie"
+						eventApprovalWarning, eventApprovalWarning
 					)
 				}) %>
 			<% } %>

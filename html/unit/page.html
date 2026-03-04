@@ -206,7 +206,8 @@
 						targetEvent: event,
 						description: event.upperUnits.map(u => u.displayName).join(", "),
 						warnings: Array.conditional(
-							!event.approvalState, "Akcja nie jest zatwierdzona"
+							!event.approvalState && (event.dates.start - Date.now() < datetime.WEEK),
+							"Akcja nie jest zatwierdzona"
 						)
 					}) %>
 				<% } %>
