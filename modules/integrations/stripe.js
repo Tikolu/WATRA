@@ -23,12 +23,12 @@ function objectToFormData(object) {
 
 export async function stripeAPI(endpoint, data={}, options={}) {
 	const fetchOptions = {
-		method: "POST",
+		method: options.method || "POST",
 		headers: {
 			"Authorization": `Bearer ${STRIPE_API_KEY}`,
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
-		body: objectToFormData(data)
+		body: options.method == "GET" ? undefined : objectToFormData(data)
 	}
 
 	if(options.idempotency) {
