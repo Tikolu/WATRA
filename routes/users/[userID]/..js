@@ -55,6 +55,10 @@ export default async function({user, targetUser}) {
 		eventInvites.push({event, inviteState})
 	}
 
+	// Sort parents and children
+	targetUser.parents.sort((a, b) => a.displayName.localeCompare(b.displayName))
+	targetUser.children.sort((a, b) => a.displayName.localeCompare(b.displayName))
+
 	return html("user/page/main", {
 		user,
 		targetUser,

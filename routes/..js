@@ -109,6 +109,9 @@ export default async function({user}) {
 		}
 	)
 
+	// Sort children alphabetically
+	user.children.sort((a, b) => a.displayName.localeCompare(b.displayName))
+
 	// Check child permissions
 	for(const child of user.children) {
 		await user.checkPermission(child.PERMISSIONS.APPROVE)

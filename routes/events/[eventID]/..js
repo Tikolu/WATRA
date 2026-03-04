@@ -49,7 +49,7 @@ export default async function({user, targetEvent}) {
 	}
 
 	// Sort invited units
-	targetEvent.invitedUnits.sort((a, b) => a.unit.name.localeCompare(b.unit.name))
+	targetEvent.invitedUnits.sort((a, b) => a.unit.displayName.localeCompare(b.unit.displayName))
 
 	// Check permissions on upper units
 	for(const upperUnit of targetEvent.upperUnits || []) {
@@ -83,6 +83,9 @@ export default async function({user, targetEvent}) {
 
 		approvalParticipants.push(userInvite)
 	}
+
+	// Sort approval participants
+	approvalParticipants.sort((a, b) => a.user.displayName.localeCompare(b.user.displayName))
 
 	// Get event files
 	const files = []
