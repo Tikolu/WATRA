@@ -11,8 +11,7 @@
 		<%~ include("/user/templates/userPicker", {
 			tree: $.tree,
 			multiple: true,
-			disabled: u => $.targetEvent.participants.hasID(u.id),
-			selected: u => $.targetEvent.participants.hasID(u.id)
+			disabled: u => $.targetEvent.participants.hasID(u.id)
 		}) %>
 	</section>
 </main>

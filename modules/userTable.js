@@ -170,7 +170,6 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 				{
 					id: "dob",
 					name: "Data urodzenia",
-					default: true,
 					value(targetUser) {
 						if(targetUser.dateOfBirth) {
 							return formatDate(targetUser.dateOfBirth)
@@ -180,7 +179,6 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 				{
 					id: "age",
 					name: "Wiek",
-					default: true,
 					value(targetUser) {
 						if(targetUser.dateOfBirth) {
 							return targetUser.age
@@ -254,6 +252,7 @@ export async function loadFilterValues(filterCategories, routeData) {
 			}
 		}
 	} catch(error) {
+		console.error(error)
 		return error.message
 	}
 }

@@ -71,6 +71,24 @@ export default async function({user, targetEvent}) {
 						if(!user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) && !unitOptions.hasID(targetUser.$locals.participant.originUnit?.id)) return false
 						return !this.value || targetUser.$locals.participant.originUnit?.id == this.value
 					}
+				},
+
+				{
+					id: "role",
+					name: "Funkcja w akcji",
+					verify: async value => {
+						await targetEvent.populate("roles")
+						return value
+					},
+					options: [
+						{value: "no-role", name: "Bez funkcji"},
+						{value: "role", name: "Z funkcją"}
+					],
+					callback(targetUser) {
+						if(!this.value) return true
+						const hasRole = targetEvent.roles.some(r => r.user.id == targetUser.id)
+						return this.value == "role" ? hasRole : !hasRole
+					}
 				}
 			]
 		}),
@@ -144,6 +162,18 @@ export default async function({user, targetEvent}) {
 					name: "Jednostka",
 					default: true,
 					value: u => u.$locals.participant.originUnit?.displayName
+				},
+				{
+					id: "participationTime",
+					name: "Czas zapisu",
+					value: u => u.$locals.participant.signature?.time && datetime.format(u.$locals.participant.signature?.time, "yyyy-MM-dd HH:mm")
+				},
+				{
+					id: "role",
+					name: "Funkcja w akcji",
+					default: true,
+					process: async () => await targetEvent.populate({"roles": "user"}),
+					value: u => targetEvent.roles.find(r => r.user.id == u.id)?.displayName
 				}
 			]
 		}),
@@ -153,7 +183,7 @@ export default async function({user, targetEvent}) {
 
 	// Insert org column
 	if(!eventOrg) {
-		columnCategories[0].columns.push({
+		columnCategories[0].columns.splice(2, 0, {
 			id: "org",
 			name: "Organizacja",
 			value: u => Config.orgs[u.org]?.name
@@ -163,11 +193,9 @@ export default async function({user, targetEvent}) {
 	// Insert age column
 	if(targetEvent.dates.start) {
 		columnCategories[1].columns[1].name = "Wiek (dzisiaj)"
-		columnCategories[1].columns[1].default = false
 		columnCategories[1].columns.splice(2, 0, {
 			id: "event.age",
 			name: "Wiek (w dniu akcji)",
-			default: true,
 			value: targetUser => {
 				if(!targetUser.dateOfBirth || targetEvent.dates.start < targetUser.dateOfBirth) return false
 				const {years} = datetime.difference(targetUser.dateOfBirth, targetEvent.dates.start)

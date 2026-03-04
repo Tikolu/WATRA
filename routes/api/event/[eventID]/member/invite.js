@@ -16,6 +16,9 @@ export default async function({user, targetEvent, targetUsers}) {
 	// Invite users and set role
 	const newRoles = []
 	for(const targetUser of targetUsers) {
+		// Skip users already in the event
+		if(targetEvent.participants.hasID(targetUser.id)) continue
+		
 		await targetEvent.inviteParticipant(targetUser, undefined, false)
 		const newRole = await targetEvent.setRole(targetUser, undefined, false)
 		newRoles.push(newRole)

@@ -8,6 +8,9 @@ export default async function({user, targetEvent}) {
 	const unitsTree = await user.listUnits(true).toArray()
 	const topUnit = unitsTree.at(-1)
 
+	// Load current roles
+	await targetEvent.populate("roles")
+
 	// Generate tree
 	const tree = await topUnit.getTree({
 		roleFilter: (unit, role) => user.checkPermission(unit.PERMISSIONS.CREATE_USER),

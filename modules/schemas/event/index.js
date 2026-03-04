@@ -160,18 +160,19 @@ export class EventClass extends UnitClass {
 	/* * Methods * */
 
 	/** Sets a role for a event */
-	async setRole(user, roleType) {
+	async setRole(user, roleType, save=true) {
 		const role = new Role({
 			type: roleType || this.config.defaultRole,
 			eventRole: true
 		})
 		
-		await super.setRole(user, role)
+		const newRole = await super.setRole(user, role)
 
 		// Re-calculate approvers if role has "approveEvent" or "manageEvent" tag
-		if(role.hasTag("approveEvent") || role.hasTag("manageEvent")) {
+		if(save && (role.hasTag("approveEvent") || role.hasTag("manageEvent"))) {
 			await this.calculateApprovers()
 		}
+		return newRole
 	}
 
 	/** Sets upper units of the event */

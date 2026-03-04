@@ -18,8 +18,15 @@ export default class {
 		ref: "Unit"
 	}
 
+	signature = {
+		type: {
+			name: String,
+			time: Date
+		}
+	}
+
 	/** Sets the invitation state for the user */
-	async setState(state) {
+	async setState(state, signature) {
 		const targetEvent = this.ownerDocument()
 		
 		await this.populate({
@@ -33,16 +40,28 @@ export default class {
 			throw new HTTPError(400, "Rejestracja na tę akcję jest zamknięta")
 		}
 
-		// Check participant eligibility
-		if(!this.user.confirmed) {
-			throw new HTTPError(400, "Dane uczestnika nie zostały zatwierdzone")
-		}
-
 		// Remove role if declined
 		if(state == "declined") {
 			const existingRole = await this.user.getRoleInUnit(targetEvent)
 			if(existingRole) await existingRole.delete()
+
+		} if(state == "accepted") {
+			// Check participant eligibility
+			if(!this.user.confirmed) {
+				throw new HTTPError(400, "Dane uczestnika nie zostały zatwierdzone")
+			}
+			
+			// Add role if direct participant
+			if(!this.originUnit) {
+				const existingRole = await this.user.getRoleInUnit(targetEvent)
+				if(!existingRole) {
+					await targetEvent.setRole(this.user, undefined)
+				}
+			}
 		}
+
+		// Save signature if accepting
+		this.signature = state == "accepted" ? signature : undefined
 
 		this.state = state
 		await targetEvent.save()
@@ -51,6 +70,8 @@ export default class {
 	/** Uninvites the participant and removes them from the event */
 	async uninvite(saveEvent=true) {
 		const targetEvent = this.parent()
+
+		await targetEvent.validate()
 		
 		await this.populate("user")
 

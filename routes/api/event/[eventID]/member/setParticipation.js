@@ -28,7 +28,7 @@ export default async function({user, targetEvent, targetUsers, participation, si
 		const targetInvitation = targetEvent.participants.id(targetUser.id)
 		
 		// Set participation state
-		await targetInvitation.setState(participation)
+		await targetInvitation.setState(participation, signature)
 
 		// Check for required forms
 		if(participation == "accepted") {
