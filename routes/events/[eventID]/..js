@@ -48,6 +48,9 @@ export default async function({user, targetEvent}) {
 		}
 	}
 
+	// Sort invited units
+	targetEvent.invitedUnits.sort((a, b) => a.unit.name.localeCompare(b.unit.name))
+
 	// Check permissions on upper units
 	for(const upperUnit of targetEvent.upperUnits || []) {
 		await user.checkPermission(upperUnit.PERMISSIONS.ACCESS_EVENTS)

@@ -46,7 +46,7 @@
 		</article>
 	<% } %>
 	<% if($.targetEvent.invitedUnits.length > 0) { %>
-		<div class="entry-grid full">
+		<div class="entry-grid">
 			<% for(const unitInvite of $.targetEvent.invitedUnits || []) { %>
 				<%
 					if(unitInvite.state == "declined" && !($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission(unitInvite.unit.PERMISSIONS.MANAGE_INVITES))) continue
