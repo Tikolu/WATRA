@@ -22,7 +22,7 @@ globalThis.addEventListener("unhandledrejection", event => {
 
 // Parse command line arguments
 const args = cli.parseArgs(Deno.args, {
-	boolean: ["clear-database", "development", "proxy"],
+	boolean: ["clear-database", "development", "proxy", "repl"],
 	string: ["import", "host", "port", "db", "script"]
 })
 
@@ -75,7 +75,7 @@ database.ready.then(async () => {
 	}
 
 	// Exit
-	if(!args.host || !args.port) {
+	if(!args.repl && (!args.host || !args.port)) {
 		console.log("Provide --host and --port to start server")
 		Deno.exit()
 	}
