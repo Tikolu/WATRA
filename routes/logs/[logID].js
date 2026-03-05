@@ -14,7 +14,7 @@ export default async function({user, logID}) {
 
 	await user.requirePermission(targetLog.PERMISSIONS.ACCESS, "Nie masz dostępu do tego logu")
 
-	await targetLog.populate(["user", "targetUser", "targetEvent", "targetUnit", "targetForm"], {placeholders: false})
+	await targetLog.populate(["user", "targetUsers", "targetEvent", "targetUnit", "targetForm"], {placeholders: false})
 
 	return html("logs/log", {
 		targetLog

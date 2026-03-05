@@ -14,7 +14,7 @@ export default async function({user, targetUser, start, end, direct, type}) {
 	// Load logs
 	const query = {
 		$or: [
-			{targetUser: targetUser.id}
+			{targetUsers: targetUser.id}
 		],
 		_id: {
 			$gte: Log.dateToID(start),
@@ -23,8 +23,7 @@ export default async function({user, targetUser, start, end, direct, type}) {
 	if(end) query._id.$lte = Log.dateToID(end)
 	
 	if(!directOnly) query.$or.push(
-		{user: targetUser.id},
-		{"data.userIDs": targetUser.id}
+		{user: targetUser.id}
 	)
 	if(type) {
 		const typeEntry = Log.eventTypes[type]
@@ -34,7 +33,7 @@ export default async function({user, targetUser, start, end, direct, type}) {
 
 	const logs = await Log.find(query)
 
-	await logs.populate(["user", "targetUser", "targetEvent", "targetUnit", "targetForm"], {placeholders: false})
+	await logs.populate(["user", "targetUsers", "targetEvent", "targetUnit", "targetForm"], {placeholders: false})
 
 	return html("logs/list", {
 		user,

@@ -48,11 +48,19 @@ export async function _exit({user}) {
 
 	let output = this.lastOutput
 	if(user && user.logEvent && !this.logging.disabled) {
+		// Get target users from route data and API output data
+		const targetUsers = []
+		if(this.routeData.targetUser) targetUsers.push(this.routeData.targetUser)
+		if(output.userIDs) {
+			targetUsers.push(...output.userIDs)
+			delete output.userIDs
+		}
+		
 		await user.logEvent(
 			decodeURI(this.request.address.pathname).replace(/^\/api\//, ""),
 			{
 				request: this.request,
-				targetUser: this.routeData.targetUser,
+				targetUsers,
 				targetUnit: this.routeData.targetUnit,
 				targetEvent: this.routeData.targetEvent,
 				targetForm: this.routeData.targetForm,

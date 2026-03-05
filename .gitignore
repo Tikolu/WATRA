@@ -8,3 +8,4 @@ scrap
 /html/custom
 /config/custom*.json
 /cert
+/backup

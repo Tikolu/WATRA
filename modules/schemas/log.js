@@ -48,9 +48,10 @@ const eventTypes = {
 	"event/*/unit/*/uninvite": "Cofnięto zaproszenie $UNIT na $EVENT",
 	"event/*/file/add": "Dodano dokument do $EVENT",
 	"event/*/file/*/delete": "Usunięto dokument z $EVENT",
-	"event/*/member/*/invite": "Zaproszono $USER na $EVENT",
-	"event/*/member/*/setParticipation": "Ustawiono uczestnictwo $USER na $EVENT",
-	"event/*/member/*/setRole": "Ustawiono funkcję $USER na $EVENT",
+	"event/*/member/invite": "Zaproszono $USER na $EVENT",
+	"event/*/member/uninvite": "Usunięto $USER z $EVENT",
+	"event/*/member/setParticipation": "Ustawiono uczestnictwo $USER na $EVENT",
+	"event/*/member/setRole": "Ustawiono funkcję $USER na $EVENT",
 	"event/*/setUpperUnits": "Zmieniono jednostki nadrzędne $EVENT",
 	"event/*/registration/enable": "Włączono zapisy na $EVENT",
 	"event/*/registration/disable": "Wyłączono zapisy na $EVENT",
@@ -108,10 +109,12 @@ export class LogClass {
 		required: true
 	}
 
-	targetUser = {
-		type: String,
-		ref: "User"
-	}
+	targetUsers = [
+		{
+			type: String,
+			ref: "User"
+		}
+	]
 
 	targetUnit = {
 		type: String,
@@ -158,8 +161,12 @@ export class LogClass {
 		}
 
 		// Return formatted description
+		let userDisplayName
+		if(this.targetUsers.length <= 1) userDisplayName = this.targetUsers[0]?.displayName || this.targetUsers[0]
+		else userDisplayName = `${this.targetUsers.length} użytkowników`
+		
 		if(text) return LogClass.formatDescription(text,
-			this.targetUser?.displayName || this.targetUser,
+			userDisplayName,
 			this.targetUnit?.displayName || this.targetUnit,
 			this.targetEvent?.displayName || this.targetEvent,
 			this.targetForm?.displayName || this.targetForm
@@ -174,7 +181,7 @@ const schema = mongoose.Schema.fromClass(LogClass)
 
 schema.permissions = {
 	async ACCESS(user) {
-		const fields = ["user", "targetUser", "targetUnit", "targetEvent", "targetForm"]
+		const fields = ["user", "targetUsers", "targetUnit", "targetEvent", "targetForm"]
 		
 		for(const field of fields) {
 			await this.populate(field, {placeholders: false})

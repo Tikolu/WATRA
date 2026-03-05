@@ -31,9 +31,13 @@
 			<dt>ID</dt>
 			<dd><%= $.targetLog.eventType %></dd>
 
-			<% if($.targetLog.targetUser) { %>
-				<dt>Użytkownik</dt>
-				<dd><a href="/users/<%= $.targetLog.targetUser.id %>"><%= $.targetLog.targetUser.displayName %></a> (<%= $.targetLog.targetUser.id %>)</dd>
+			<% if($.targetLog.targetUsers.length > 0) { %>
+				<dt>Użytkownicy</dt>
+				<dd>
+					<% for(const user of $.targetLog.targetUsers) { %>
+						<a href="/users/<%= user.id %>"><%= user.displayName %></a> (<%= user.id %>)<br>
+					<% } %>
+				</dd>
 			<% } %>
 
 			<% if($.targetLog.targetUnit) { %>
