@@ -25,9 +25,9 @@ const eta = new Eta({
 	views: "./html",
 	defaultExtension: ".html",
 	varName: "$",
-	functionHeader: `for(const importName in $?.ETA_IMPORTS) {
-		globalThis[importName] = $.ETA_IMPORTS[importName]
-	}`,
+	functionHeader: Object.keys(etaImports).map(key => 
+		`const ${key} = $.ETA_IMPORTS["${key}"];`
+	).join("\n"),
 	debug: true,
 	cache: !DEV,
 	rmWhitespace: true
