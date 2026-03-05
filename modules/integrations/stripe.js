@@ -26,7 +26,8 @@ export async function stripeAPI(endpoint, data={}, options={}) {
 		method: options.method || "POST",
 		headers: {
 			"Authorization": `Bearer ${STRIPE_API_KEY}`,
-			"Content-Type": "application/x-www-form-urlencoded"
+			"Content-Type": "application/x-www-form-urlencoded",
+			"Stripe-Version": "2026-02-25.clover"
 		},
 		body: options.method == "GET" ? undefined : objectToFormData(data)
 	}
