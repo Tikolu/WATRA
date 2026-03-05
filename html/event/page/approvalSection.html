@@ -44,8 +44,12 @@
 			<% for(const approver of $.targetEvent.approvers || []) { %>
 				<div>
 					<div class="entry-title">
-						<h3><%= approver.role.user.displayName %></h3>
-						<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
+						<% if(approver.role.user) { %>
+							<h3><%= approver.role.user.displayName %></h3>
+							<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
+						<% } else { %>
+							<h3>(zatwierdzający)</h3>
+						<% } %>
 					</div>
 					<div class="entry-content">
 						<% if(approver.approved) { %>
@@ -55,11 +59,11 @@
 							</p>
 						<% } else if($.targetEvent.isPast) { %>
 							<p><%~ icon`close` %>Nie zatwierdzono</p>
-						<% } else if(approver.role.user.id != $.user.id) { %>
+						<% } else if(approver.role.user?.id != $.user.id) { %>
 							<p><%~ icon`progress_activity` %>Oczekiwane zatwierdzenie...</p>
 						<% } %>
 					
-						<% if(approver.role.user.id == $.user.id && $.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE)) { %>
+						<% if(approver.role.user?.id == $.user.id && $.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE)) { %>
 							<div class="button-row">
 								<% if(approver.approved) { %>
 									<button api="event/[eventID]/approval/unapprove" class="dangerous">
