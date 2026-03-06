@@ -27,6 +27,7 @@ html[theme^=light] {
 	
 	--border-radius: 0.5rem;
 	--highlight-brightness: 0.75;
+	--select-arrow: url(assets/arrow-light.svg);
 }
 
 html[theme^=dark] {
@@ -50,6 +51,7 @@ html[theme^=dark] {
 	
 	--border-radius: 0.5rem;
 	--highlight-brightness: 2;
+	--select-arrow: url(assets/arrow-dark.svg);
 }
 
 .watra-logo {
@@ -212,18 +214,8 @@ input, button, select, textarea {
 	border: none;
 	box-sizing: border-box;
 	color: var(--text);
-}
-
-textarea {
-	width: 100%;
-	height: 100%;
-	min-height: 5em;
-	field-sizing: content;
-	resize: none;
-}
-
-input, textarea {
-	cursor: text;
+	-webkit-appearance: none;
+	appearance: none;
 }
 
 label {
@@ -243,9 +235,9 @@ label + textarea {
 /* Input elements */
 
 input, select, textarea {
+	min-height: 1em;
 	background-color: var(--surface-3);
 	color: var(--text);
-	accent-color: var(--secondary-text);
 	outline: 1px solid transparent;
 	outline-offset: -1px;
 	transition: outline 250ms, background-color 250ms;
@@ -258,6 +250,18 @@ input, select, textarea {
 			right: 0.5em;
 		}
 	}
+}
+
+textarea {
+	width: 100%;
+	height: 100%;
+	min-height: 6em;
+	resize: none;
+	field-sizing: content;
+}
+
+input, textarea {
+	cursor: text;
 }
 
 [data-before-text]::before { content: attr(data-before-text); }
@@ -275,22 +279,37 @@ input:disabled, select:disabled, textarea:disabled {
 
 select {
 	cursor: pointer;
-}
 
-select:disabled {
-	cursor: not-allowed;
+	background-image: var(--select-arrow);
+	background-repeat: no-repeat;
+	background-position: right 0.5em top 55%;
+	background-size: 1em;
+
+	padding-right: 2em;
+
+	&:disabled {
+		cursor: not-allowed;
+	}
 }
 
 input.invalid, select.invalid {
 	background-color: var(--red-background) !important;
 }
 
-input[type^=date]:disabled {
-	appearance: none;
-}
+input[type^=date] {
+	&::-webkit-date-and-time-value {
+		text-align: start;
+	}
 
-input[type^=date]:disabled:not([value]) {
-	color: transparent;
+	&:disabled {
+		&::-webkit-date-and-time-value {
+			color: var(--secondary-text);
+		}
+		
+		&:not([value]), &:not([value])::-webkit-date-and-time-value {
+			color: transparent;
+		}
+	}
 }
 
 input[type=checkbox], input[type=radio] {
@@ -300,26 +319,71 @@ input[type=checkbox], input[type=radio] {
 	margin: 0;
 	flex-shrink: 0;
 	cursor: pointer;
+	padding: 0;
+	outline: none;
 	
 	& + label {
 		margin-left: 0.5em;
 	}
-}
 
-input[type=checkbox]:focus, input[type=radio]:focus {
-	outline: none;
-}
-
-input[type=checkbox]:focus-visible, input[type=radio]:focus-visible {
-	outline: 1px solid var(--text);
-}
-
-input[type=checkbox]:disabled, input[type=radio]:disabled {
-	cursor: not-allowed;
-	
-	& + label {
-		color: var(--secondary-text);
+	&:focus-visible {
+		outline: 1px solid var(--text);
 	}
+	
+	&:disabled {
+		cursor: not-allowed;
+	
+		& + label {
+			color: var(--secondary-text);
+		}
+	}
+
+	&::before {
+		font-family: "Material Symbols Sharp", blank;
+		display: inline-block;
+		width: 100%;
+		text-align: center;
+		vertical-align: middle;
+		color: var(--surface-1);
+		
+		opacity: 0;
+		scale: 0;
+		transition: opacity 250ms, scale 250ms;
+	}
+
+	@media (hover: hover) {
+		&::before {
+			color: var(--text);
+		}
+		
+		&:hover::before {
+			opacity: 1;
+			scale: 0.8;
+		}
+	}
+	
+	&:checked, &[type=checkbox]:indeterminate {
+		background-color: var(--secondary-text);
+
+		&::before {
+			color: var(--surface-1);
+			opacity: 1;
+			scale: 1;
+		}
+	}
+}
+
+input[type=checkbox] {
+	border-radius: calc(var(--border-radius) / 2);
+
+	&::before { content: "\e5ca" }
+	&:indeterminate::before { content: "\f88a" }
+}
+	
+input[type=radio] {
+	border-radius: 50%;
+
+	&::before { content: "\ef4a" }
 }
 
 input[type=file] {
@@ -400,13 +464,6 @@ button:disabled {
 	cursor: not-allowed;
 }
 
-button:not(:disabled):hover,
-button:not(:disabled):focus-visible, 
-a:focus-visible > button:only-child {
-	box-shadow: 0 0 0.5em var(--shadow);
-	outline: none;
-}
-
 button.icon {
 	background-color: transparent;
 	padding: 0;
@@ -414,10 +471,19 @@ button.icon {
 	transition: color 250ms;
 }
 
-button.icon:hover, button.icon:focus-visible {
-	background-color: transparent;
-	box-shadow: none;
-	color: var(--secondary-text);
+@media (hover: hover) {
+	button:not(:disabled):hover,
+	button:not(:disabled):focus-visible, 
+	a:focus-visible > button:only-child {
+		box-shadow: 0 0 0.5em var(--shadow);
+		outline: none;
+	}
+
+	button.icon:hover, button.icon:focus-visible {
+		background-color: transparent;
+		box-shadow: none;
+		color: var(--secondary-text);
+	}
 }
 
 /* Other elements */
@@ -439,9 +505,11 @@ a {
 	cursor: pointer;
 	transition: color 250ms, text-decoration-color 500ms;
 
-	&:hover, &:focus-visible {
-		color: var(--link-text);
-		text-decoration-color: var(--link-text);
+	@media (hover: hover) {
+		&:hover, &:focus-visible {
+			color: var(--link-text);
+			text-decoration-color: var(--link-text);
+		}
 	}
 }
 
@@ -460,15 +528,33 @@ hr {
 details > summary {
 	cursor: pointer;
 	transition: color 250ms;
+
+	list-style-type: none;
+
+	&::before {
+		content: "\e315";
+		font-family: "Material Symbols Sharp", blank;
+		display: inline-block;
+		vertical-align: text-top;
+		margin-right: 0.25em;
+		transition: rotate 250ms;
+	}
+
+	@media (hover: hover) {
+		&:hover {
+			color: var(--secondary-text);
+		}
+	}
+
+	& > * {
+		display: inline;
+	}
 }
 
-details > summary:hover {
-	color: var(--secondary-text);
+details[open] > summary::before {
+	rotate: 90deg;
 }
 
-details > summary > * {
-	display: inline;
-}
 
 details:not([open]) > summary > .close-text { display: none }
 details[open] > summary > .open-text { display: none }
@@ -594,9 +680,11 @@ p.warning, p.info {
 			color: var(--secondary-text);
 			background-color: var(--surface-2);
 
-			&:hover, &:focus-visible {
-				color: var(--secondary-text);
-			}			
+			@media (hover: hover) {
+				&:hover, &:focus-visible {
+					color: var(--secondary-text);
+				}
+			}
 		}
 
 		& > .entry-header {

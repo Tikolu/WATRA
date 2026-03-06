@@ -39,7 +39,7 @@
 }
 
 .user-picker details::details-content {
-	margin-left: 0.3em;
-	padding-left: 0.7em;
+	margin-left: 0.45em;
+	padding-left: 0.55em;
 	border-left: 1px solid var(--secondary-text);
 }

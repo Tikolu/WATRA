@@ -15,8 +15,10 @@ header {
 		color: var(--text);
 		text-decoration: none;
 
-		&:hover, &:focus-visible {
-			color: var(--secondary-text);
+		@media (hover: hover) {
+			&:hover, &:focus-visible {
+				color: var(--secondary-text);
+			}
 		}
 	}
 

@@ -40,6 +40,10 @@ body main {
 	thead {
 		background-color: var(--surface-3);
 
+		input:not(:checked) {
+			background-color: var(--surface-4);
+		}
+
 		a {
 			color: inherit;
 			
