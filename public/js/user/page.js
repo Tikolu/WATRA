@@ -73,9 +73,7 @@ API.registerHandler("passkey/create", {
 		} catch(error) {
 			console.error(error)
 			logError(error)
-			if(Date.now() - passkeyStartTime > 500) {
-				Popup.error("Anulowano tworzenie klucza")
-			} else {
+			if(Date.now() - passkeyStartTime < 500) {
 				Popup.error("Przeglądarka internetowa odrzuciła próbę utworzenia klucza dostępu. Spróbuj użyć innej przeglądarki.")
 			}
 			return
@@ -90,7 +88,7 @@ API.registerHandler("passkey/create", {
 API.registerHandler("passkey/save", {
 	progressText: "Zapisywanie klucza dostępu...",
 	successText: "Zapisano klucz dostępu!",
-	error: async (response, data) => {
+	error: async ({data}) => {
 		await deleteCredential(data.credential.id)
 	}
 })
@@ -103,24 +101,6 @@ API.registerHandler("passkey/[passkeyID]/delete", {
 		await deleteCredential(response.passkeyID)
 	}
 })
-
-async function deleteCredential(id) {
-	try {
-		await PublicKeyCredential.signalUnknownCredential?.({
-			rpId: window.location.hostname,
-			credentialId: id
-		})
-	} catch(error) {
-		sleep(500).then(() => {
-			Popup.create({
-				message: "Twoja przeglądarka nie obsługuje automatycznego kasowania kluczy dostępu i należy go ręcznie usunąć w ustawieniach",
-				time: false,
-				type: "error",
-				icon: "warning"
-			})
-		})
-	}
-}
 
 API.registerHandler("logout", {
 	progressText: "Wylogowywanie...",

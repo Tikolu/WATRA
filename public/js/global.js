@@ -563,7 +563,7 @@ const API = {
 			const text = json.error.message.replace(/^Error: /, "")
 			// Prevent logging error on server
 			loggedErrors.push(text)
-			throw text
+			throw new Error(text, {cause: json.error})
 		}
 		return json
 	},
@@ -796,7 +796,7 @@ const API = {
 			} catch(error) {
 				if(progressMessage) progressMessage.close()
 				elements.forEach(e => e.classList.add("invalid"))
-				await handler.error?.(response, data, element)
+				await handler.error?.({error, data, element})
 				await API.onRequestError?.(error)
 				throw error
 			} finally {

@@ -14,7 +14,7 @@ export default async function({credential, userID}) {
 
 	// Load passkey from database
 	const passkey = await Passkey.findById(credential.id)
-	if(!passkey) throw new HTTPError(400, "Klucz dostępu nie istnieje")
+	if(!passkey) throw new HTTPError(404, "Klucz dostępu nie istnieje")
 	if(userID && userID != passkey.user.id) throw new HTTPError(400, "Klucz dostępu nie należy do podanego użytkownika")
 
 	const verification = await webauthn.verifyAuthenticationResponse({
@@ -25,7 +25,7 @@ export default async function({credential, userID}) {
 		expectedChallenge
 	})
 	
-	if(!verification.verified) throw Error("Błąd weryfikowania klucza dostępu")
+	if(!verification.verified) throw new HTTPError(500, "Błąd weryfikowania klucza dostępu")
 
 	// Find user
 	await passkey.populate("user", {placeholders: false})
