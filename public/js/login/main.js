@@ -48,7 +48,7 @@ sleep(1000).then(() => {
 })
 
 // Check for passkey support
-if(!window.PublicKeyCredential?.parseRequestOptionsFromJSON) {
+if(META.passkeyRequired && !window.PublicKeyCredential?.parseRequestOptionsFromJSON) {
 	unsupportedBrowser()
 }
 

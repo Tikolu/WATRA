@@ -29,7 +29,7 @@ API.registerHandler("login/getKeys", {
 			return
 		}
 
-		let credential
+		let credential, passkeyStartTime = Date.now()
 		try {
 			credential = await top.navigator.credentials.get({
 				publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(response.options)
@@ -37,7 +37,11 @@ API.registerHandler("login/getKeys", {
 		} catch(error) {
 			console.error(error)
 			logError(error)
-			Popup.error("Anulowano logowanie")
+			if(Date.now() - passkeyStartTime > 500) {
+				Popup.error("Anulowano logowanie")
+			} else {
+				Popup.error("Przeglądarka internetowa odrzuciła próbę logowania. Spróbuj użyć innej przeglądarki.")
+			}
 			return
 		}
 

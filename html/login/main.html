@@ -1,6 +1,9 @@
 <% layout("/layouts/login", {
 	title: `WATRA - ${Config.systemTitle || "Logowanie"}`,
-	scripts: ["login/common", "login/main"]
+	scripts: ["login/common", "login/main"],
+	meta: {
+		passkeyRequired: Config.passkeyRequired
+	}
 }) %>
 <h1>
 	<img class="watra-logo" src="watra.svg">
