@@ -51,7 +51,7 @@ export async function _exit({user}) {
 		// Get target users from route data and API output data
 		const targetUsers = []
 		if(this.routeData.targetUser) targetUsers.push(this.routeData.targetUser)
-		if(output.userIDs) {
+		if(output?.userIDs) {
 			targetUsers.push(...output.userIDs)
 			delete output.userIDs
 		}

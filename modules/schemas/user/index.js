@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 import * as Text from "modules/text.js"
 import * as datetime from "datetime"
+import * as Crypto from "modules/crypto.js"
 
 import Role from "modules/schemas/role.js"
 import Event from "modules/schemas/event"
@@ -12,7 +13,7 @@ import UnitTree from "modules/schemas/unit/tree.js"
 
 import userMedical from "./medical.js"
 import userAuth from "./auth.js"
-import * as Crypto from "modules/crypto.js"
+import userSignature from "./signature.js"
 
 export class UserClass {
 	/* * Static functions * */
@@ -82,12 +83,7 @@ export class UserClass {
 			return phone
 		}
 	}
-	signature = {
-		type: {
-			name: String,
-			time: Date
-		}
-	}
+	signature = userSignature
 
 	org = {
 		type: String,
@@ -420,7 +416,7 @@ export class UserClass {
 	
 	/** Confirms and locks details */
 	async confirmDetails(signature) {
-		if(!signature || this.signature) return
+		if(!signature || this.confirmed) return
 
 		// Check completeness
 		if(!this.medical.complete) throw Error("Brakujące dane medyczne")

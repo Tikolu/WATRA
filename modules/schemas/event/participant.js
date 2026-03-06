@@ -1,4 +1,5 @@
 import HTTPError from "modules/server/error.js"
+import Signature from "modules/schemas/user/signature.js"
 
 export default class {
 	user = {
@@ -18,12 +19,7 @@ export default class {
 		ref: "Unit"
 	}
 
-	signature = {
-		type: {
-			name: String,
-			time: Date
-		}
-	}
+	signature = Signature
 
 	/** Sets the invitation state for the user */
 	async setState(state, signature) {

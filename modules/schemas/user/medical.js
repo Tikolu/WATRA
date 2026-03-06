@@ -6,6 +6,7 @@ export default class {
 
 	entries = [
 		class {
+			_id = false
 			title = String
 			category = {
 				type: String,

@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import Signature from "modules/schemas/user/signature.js"
 
 export class FormResponseClass {
 	/* * Properties * */
@@ -28,12 +29,7 @@ export class FormResponseClass {
 
 	elements = {}
 
-	signature = {
-		type: {
-			name: String,
-			time: Date
-		}
-	}
+	signature = Signature
 
 	/* * Methods * */
 	async updateElement(element, value, validate=true) {
