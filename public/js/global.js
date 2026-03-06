@@ -1014,9 +1014,10 @@ function processCustomInputElements() {
 		}
 		
 		input.initialValue = input.value
-		input.modified = false
-		input.addEventListener("input", () => {
-			input.modified = input.value != input.initialValue
+		Object.defineProperty(input, "modified", {
+			get() {
+				return this.value != this.initialValue
+			}
 		})
 		input.addEventListener("keypress", event => {
 			if(event.key != "Enter" && event.key != "\n") return
