@@ -163,7 +163,7 @@ if(window == window.top) {
 
 // Popups and dialogs
 const Popup = window.top.Popup || {
-	create({message, type, icon, time=3500}) {
+	create({message, type, icon, time=3500, vibration}) {
 		const popup = document.createElement("div")
 		popup.classList.add("popup")
 		popup.popover = "manual"
@@ -221,6 +221,10 @@ const Popup = window.top.Popup || {
 
 		popup.scrollIntoView({behavior: "smooth"})
 
+		if(vibration) {
+			navigator.vibrate?.(vibration)
+		}
+
 		popup.closePromise = new Promise(resolve => {
 			// Wait for animation to finish before removing
 			popup.close = async () => {
@@ -242,7 +246,8 @@ const Popup = window.top.Popup || {
 	info(message, icon="") {
 		return Popup.create({
 			message,
-			icon
+			icon,
+			vibration: 25
 		})
 	},
 
@@ -251,7 +256,8 @@ const Popup = window.top.Popup || {
 			message,
 			type: "success",
 			icon,
-			time: 1500
+			time: 1500,
+			vibration: 75
 		})
 	},
 
@@ -259,7 +265,8 @@ const Popup = window.top.Popup || {
 		return Popup.create({
 			message,
 			type: "error",
-			icon
+			icon,
+			vibration: [75, 50, 75]
 		})
 	}
 }
@@ -773,7 +780,7 @@ const API = {
 				// Skip focused elements, unless button
 				if(element == document.activeElement && !element.matches("button")) continue
 				
-				element.disabled = true
+				sleep(10).then(() => element.disabled = true)
 				element.classList.add("loading")
 				element.classList.remove("invalid")
 			}
@@ -809,7 +816,6 @@ const API = {
 					formElement.value = response[valueKey]
 				}
 				formElement.initialValue = formElement.value
-				formElement.modified = false
 			}
 
 			// Show success message
@@ -877,7 +883,7 @@ function processAPIAttributes() {
 		let event
 		if(element.matches("button")) event = "click"
 		else if(element.matches("input[type=checkbox]")) event = "change"
-		else if(element.matches("input[type^=date]")) event = "blur"
+		else if(element.matches("input[type^=date]")) event = "submit"
 		else if(element.matches("input")) event = "submit"
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
@@ -1127,6 +1133,15 @@ function processCustomInputElements() {
 }
 processCustomInputElements()
 window.afterDataRefresh.push(processCustomInputElements)
+
+// Vibrations
+const vibrateElements = "button, a, input, select, textarea, [contenteditable], summary"
+document.documentElement.addEventListener("click", event => {
+	const chain = [event.target, ...event.target.parentElementChain]
+	const match = chain.find(p => !p.disabled && p.matches(vibrateElements))
+	if(!match) return
+	navigator.vibrate?.(10)
+})
 
 // Disable form elements
 function disableForms() {
