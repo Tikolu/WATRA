@@ -186,8 +186,7 @@ export class UserClass {
 
 	/** Checks if profile is confirmed (signed) */
 	get confirmed() {
-		if(this.signature?.name && this.signature?.time) return true
-		else return false
+		return this.signature.valid
 	}
 
 	/** Checks if profile is complete (no missing details) */

@@ -34,7 +34,7 @@
 				<% } %>
 			</select>
 		</form>
-		<% if(!$.targetResponse.signature && $.targetResponse.id != "new") { %>
+		<% if(!$.targetResponse.signature?.valid && $.targetResponse.id != "new") { %>
 			<% if($.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
 				<article class="warning">
 					<p>
@@ -64,7 +64,7 @@
 			}) %>
 		<% } %>
 	</section>
-	<% if($.targetResponse.signature || $.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
+	<% if($.targetResponse.signature?.valid || $.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
 		<section>
 			<%~ include("/templates/signature", {
 				user: $.user,
