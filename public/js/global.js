@@ -764,6 +764,7 @@ const API = {
 					message: handler.progressText,
 					type: "progress",
 					icon: "progress_activity",
+					time: false
 				})
 			}
 

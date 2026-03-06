@@ -40,6 +40,7 @@ async function updateState() {
 		message: "Ładowanie danych...",
 		type: "progress",
 		icon: "progress_activity",
+		time: false
 	})
 	
 	await refreshPageData()

@@ -20,6 +20,7 @@ async function updateFilters() {
 		message: "Ładowanie danych...",
 		type: "progress",
 		icon: "progress_activity",
+		time: false
 	})
 	
 	await refreshPageData()
