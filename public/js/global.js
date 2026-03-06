@@ -219,6 +219,8 @@ const Popup = window.top.Popup || {
 		}
 		popup.showPopover()
 
+		popup.scrollIntoView({behavior: "smooth"})
+
 		popup.closePromise = new Promise(resolve => {
 			// Wait for animation to finish before removing
 			popup.close = async () => {
@@ -669,6 +671,7 @@ const API = {
 					// Ensure required checkboxes are checked
 					} else if(formElement.required) {
 						formElement.classList.add("invalid")
+						formElement.scrollIntoView({behavior: "smooth"})
 						return
 
 					// Not checked - skip element
@@ -682,6 +685,7 @@ const API = {
 					if(files.length == 0) {
 						if(formElement.required) {
 							formElement.classList.add("invalid")
+							formElement.scrollIntoView({behavior: "smooth"})
 							return
 						} else {
 							continue
@@ -691,6 +695,7 @@ const API = {
 					for(const file of files) {
 						if(file.size > 8 * 1024 * 1024) {
 							formElement.classList.add("invalid")
+							formElement.scrollIntoView({behavior: "smooth"})
 							return
 						}
 						elementValue.push({
@@ -708,6 +713,7 @@ const API = {
 					formElement.checkValidity && !formElement.checkValidity()
 				) {
 					formElement.classList.add("invalid")
+					formElement.scrollIntoView({behavior: "smooth"})
 					return
 				}
 
@@ -731,6 +737,7 @@ const API = {
 				const validationResponse = await handler.validate(data, element)
 				if(!validationResponse) {
 					for(const formElement of elements) {
+						if(formElement.disabled || formElement.classList.contains("disabled")) continue
 						formElement.classList.add("invalid")
 					}
 					return
