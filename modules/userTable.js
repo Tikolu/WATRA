@@ -150,6 +150,7 @@ export class DataColumn {
 		this.default = options.default
 		this.value = options.value
 		this.process = options.process
+		this.sortable = options.sortable || false
 		this.selected = false
 	}
 
@@ -174,7 +175,8 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 						if(targetUser.dateOfBirth) {
 							return formatDate(targetUser.dateOfBirth)
 						}
-					}
+					},
+					sortable: true
 				},
 				{
 					id: "age",
@@ -183,7 +185,8 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 						if(targetUser.dateOfBirth) {
 							return targetUser.age
 						}
-					}
+					},
+					sortable: true
 				},
 				{
 					id: "phone",
@@ -235,7 +238,8 @@ export class FormColumnCategory extends ColumnCategory {
 						) {
 							return "Oczekiwana"
 						}
-					}
+					},
+					sortable: true
 				}
 			]
 		})
@@ -261,5 +265,57 @@ export async function loadColumnValues(columnCategories, routeData) {
 	const selectedColumns = routeData.columns?.split(",") || []
 	for(const column of columnCategories.flatMap(c => c.mapColumns())) {
 		await column.setSelected(selectedColumns)
+	}
+}
+
+export async function sortUsers(users, columnCategories, sort="") {
+	// Determine sort order
+	let sortDescending = false
+	if(sort.startsWith("^")) {
+		sortDescending = true
+		sort = sort.substring(1)
+	}
+
+	// Default to sorting by name
+	let sortColumn
+	if(sort) sortColumn = columnCategories.flatMap(c => c.columns).find(c => c.sortable && c.id == sort)
+	sortColumn ||= new DataColumn({id: "name", value: u => u.displayName})
+
+	// Process column if needed
+	if(sortColumn.process) await sortColumn.process()
+
+	users.sort((userA, userB) => {
+		// Handle sort order
+		let a, b
+		if(sortDescending) [a, b] = [userB, userA]
+		else [a, b] = [userA, userB]
+		
+		// Load values from column
+		const aValue = sortColumn.value(a)
+		const bValue = sortColumn.value(b)
+
+		let comparison
+
+		// Handle empty values
+		if(!aValue) comparison = -1
+		else if(!bValue) comparison = 1
+		
+		// Compare string values
+		else if(typeof aValue == "string" && typeof bValue == "string") {
+			comparison = aValue.localeCompare(bValue)
+
+		// Compare numeric values
+		} else if(typeof aValue == "number" && typeof bValue == "number") {
+			comparison = aValue - bValue
+		}
+
+		// Fallback to names
+		if(comparison) return comparison
+		else return userA.displayName.localeCompare(userB.displayName)
+	})
+
+	return {
+		column: sortColumn.id,
+		descending: sortDescending
 	}
 }

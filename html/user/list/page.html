@@ -200,7 +200,7 @@
 <% } %>
 
 <section id="table-container">
-	<table id="user-table">
+	<table id="user-table" class="loading">
 		<thead>
 			<tr>
 				<th
@@ -210,10 +210,29 @@
 				>
 					<input type="checkbox" id="select-all-checkbox">
 				</th>
-				<th>Imię</th>
-				<% for(const column of $.columnCategories.flatMap(c => c.columns)) { %>
+				<%
+					const headerColumns = $.columnCategories.flatMap(c => c.columns)
+					headerColumns.unshift({
+						id: "name",
+						name: "Imię",
+						selected: true,
+						sortable: true
+					})
+				%>
+				<% for(const column of headerColumns) { %>
 					<% if(!column.selected) continue %>
-					<th><%= column.name %></th>
+					<th>
+						<% if(column.sortable) { %>
+							<a href="?sort=<%= $.sort.column == column.id && !$.sort.descending ? "^" : "" %><%= column.id %>">
+								<%= column.name %>
+								<% if($.sort.column == column.id) { %>
+									<%~ icon($.sort.descending ? "arrow_drop_down" : "arrow_drop_up") %>
+								<% } %>
+							</a>
+						<% } else { %>
+							<%= column.name %>
+						<% } %>
+					</th>
 				<% } %>
 			</tr>
 		</thead>

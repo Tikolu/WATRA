@@ -13,7 +13,8 @@ import {
 	PersonalDetailsColumnCategory,
 
 	loadFilterValues,
-	loadColumnValues
+	loadColumnValues,
+	sortUsers
 } from "modules/userTable.js"
 
 
@@ -93,9 +94,6 @@ export default async function({user, targetUnit}) {
 			}
 			if(!filtered) users.push(user)
 		}
-
-		// Sort users by name
-		users.sort((a, b) => a.displayName.localeCompare(b.displayName))
 	}
 
 	// Create columns
@@ -126,7 +124,8 @@ export default async function({user, targetUnit}) {
 			if(u.archived) return "Zarchiwizowany"
 			else if(!u.confirmed) return "Niezatwierdzony"
 			else return "Aktywny"
-		}
+		},
+		sortable: true
 	})
 
 	// Insert org column
@@ -134,12 +133,16 @@ export default async function({user, targetUnit}) {
 		columnCategories[1].columns.push({
 			id: "org",
 			name: "Organizacja",
-			value: u => Config.orgs[u.org]?.name
+			value: u => Config.orgs[u.org]?.name,
+			sortable: true
 		})
 	}
 
 	// Load column values
 	await loadColumnValues(columnCategories, this.routeData)
+
+	// Sort users
+	const sort = await sortUsers(users, columnCategories, this.routeData.sort)
 
 	return html("user/list/page", {
 		user,
@@ -147,6 +150,7 @@ export default async function({user, targetUnit}) {
 		users,
 		filterCategories,
 		columnCategories,
-		filterError
+		filterError,
+		sort
 	})
 }

@@ -26,8 +26,28 @@ body main {
 	border-collapse: collapse;
 	width: 100%;
 
+	transition: opacity 500ms;
+
+	&.loading {
+		opacity: 0.5;
+		cursor: wait;
+
+		tr {
+			pointer-events: none;
+		}
+	}
+
 	thead {
 		background-color: var(--surface-3);
+
+		a {
+			color: inherit;
+			
+			i {
+				vertical-align: middle;
+				padding-left: 0.25em;
+			}
+		}
 	}
 
 	tbody tr:nth-child(even) {

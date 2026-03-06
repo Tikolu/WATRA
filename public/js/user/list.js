@@ -1,4 +1,8 @@
+let sort
+
 async function updateState() {
+	userTable.classList.add("loading")
+	
 	const values = {}
 	for(const filter of filterOptions.querySelectorAll("[name]")) {
 		// Skip unchecked checkboxes
@@ -22,6 +26,8 @@ async function updateState() {
 		params.set(key, value)
 	}
 
+	if(sort) params.set("sort", sort)
+
 	const columns = []
 	for(const columnOption of columnOptions.querySelectorAll("[name]")) {
 		if(columnOption.checked) columns.push(columnOption.name)
@@ -39,14 +45,14 @@ async function updateState() {
 	await refreshPageData()
 
 	progressMessage.close()
-
-	initialiseCheckboxes()
 }
 
 confirmFiltersButton.onclick = updateState
 confirmColumnsButton.onclick = updateState
 
-function initialiseCheckboxes() {
+function initialiseTable() {
+	userTable.classList.remove("loading")
+	
 	selectAllCheckbox.globalCheckbox(userTable)
 
 	// Show actions when checkbox is checked
@@ -55,8 +61,19 @@ function initialiseCheckboxes() {
 		const checked = userTable.querySelectorAll("tbody :checked")
 		userCount.innerText = checked.length
 	}
+
+	// Load sorting links
+	for(const link of userTable.querySelectorAll("th a")) {
+		link.onclick = async event => {
+			event.preventDefault()
+			sort = link.href.split("sort=")[1]	
+			updateState()
+		}
+	}
 }
-initialiseCheckboxes()
+initialiseTable()
+
+window.afterDataRefresh.push(initialiseTable)
 
 function toggleTableLinks(show) {
 	for(const link of userTable.querySelectorAll(".details-link")) link.hidden = !show

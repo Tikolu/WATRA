@@ -15,7 +15,8 @@ import {
 	FormColumnCategory,
 	
 	loadFilterValues,
-	loadColumnValues
+	loadColumnValues,
+	sortUsers
 } from "modules/userTable.js"
 
 
@@ -61,15 +62,19 @@ export default async function({user, targetEvent}) {
 					id: "unit",
 					name: "Jednostka",
 					options: unitOptions.map(u => ({value: u.id, name: u.displayName})),
-					verify(value) {
-						// Ensure access permissions for the selected unit
-						if(!unitOptions.hasID(value)) throw new HTTPError(403, "Brak dostępu do tej jednostki")
+					async verify(value) {
+						if(value == "no-unit") {
+							await user.requirePermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
+						} else {
+							// Ensure access permissions for the selected unit
+							if(!unitOptions.hasID(value)) throw new HTTPError(403, "Brak dostępu do tej jednostki")
+						}
 						return value
 					},
 					callback(targetUser) {
 						// If user cannot access participants, they can only filter by their own unit
 						if(!user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS) && !unitOptions.hasID(targetUser.$locals.participant.originUnit?.id)) return false
-						return !this.value || targetUser.$locals.participant.originUnit?.id == this.value
+						return !this.value || targetUser.$locals.participant.originUnit?.id == this.value || (this.value == "no-unit" && !targetUser.$locals.participant.originUnit)
 					}
 				},
 
@@ -95,6 +100,11 @@ export default async function({user, targetEvent}) {
 		new AgeFilterCategory(),
 		...targetEvent.forms.map(form => new FormFilterCategory(form))
 	]
+
+	// Add "no-unit" option
+	if(await user.checkPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) {
+		filterCategories[0].filters[1].options.unshift({value: "no-unit", name: "(brak)"})
+	}
 
 	// Insert org filter
 	if(!eventOrg) {
@@ -130,9 +140,6 @@ export default async function({user, targetEvent}) {
 			}
 			if(!filtered) users.push(participant.user)
 		}
-
-		// Sort users by name
-		users.sort((a, b) => a.displayName.localeCompare(b.displayName))
 	}
 
 
@@ -155,25 +162,29 @@ export default async function({user, targetEvent}) {
 						} else if(state == "declined") {
 							return "Odrzucono"
 						}
-					}
+					},
+					sortable: true
 				},
 				{
 					id: "unit",
 					name: "Jednostka",
 					default: true,
-					value: u => u.$locals.participant.originUnit?.displayName
+					value: u => u.$locals.participant.originUnit?.displayName,
+					sortable: true
 				},
 				{
 					id: "participationTime",
 					name: "Czas zapisu",
-					value: u => u.$locals.participant.signature?.time && datetime.format(u.$locals.participant.signature?.time, "yyyy-MM-dd HH:mm")
+					value: u => u.$locals.participant.signature?.time && datetime.format(u.$locals.participant.signature?.time, "yyyy-MM-dd HH:mm"),
+					sortable: true
 				},
 				{
 					id: "role",
 					name: "Funkcja w akcji",
 					default: true,
 					process: async () => await targetEvent.populate({"roles": "user"}),
-					value: u => targetEvent.roles.find(r => r.user.id == u.id)?.displayName
+					value: u => targetEvent.roles.find(r => r.user.id == u.id)?.displayName,
+					sortable: true
 				}
 			]
 		}),
@@ -200,12 +211,16 @@ export default async function({user, targetEvent}) {
 				if(!targetUser.dateOfBirth || targetEvent.dates.start < targetUser.dateOfBirth) return false
 				const {years} = datetime.difference(targetUser.dateOfBirth, targetEvent.dates.start)
 				return years
-			}
+			},
+			sortable: true
 		})
 	}
 
 	// Load column values
 	await loadColumnValues(columnCategories, this.routeData)
+	
+	// Sort users
+	const sort = await sortUsers(users, columnCategories, this.routeData.sort)
 
 	return html("user/list/page", {
 		user,
@@ -214,6 +229,7 @@ export default async function({user, targetEvent}) {
 		filterCategories,
 		columnCategories,
 		filterError,
+		sort,
 		title: "Uczestnicy"
 	})
 }
