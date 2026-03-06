@@ -66,6 +66,7 @@ body {
 	font-family: Lato, "Trebuchet MS", sans-serif;
 	color: var(--text);
 	margin: 0;
+	touch-action: pan-x pan-y;
 
 	& > main {
 		max-width: 60em;
