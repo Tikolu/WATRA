@@ -5,52 +5,51 @@
 		error: $.error.code
 	}
 }) %>
-<h1>Error <%= $.error.code %> - <%= $.error.title %></h2>
-<h2><%= $.error.message %></h2>
-<% if($.error.stack) { %>
-	<details>
-		<summary>Szczegóły diagnostyczne</summary>
-		<pre><%= $.error.stack %></pre>
-		<table>
-			<tr>
-				<th>Strona:</th>
-				<td><%= $.path || "/" %></td>
-			</tr>
-			<tr>
-				<th>Data i godzina:</th>
-				<td><%= datetime.format(new Date, "yyyy-MM-dd HH:mm:ss.SSS") %></td>
-			</tr>
-			<tr>
-				<th>ID przeglądarki:</th>
-				<td><%= $.client || "(nieznany)" %></td>
-			</tr>
-			<tr>
-				<th>ID użytkownika:</th>
-				<td><%= $.user?.id || "(nie zalogowany)" %></td>
-			</tr>
-			<tr>
-				<th>Adres IP:</th>
-				<td><%= $.ip || "(nieznany)" %></td>
-			</tr>
-			<tr>
-				<th>Agent:</th>
-				<td><%= $.userAgent || "(nieznany)" %></td>
-			</tr>
-			<tr>
-				<th>Uprawnienia:</th>
-				<td>
-					<table>
-						<% for(const permission of $.user?.listPermissions() || []) { %>
-							<tr>
-								<td><%= permission.source?.[0] || "" %></td>
-								<td><%= permission.source?.[1] || "" %></td>
-								<td><%= permission.name %></td>
-								<td><%= permission.state ? "✅" : "❌" %></td>
-							</tr>
-						<% } %>
-					</table>
-				</td>
-			</tr>
-		</table>
-	</details>
-<% } %>
+<section>
+	<h1>Error <%= $.error.code %> - <%= $.error.title %></h2>
+	<h2><%= $.error.message %></h2>
+	<% if($.error.stack) { %>
+		<details>
+			<summary>Szczegóły diagnostyczne</summary>
+			<pre><%= $.error.stack %></pre>
+			<dl>
+				<dt>Strona:</dt>
+				<dd><%= $.path || "/" %></dd>
+			
+				<dt>Data i godzina:</dt>
+				<dd><%= datetime.format(new Date, "yyyy-MM-dd HH:mm:ss.SSS") %></dd>
+			
+				<dt>ID przeglądarki:</dt>
+				<dd><%= $.client || "(nieznany)" %></dd>
+			
+				<dt>ID użytkownika:</dt>
+				<dd><%= $.user?.id || "(nie zalogowany)" %></dd>
+			
+				<dt>Adres IP:</dt>
+				<dd><%= $.ip || "(nieznany)" %></dd>
+			
+				<dt>Agent:</dt>
+				<dd><%= $.userAgent || "(nieznany)" %></dd>
+			
+				<dt>Uprawnienia:</dt>
+				<dd>
+					<% const permissions = $.user?.listPermissions() || [] %>
+					<% if(permissions.length > 0) { %>
+						<table>
+							<% for(const permission of permissions) { %>
+								<tr>
+									<td><%= permission.source?.[0] || "" %></td>
+									<td><%= permission.source?.[1] || "" %></td>
+									<td><%= permission.name %></td>
+									<td><%= permission.state ? "✅" : "❌" %></td>
+								</tr>
+							<% } %>
+						</table>
+					<% } else { %>
+						<em>(brak)</em>
+					<% } %>
+				</dd>
+			</dl>
+		</details>
+	<% } %>
+</section>
