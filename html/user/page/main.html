@@ -208,7 +208,7 @@
 	</section>
 <% } %>
 
-<% if(!blockAccess && $.eventRoles.length > 0 && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) &&
+<% if(!blockAccess && $.eventRoles.length > 0 &&
 	 ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>

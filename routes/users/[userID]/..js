@@ -53,16 +53,17 @@ export default async function({user, targetUser}) {
 		roles.push(role)
 	}
 
-	// Process event roles and invites
+	// Process event roles
 	const eventRoles = [], eventInvites = []
+	for(const role of targetUser.eventRoles) {
+		if(!user.hasPermission(targetUser.PERMISSIONS.ACCESS_DETAILS) && !role.hasTag("public")) continue
+		if(!await user.checkPermission(role.unit.PERMISSIONS.ACCESS)) continue
+		const inviteState = role.unit.participants.id(targetUser.id)?.state
+		if(inviteState != "accepted") continue
+		eventRoles.push(role)
+	}
 
 	if(user.hasPermission(targetUser.PERMISSIONS.ACCESS_DETAILS)) {
-		for(const role of targetUser.eventRoles) {
-			const inviteState = role.unit.participants.id(targetUser.id)?.state
-			if(inviteState != "accepted") continue
-			eventRoles.push(role)
-		}
-
 		for(const event of targetUser.eventInvites) {
 			const inviteState = event.participants.id(targetUser.id)?.state
 			// Skip invites in which user has role (will be shown in eventRoles section)

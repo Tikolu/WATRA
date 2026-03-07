@@ -332,7 +332,7 @@ async function refreshPageData() {
 	const parser = new DOMParser()
 	const newDocument = parser.parseFromString(body, "text/html")
 
-	const ignoreElements = ".popup, dialog.frame, link:not([href^=\\/css\\/themes]), script, meta[static]"
+	const ignoreElements = ".popup, dialog.frame, meta[static]"
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],

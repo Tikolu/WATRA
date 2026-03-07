@@ -12,21 +12,15 @@ export async function ACCESS(user) {
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
 	// Users with "public" roles in accessible units can be accessed
-	await this.populate("roles")
-	for(const role of this.roles) {
+	await this.populate(["roles", "eventRoles"])
+	for(const role of [...this.roles, ...this.eventRoles]) {
 		if(!role.hasTag("public")) continue
 		await role.populate("unit")
 		if(await user.checkPermission(role.unit.PERMISSIONS.ACCESS)) return true
 	}
 
-	// Parents of non-adult users which can be accessed can also be accessed
-	await this.populate("children")
-	for(const child of this.children) {
-		if(child.isAdult) continue
-		if(await user.checkPermission(child.PERMISSIONS.ACCESS)) return true
-	}
-
 	// Users with "accessUser" role in events in which user (or their child) is a participant can access
+	await this.populate("children")
 	for(const u of [this, ...this.children]) {
 		await u.populate("eventInvites")
 		for(const event of u.eventInvites) {
