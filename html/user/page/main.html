@@ -4,7 +4,7 @@
 	styles: ["signature"],
 	meta: {
 		userID: $.targetUser.id,
-		lastLogin: $.targetUser.auth.lastLogin
+		lastLogin: $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) ? $.targetUser.auth.lastLogin : undefined
 	}
 }) %>
 <%
@@ -133,22 +133,23 @@
 	<% } %>
 </div>
 
-<% if(!blockAccess) { %>
+<% if(!blockAccess && ($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) || $.targetUser.email || $.targetUser.phone)) { %>
 	<%~ include("detailsSection", $) %>
 <% } %>
 
-<% if(!blockAccess && ($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length > 0)) { %>
+<% if(!blockAccess && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) &&
+	 ($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length > 0)) { %>
 	<%~ include("medicalSection", $) %>
 <% } %>
 
-<% if(!blockAccess && $.targetUser.isParent) { %>
+<% if(!blockAccess && $.children.length > 0) { %>
 	<section>
 		<h2>
 			<%~ icon`supervisor_account` %>
 			Podopieczni
 		</h2>
 		<div id="child-list" class="entry-grid">
-			<% for(const child of $.targetUser.children || []) { %>
+			<% for(const child of $.children) { %>
 				<% child.defaultName = "(podopieczny)" %>
 				<%~ include("/user/templates/userEntry", {
 					targetUser: child,
@@ -161,7 +162,7 @@
 			<% } %>
 		</div>
 	</section>
-<% } else if(!blockAccess && ($.targetUser.parents.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT))) { %>
+<% } else if(!blockAccess && ($.parents.length > 0 || $.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT))) { %>
 	<section>
 		<h2>
 			<%~ icon`supervisor_account` %>
@@ -172,7 +173,7 @@
 			<% } %>
 		</h2>
 		<div id="parent-list" class="entry-grid">
-			<% for(const parent of $.targetUser.parents || []) { %>
+			<% for(const parent of $.parents) { %>
 				<% parent.defaultName = "(rodzic / opiekun)" %>
 				<%~ include("/user/templates/userEntry", {targetUser: parent}) %>
 			<% } %>
@@ -190,14 +191,14 @@
 	</section>
 <% } %>
 
-<% if(!blockAccess && $.targetUser.roles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+<% if(!blockAccess && $.roles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
 			<%~ icon`groups` %>
 			Funkcje w jednostkach
 		</h2>
 		<div class="entry-grid">
-			<% for(const role of $.targetUser.roles) { %>
+			<% for(const role of $.roles) { %>
 				<%~ include("/unit/templates/unitEntry", {
 					targetUnit: role.unit,
 					content: Text.capitalise(role.displayName)
@@ -207,7 +208,8 @@
 	</section>
 <% } %>
 
-<% if(!blockAccess && $.eventRoles.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+<% if(!blockAccess && $.eventRoles.length > 0 && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) &&
+	 ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
 		<%~ icon`hiking` %>
@@ -224,7 +226,8 @@
 	</section>
 <% } %>
 
-<% if(!blockAccess && $.eventInvites.length > 0 && ($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
+<% if(!blockAccess && $.eventInvites.length > 0 && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) &&
+	($.targetUser.confirmed || !$.user.hasPermission($.targetUser.PERMISSIONS.APPROVE))) { %>
 	<section>
 		<h2>
 		<%~ icon`hiking` %>
@@ -249,6 +252,6 @@
 	<%~ include("passkeySection", $) %>
 <% } %>
 
-<% if($.targetUser.roles.length > 0) { %>
+<% if($.targetUser.roles.length > 0 && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS)) { %>
 	<%~ include("confirmationSection", $) %>
 <% } %>

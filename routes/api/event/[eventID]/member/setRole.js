@@ -33,8 +33,8 @@ export default async function({user, targetEvent, targetUsers, roleType}) {
 			throw new HTTPError(400, "Nie można zmieniać funkcji wyższej niż własna")
 		}
 
-		// User can only set their own role if they have a "setRole" role in an upper unit
-		if(user.id == targetUser.id && userRole) {
+		// User can only set their own role if they have SET_ROLE permission in an upper unit
+		if(user.id == targetUser.id && !await targetEvent.traverse("upperUnits").some(u => user.checkPermission(u.PERMISSIONS.SET_ROLE))) {
 			throw new HTTPError(400, "Nie można zmienić własnej funkcji")
 		}
 

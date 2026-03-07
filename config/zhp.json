@@ -71,6 +71,9 @@
 			"name": "Ośrodek",
 			"rank": 2,
 			"maxUpperUnits": 2,
+			"roles": [
+				"opiekun"
+			],
 			"eventRules": {
 				"create": true,
 				"invite": false

@@ -5,6 +5,7 @@ import HTTPError from "modules/server/error.js"
 
 export default async function({user, targetUser}) {
 	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.ACCESS_DETAILS)
 	await user.checkPermission(targetUser.PERMISSIONS.APPROVE)
 	await user.checkPermission(targetUser.PERMISSIONS.MANAGE)
 

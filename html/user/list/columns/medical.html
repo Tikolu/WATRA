@@ -1,4 +1,6 @@
-<% if($.user.medical.entries.length) { %>
+<% if($.user.$locals.detailsAccess === false) { %>
+	<em>Brak dostępu</em>
+<% } else if($.user.medical.entries.length) { %>
 	<ul>
 		<% for(const entry of $.user.medical.entries) { %>
 			<li><%= entry.title %></li>

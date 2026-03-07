@@ -1,7 +1,7 @@
 import Config from "modules/config.js"
 
-/** Accessing the user's profile page and any user details */
-export async function ACCESS(user) {	
+/** Accessing the user's profile page */
+export async function ACCESS(user) {
 	// User can access themselves
 	if(user.id == this.id) return true
 
@@ -11,36 +11,71 @@ export async function ACCESS(user) {
 	// Block access if user has no passkeys
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
-	// Parent can access their children
+	// Users with "public" roles in accessible units can be accessed
+	await this.populate("roles")
+	for(const role of this.roles) {
+		if(!role.hasTag("public")) continue
+		await role.populate("unit")
+		if(await user.checkPermission(role.unit.PERMISSIONS.ACCESS)) return true
+	}
+
+	// Parents of non-adult users which can be accessed can also be accessed
+	await this.populate("children")
+	for(const child of this.children) {
+		if(child.isAdult) continue
+		if(await user.checkPermission(child.PERMISSIONS.ACCESS)) return true
+	}
+
+	// Users with "accessUser" role in events in which user (or their child) is a participant can access
+	for(const u of [this, ...this.children]) {
+		await u.populate("eventInvites")
+		for(const event of u.eventInvites) {
+			const invite = event.participants.id(u.id)
+			if(await user.hasRoleInUnits("accessUser", event)) return true
+		}
+	}
+
+	// ACCESS_DETAILS permission grants ACCESS
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS_DETAILS)) return true
+
+	return false
+}
+
+/** Accessing the user's personal details */
+export async function ACCESS_DETAILS(user) {
+	// User can access their own details
+	if(user.id == this.id) return true
+
+	// Parent can access their child's details
 	if(user.children.hasID(this.id)) return true
 
-	// Child can access their parents
+	// Child can access their parent's details
 	if(user.parents.hasID(this.id)) return true
 
-	// Users with "accessUser" role in any unit/upperUnit of user can access
+	// Users with "accessUser" role in any unit/upperUnit of user can access details
 	if(await user.hasRoleInUnits("accessUser", this.listUnits(true))) return true
 
 	if(this.archived) {
 		await this.populate("archived")
-		// Users with ACCESS_ARCHIVED_MEMBERS permission in user's archival unit can access
+		// Users with ACCESS_ARCHIVED_MEMBERS permission in user's archival unit can access details
 		if(await user.checkPermission(this.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
 	}
 
-	// Users with "accessUser" role in any unit/upperUnit of any child can access parent
+	// Users with "accessUser" role in any unit/upperUnit of any child can access parent details
 	if(this.parent) {
 		await this.populate({"children": "archived"})
 		for(const child of this.children) {
 			if(await user.hasRoleInUnits("accessUser", child.listUnits(true))) return true
 		}
 
-		// Users with ACCESS_ARCHIVED_MEMBERS permission in unit of any child can access parent
+		// Users with ACCESS_ARCHIVED_MEMBERS permission in unit of any child can access parent details
 		for(const child of this.children) {
 			if(!child.archived) continue
 			if(await user.checkPermission(child.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
 		}
 	}
 
-	// Users with "accessUser" role in events in which user (or their child) is a participant can access
+	// Users with "accessUser" role in events in which user (or their child) is an accepted participant can access details
 	await this.populate("children")
 	for(const u of [this, ...this.children]) {
 		await u.populate("eventInvites")
@@ -131,17 +166,14 @@ export async function EDIT(user) {
 
 /** Creating parent users or adding existing users as parents to the user */
 export async function ADD_PARENT(user) {
-	// Lack of ACCESS permission denies ADD_PARENT
-	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+	// Lack of EDIT permission denies ADD_PARENT
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
 
 	// Block adding parent if user has no passkeys
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
 
 	// Non-adults cannot add parents to themselves
 	if(user.id == this.id) return user.isAdult
-
-	// Cannot add parent to confirmed user
-	if(this.confirmed) return false
 
 	// Cannot add parents to user with existing unnamed parents
 	await this.populate("parents")
@@ -160,8 +192,8 @@ export async function ADD_PARENT(user) {
 
 /** Deleting the user */
 export async function DELETE(user) {
-	// Lack of ACCESS permission denies DELETE
-	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+	// Lack of EDIT permission denies DELETE
+	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
 
 	// User can never delete themselves
 	if(user.id == this.id) return false

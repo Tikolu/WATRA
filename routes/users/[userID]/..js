@@ -37,22 +37,40 @@ export default async function({user, targetUser}) {
 		}
 	}
 
-	// Process event roles and invites
-	const eventRoles = []
-	for(const role of targetUser.eventRoles) {
-		const inviteState = role.unit.participants.id(targetUser.id)?.state
-		if(inviteState != "accepted") continue
-		eventRoles.push(role)
+	// Load parents and children if user has access
+	const children = [], parents = []
+	for(const child of targetUser.children) {
+		if(await user.checkPermission(child.PERMISSIONS.ACCESS)) children.push(child)
+	}
+	for(const parent of targetUser.parents) {
+		if(await user.checkPermission(parent.PERMISSIONS.ACCESS)) parents.push(parent)
 	}
 
-	const eventInvites = []
-	for(const event of targetUser.eventInvites) {
-		const inviteState = event.participants.id(targetUser.id)?.state
-		// Skip invites in which user has role (will be shown in eventRoles section)
-		if(inviteState == "accepted" && targetUser.eventRoles.some(role => role.unit.id == event.id)) continue
-		// Skip invites for events which have closed registration and user has declined
-		if(event.registrationClosed && inviteState == "declined") continue
-		eventInvites.push({event, inviteState})
+	// Load roles
+	const roles = []
+	for(const role of targetUser.roles) {
+		if(!user.hasPermission(targetUser.PERMISSIONS.ACCESS_DETAILS) && !role.hasTag("public")) continue
+		roles.push(role)
+	}
+
+	// Process event roles and invites
+	const eventRoles = [], eventInvites = []
+
+	if(user.hasPermission(targetUser.PERMISSIONS.ACCESS_DETAILS)) {
+		for(const role of targetUser.eventRoles) {
+			const inviteState = role.unit.participants.id(targetUser.id)?.state
+			if(inviteState != "accepted") continue
+			eventRoles.push(role)
+		}
+
+		for(const event of targetUser.eventInvites) {
+			const inviteState = event.participants.id(targetUser.id)?.state
+			// Skip invites in which user has role (will be shown in eventRoles section)
+			if(inviteState == "accepted" && targetUser.eventRoles.some(role => role.unit.id == event.id)) continue
+			// Skip invites for events which have closed registration and user has declined
+			if(event.registrationClosed && inviteState == "declined") continue
+			eventInvites.push({event, inviteState})
+		}
 	}
 
 	// Sort parents and children
@@ -62,7 +80,10 @@ export default async function({user, targetUser}) {
 	return html("user/page/main", {
 		user,
 		targetUser,
+		roles,
 		eventRoles,
-		eventInvites
+		eventInvites,
+		children,
+		parents
 	})
 }

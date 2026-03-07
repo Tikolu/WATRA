@@ -1,52 +1,59 @@
 <section>
 	<h2>
 		<%~ icon`assignment` %>
-		Dane
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS)) { %>
+			Dane
+		<% } else { %>
+			Kontakt
+		<% } %>
 	</h2>
 	<div class="vertical-split">
-		<form>
-			<label for="first-name-input">Imię:</label>
-			<input
-				type="text"
-				id="first-name-input"
-				autocomplete="off"
-				value="<%= $.targetUser.name.first || "" %>"
-				api="user/[userID]/update/names"
-				name="firstName"
-				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
-			>
-
-			<label for="last-name-input">Nazwisko:</label>
-			<input
-				type="text"
-				id="last-name-input"
-				autocomplete="off"
-				value="<%= $.targetUser.name.last || "" %>"
-				api="user/[userID]/update/names"
-				name="lastName"
-				<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
-			>
-
-			<% if($.targetUser.roles.length > 0) { %>
-				<label for="date-of-birth-input">Data urodzenia:</label>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS)) { %>
+			<form>
+				<label for="first-name-input">Imię:</label>
 				<input
-					type="date" id="date-of-birth-input"
-					min="<%= formatDate(MIN_DATE) %>"
-					max="<%= formatDate() %>"
-					<% if($.targetUser.dateOfBirth) { %>
-						value="<%= formatDate($.targetUser.dateOfBirth) %>"
-						<% if(!$.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
-							data-after-text="(<%= $.targetUser.age %> lat)"
-						<% } %>
-					<% } %>
-					api="user/[userID]/update/dateOfBirth"
-					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : " disabled" %>
+					type="text"
+					id="first-name-input"
+					autocomplete="off"
+					value="<%= $.targetUser.name.first || "" %>"
+					api="user/[userID]/update/names"
+					name="firstName"
+					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 				>
-			<% } %>
-		</form>
+
+				<label for="last-name-input">Nazwisko:</label>
+				<input
+					type="text"
+					id="last-name-input"
+					autocomplete="off"
+					value="<%= $.targetUser.name.last || "" %>"
+					api="user/[userID]/update/names"
+					name="lastName"
+					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+				>
+
+				<% if($.targetUser.roles.length > 0) { %>
+					<label for="date-of-birth-input">Data urodzenia:</label>
+					<input
+						type="date" id="date-of-birth-input"
+						min="<%= formatDate(MIN_DATE) %>"
+						max="<%= formatDate() %>"
+						<% if($.targetUser.dateOfBirth) { %>
+							value="<%= formatDate($.targetUser.dateOfBirth) %>"
+							<% if(!$.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+								data-after-text="(<%= $.targetUser.age %> lat)"
+							<% } %>
+						<% } %>
+						api="user/[userID]/update/dateOfBirth"
+						<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : " disabled" %>
+					>
+				<% } %>
+			</form>
+		<% } %>
 		<% if($.targetUser.email || $.targetUser.phone ||
 			($.user.hasPermission($.targetUser.PERMISSIONS.EDIT) && (
-				$.targetUser.missingDetails.includes("email") || $.targetUser.missingDetails.includes("phone")
+				// Only show inputs if data is required or user is not a parent of targetUser
+				$.targetUser.missingDetails.includes("email") || $.targetUser.missingDetails.includes("phone") || !$.targetUser.parents.hasID($.user.id)
 			))
 		) { %>
 			<form>

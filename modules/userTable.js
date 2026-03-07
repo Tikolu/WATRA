@@ -163,7 +163,14 @@ export class DataColumn {
 }
 
 export class PersonalDetailsColumnCategory extends ColumnCategory {
-	constructor(users) {
+	constructor(users, checkPermissions) {
+		const process = checkPermissions ?
+			async () => {
+				for(const user of users) {
+					user.$locals.detailsAccess = await checkPermissions(user)
+				}
+			} : undefined
+		
 		super({
 			name: "Dane osobowe",
 			icon: "assignment",
@@ -172,20 +179,24 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 					id: "dob",
 					name: "Data urodzenia",
 					value(targetUser) {
+						if(checkPermissions && !targetUser.$locals.detailsAccess) return
 						if(targetUser.dateOfBirth) {
 							return formatDate(targetUser.dateOfBirth)
 						}
 					},
+					process,
 					sortable: true
 				},
 				{
 					id: "age",
 					name: "Wiek",
 					value(targetUser) {
+						if(checkPermissions && !targetUser.$locals.detailsAccess) return
 						if(targetUser.dateOfBirth) {
 							return targetUser.age
 						}
 					},
+					process,
 					sortable: true
 				},
 				{
@@ -207,6 +218,7 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 				},
 				{
 					id: "medical",
+					process,
 					name: "Dane medyczne / dietetyczne"
 				}
 			]
@@ -297,8 +309,8 @@ export async function sortUsers(users, columnCategories, sort="") {
 		let comparison
 
 		// Handle empty values
-		if(!aValue) comparison = -1
-		else if(!bValue) comparison = 1
+		if(!aValue) comparison = 1
+		else if(!bValue) comparison = -1
 		
 		// Compare string values
 		else if(typeof aValue == "string" && typeof bValue == "string") {

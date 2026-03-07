@@ -144,6 +144,7 @@ export default async function({user, targetEvent}) {
 
 
 	// Create columns
+	const permissionCheck = u => targetEvent.participants.id(u.id)?.state == "accepted"
 	const columnCategories = [
 		new ColumnCategory({
 			name: "Uczestnictwo",
@@ -188,7 +189,7 @@ export default async function({user, targetEvent}) {
 				}
 			]
 		}),
-		new PersonalDetailsColumnCategory(users),
+		new PersonalDetailsColumnCategory(users, permissionCheck),
 		...targetEvent.forms.map(form => new FormColumnCategory(form))
 	]
 
