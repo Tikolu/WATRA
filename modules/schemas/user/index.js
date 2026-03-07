@@ -131,6 +131,15 @@ export class UserClass {
 	medical = userMedical
 	auth = userAuth
 
+	pref = {
+		_id: false,
+		alias: "preferences",
+		type: {
+			theme: String,
+			lang: String
+		}
+	}
+
 	/* * Getters * */
 
 	/** Returns the user's name in the format "First Last" */

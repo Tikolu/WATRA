@@ -4,55 +4,7 @@
 @import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20,700,1);
 
 
-/* Themes */
-
-html[theme^=light] {
-	color-scheme: light;
-
-	--hue: 100deg;
-	
-	--surface-0: hsl(var(--hue), 5%, 99%);
-	--surface-1: hsl(var(--hue), 10%, 95%);
-	--surface-2: hsl(var(--hue), 10%, 90%);
-	--surface-3: hsl(var(--hue), 20%, 85%);
-	--surface-4: hsl(var(--hue), 20%, 70%);
-
-	--red-background: hsl(0, 50%, 70%);
-	--red-text: hsl(0, 80%, 10%);
-
-	--text: hsl(var(--hue), 50%, 10%);
-	--secondary-text: hsl(var(--hue), 10%, 30%);
-	--link-text: hsl(var(--hue), 40%, 30%);
-	--shadow: hsla(var(--hue), 20%, 10%, 0.4);
-	
-	--border-radius: 0.5rem;
-	--highlight-brightness: 0.75;
-	--select-arrow: url(assets/arrow-light.svg);
-}
-
-html[theme^=dark] {
-	color-scheme: dark;
-
-	--hue: 100deg;
-	
-	--surface-0: hsl(var(--hue), 5%, 1%);
-	--surface-1: hsl(var(--hue), 5%, 10%);
-	--surface-2: hsl(var(--hue), 5%, 15%);
-	--surface-3: hsl(var(--hue), 10%, 17.5%);
-	--surface-4: hsl(var(--hue), 12.5%, 20%);
-
-	--red-background: hsl(0, 40%, 30%);
-	--red-text: hsl(0, 95%, 95%);
-
-	--text: hsl(var(--hue), 30%, 90%);
-	--secondary-text: hsl(var(--hue), 10%, 65%);
-	--link-text: hsl(var(--hue), 30%, 70%);
-	--shadow: hsl(var(--hue), 5%, 5%);
-	
-	--border-radius: 0.5rem;
-	--highlight-brightness: 2;
-	--select-arrow: url(assets/arrow-dark.svg);
-}
+/* Logo */
 
 .watra-logo {
 	filter: hue-rotate(calc(var(--hue) - 100deg));

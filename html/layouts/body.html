@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="pl"
-	<%_ if(Config.themeHue) { -%>
- theme="<%=Config.themeHue%>"
-	<%_ } _%>
+	<% if(Config.themeHue) { %>
+		theme="<%=Config.themeHue%>"
+	<% } %>
 >
 	<%~ include("/templates/head", $) %>
 	<body
-		<%_~ include("/templates/classList", $) _%>
+		<%~ include("/templates/classList", $) %>
 	>
 		<%~ $.body %>
 	</body>

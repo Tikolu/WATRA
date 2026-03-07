@@ -16,13 +16,11 @@ API.registerHandler("logout", {
 	}
 })
 
-themeChooser.value = Local.theme || "auto"
-themeChooser.onchange = () => {
-	// Save value
-	Local.theme = themeChooser.value
-	// Apply theme
-	top.setTheme(themeChooser.value)
-}
+API.registerHandler("preferences/update/theme", {
+	progressText: "Zmienianie motywu...",
+	valueKey: "theme",
+	refresh: "all"
+})
 
 feedbackButton.onclick = () => {
 	const reportDialog = window.top.createURLDialog("/report/submit", true)

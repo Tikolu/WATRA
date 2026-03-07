@@ -65,14 +65,21 @@
 			Ustawienia
 		</h2>
 		<form>
+			<%
+				const themes = {
+					auto: "Automatyczny",
+					light: "Jasny",
+					dark: "Ciemny"
+				}
+			%>
 			<label for="theme-chooser">Motyw:</label>
-			<select id="theme-chooser">
-				<option value="auto">Automatyczny</option>
-				<option value="light">Jasny</option>
-				<option value="dark">Ciemny</option>
+			<select id="theme-chooser" api="preferences/update/theme">
+				<% for(const [key, name] of Object.entries(themes)) { %>
+					<option value="<%= key %>"<%= $.user.preferences?.theme == key ? "selected" : "" %>><%= name %></option>
+				<% } %>
 			</select>
 			<label for="language-chooser">Język:</label>
-			<select id="language-chooser">
+			<select id="language-chooser" api="preferences/update/language">
 				<option value="pl">Polski</option>
 			</select>
 		</form>

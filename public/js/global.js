@@ -332,7 +332,7 @@ async function refreshPageData() {
 	const parser = new DOMParser()
 	const newDocument = parser.parseFromString(body, "text/html")
 
-	const ignoreElements = ".popup, dialog.frame, link, script, meta[static]"
+	const ignoreElements = ".popup, dialog.frame, link:not([href^=\\/css\\/themes]), script, meta[static]"
 	const ignoreAttributes = {
 		"dialog": ["open"],
 		"details": ["open"],
@@ -494,6 +494,7 @@ async function refreshPageData() {
 			const newChild = elementsToAdd[newChildIndex]
 			const elementIndex = [...oldDoc.children].filter(e => !e.classList.contains("removing")).indexOf(newChild)
 			if(elementIndex == newChildIndex) continue
+			if(elementIndex >= 0 && document.head.contains(newChild)) continue
 			console.log(elementIndex < 0 ? "Adding" : "Re-ordering", newChild, "to", oldDoc)
 			oldDoc.insertBefore(newChild, oldDoc.children[newChildIndex] || null)
 
@@ -835,9 +836,13 @@ const API = {
 			if(handler.refresh === false) return	
 			if(handler.refresh == "all") {
 				window.top.channel?.postMessage({event: "refresh"})
+				// Refresh dialog
+				if(window != window.top) document.startViewTransition(refreshPageData)
 			}
 			if(window.top.unloading) {
 				window.top.refreshDataOnShow = true
+			} else if(handler.refresh == "all") {
+				await window.top.document.startViewTransition(window.top.refreshPageData)
 			} else {
 				await window.top.refreshPageData()
 			}
@@ -1172,6 +1177,35 @@ function processLinkButtons() {
 }
 processLinkButtons()
 window.afterDataRefresh.push(processLinkButtons)
+
+// View Transition fallback function
+document.startViewTransition ||= async function(callback) {
+	await callback()
+}
+	
+// Theme handling
+function setTheme() {
+	// Extract hue from theme attribute
+	const currentTheme = document.documentElement.getAttribute("theme")
+	const currentHue = Number(currentTheme)
+
+	// Apply hue if set
+	if(currentTheme && !isNaN(currentHue)) {
+		document.documentElement.style.setProperty("--hue", `${currentHue}deg`)
+	}
+
+	// Apply theme colour
+	const colour = window.getComputedStyle(document.documentElement).getPropertyValue("--surface-4")
+	const meta = document.querySelector("meta[name=theme-color]") || document.createElement("meta")
+	meta.name = "theme-color"
+	meta.setAttribute("static", "")
+	meta.content = colour
+	document.head.append(meta)
+}
+const themeQuery = window.matchMedia("(prefers-color-scheme: dark)")
+themeQuery.onchange = () => setTheme()
+window.afterDataRefresh.push(setTheme)
+setTheme()
 
 // Make all element IDs globally accessible
 function processCustomIDs() {
