@@ -20,7 +20,7 @@ export default async function({user, code: accessCode}) {
 	const savedUsers = await this.session.getSavedUsers()
 	
 	// Render login page
-	return html("login/main", {
+	return html("login", {
 		savedUsers,
 		accessCode
 	})
