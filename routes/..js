@@ -91,9 +91,13 @@ export default async function({user}) {
 
 	await user.populate({
 		"children": {
-			"roles": "unit"
+			"roles": {
+				"unit": "upperUnits"
+			}
 		},
-		"roles": "unit"
+		"roles": {
+			"unit": "upperUnits"
+		}
 	})
 	await user.populate(
 		{

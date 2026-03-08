@@ -51,6 +51,7 @@ export default async function({user, targetUser}) {
 	for(const role of targetUser.roles) {
 		if(!user.hasPermission(targetUser.PERMISSIONS.ACCESS_DETAILS) && !role.hasTag("public")) continue
 		roles.push(role)
+		await role.unit.populate("upperUnits")
 	}
 
 	// Process event roles
