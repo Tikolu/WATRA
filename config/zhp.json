@@ -392,14 +392,14 @@
 		},
 		"zuch": {
 			"name": "Zuch",
-			"minAge": 6,
-			"maxAge": 11,
+			"minAge": 5,
+			"maxAge": 13,
 			"rank": 0
 		},
 		"skrzat": {
 			"name": "Skrzat",
-			"minAge": 4,
-			"maxAge": 7,
+			"minAge": 3,
+			"maxAge": 13,
 			"rank": 0
 		},
 
