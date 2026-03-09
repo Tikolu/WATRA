@@ -14,7 +14,14 @@
 		<% } %>
 	"
 >
-	<h3><%= $.unitInvite.unit.displayName %></h3>
+	<div class="entry-header">
+		<div class="entry-image">
+				<%~ icon`groups` %>
+		</div>
+		<div class="entry-title">
+			<h3><%= $.unitInvite.unit.displayName %></h3>
+		</div>
+	</div>
 
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.INVITE_PARTICIPANT) || $.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES)) { %>
 		<% if($.unitInvite.state != "accepted") { %>

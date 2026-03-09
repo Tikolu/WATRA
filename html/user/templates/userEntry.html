@@ -1,25 +1,17 @@
 <%
-	$.classList ||= []
-	if(!Array.isArray($.classList)) $.classList = [$.classList]
+	if(!$.description && $.targetUser.roles?.length > 0) {
+		// Display role with highest rank
+		let maxRole
+		for(const role of $.targetUser.roles) {
+			if(typeof role.unit == "string") continue
+			if(!maxRole || role.rank > maxRole.rank) {
+				maxRole = role
+			}
+		}
+		$.description = `${Text.capitalise(maxRole.displayName)} w ${maxRole.unit?.displayName || "(nieznana jednostka)"}`
+	}
 %>
-<a href="/users/<%= $.targetUser.id %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
-	<div class="entry-header">
-		<div class="entry-image">
-			<%~ icon`person` %>
-		</div>
-		<div class="entry-title">
-			<h3><%= $.targetUser.displayName || "(użytkownik)" %></h3>
-			<p>
-				<% if($.description) { %>
-					<%= $.description %>
-				<% } else if($.targetUser.roles?.length == 1 && typeof $.targetUser.roles[0] != "string") { %>
-					<%= Text.capitalise($.targetUser.roles[0].displayName) %>, <%= $.targetUser.roles[0].unit?.displayName || "(nieznana jednostka)" %>
-				<% } %>
-			</p>
-		</div>
-	</div>
-	<%~ include("/templates/entryContent", {
-		content: $.content,
-		warnings: $.warnings
-	}) %>
-</a>
+<%~ include("/templates/entry", {
+	target: $.targetUser,
+	icon: "person"
+}) %>

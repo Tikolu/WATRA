@@ -43,14 +43,16 @@
 		<div class="entry-grid medium">
 			<% for(const approver of $.targetEvent.approvers || []) { %>
 				<div>
-					<div class="entry-title">
-						<% if(approver.role.user) { %>
-							<h3><%= approver.role.user.displayName %></h3>
-							<p><%= approver.role.displayName %>, <%= approver.role.unit.displayName %></p>
-						<% } else { %>
-							<h3>(zatwierdzający)</h3>
-						<% } %>
-					</div>
+					<% if(approver.role.user) { %>
+						<div class="entry-grid full">
+							<%~ include("/user/templates/userEntry", {
+								targetUser: approver.role.user,
+								description: `${approver.role.displayName}, ${approver.role.unit.displayName}`
+							}) %>
+						</div>
+					<% } else { %>
+						<h3>(zatwierdzający)</h3>
+					<% } %>
 					<div class="entry-content">
 						<% if(approver.approved) { %>
 							<p>

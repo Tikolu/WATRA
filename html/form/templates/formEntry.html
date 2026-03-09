@@ -1,25 +1,4 @@
-<%
-	$.classList ||= []
-	if(!Array.isArray($.classList)) $.classList = [$.classList]
-%>
-<a href="/forms/<%= $.targetForm.id %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
-	<div class="entry-header">
-		<div class="entry-image">
-			<%~ icon`ballot` %>
-		</div>
-		<div class="entry-title">
-			<h3><%= $.targetForm.displayName %></h3>
-			<p>
-				<% if($.description) { %>
-					<%= $.description %>
-				<% } else { %>
-				
-				<% } %>
-			</p>
-		</div>
-	</div>
-	<%~ include("/templates/entryContent", {
-		content: $.content,
-		warnings: $.warnings
-	}) %>
-</a>
+<%~ include("/templates/entry", {
+	target: $.targetForm,
+	icon: "ballot"
+}) %>

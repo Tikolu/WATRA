@@ -1,24 +1,13 @@
-<a href="/events/<%= $.targetEvent.id %>">
-	<div class="entry-header">
-		<div class="entry-image">
-			<%~ icon`hiking` %>
-		</div>
-		<div class="entry-title">
-			<h3><%= $.targetEvent.displayName %></h3>
-			<p>
-				<% if($.description) { %>
-					<%= $.description %>
-				<% } else if($.targetEvent.length === 0) { %>
-					<%= datetime.format($.targetEvent.dates.start, "dd/MM/yyyy") %>
-				<% } else if($.targetEvent.length > 0) { %>
-					<%= datetime.format($.targetEvent.dates.start, "dd/MM") %> do
-					<%= datetime.format($.targetEvent.dates.end, "dd/MM") %>
-				<% } %>
-			</p>
-		</div>
-	</div>
-	<%~ include("/templates/entryContent", {
-		content: $.content,
-		warnings: $.warnings
-	}) %>
-</a>
+<%
+	if(!$.description) {
+		if($.targetEvent.length === 0) {
+			$.description = datetime.format($.targetEvent.dates.start, "dd/MM/yyyy")
+		} else if($.targetEvent.length > 0) {
+			$.description = `${datetime.format($.targetEvent.dates.start, "dd/MM")} do ${datetime.format($.targetEvent.dates.end, "dd/MM")}`
+		}
+	}	
+%>
+<%~ include("/templates/entry", {
+	target: $.targetEvent,
+	icon: "hiking"
+}) %>

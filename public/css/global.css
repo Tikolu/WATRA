@@ -629,6 +629,10 @@ p.warning, p.info {
 
 		text-decoration: none;
 
+		.entry-grid {
+			margin-top: 0;
+		}
+
 		&.faded {
 			color: var(--secondary-text);
 			background-color: var(--surface-2);
@@ -650,9 +654,11 @@ p.warning, p.info {
 		}
 
 		& .entry-image {
-			width: 2em;
-			height: 2em;
+			width: 2.5em;
+			height: 2.5em;
 			margin-right: 0.5em;
+			flex-shrink: 0;
+			
 			display: flex;
 		}
 

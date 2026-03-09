@@ -1,0 +1,31 @@
+<%
+	$.classList ||= []
+	if(!Array.isArray($.classList)) $.classList = [$.classList]
+
+	$.url ||= `/${$.target.modelName.toLowerCase()}s/${$.target.id}`
+%>
+<a href="<%= $.url %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
+	<div class="entry-header">
+		<div class="entry-image">
+			<%~ icon($.icon) %>
+		</div>
+		<div class="entry-title">
+			<h3><%= $.target.displayName %></h3>
+			<% if($.description) { %>
+				<p>
+					<%= $.description %>
+				</p>
+			<% } %>
+		</div>
+	</div>
+	<% if($.content || $.warnings?.length > 0) { %>
+		<div class="entry-content">
+			<% if($.content) { %>
+				<p><%= $.content %></p>
+			<% } %>
+			<% for(const warning of $.warnings || []) { %>
+				<p class="warning"><%~ icon`warning` %> <%= warning %></p>
+			<% } %>
+		</div>
+	<% } %>
+</a>

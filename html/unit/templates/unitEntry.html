@@ -1,25 +1,13 @@
 <%
-	$.classList ||= []
-	if(!Array.isArray($.classList)) $.classList = [$.classList]
+	if(!$.description) {
+		$.description = $.targetUnit.typeName
+		if($.targetUnit.upperUnits.length == 1 && $.targetUnit.upperUnits[0]?.displayName) {
+			$.description += ` w ${$.targetUnit.upperUnits[0].displayName}`
+		}
+	}
 %>
-<a href="/units/<%= $.targetUnit.id %><%= $.org ? `?org=${$.org}` : "" %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
-	<div class="entry-header">
-		<div class="entry-image">
-			<%~ icon`groups` %>
-		</div>
-		<div class="entry-title">
-			<h3><%= $.targetUnit.displayName %></h3>
-			<p>
-				<% if($.description) { %>
-					<%= $.description %>
-				<% } else { %>
-					<%= $.targetUnit.typeName %><% if($.targetUnit.upperUnits.length == 1 && $.targetUnit.upperUnits[0]?.displayName) { %> w <%= $.targetUnit.upperUnits[0]?.displayName %><% } %>
-				<% } %>
-			</p>
-		</div>
-	</div>
-	<%~ include("/templates/entryContent", {
-		content: $.content,
-		warnings: $.warnings
-	}) %>
-</a>
+<%~ include("/templates/entry", {
+	target: $.targetUnit,
+	icon: "groups",
+	url: `/units/${$.targetUnit.id}${$.org ? `?org=${$.org}` : ""}`
+}) %>
