@@ -8,38 +8,49 @@
 }) %>
 <% const orgParam = $.orgContext ? `?org=${$.orgContext}` : "" %>
 
-<h1 id="unit-title">
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
-		<input
-			type="text"
-			name="name"
-			placeholder="Nazwa jednostki"
-			autocomplete="off"
-			api="unit/[unitID]/update/name"
-			value="<%= $.targetUnit.name || "" %>"
-			title="Zmień nazwę"
-		>
-	<% } else { %>
-		<%= $.targetUnit.displayName %>
-	<% } %>
-</h1>
+<section>
+	<div class="logo-header">
+		<%~ include("/templates/headerImage", {
+			target: $.targetUnit,
+			icon: "groups"
+		}) %>
+		
+		<div>
+			<h1 id="unit-title">
+				<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
+					<input
+						type="text"
+						name="name"
+						placeholder="Nazwa jednostki"
+						autocomplete="off"
+						api="unit/[unitID]/update/name"
+						value="<%= $.targetUnit.name || "" %>"
+						title="Zmień nazwę"
+					>
+				<% } else { %>
+					<%= $.targetUnit.displayName %>
+				<% } %>
+			</h1>
 
-<%~ include("upperUnitDescription") %>
+			<%~ include("upperUnitDescription") %>
+		</div>
+	</div>
 
-<div class="button-row">
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
-		<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">
-			<%~ icon`delete` %>
-			<span>Usuń jednostkę</span>
-		</button>
-	<% } %>
-	<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ACTIVITY)) { %>
-		<button id="activity-log-button" href="/units/<%= $.targetUnit.id %>/log">
-			<%~ icon`history` %>
-			<span>Log aktywności</span>
-		</button>
-	<% } %>
-</div>
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.EDIT)) { %>
+			<button id="delete-unit-button" class="dangerous" opens-dialog="/units/<%= $.targetUnit.id %>/delete">
+				<%~ icon`delete` %>
+				<span>Usuń jednostkę</span>
+			</button>
+		<% } %>
+		<% if($.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+			<button id="activity-log-button" href="/units/<%= $.targetUnit.id %>/log">
+				<%~ icon`history` %>
+				<span>Log aktywności</span>
+			</button>
+		<% } %>
+	</div>
+</section>
 
 <% if(
 	($.targetUnit.roles.length > 0 && $.user.hasPermission($.targetUnit.PERMISSIONS.ACCESS_MEMBERS)) ||

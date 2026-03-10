@@ -219,7 +219,7 @@ export default async function({user, targetEvent}) {
 
 	// Load column values
 	await loadColumnValues(columnCategories, this.routeData)
-	
+
 	// Sort users
 	const sort = await sortUsers(users, columnCategories, this.routeData.sort)
 

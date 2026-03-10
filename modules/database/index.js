@@ -238,10 +238,8 @@ mongoose.plugin(schema => {
 })
 
 
-let readyCallbacks
-export const ready = new Promise((resolve, reject) => {
-	readyCallbacks = {resolve, reject}
-})
+const {promise: ready, ...readyCallbacks} = Promise.withResolvers()
+export {ready}
 
 // Establish connection to database
 export async function connect(dbName="main") {

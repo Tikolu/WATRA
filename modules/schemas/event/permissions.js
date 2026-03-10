@@ -151,3 +151,9 @@ export async function MANAGE_FORMS(user) {
 	// "manageForms" roles in this event and upper units can manage forms
 	if(await user.hasRoleInUnits("manageForms", this.traverse("upperUnits", {includeSelf: true}))) return true
 }
+
+/** Setting the events's logo image */
+export async function SET_IMAGE(user) {
+	// EDIT permission grants SET_IMAGE
+	return await user.checkPermission(this.PERMISSIONS.EDIT)
+}

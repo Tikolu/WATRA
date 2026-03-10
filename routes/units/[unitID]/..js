@@ -72,3 +72,5 @@ export default async function({user, targetUnit, orgContext}) {
 		subUnitEvents
 	})
 }
+
+export {image} from "routes/image.js"

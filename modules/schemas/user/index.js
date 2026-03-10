@@ -131,6 +131,11 @@ export class UserClass {
 	medical = userMedical
 	auth = userAuth
 
+	image = {
+		type: String,
+		ref: "File"
+	}
+
 	pref = {
 		_id: false,
 		alias: "preferences",
@@ -210,6 +215,12 @@ export class UserClass {
 	get isAdult() {
 		if(this.age === null) return undefined
 		return this.age >= Config.adultAge
+	}
+
+	/** Returns the user's profile photo URL */
+	get imageURL() {
+		if(!this.image) return
+		else return `/files/${this.image.id}/${this.id}`
 	}
 
 	/* * Methods * */

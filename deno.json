@@ -10,7 +10,7 @@
 	},
 	"tasks": {
 		"watra": "deno --permission-set=default --env-file --no-prompt index.js",
-		"watra-dev": "deno --inspect --watch-hmr --permission-set=default --env-file --no-prompt index.js --development"
+		"watra-dev": "deno --inspect --watch-hmr --watch-exclude=public --permission-set=default --env-file --no-prompt index.js --development"
 	},
 	"imports": {
 		"modules/": "./modules/",
@@ -20,6 +20,9 @@
 		"modules/schemas/unit": "./modules/schemas/unit/index.js",
 		"modules/schemas/event": "./modules/schemas/event/index.js",
 		"modules/schemas/form": "./modules/schemas/form/index.js",
+
+		"routes/api/": "./routes/api/_common/",
+		"routes/": "./routes/_common/",
 
 		"mongoose": "npm:mongoose",
 		"eta": "jsr:@bgub/eta",

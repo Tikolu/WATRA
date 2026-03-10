@@ -89,3 +89,5 @@ export default async function({user, targetUser}) {
 		parents
 	})
 }
+
+export {image} from "routes/image.js"

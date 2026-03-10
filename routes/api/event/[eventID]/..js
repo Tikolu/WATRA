@@ -11,3 +11,5 @@ export async function _open({user, eventID}) {
 
 	this.addRouteData({targetEvent})
 }
+
+export {setImage} from "routes/api/setImage.js"

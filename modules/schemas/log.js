@@ -24,6 +24,7 @@ const eventTypes = {
 	"user/*/medical/*": "Edytowano dane medyczne $USER",
 	"user/*/archive": "Zarchiwizowano $USER",
 	"user/*/unarchive": "Cofnięto archiwizację $USER",
+	"user/*/setImage": "Ustawiono zdjęcie $USER",
 
 	"signature/verify": "Podpisano",
 
@@ -39,6 +40,7 @@ const eventTypes = {
 	"unit/*/event/create": "Utworzono akcję w $UNIT",
 	"unit/*/event/*/invitation/decline": "Odrzucono zaproszenie $UNIT na $EVENT",
 	"unit/*/event/*/setParticipants": "Ustawiono uczestników z $UNIT na $EVENT",
+	"unit/*/setImage": "Ustawiono logo $UNIT",
 
 	"event/*/update/*": "Zaktualizowano dane akcji $EVENT",
 	"event/*/delete": "Usunięto akcję",
@@ -55,6 +57,7 @@ const eventTypes = {
 	"event/*/setUpperUnits": "Zmieniono jednostki nadrzędne $EVENT",
 	"event/*/registration/enable": "Włączono zapisy na $EVENT",
 	"event/*/registration/disable": "Wyłączono zapisy na $EVENT",
+	"event/*/setImage": "Ustawiono logo $EVENT",
 
 	"form/create": "Utworzono formularz $FORM",
 	"form/*/delete": "Usunięto formularz",

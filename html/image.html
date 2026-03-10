@@ -1,0 +1,60 @@
+<% layout("/layouts/dialog", {
+	styles: ["image"],
+	scripts: ["image"],
+	meta: {
+		type: $.target.modelName,
+		id: $.target.id
+	}
+}) %>
+<h1>
+	<%~ icon`frame_person` %>
+	<%= $.target.displayName %> - <%= $.target.modelName == "User" ? "Zdjęcie" : "Logo" %>
+</h1>
+<main>
+	<section id="image-preview-container">
+		<img id="image-preview"
+			<% if($.target.image) { %>
+				src="<%= $.target.imageURL %>"
+			<% } else { %>
+				hidden
+			<% } %>
+		>
+		<% if(!$.target.image) { %>
+			<div id="no-image-text">
+				<%~ icon`hide_image` %>
+				<p>Brak <%= $.target.modelName == "User" ? "zdjęcia" : "logo" %></p>
+			</div>
+		<% } %>
+		<div id="crop-text" hidden>
+			<p>
+				<%~ icon`crop` %>
+				Przesuń aby przyciąć
+			</p>
+		</div>
+	</section>
+	<% if($.setting) { %>
+		<section>
+			<form>
+				<label for="image-picker">
+					<% if($.target.image) { %>
+						Zmień <%= $.target.modelName == "User" ? "zdjęcie" : "logo" %>:
+					<% } else { %>
+						Ustaw <%= $.target.modelName == "User" ? "zdjęcie" : "logo" %>:
+					<% } %>
+				</label>
+				<input type="file" id="image-picker" accept="image/*,bajo/jajo">
+			</form>
+			<button id="set-image-button" api="<%= $.target.modelName.toLowerCase() %>/<%= $.target.id %>/setImage" class="confirm" hidden>
+				<%~ icon`check` %>
+				Zapisz
+			</button>
+		</section>
+	<% } %>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<%~ icon`arrow_back` %>
+		Zamknij
+	</button>
+</div>

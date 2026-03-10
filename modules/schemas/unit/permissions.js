@@ -38,9 +38,6 @@ export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// "editUnit" roles in this unit can edit
-	if(await user.hasRoleInUnits("editUnit", this)) return true
-
 	// "manageSubUnit" roles in upper units can edit
 	if(await user.hasRoleInUnits("manageSubUnit", this.traverse("upperUnits"))) return true
 
@@ -182,4 +179,15 @@ export async function MANAGE_FORMS(user) {
 
 	// "manageForms" roles in this unit and upper units can manage forms
 	if(await user.hasRoleInUnits("manageForms", this.traverse("upperUnits", {includeSelf: true}))) return true
+}
+
+/** Setting the unit's logo image */
+export async function SET_IMAGE(user) {
+	// Lack of ACCESS permission denies SET_IMAGE
+	if(!await user.checkPermission(this.PERMISSIONS.ACCESS, true)) return false
+
+	// "manageSubUnit" roles in this unit and upper units can set image
+	if(await user.hasRoleInUnits("manageSubUnit", this.traverse("upperUnits", {includeSelf: true}))) return true
+
+	return false
 }

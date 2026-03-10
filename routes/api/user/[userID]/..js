@@ -44,3 +44,5 @@ export async function unarchive({user, targetUser}) {
 	
 	await targetUser.unarchive()
 }
+
+export {setImage} from "routes/api/setImage.js"

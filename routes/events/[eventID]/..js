@@ -109,3 +109,5 @@ export default async function({user, targetEvent}) {
 		files
 	})
 }
+
+export {image} from "routes/image.js"

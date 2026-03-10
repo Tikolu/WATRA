@@ -69,6 +69,11 @@ export class UnitClass {
 		}
 	]
 
+	image = {
+		type: String,
+		ref: "File"
+	}
+
 
 	/** * Getters * */
 
@@ -90,6 +95,11 @@ export class UnitClass {
 		return nameConfig[this.org] || nameConfig["default"]
 	}
 
+	/** Returns the units's logo image URL */
+	get imageURL() {
+		if(!this.image) return null
+		else return `/files/${this.image.id}/${this.id}`
+	}
 
 	/** Methods */
 	

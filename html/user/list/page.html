@@ -211,15 +211,17 @@
 					<input type="checkbox" id="select-all-checkbox">
 				</th>
 				<%
-					const headerColumns = $.columnCategories.flatMap(c => c.columns)
-					headerColumns.unshift({
+					const displayColumns = $.columnCategories.flatMap(c => c.columns)
+					displayColumns.unshift({
 						id: "name",
 						name: "Imię",
 						selected: true,
-						sortable: true
-					})
+						sortable: true,
+						position: 1
+					});
+					displayColumns.sort((a, b) => a.position - b.position)
 				%>
-				<% for(const column of headerColumns) { %>
+				<% for(const column of displayColumns) { %>
 					<% if(!column.selected) continue %>
 					<th>
 						<% if(column.sortable) { %>
@@ -246,10 +248,7 @@
 					>
 						<input type="checkbox" name="userIDs" value="<%= user.id %>">
 					</td>
-					<td>
-						<a href="/users/<%= user.id %>"><%= user.displayName %></a>
-					</td>
-					<% for(const column of $.columnCategories.flatMap(c => c.columns)) { %>
+					<% for(const column of displayColumns) { %>
 						<% if(!column.selected) continue %>
 						<td>
 							<% if(column.value) { %>

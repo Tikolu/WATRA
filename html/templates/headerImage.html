@@ -1,0 +1,21 @@
+<%
+	const openable = $.target.image || $.user.hasPermission($.target.PERMISSIONS.SET_IMAGE)
+%>
+<% if(openable) { %>
+	<a
+		opens-dialog="/<%= $.target.modelName.toLowerCase() %>s/<%= $.target.id %>/image"
+		href="<%= $.target.imageURL %>"
+	>
+<% } else { %>
+	<div>
+<% } %>
+	<% if($.target.image) { %>
+		<img src="<%= $.target.imageURL %>">
+	<% } else { %>
+		<%~ icon($.icon) %>
+	<% } %>
+<% if(openable) { %>
+	</a>
+<% } else { %>
+	</div>
+<% } %>

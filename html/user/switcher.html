@@ -41,7 +41,11 @@
 					<div>
 						<div class="entry-header">
 							<div class="entry-image">
-								<%~ icon`person` %>
+								<% if(user.image) { %>
+									<img src="<%= user.imageURL %>?alt=48">
+								<% } else { %>
+									<%~ icon`person` %>
+								<% } %>
 							</div>
 							<div class="entry-title">
 								<h3><%= user.displayName %></h3>

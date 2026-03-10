@@ -7,7 +7,11 @@
 <a href="<%= $.url %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
 	<div class="entry-header">
 		<div class="entry-image">
-			<%~ icon($.icon) %>
+			<% if($.target.image) { %>
+				<img src="<%= $.target.imageURL %>?alt=48">
+			<% } else if($.icon) { %>
+				<%~ icon($.icon) %>
+			<% } %>
 		</div>
 		<div class="entry-title">
 			<h3><%= $.target.displayName %></h3>

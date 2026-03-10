@@ -1,0 +1,53 @@
+#image-preview-container {
+	position: relative;
+	aspect-ratio: 1 / 1;
+	padding: 0;
+
+	overflow: hidden;
+	img {
+		width: 100%;
+	}
+
+	&.portrait {
+		overflow: hidden scroll;
+		img {
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	&.landscape {
+		overflow: scroll hidden;
+		img {
+			width: auto;
+			height: 100%;
+		}
+	}
+
+	div {
+		position: fixed;
+		top: 30%;
+		left: 4em;
+		right: 4em;
+		text-align: center;
+		pointer-events: none;
+	}
+
+	#crop-text {
+		background-color: var(--surface-3);
+		padding: 0.5em;
+		border-radius: var(--border-radius);
+		animation:	fade-in 500ms 500ms backwards,
+					fade-out 500ms 2s forwards;
+	}
+
+	#no-image-text {
+		font-size: 1.5em;
+		animation: fade-in 250ms 500ms backwards;
+
+		i {
+			font-size: 2.5em;
+			margin: 0;
+		}
+	}
+}

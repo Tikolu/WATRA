@@ -80,6 +80,12 @@ body main {
 			display: block;
 			margin-top: 0.5em;
 		}
+
+		img {
+			width: 2.5em;
+			height: 2.5em;
+			border-radius: calc(var(--border-radius) / 2);
+		}
 	}
 }
 

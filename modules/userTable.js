@@ -151,7 +151,8 @@ export class DataColumn {
 		this.value = options.value
 		this.process = options.process
 		this.sortable = options.sortable || false
-		this.selected = false
+		this.selected = false,
+		this.position = options.position ?? Infinity
 	}
 
 	async setSelected(selectedList) {
@@ -220,6 +221,11 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 					id: "medical",
 					process,
 					name: "Dane medyczne / dietetyczne"
+				},
+				{
+					id: "image",
+					name: "Zdjęcie",
+					position: 0
 				}
 			]
 		})

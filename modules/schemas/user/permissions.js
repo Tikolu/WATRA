@@ -184,6 +184,29 @@ export async function ADD_PARENT(user) {
 	return false
 }
 
+/** Setting the user's photo */
+export async function SET_IMAGE(user) {
+	// Cannot set photo of archived user
+	if(this.archived) return false
+
+	// Lack of ACCESS_DETAILS permission denies SET_IMAGE
+	if(!await user.checkPermission(this.PERMISSIONS.ACCESS_DETAILS)) return false
+
+	// MANAGE permission grants SET_IMAGE
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
+
+	// APPROVE permission grants SET_IMAGE
+	if(await user.checkPermission(this.PERMISSIONS.APPROVE)) return true
+	
+	// Parents can set photo's of parent's of their children (including their own)
+	await user.populate("children")
+	for(const child of user.children) {
+		if(child.parents.hasID(this.id)) return true
+	}
+	
+	return false
+}
+
 /** Deleting the user */
 export async function DELETE(user) {
 	// Lack of EDIT permission denies DELETE

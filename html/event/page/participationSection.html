@@ -26,8 +26,19 @@
 		<div class="entry-grid">
 			<% for(const userInvite of $.approvalParticipants) { %>
 				<div>
-					<div class="entry-title">
-						<h3><%= userInvite.user.displayName %></h3>
+					<div class="entry-header">
+						<div class="entry-image">
+							<% if(userInvite.user.image) { %>
+								<img src="<%= userInvite.user.imageURL %>?alt=48">
+							<% } else { %>
+								<%~ icon`person` %>
+							<% } %>
+						</div>
+						<div class="entry-title">
+							<h3><%= userInvite.user.displayName %></h3>
+						</div>
+					</div>
+					<div class="entry-content">
 						<p>
 							<% if(userInvite.state == "pending") { %>
 								<% if($.targetEvent.registrationOpen) { %>

@@ -63,8 +63,8 @@ class Route {
 
 			// Route is a directory, list files inside
 			if(this.type == Route.TYPE.DIR) {
-				const files = await Array.fromAsync(Deno.readDir(`${Route.dir}/${this.path}`))
-				for(const file of files) {
+				const files = Deno.readDir(`${Route.dir}/${this.path}`)
+				for await(const file of files) {
 					if(file.name == "default.js" || file.name.startsWith(".") || file.name.startsWith("_")) continue
 					const routeName = file.name.replace(/\.js$/, "")
 					if(this.subRoutes[routeName]) {

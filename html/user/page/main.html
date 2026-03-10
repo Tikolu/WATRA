@@ -11,127 +11,137 @@
 	const blockAccess = Config.passkeyRequired && $.user.auth.keys.length == 0
 %>
 
-<h1 id="user-title">
-	<%~ icon`person` %>
-	<%= $.targetUser.displayName %>
-</h1>
-<% if($.targetUser.roles.length > 0 && ($.targetUser.org || $.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG))) { %>
-	<%~ include("orgOptions", $) %>
-<% } %>
-
-<% if($.targetUser.archived) { %>
-	<article>
-		<p>
-			<b><%~ icon`archive` %> Profil zarchiwizowany</b><br>
-			<% if($.targetUser.id == $.user.id || $.user.children.some(child => child.id == $.targetUser.id)) { %>
-				Skontaktuj się z przełożonym aby odblokować profil.
+<section>
+	<div class="logo-header">
+		<%~ include("/templates/headerImage", {
+			target: $.targetUser,
+			icon: "person"
+		}) %>
+		
+		<div>
+			<h1 id="user-title">
+				<%= $.targetUser.displayName %>
+			</h1>
+			<% if($.targetUser.roles.length > 0 && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) && ($.targetUser.org || $.user.hasPermission($.targetUser.PERMISSIONS.SET_ORG))) { %>
+				<%~ include("orgOptions", $) %>
 			<% } %>
-		</p>
-	</article>
-<% } %>
 
-<div class="button-row">
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
-		<button href="/users/<%= $.targetUser.id %>/log">
-			<%~ icon`history` %>
-			Log aktywności
-		</button>
-	<% } %>
-	<% if($.user.id == $.targetUser.id) { %>
-		<button id="logout-button" api="logout">
-			<%~ icon`logout` %>
-			Wyloguj
-		</button>
-	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
-		<%
-			let showAccessCodeWarning = (() => {
-				if($.targetUser.isParent) return false
-				if($.targetUser.id == $.user.id) return false
-				if($.targetUser.parents.hasID($.user.id)) return false
-				if($.targetUser.isAdult) return false
-				return true
-			})()
-		%>
-		<button
-			id="generate-access-code-button"
-			<% if(showAccessCodeWarning) { %>
-				opens-dialog="access-code-warning-dialog"
-			<% } else { %>
-				opens-dialog="/users/<%= $.targetUser.id %>/accessCode"
-			<% } %>
-		>
-			<%~ icon`password` %>
-			Wygeneruj kod rejestracyjny
-		</button>
-		<% if(showAccessCodeWarning) { %>
-			<dialog id="access-code-warning-dialog">
-				<h1>
-					<%~ icon`warning` %>
-					Kod dla profilu <%= $.targetUser.displayName %>
-				</h1>
-				<article class="warning">
+			<% if($.targetUser.archived) { %>
+				<article>
 					<p>
-						<%~ icon`warning` %>
-						<b>Uwaga - Kod nie umożliwi dostępu do profilu rodzica / opiekuna</b>
+						<b><%~ icon`archive` %> Profil zarchiwizowany</b><br>
+						<% if($.targetUser.id == $.user.id || $.user.children.some(child => child.id == $.targetUser.id)) { %>
+							Skontaktuj się z przełożonym aby odblokować profil.
+						<% } %>
 					</p>
-					<p>Kod umożliwi dostęp tylko do profilu <%= $.targetUser.displayName %>.</p>
 				</article>
-				<p>Jeśli <%= $.targetUser.name.first || "osoba" %> jest osobą niepełnoletnią, nie będzie mógł zatwierdzić własnych danych.</p>
-				<p>Na pewno kontynuować z wygenerowaniem kodu?</p>
+			<% } %>
+		</div>
+	</div>
+
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+			<button href="/users/<%= $.targetUser.id %>/log">
+				<%~ icon`history` %>
+				Log aktywności
+			</button>
+		<% } %>
+		<% if($.user.id == $.targetUser.id) { %>
+			<button id="logout-button" api="logout">
+				<%~ icon`logout` %>
+				Wyloguj
+			</button>
+		<% } %>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.GENERATE_ACCESS_CODE)) { %>
+			<%
+				let showAccessCodeWarning = (() => {
+					if($.targetUser.isParent) return false
+					if($.targetUser.id == $.user.id) return false
+					if($.targetUser.parents.hasID($.user.id)) return false
+					if($.targetUser.isAdult) return false
+					return true
+				})()
+			%>
+			<button
+				id="generate-access-code-button"
+				<% if(showAccessCodeWarning) { %>
+					opens-dialog="access-code-warning-dialog"
+				<% } else { %>
+					opens-dialog="/users/<%= $.targetUser.id %>/accessCode"
+				<% } %>
+			>
+				<%~ icon`password` %>
+				Wygeneruj kod rejestracyjny
+			</button>
+			<% if(showAccessCodeWarning) { %>
+				<dialog id="access-code-warning-dialog">
+					<h1>
+						<%~ icon`warning` %>
+						Kod dla profilu <%= $.targetUser.displayName %>
+					</h1>
+					<article class="warning">
+						<p>
+							<%~ icon`warning` %>
+							<b>Uwaga - Kod nie umożliwi dostępu do profilu rodzica / opiekuna</b>
+						</p>
+						<p>Kod umożliwi dostęp tylko do profilu <%= $.targetUser.displayName %>.</p>
+					</article>
+					<p>Jeśli <%= $.targetUser.name.first || "osoba" %> jest osobą niepełnoletnią, nie będzie mógł zatwierdzić własnych danych.</p>
+					<p>Na pewno kontynuować z wygenerowaniem kodu?</p>
+					<div class="button-row">
+						<button>
+							<%~ icon`arrow_back` %>
+							Anuluj
+						</button>
+						<button opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
+							<%~ icon`password` %>
+							Kontynuuj
+						</button>
+					</div>
+				</dialog>
+			<% } %>
+		<% } %>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ARCHIVE)) { %>
+			<% if($.targetUser.archived) { %>
+				<button id="unarchive-user-button" api="user/[userID]/unarchive">
+					<%~ icon`unarchive` %>
+					Cofnij archiwizację
+				</button>
+			<% } else { %>
+				<button id="archive-user-button" api="user/[userID]/archive">
+					<%~ icon`archive` %>
+					Archiwizuj użytkownika
+				</button>
+			<% } %>
+		<% } %>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
+			<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
+				<%~ icon`delete` %>
+				<% if($.targetUser.children.length > 0 && $.targetUser.children.every(child => child.isAdult)) { %>
+					Usuń kontakt alarmowy
+				<% } else if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
+					Usuń rodzica
+				<% } else { %>
+					Usuń użytkownika
+				<% } %>
+			</button>
+			<dialog id="delete-user-dialog">
+				<h1>Trwale usunąć użytkownika <%= $.targetUser.displayName %>?</h1>
+				<p>Użytkownik i wszystkie jego dane zostaną trwale usunięte.</p>
 				<div class="button-row">
 					<button>
 						<%~ icon`arrow_back` %>
 						Anuluj
 					</button>
-					<button opens-dialog="/users/<%= $.targetUser.id %>/accessCode">
-						<%~ icon`password` %>
-						Kontynuuj
+					<button class="dangerous" command>
+						<%~ icon`delete` %>
+						Usuń
 					</button>
 				</div>
 			</dialog>
 		<% } %>
-	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.ARCHIVE)) { %>
-		<% if($.targetUser.archived) { %>
-			<button id="unarchive-user-button" api="user/[userID]/unarchive">
-				<%~ icon`unarchive` %>
-				Cofnij archiwizację
-			</button>
-		<% } else { %>
-			<button id="archive-user-button" api="user/[userID]/archive">
-				<%~ icon`archive` %>
-				Archiwizuj użytkownika
-			</button>
-		<% } %>
-	<% } %>
-	<% if($.user.hasPermission($.targetUser.PERMISSIONS.DELETE)) { %>
-		<button id="delete-user-button" class="dangerous" api="user/[userID]/delete">
-			<%~ icon`delete` %>
-			<% if($.targetUser.children.length > 0 && $.targetUser.children.every(child => child.isAdult)) { %>
-				Usuń kontakt alarmowy
-			<% } else if($.targetUser.isParent && $.targetUser.roles.length == 0) { %>
-				Usuń rodzica
-			<% } else { %>
-				Usuń użytkownika
-			<% } %>
-		</button>
-		<dialog id="delete-user-dialog">
-			<h1>Trwale usunąć użytkownika <%= $.targetUser.displayName %>?</h1>
-			<p>Użytkownik i wszystkie jego dane zostaną trwale usunięte.</p>
-			<div class="button-row">
-				<button>
-					<%~ icon`arrow_back` %>
-					Anuluj
-				</button>
-				<button class="dangerous" command>
-					<%~ icon`delete` %>
-					Usuń
-				</button>
-			</div>
-		</dialog>
-	<% } %>
-</div>
+	</div>
+</section>
 
 <% if(!blockAccess && ($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) || $.targetUser.email || $.targetUser.phone)) { %>
 	<%~ include("detailsSection", $) %>

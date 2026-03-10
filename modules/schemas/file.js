@@ -9,7 +9,7 @@ const MAX_FILE_SIZE = 8 * 1024 * 1024
 export class FileClass {
 	/* * Static functions * */
 	static async fromJSON(json) {
-		const {name, data} = json
+		const {name, data} = json || {}
 		if(!name || !data) throw new Error("Invalid file")
 
 		// Load file from data URL
@@ -24,7 +24,8 @@ export class FileClass {
 
 		// Check file type
 		const type = response.headers.get("Content-Type")
-		if(!type || mime.getType(name) != type) {
+		const nameType = mime.getType(name)
+		if(!type || (nameType && nameType != type)) {
 			throw new Error("Invalid file type")
 		}
 
@@ -50,6 +51,13 @@ export class FileClass {
 		required: true
 	}
 
+	altData = [
+		{
+			_id: String,
+			data: Buffer
+		}
+	]
+
 	type = {
 		type: String,
 		required: true
@@ -71,12 +79,11 @@ export class FileClass {
 	get url() {
 		return `/files/${this.id}/${this.name}`
 	}
-
-	/** Returns the MIME type for the file */
-	get mimeType() {
-		return mime.getType(this.name)
-	}
 	
+	/** Returns the blob of this file */
+	get blob() {
+		return new Blob([this.data], {type: this.type})
+	}
 }
 
 const schema = mongoose.Schema.fromClass(FileClass)

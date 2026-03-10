@@ -1,10 +1,12 @@
-<% if($.targetUnit.upperUnits?.length > 0) { %>
-	<p>
+<p>
+	<% if($.targetUnit.upperUnits?.length > 0) { %>
 		<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", {
 			links: $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])
 		}) %>
 		<% if($.targetUnit.org && $.targetUnit.upperUnits.some(u => u.org != $.targetUnit.org)) { %>
 			&#x20;(<%= Config.orgs[$.targetUnit.org]?.name || $.targetUnit.org %>)
 		<% } %>
-	</p>
-<% } %>
+	<% } else { %>
+		<%= $.targetUnit.typeName %>
+	<% } %>
+</p>
