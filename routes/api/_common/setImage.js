@@ -19,13 +19,13 @@ export async function setImage({user, image, icon}) {
 	const bitmap = await createImageBitmap(file.blob)
 	const altBitmap = await createImageBitmap(altFile.blob)
 	if(	bitmap.width > 512 || bitmap.width != bitmap.height ||
-		altBitmap.width > 48 || altBitmap.width != altBitmap.height
+		altBitmap.width > 96 || altBitmap.width != altBitmap.height
 	) {
 		throw new HTTPError(400, "Nieprawidłowe wymiary obrazu")
 	}
 
 	file.altData.push({
-		_id: "48",
+		_id: "96",
 		data: altFile.data
 	})
 

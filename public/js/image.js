@@ -83,7 +83,7 @@ API.registerHandler("[type]/[id]/setImage", {
 		},
 		data.icon = {
 			name: `${META.id}`,
-			data: await fileToBase64(await cropImage(48))
+			data: await fileToBase64(await cropImage(96))
 		}
 
 		progressMessage.close()
