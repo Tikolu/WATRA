@@ -58,7 +58,7 @@ if(window.confirmUnlockEditingButton) {
 			eventEndDateInput,
 			eventEndTimeInput,
 			eventLocationInput,
-			...eventDocuments.querySelectorAll("button[disabled]")
+			...eventFiles.querySelectorAll("button[disabled]")
 		]
 
 		disabledElements.forEach(e => e.disabled = false)

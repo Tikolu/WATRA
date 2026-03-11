@@ -5,7 +5,7 @@ export default async function({user, targetEvent}) {
 	// Check permissions
 	await user.requirePermission(targetEvent.PERMISSIONS.EDIT)
 
-	return html("event/addDocument", {
+	return html("event/addFile", {
 		user,
 		targetEvent
 	})

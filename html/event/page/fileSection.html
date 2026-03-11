@@ -1,4 +1,4 @@
-<section id="event-documents">
+<section id="event-files">
 	<h2>
 		<%~ icon`draft` %>
 		Dokumenty
@@ -46,7 +46,7 @@
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<div class="button-row">
 			<button
-				opens-dialog="/events/<%= $.targetEvent.id %>/addDocument"
+				opens-dialog="/events/<%= $.targetEvent.id %>/addFile"
 				<% if($.targetEvent.approvalState) { %>
 					disabled
 				<% } %>
