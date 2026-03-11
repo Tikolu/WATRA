@@ -55,9 +55,9 @@
 						</div>
 					</div>
 					<% if(!response.submitted) { %>
-						<%~ include("/templates/entryContent", {
-							warnings: ["Odpowiedź nie wysłana"],
-						}) %>
+						<div class="entry-content">
+							<p class="warning"><%~ icon`warning` %> Odpowiedź nie wysłana</p>
+						</div>
 					<% } %>
 				</a>
 			<% } %>
