@@ -17,13 +17,13 @@ export default class extends Request {
 
 		const decoder = new TextDecoder()
 		this.decodedBody = ""
-		for await (const chunk of this.body) {
+		for await(const chunk of this.body) {
 			this.decodedBody += decoder.decode(chunk)
 		}
 		return this.decodedBody
 	}
 
-	getCookies() {
+	loadCookies() {
 		const cookieHeader = this.headers.get("Cookie")
 		this.cookies = {}
 		for(const cookie of cookieHeader.split(";")) {
@@ -32,8 +32,11 @@ export default class extends Request {
 			name = name.trim()
 			value = value.join("=").trim()
 			if(!name || !value) return
-			this.cookies[name] = decodeURIComponent(value)
+			try {
+				this.cookies[name] = decodeURIComponent(value)
+			} catch {
+				this.cookies[name] = undefined
+			}
 		}
-		return this.cookies
 	}
 }

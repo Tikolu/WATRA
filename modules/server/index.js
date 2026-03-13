@@ -76,7 +76,7 @@ async function handler(req, ip) {
 
 	// If a cookie header is present, parse cookies
 	if(request.headers.has("Cookie")) {
-		request.getCookies()
+		request.loadCookies()
 		// If a token cookie is present, parse token
 		if(request.cookies.token) {
 			request.token = new Token(await Token.parse(request.cookies.token))
