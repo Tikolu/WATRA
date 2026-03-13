@@ -8,6 +8,7 @@ class UnitTree {
 
 	contains(tree) {
 		if(!this.unit || !tree.unit) return false
+		if(this.unit.org && this.unit.org != tree.unit.org) return false
 		if(this.unit.id == tree.unit.id) return true
 
 		for(const subTree of this.subUnits) {
