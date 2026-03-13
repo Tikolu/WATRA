@@ -4,13 +4,21 @@ export async function _open() {
 	this.response.headers.set("Content-Type", "application/json")
 	this.logging = {}
 
+	// Load request body
 	let input = ""
 	if(this.request.method == "POST") {
 		input = await this.request.getBody()
-	} else if(!this.routePath.equals(["api", "stream"])) {
+	} else if(!this.routePath.equals(["api"]) && !this.routePath.equals(["api", "stream"])) {
 		throw new HTTPError(405, "Only POST method is allowed")
 	}
 
+	// Ensure request is not cross-origin
+	const fetchSite = this.request.headers.get("Sec-Fetch-Site")
+	if(fetchSite && fetchSite != "same-origin") {
+		throw new HTTPError(403, "Cross-origin requests are not allowed")
+	}
+
+	// Parse JSON
 	try {
 		if(input === "") input = {}
 		else input = JSON.parse(input)
