@@ -367,15 +367,17 @@ export class UserClass {
 	}
 
 	/** Lists all checked permissions */
-	* listPermissions() {
+	listPermissions() {
+		const permissions = []
 		for(const cacheEntry of this.$locals.permissionCache || []) {
 			const permission = {
 				source: cacheEntry[0].permissionSource,
 				name: cacheEntry[0].name.replace(/^bound /, ""),
 				state: cacheEntry[1]
 			}
-			yield permission
+			permissions.push(permission)
 		}
+		return permissions
 	}
 
 	/** Adds an entry to the user's activity log */
