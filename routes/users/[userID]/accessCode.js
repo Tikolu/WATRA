@@ -22,7 +22,7 @@ export default async function({user, targetUser, parent: parentCode}) {
 	// Log event
 	await user.logEvent(`user/${generateUser.id}/accessCode/generate`, {
 		request: this.request,
-		targetUser: generateUser.id
+		targetUsers: [generateUser.id]
 	})
 	
 	return html("user/accessCode", {
