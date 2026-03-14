@@ -13,6 +13,9 @@ export default class {
 
 	/** Login a user */
 	async login(user) {
+		// Update user
+		await user.auth.registerLogin(this.token.client)
+
 		// Set active user
 		this.token.active = user.id
 		this.resetTimeout()
@@ -24,9 +27,6 @@ export default class {
 		this.token.saved ||= []
 		if(!this.token.saved.includes(user.id)) this.token.saved.push(user.id)
 		this.token.modified = true
-
-		// Update user
-		await user.auth.registerLogin(this.token.client)
 	}
 
 	/** Ensures user is logged in, redirects if not */
@@ -59,7 +59,7 @@ export default class {
 
 		// Ensure access code is not expired
 		if(user.auth.accessCodeExpiry < Date.now()) {
-			throw new HTTPError(400, "Ważność kodu rejestracyjnego wygasła")
+			throw new HTTPError(400, "login.error.expired_access_code")
 		}
 
 		// Login
@@ -143,7 +143,7 @@ export default class {
 		delete this.token.chall
 		
 		if(!expiry || Date.now() > expiry) {
-			throw new HTTPError(400, "Minął termin ważności weryfikacji, spróbuj ponownie")
+			throw new HTTPError(400, "passkey.error.expired_verification")
 		}
 
 		return challenge
