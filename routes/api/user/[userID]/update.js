@@ -1,6 +1,8 @@
 import * as datetime from "datetime"
 import * as Text from "modules/text.js"
+import * as Phone from "modules/phone.js"
 import HTTPError from "modules/server/error.js"
+import Config from "modules/config.js"
 
 export async function _open({user, targetUser}) {
 	// Check permissions
@@ -49,7 +51,7 @@ export async function phone({targetUser, phone}) {
 	await targetUser.save()
 
 	return {
-		phone: Text.formatPhone(targetUser.phone, targetUser.phone?.startsWith("+353"))
+		phone: Phone.format(targetUser.phone, !targetUser.phone?.startsWith(Config.phonePrefix))
 	}
 }
 

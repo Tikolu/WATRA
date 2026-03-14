@@ -21,7 +21,7 @@ function handleMongooseValidationError(error) {
 		subError.stack = subError.message
 		if(subError.kind == "required") {
 			subError.message = "Wartość jest wymagana"
-		} else if(subError.message.startsWith("Path")) {
+		} else if(subError.value) {
 			subError.message = `Nieprawidłowa wartość: ${JSON.stringify(subError.value)}`
 		}
 		// console.log(JSON.parse(JSON.stringify(subError)))

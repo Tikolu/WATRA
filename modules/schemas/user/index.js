@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import * as Text from "modules/text.js"
+import * as Phone from "modules/phone.js"
 import * as datetime from "datetime"
 import * as Crypto from "modules/crypto.js"
 
@@ -66,22 +67,13 @@ export class UserClass {
 		type: String,
 		lowercase: true,
 		trim: true,
-		match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+		maxLength: 64
 	}
 	phone = {
 		type: String,
-		trim: true,
-		match: /^\+\d{1,3}\d{9}$/,
-		set: phone => {
-			if(!phone) return undefined
-			
-			phone = phone.replaceAll(" ", "")
-			phone = phone.replace(/^00/, "+")
-			if(!phone.startsWith("+") && phone.length > 10) phone = `+${phone}`
-			if(phone.startsWith("8") && phone.length == 9) phone = `+353${phone}`
-			if(phone.startsWith("08") && phone.length == 10) phone = `+353${phone.slice(1)}`
-			return phone
-		}
+		set: number => Phone.parse(number),
+		validate: number => Phone.validate(number)
 	}
 	signature = userSignature
 

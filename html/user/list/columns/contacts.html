@@ -4,7 +4,7 @@
 			<li>
 				<%= parent.displayName %>
 				<% if(parent.phone) { %>
-					<br><a href="tel:<%= parent.phone %>"><%= Text.formatPhone(parent.phone) %></a>
+					<br><a href="tel:<%= parent.phone %>"><%= Phone.format(parent.phone) %></a>
 				<% } %>
 				<% if(parent.email) { %>
 					<br><a href="mailto:<%= parent.email %>"><%= parent.email %></a>

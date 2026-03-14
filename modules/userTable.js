@@ -1,5 +1,6 @@
 import * as datetime from "datetime"
 import * as Text from "modules/text.js"
+import * as Phone from "modules/phone.js"
 
 export class UserFilter {
 	static numericOperations = ["equal", "greater", "less"]
@@ -203,7 +204,7 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 				{
 					id: "phone",
 					name: "Numer telefonu",
-					value: u => Text.formatPhone(u.phone)
+					value: u => Phone.format(u.phone)
 				},
 				{
 					id: "email",

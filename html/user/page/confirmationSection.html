@@ -73,7 +73,7 @@
 
 				<% if($.targetUser.phone) { %>
 					<dt>Numer telefonu:</dt>
-					<dd><%= Text.formatPhone($.targetUser.phone) %></dd>
+					<dd><%= Phone.format($.targetUser.phone) %></dd>
 				<% } else if(missingDetails.includes("phone")) { %>
 					<% confirmationAllowed = false %>
 					<dt>Numer telefonu:</dt>
@@ -145,7 +145,7 @@
 							<dl>
 								<% if(parent.phone) { %>
 									<dt>Telefon:</dt>
-									<dd><%= Text.formatPhone(parent.phone) %></dd>
+									<dd><%= Phone.format(parent.phone) %></dd>
 								<% } else if(parent.missingDetails.includes("phone")) { %>
 									<% confirmationAllowed = false %>
 									<dt>Telefon:</dt>

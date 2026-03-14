@@ -72,7 +72,7 @@
 					type="tel"
 					id="phone-input"
 					autocomplete="off"
-					value="<%= Text.formatPhone($.targetUser.phone, $.targetUser.phone?.startsWith("+353")) || "" %>"
+					value="<%= Phone.format($.targetUser.phone, !$.targetUser.phone?.startsWith(Config.phonePrefix)) || "" %>"
 					api="user/[userID]/update/phone"
 					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
 				>

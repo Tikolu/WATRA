@@ -2,6 +2,7 @@ import { Eta } from "eta"
 import * as datetime from "datetime"
 import * as Base64 from "modules/base64.js"
 import * as Text from "modules/text.js"
+import * as Phone from "modules/phone.js"
 import { iconSymbol } from "material-symbols-codepoints"
 
 import Config from "modules/config.js"
@@ -11,6 +12,7 @@ import UnitTree from "modules/schemas/unit/tree.js"
 const etaImports = {
 	Base64,
 	Text,
+	Phone,
 	datetime,
 	Config,
 	UnitTree,
