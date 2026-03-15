@@ -22,6 +22,7 @@
 				<% for(const participant of directParticipants) { %>
 					<%~ include("participant", {
 						targetUser: participant.user,
+						showState: true,
 						warnings: Array.conditional(
 							!participant.user.confirmed, "Niezatwierdzone dane"
 						)

@@ -3,12 +3,14 @@
 		// Display role with highest rank
 		let maxRole
 		for(const role of $.targetUser.roles) {
-			if(typeof role.unit == "string") continue
+			if(!role.unit || typeof role.unit == "string") continue
 			if(!maxRole || role.rank > maxRole.rank) {
 				maxRole = role
 			}
 		}
-		$.description = `${Text.capitalise(maxRole.displayName)} w ${maxRole.unit?.displayName || "(nieznana jednostka)"}`
+		if(maxRole) {
+			$.description = `${Text.capitalise(maxRole.displayName)} w ${maxRole.unit?.displayName || "(nieznana jednostka)"}`
+		}
 	}
 %>
 <%~ include("/templates/entry", {

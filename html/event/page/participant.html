@@ -10,9 +10,6 @@
 	}
 %>
 <%~ include("/user/templates/userEntry", {
-	targetUser: $.targetUser,
-	description: $.description || state,
-	content: $.description ? state : null,
-	classList: userInvite?.state == "declined" ? ["faded"] : [],
-	warnings: $.warnings
+	content: state,
+	classList: userInvite?.state == "declined" ? ["faded"] : []
 }) %>
