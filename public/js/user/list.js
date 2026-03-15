@@ -88,7 +88,12 @@ exportButton.onclick = () => {
 		const cells = row.querySelectorAll("th, td")
 		for(const [cellIndex, cell] of cells.entries()) {
 			if(cell.querySelector("input[type=checkbox]")) continue
-			csv += cell.innerText.replaceAll(",", "").replaceAll("\n", "; ").trim()
+			csv += cell.innerText
+				.replaceAll(",", "")
+				.replaceAll("\n", "; ")
+				// Remove icons
+				.replaceAll(/[\ue000-\ufffff]/g, "")
+				.trim()
 			if(cellIndex < cells.length - 1) csv += ","
 		}
 		csv += "\n"
