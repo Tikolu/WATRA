@@ -1,20 +1,22 @@
+import mongoose from "mongoose"
+
 import HTTPError from "modules/server/error.js"
 import sleep from "modules/sleep.js"
 
-import mongoose from "mongoose"
-
-const eventEmitter = mongoose.connection.db.watch()
-
-let resolve = () => {}
-function promiseSetup() {
-	eventEmitter.promise = new Promise(r => resolve = r)
+const watcher = {
+	emitter: null,
+	async: Promise.withResolvers()
 }
-promiseSetup()
 
-eventEmitter.addListener("change", event => {
-	resolve(event)
-	promiseSetup()
-})
+// Check topology type to determine if change streams are supported
+const dbTopology = mongoose.connection.db.client.topology.description.type
+if(dbTopology != "Single") {
+	watcher.emitter = mongoose.connection.db.watch()
+	watcher.emitter?.addListener("change", event => {
+		watcher.async.resolve(event)
+		watcher.async = Promise.withResolvers()
+	})
+}
 
 export default async function * ({user}) {
 	if(!user) throw new HTTPError(403)
@@ -22,7 +24,7 @@ export default async function * ({user}) {
 	while(true) {
 		// Wait for database update, or 10 seconds
 		const result = await Promise.any([
-			eventEmitter.promise,
+			watcher.async.promise,
 			sleep(10000)
 		])
 
