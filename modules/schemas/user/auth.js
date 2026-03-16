@@ -24,9 +24,9 @@ export default class {
 		if(!expiry) {
 			throw Error("No expiry time provided")
 		}
-		
+
 		const targetUser = this.parent()
-		
+
 		// Generate access code
 		this.accessCode = randomID(8, "numeric")
 
@@ -44,15 +44,15 @@ export default class {
 	/** Generates options for creating a new passkey */
 	async passkeyCreationOptions() {
 		const targetUser = this.parent()
-		
+
 		if(!targetUser.name.first || !targetUser.name.last) {
 			throw Error("Nie można dodać klucza dostępu bez ustawionego imienia i nazwiska")
 		}
 		
 		// Options for browser to create new passkey
 		const options = await webauthn.generateRegistrationOptions({
-			rpName: Config.name,
-			rpID: Config.host,
+			rpName: Config.rp.name,
+			rpID: Config.rp.id,
 			userName: targetUser.displayName,
 			excludeCredentials: this.keys.map(k => ({id: k.id})),
 			attestationType: "none",
@@ -73,8 +73,8 @@ export default class {
 
 		// Verify passkey data
 		const verification = await webauthn.verifyRegistrationResponse({
-			expectedRPID: Config.host,
-			expectedOrigin: `https://${Config.host}`,
+			expectedRPID: Config.rp.id,
+			expectedOrigin: Config.rp.origin,
 			response: credential,
 			expectedChallenge
 		})
@@ -95,7 +95,7 @@ export default class {
 			user: targetUser
 		})
 		this.keys.push(passkey)
-		
+
 		await passkey.save()
 		await targetUser.save()
 	}

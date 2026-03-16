@@ -15,7 +15,7 @@ export async function _open() {
 	// Ensure request is not cross-origin
 	const fetchSite = this.request.headers.get("Sec-Fetch-Site")
 	if(fetchSite && fetchSite != "same-origin") {
-		throw new HTTPError(403, "Cross-origin requests are not allowed")
+		throw new HTTPError(403, `Request blocked due to header "Sec-Fetch-Site: ${fetchSite}"`)
 	}
 
 	// Parse JSON
@@ -64,17 +64,20 @@ export async function _exit({user}) {
 			delete output.userIDs
 		}
 		
-		await user.logEvent(
-			decodeURI(this.request.address.pathname).replace(/^\/api\//, ""),
-			{
-				request: this.request,
-				targetUsers,
-				targetUnit: this.routeData.targetUnit,
-				targetEvent: this.routeData.targetEvent,
-				targetForm: this.routeData.targetForm,
-				data: this.logging.noOutput ? undefined : output
-			}
-		)
+		const logEventType = decodeURI(this.request.address.pathname).replace(/^\/api\//, "")
+		if(logEventType) {
+			await user.logEvent(
+				logEventType,
+				{
+					request: this.request,
+					targetUsers,
+					targetUnit: this.routeData.targetUnit,
+					targetEvent: this.routeData.targetEvent,
+					targetForm: this.routeData.targetForm,
+					data: this.logging.noOutput ? undefined : output
+				}
+			)
+		}
 	}
 
 	output ||= {}

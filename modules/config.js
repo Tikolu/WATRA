@@ -1,4 +1,5 @@
-import { Logger } from "./logger.js"
+import * as cli from "cli"
+import { Logger } from "modules/logger.js"
 
 // Global config object
 const Config = {}
@@ -185,5 +186,17 @@ Config.news ||= []
 Config.passkeyRequired ??= true
 Config.paymentCurrency ||= "EUR"
 
+// Get host from args if not set
+const args = cli.parseArgs(Deno.args, {
+	boolean: ["proxy"],
+	string: ["host", "port"]
+})
+Config.host ||= args.host
+
+// Passkey relying party config
+Config.rp ||= {}
+Config.rp.id ||= Config.host
+Config.rp.name ||= Config.systemTitle ? `WATRA - ${Config.systemTitle}` : "WATRA"
+Config.rp.origin ||= (Config.host == "localhost" && !args.proxy) ? `http://${Config.host}:${args.port}` : `https://${Config.host}`
 
 export default Config

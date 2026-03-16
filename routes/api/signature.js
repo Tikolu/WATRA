@@ -17,7 +17,7 @@ export async function start({user}) {
 	}
 
 	const options = await webauthn.generateAuthenticationOptions({
-		rpID: Config.host,
+		rpID: Config.rp.id,
 		allowCredentials: user.auth.keys.map(key => ({id: key.id})),
 		userVerification: "required",
 		timeout: (10 * 60 * 1000) // 10 minutes
@@ -44,8 +44,8 @@ export async function verify({user, credential}) {
 		if(user.id != passkey.user.id) throw new HTTPError(400, "Klucz dostępu należy do innego użytkownika")
 
 		const verification = await webauthn.verifyAuthenticationResponse({
-			expectedRPID: Config.host,
-			expectedOrigin: `https://${Config.host}`,
+			expectedRPID: Config.rp.id,
+			expectedOrigin: Config.rp.origin,
 			response: credential,
 			credential: passkey,
 			expectedChallenge

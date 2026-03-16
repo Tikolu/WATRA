@@ -18,8 +18,8 @@ export default async function({credential, userID}) {
 	if(userID && userID != passkey.user.id) throw new HTTPError(400, "Klucz dostępu nie należy do podanego użytkownika")
 
 	const verification = await webauthn.verifyAuthenticationResponse({
-		expectedRPID: Config.host,
-		expectedOrigin: `https://${Config.host}`,
+		expectedRPID: Config.rp.id,
+		expectedOrigin: Config.rp.origin,
 		response: credential,
 		credential: passkey,
 		expectedChallenge

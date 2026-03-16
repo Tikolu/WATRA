@@ -24,7 +24,7 @@ const logger = new Logger("Server", 34)
 
 async function handlePublicFile(url, response) {
 	url = Path.join("public", url)
-	if(!url.startsWith("public/")) return
+	if(!url.startsWith(`public${Path.sep}`)) return
 
 	// Check if path is a file
 	try {
@@ -66,7 +66,7 @@ async function handler(req, ip) {
 	const response = new ServerResponse()
 
 	// Redirect to host
-	if(!forwardedFor && Config.host && request.address.host != Config.host) {
+	if(!forwardedFor && Config.host && request.address.hostname != Config.host) {
 		const address = request.address.href.replace(request.address.host, Config.host)
 		return new Response(null, {
 			status: 301,

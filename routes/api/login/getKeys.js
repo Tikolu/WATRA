@@ -29,7 +29,7 @@ export default async function({userID}) {
 	const keys = user?.auth.keys.map(key => ({id: key.id}))
 
 	const options = await webauthn.generateAuthenticationOptions({
-		rpID: Config.host,
+		rpID: Config.rp.id,
 		allowCredentials: keys,
 		userVerification: "required",
 		timeout: (10 * 60 * 1000) // 10 minutes
