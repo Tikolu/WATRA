@@ -32,9 +32,7 @@ export async function _open() {
 	
 	// Get active user from session
 	const user = await this.session.getActiveUser()
-	if(user) {
-		this.addRouteData({user})
-	}
+	this.addRouteData({user})
 }
 
 export function _exit({user}) {
