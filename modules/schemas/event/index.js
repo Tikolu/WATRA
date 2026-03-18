@@ -419,6 +419,14 @@ schema.beforeDelete = async function() {
 	for(const role of this.roles) {
 		await role.delete()
 	}
+
+	// Uninvite all participants
+	for(const participant of this.participants) {
+		await participant.uninvite()
+	}
+
+	// Delete all files
+	await File.deleteMany({id: this.files.map(f => f.file.id)})
 }
 
 schema.permissions = await import("./permissions.js")

@@ -187,7 +187,8 @@
 			"oboźny",
 			"kadraProgramowa"
 		],
-		"approvalsRequired": 2
+		"approvalsRequired": 2,
+		"creatorRole": "komendant"
 	},
 	
 	"roles": {

@@ -18,12 +18,17 @@ export default async function({user, targetUnit, name, startDate, endDate}) {
 	targetUnit.events.push(event.id)
 	event.upperUnits.push(targetUnit.id)
 
-	// Calculate event approvers
-	await event.calculateApprovers()
 	// Automatically invite unit
 	if(targetUnit.config.eventRules.invite) {
 		await event.inviteUnit(targetUnit, "accepted")
 	}
+
+	// Automatically set user role
+	await event.inviteParticipant(user, undefined, false)
+	await event.setRole(user, Config.event.creatorRole, false)
+
+	// Calculate event approvers
+	await event.calculateApprovers()
 
 	// Save
 	await event.save()
