@@ -7,6 +7,6 @@ export default async function({targetInvitation, userIDs}) {
 	await targetInvitation.setParticipants(participantIDs)
 
 	return {
-		participantIDs
+		userIDs: participantIDs
 	}
 }
