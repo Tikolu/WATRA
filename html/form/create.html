@@ -7,7 +7,11 @@
 }) %>
 <h1>Tworzenie formularza</h1>
 <main>
-	<section>
+	<section id="new-form">
+		<h2>
+			<%~ icon`ballot` %>
+			Nowy formularz
+		</h2>
 		<form>
 			<label for="form-name-input">Tytuł formularza:</label>
 			<input
@@ -18,16 +22,49 @@
 				required
 			>
 		</form>
+		<div class="button-row">
+			<button api="form/create" class="confirm">
+				<%~ icon`add` %>
+				Utwórz nowy formularz
+			</button>
+		</div>
 	</section>
+	<% if ($.targetUnit.forms.length > 0) { %>
+		<section id="copy-form">
+			<h2>
+				<%~ icon`copy_all` %>
+				Kopia istniejącego formularza
+			</h2>
+			<div class="entry-grid">
+				<% for(const form of $.targetUnit.forms) { %>
+					<div>
+						<div class="entry-header">
+							<input
+								type="radio"
+								id="form-<%= form.id %>"
+								name="formID"
+								value="<%= form.id %>"
+							>
+							<label for="form-<%= form.id %>">
+								<h3><%= form.displayName || "(formularz)" %></h3>
+							</label>
+						</div>
+					</div>
+				<% } %>
+			</div>
+			<div class="button-row">
+				<button api="form/copy" class="confirm">
+					<%~ icon`copy_all` %>
+					Kopiuj formularz
+				</button>
+			</div>
+		</section>
+	<% } %>
 </main>
 <hr>
 <div class="button-row">
 	<button>
 		<%~ icon`arrow_back` %>
 		Anuluj
-	</button>
-	<button api="form/create" class="confirm">
-		<%~ icon`add` %>
-		Utwórz formularz
 	</button>
 </div>

@@ -60,6 +60,7 @@ const eventTypes = {
 	"event/*/setImage": "Ustawiono logo $EVENT",
 
 	"form/create": "Utworzono formularz $FORM",
+	"form/copy": "Utworzono formularz $FORM, kopiując istniejący",
 	"form/*/delete": "Usunięto formularz",
 	"form/*/update/*": "Zmieniono ustawienia formularza $FORM",
 	"form/*/response/*/payment/start": "Rozpoczęto płatność za formularz $FORM",

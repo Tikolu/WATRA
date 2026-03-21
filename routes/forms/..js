@@ -18,6 +18,9 @@ export async function create({user, type, id}) {
 	// Check permission
 	await user.requirePermission(targetUnit.PERMISSIONS.MANAGE_FORMS)
 
+	// Load existing forms
+	await targetUnit.populate("forms")
+
 	return html("form/create", {
 		user,
 		targetUnit

@@ -46,6 +46,9 @@ function processDialogButtons() {
 	// Move button to dialog button row (if there is only one)
 	if(!mainButtons.length || mainButtons.length > 1) return
 	if(dialogButtons.length > 1) return
+	// Remove button container
+	if(mainButtons[0].parentElement.childElementCount == 1) mainButtons[0].parentElement.remove()
+
 	document.querySelector("body > .button-row:last-child").appendChild(mainButtons[0])
 }
 processDialogButtons()
