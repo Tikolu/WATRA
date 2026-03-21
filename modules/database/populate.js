@@ -13,7 +13,7 @@ function createFakeDocument(model, id, placeholder=true) {
 
 
 export function isPopulated(object, filter) {
-	if(typeof object == "string") return false
+	if(!object || typeof object == "string") return false
 	if(object?.$locals?.unpopulatedPlaceholder) {
 		if(filter && JSON.stringify(object.$locals.filteredBy) == JSON.stringify(filter)) return true
 		else return false
@@ -98,13 +98,14 @@ class PopulationContext {
 				const populateIDs = []
 
 				for(const subDocument of subDocuments) {
-					if(isPopulated(subDocument, options.filter)) continue
+					if(!subDocument || isPopulated(subDocument, options.filter)) continue
 					if(options?.exclude?.hasID(subDocument.id)) continue
 					populateIDs.push(subDocument.id)
 				}
 				this.registerPopulateCallback(ref, populateIDs, results => {
 					const newArray = []
 					for(const subDocument of subDocuments) {
+						if(!subDocument) continue
 						if(isPopulated(subDocument, options.filter)) {
 							newArray.push(subDocument)
 							continue
@@ -117,6 +118,7 @@ class PopulationContext {
 							newDocument = createFakeDocument(mongoose.model(ref), subDocument.id, !!options.filter)
 							results[subDocument.id] = newDocument
 						}
+						if(options.log) logger.log(`Populated ${ref} ${subDocument.id}:`, newDocument)
 						newDocument.$__parent = document
 						newDocument.$__.parent = document
 						newArray.push(newDocument)
@@ -240,6 +242,7 @@ export function populate(graph, options={}) {
 				const query = async () => {
 					if(options.log) logger.log("Requesting", ref, "from DB:", queryIDs, options.filter || "")
 					const queryResults = await model.find({_id: queryIDs, ...options.filter}, options.select)
+					if(options.log) logger.log(`Received ${ref} from DB:`, queryResults.map(r => r.id))
 					for(const id of queryIDs) {
 						if(options.placeholders === false) continue
 						if(queryResults.some(r => r?.id == id)) continue
