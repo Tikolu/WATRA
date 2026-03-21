@@ -116,7 +116,7 @@ export default async function({user, targetUnit}) {
 	]
 
 	// Insert state column
-	columnCategories[0].columns.unshift({
+	columnCategories[0].columns.splice(2, 0, {
 		id: "state",
 		name: "Stan użytkownika",
 		default: true,

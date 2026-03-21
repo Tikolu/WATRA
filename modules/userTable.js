@@ -178,6 +178,22 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 			icon: "assignment",
 			columns: [
 				{
+					id: "firstname",
+					name: "Imię",
+					value: targetUser => targetUser.name.first,
+					default: true,
+					sortable: true,
+					position: 1
+				},
+				{
+					id: "lastname",
+					name: "Nazwisko",
+					value: targetUser => targetUser.name.last,
+					default: true,
+					sortable: true,
+					position: 2
+				},
+				{
 					id: "dob",
 					name: "Data urodzenia",
 					value(targetUser) {

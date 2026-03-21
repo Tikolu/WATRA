@@ -65,10 +65,19 @@ function initialiseTable() {
 
 	// Load sorting links
 	for(const link of userTable.querySelectorAll("th a")) {
-		link.onclick = async event => {
+		link.onclick = event => {
 			event.preventDefault()
 			sort = link.href.split("sort=")[1]	
 			updateState()
+		}
+	}
+
+	// Make rows clickable
+	for(const row of userTable.querySelectorAll("tbody tr")) {
+		const url = `/users/${row.dataset.id}`
+		for(const cell of row.querySelectorAll("td")) {
+			if(cell.querySelector("a, button, input")) continue
+			cell.onclick = event => document.location.href = url
 		}
 	}
 }

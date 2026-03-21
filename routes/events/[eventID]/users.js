@@ -204,8 +204,8 @@ export default async function({user, targetEvent}) {
 
 	// Insert age column
 	if(targetEvent.dates.start) {
-		columnCategories[1].columns[1].name = "Wiek (dzisiaj)"
-		columnCategories[1].columns.splice(2, 0, {
+		columnCategories[1].columns[3].name = "Wiek (dzisiaj)"
+		columnCategories[1].columns.splice(4, 0, {
 			id: "event.age",
 			name: "Wiek (w dniu akcji)",
 			value: targetUser => {

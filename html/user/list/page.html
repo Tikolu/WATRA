@@ -212,13 +212,6 @@
 				</th>
 				<%
 					const displayColumns = $.columnCategories.flatMap(c => c.columns)
-					displayColumns.unshift({
-						id: "name",
-						name: "Imię",
-						selected: true,
-						sortable: true,
-						position: 1
-					});
 					displayColumns.sort((a, b) => a.position - b.position)
 				%>
 				<% for(const column of displayColumns) { %>
@@ -240,7 +233,7 @@
 		</thead>
 		<tbody>
 			<% for(const user of $.users) { %>
-				<tr>
+				<tr data-id="<%= user.id %>">
 					<td
 						<% if($.targetUnit.modelName != "Event") { %>
 							hidden

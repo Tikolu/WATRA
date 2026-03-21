@@ -54,8 +54,17 @@ body main {
 		}
 	}
 
-	tbody tr:nth-child(even) {
-		background-color: var(--surface-2);
+	tbody tr {
+		cursor: pointer;
+		transition: background-color 250ms;
+
+		&:hover {
+			background-color: var(--surface-2);
+		}
+
+		&:not(:first-child) {
+			border-top: 1px solid var(--surface-3);
+		}
 	}
 
 	th, td {
