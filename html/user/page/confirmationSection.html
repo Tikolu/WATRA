@@ -199,13 +199,13 @@
 				Cofnij <a href="/users/<%= confirmedChild.id %>#confirmation-section">zatwierdzenie danych podopiecznego</a> aby odblokować edycję danych
 			<% } else if($.targetUser.id == $.user.id && $.targetUser.age === null) { %>
 				Ustaw datę urodzin aby zatwierdzić dane
-			<% } else if($.targetUser.age === null || $.targetUser.age >= Config.adultAge) { %>
+			<% } else if($.targetUser.isAdult) { %>
 				Dane oczekują na zatwierdzenie
 			<% } else { %>
 				Dane oczekują na zatwierdzenie przez rodzica/opiekuna
 			<% } %>
 		</p>
-		<%  if($.targetUser.id == $.user.id) { %>
+		<% if($.targetUser.id == $.user.id && $.targetUser.isAdult === false) { %>
 			<article>
 				<p>Czuwaj<%= $.targetUser.name.first ? `, ${$.targetUser.name.first}` : "" %>!</p>
 				<p>Poproś rodzica o zatwierdzenie twoich danych.</p>
