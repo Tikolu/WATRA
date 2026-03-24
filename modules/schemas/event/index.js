@@ -3,6 +3,7 @@ import * as Text from "modules/text.js"
 import * as datetime from "datetime"
 import HTTPError from "modules/server/error.js"
 import Config from "modules/config.js"
+import UnitTree from "modules/schemas/unit/tree.js"
 
 import Role from "modules/schemas/role.js"
 import File from "modules/schemas/file.js"
@@ -304,6 +305,30 @@ export class EventClass extends UnitClass {
 		await targetUser.save()
 
 		if(saveEvent) await this.save()
+	}
+
+	/** Generates a unit tree of the event's invited units and participants */
+	async getTree() {
+		await this.participants.populate(["user", "originUnit"])
+		
+		// Split participants by origin unit
+		const participants = Object.groupBy(this.participants, p => p.originUnit?.id || "")
+		const subTrees = []
+		for(const originUnit in participants) {
+			if(!originUnit) continue
+			subTrees.push(new UnitTree({
+				unit: participants[originUnit][0].originUnit,
+				members: participants[originUnit].map(p => p.user)
+			}))
+		}
+		
+		// Create tree
+		const tree = new UnitTree({
+			subUnits: subTrees,
+			members: participants[""]?.map(p => p.user) || []
+		})
+
+		return tree
 	}
 
 	/** Get an approver of a user */

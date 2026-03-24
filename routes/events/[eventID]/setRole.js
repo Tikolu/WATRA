@@ -6,18 +6,23 @@ export default async function({user, targetEvent}) {
 	
 	await user.checkPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)
 	
-	// Get all participants
-	await targetEvent.populate({
-		"participants": "user",
-		"roles": "user"
-	})
-	const participants = []
-	for(const participant of targetEvent.participants) {
-		// If user cannot access participants, only add users with roles
-		if(!await user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) {
+	let participants = [], tree
+
+	// If user can access participants, get whole tree
+	if(await user.hasPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) {
+		tree = await targetEvent.getTree()
+		
+	// If user cannot access participants, only add users with roles
+	} else {
+		// Get all participants
+		await targetEvent.populate({
+			"participants": "user",
+			"roles": "user"
+		})
+		for(const participant of targetEvent.participants) {
 			if(!targetEvent.roles.find(r => r.user.id == participant.user.id)) continue
+			participants.push(participant.user)
 		}
-		participants.push(participant.user)
 	}
 
 	// Get user's role in event, unless user has SET_ROLE permission in an upperUnit
@@ -33,6 +38,7 @@ export default async function({user, targetEvent}) {
 		user,
 		userRole,
 		targetEvent,
-		participants
+		participants,
+		tree
 	})
 }

@@ -10,7 +10,7 @@
 	Mianowanie na funkcję
 </h1>
 <main>
-	<% if($.participants.length) { %>
+	<% if($.participants.length || $.tree) { %>
 		<section>
 			<h2>Wybierz funkcję</h2>
 			<form>
@@ -34,6 +34,7 @@
 			<h2>Wybierz użytkownika</h2>
 			<%~ include("/user/templates/userPicker", {
 				users: $.participants,
+				tree: $.tree,
 				multiple: true
 			}) %>
 		</section>
@@ -47,7 +48,7 @@
 		<%~ icon`arrow_back` %>
 		Anuluj
 	</button>
-	<% if($.participants.length) { %>
+	<% if($.participants.length || $.tree) { %>
 		<button id="set-role-button" api="event/[eventID]/member/setRole">
 			<%~ icon`check` %>
 			<span>Potwierdź mianowanie</span>
