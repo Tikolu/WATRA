@@ -23,6 +23,8 @@ export default async function({user, targetEvent, targetUsers, roleType}) {
 		throw new HTTPError(400, "Nie masz uprawnień do nadania tej funkcji")
 	}
 
+	let recalculcateApprovers = roleConfig.tags.includes("approveEvent") || roleConfig.tags.includes("manageEvent")
+
 	for(const targetUser of targetUsers) {
 		// Ensure current or new role is not higher in rank than user's role
 		const targetUserRole = await targetUser.getRoleInUnit(targetEvent)
@@ -57,6 +59,8 @@ export default async function({user, targetEvent, targetUsers, roleType}) {
 		if(!canSetRole) {
 			throw new HTTPError(400, "Brak uprawnień do nadania funkcji użytkownikowi")
 		}
+		
+		recalculcateApprovers ||= targetUserRole?.hasTag("approveEvent") || targetUserRole?.hasTag("manageEvent")
 	}
 
 	const newRoles = []
@@ -72,6 +76,9 @@ export default async function({user, targetEvent, targetUsers, roleType}) {
 	await targetEvent.save()
 	for(const role of newRoles) await role.save()
 	for(const targetUser of targetUsers) await targetUser.save()
+
+	// Re-calculate approvers if needed
+	if(recalculcateApprovers) await targetEvent.calculateApprovers()
 
 	return {
 		roleType
