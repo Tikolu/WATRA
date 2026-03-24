@@ -10,7 +10,7 @@ export default async function({user, targetForm}) {
 
 	// Get users from event form
 	if(targetForm.eventForm) {
-		users = targetForm.unit.participants.filter(p => p.state == "accepted").map(p => p.user)
+		users = targetForm.unit.participants.map(p => p.user)
 		await users.populate({}, {ref: "User"})
 
 	// Get tree from unit form
