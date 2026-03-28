@@ -141,5 +141,11 @@ API.registerHandler("event/[eventID]/member/setParticipation", {
 	form: userTable,
 	progressText: "Cofanie zapisów...",
 	successText: response => `Cofnięto zapis ${response.updated || 0} uczestników`
-	successText: "Cofnięto zapis uczestników"
+})
+
+
+API.registerHandler("unit/[unitID]/member/unconfirm", {
+	form: userTable,
+	progressText: "Cofanie zatwierdzenia...",
+	successText: response => `Cofnięto zatwierdzenie ${response.updated || 0} użytkowników`
 })
