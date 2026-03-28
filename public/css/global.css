@@ -309,7 +309,7 @@ input[type=checkbox], input[type=radio] {
 			color: var(--text);
 		}
 		
-		&:hover::before {
+		&:hover:not(:disabled)::before {
 			opacity: 1;
 			scale: 0.8;
 		}

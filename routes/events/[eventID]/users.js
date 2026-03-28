@@ -223,6 +223,16 @@ export default async function({user, targetEvent}) {
 	// Sort users
 	const sort = await sortUsers(users, columnCategories, this.routeData.sort)
 
+	// Calculate editability
+	let editable = await user.checkPermission(targetEvent.PERMISSIONS.EDIT_PARTICIPANTS)
+	if(!editable) {
+		for(const unit of unitOptions) {
+			if(!await user.checkPermission(unit.PERMISSIONS.MANAGE_INVITES, unit)) continue
+			editable = true
+			break
+		}
+	}
+
 	return html("user/list/page", {
 		user,
 		targetUnit: targetEvent,
@@ -231,6 +241,7 @@ export default async function({user, targetEvent}) {
 		columnCategories,
 		filterError,
 		sort,
+		editable,
 		title: "Uczestnicy"
 	})
 }

@@ -581,7 +581,7 @@ const API = {
 	 *  - after: Function to call after receiving response, should return a promise if async
 	 *  - valueKey: Key in response data to update element value, defaults to "value"
 	 *  - refresh: Whether to refresh page data after execution, defaults to "true", set to "all" to refresh other tabs
-	 *  - successText: Text to show on success
+	 *  - successText: Text to show on success, can be a function that takes response data as argument
 	 */
 	registerHandler(api, handler) {
 		if(api in this.handlers && !handler.overwrite) {
@@ -820,6 +820,9 @@ const API = {
 			}
 
 			// Show success message
+			if(typeof handler.successText == "function") {
+				handler.successText = handler.successText(response, data, element)
+			}
 			if(handler.successText) {
 				Popup.success(handler.successText)
 			}

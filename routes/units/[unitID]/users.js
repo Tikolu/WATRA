@@ -144,6 +144,9 @@ export default async function({user, targetUnit}) {
 	// Sort users
 	const sort = await sortUsers(users, columnCategories, this.routeData.sort)
 
+	// Calculate editability
+	const editable = await user.checkPermission(targetUnit.PERMISSIONS.MANAGE_MEMBERS)
+
 	return html("user/list/page", {
 		user,
 		targetUnit,
@@ -151,6 +154,7 @@ export default async function({user, targetUnit}) {
 		filterCategories,
 		columnCategories,
 		filterError,
-		sort
+		sort,
+		editable
 	})
 }

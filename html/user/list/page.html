@@ -161,6 +161,14 @@
 	</div>
 </dialog>
 
+<% if($.editable) { %>
+	<section id="user-actions" class="hideable" hidden>
+		<p>Wybrano: <span id="user-count">0</span></p>
+		<div class="button-row">
+			<% if($.targetUnit.modelName == "Event") { %>
+				<button opens-dialog="remove-user-from-event"><%~ icon`person_remove` %> Usuń z akcji</button>
+				<button opens-dialog="remove-user-participation"><%~ icon`mail_off` %> Cofnij zapis</button>
+			<% } %>
 <section id="user-actions" class="hideable" hidden>
 	<p>Wybrano: <span id="user-count">0</span></p>
 	<div class="button-row">
@@ -170,21 +178,36 @@
 		<% } %>
 	</div>
 </section>
-
-<% if($.targetUnit.modelName == "Event") { %>
-	<dialog id="remove-user-from-event">
-		<h1><%~ icon`person_remove` %> Usuwanie uczestników z akcji</h1>
-		<p>Usunąć wybranych uczestników z tej akcji?</p>
-		<p>Uczestnicy stracą dostęp do akcji oraz możliwość zapisu.</p>
-		<hr>
-		<div class="button-row">
-			<button><%~ icon`arrow_back` %> Anuluj</button>
-			<button class="dangerous" api="event/<%= $.targetUnit.id %>/member/uninvite">
-				<%~ icon`person_remove` %> Usuń z akcji
-			</button>
 		</div>
-	</dialog>
+	</section>
 
+	<% if($.targetUnit.modelName == "Event") { %>
+		<dialog id="remove-user-from-event">
+			<h1><%~ icon`person_remove` %> Usuwanie uczestników z akcji</h1>
+			<p>Usunąć wybranych uczestników z tej akcji?</p>
+			<p>Uczestnicy stracą dostęp do akcji oraz możliwość zapisu.</p>
+			<hr>
+			<div class="button-row">
+				<button><%~ icon`arrow_back` %> Anuluj</button>
+				<button class="dangerous" api="event/<%= $.targetUnit.id %>/member/uninvite">
+					<%~ icon`person_remove` %> Usuń z akcji
+				</button>
+			</div>
+		</dialog>
+
+		<dialog id="remove-user-participation">
+			<h1><%~ icon`mail_off` %> Cofnięcie zapisu</h1>
+			<p>Cofnąć zapis wybranych uczestników?</p>
+			<p>Jeśli zapisy są otwarte, uczestnicy będą mogli ponownie zapisać się na akcję.</p>
+			<hr>
+			<div class="button-row">
+				<button><%~ icon`arrow_back` %> Anuluj</button>
+				<button api="event/<%= $.targetUnit.id %>/member/setParticipation">
+					<%~ icon`mail_off` %> Cofnij zapis
+				</button>
+			</div>
+		</dialog>
+	<% } %>
 	<dialog id="remove-user-participation">
 		<h1><%~ icon`mail_off` %> Cofnięcie zapisu</h1>
 		<p>Cofnąć zapis wybranych uczestników?</p>
@@ -203,13 +226,11 @@
 	<table id="user-table" class="loading">
 		<thead>
 			<tr>
-				<th
-					<% if($.targetUnit.modelName != "Event") { %>
-						hidden
-					<% } %>
-				>
-					<input type="checkbox" id="select-all-checkbox">
-				</th>
+				<% if($.editable) { %>
+					<th>
+						<input type="checkbox" id="select-all-checkbox">
+					</th>
+				<% } %>
 				<%
 					const displayColumns = $.columnCategories.flatMap(c => c.columns)
 					displayColumns.sort((a, b) => a.position - b.position)
@@ -234,13 +255,11 @@
 		<tbody>
 			<% for(const user of $.users) { %>
 				<tr data-id="<%= user.id %>">
-					<td
-						<% if($.targetUnit.modelName != "Event") { %>
-							hidden
-						<% } %>
-					>
-						<input type="checkbox" name="userIDs" value="<%= user.id %>">
-					</td>
+					<% if($.editable) { %>
+						<td>
+							<input type="checkbox" name="userIDs" value="<%= user.id %>">
+						</td>
+					<% } %>
 					<% for(const column of displayColumns) { %>
 						<% if(!column.selected) continue %>
 						<td>

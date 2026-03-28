@@ -54,13 +54,15 @@ confirmColumnsButton.onclick = updateState
 function initialiseTable() {
 	userTable.classList.remove("loading")
 	
-	selectAllCheckbox.globalCheckbox(userTable)
+	if(window.selectAllCheckbox) {
+		selectAllCheckbox.globalCheckbox(userTable)
 
-	// Show actions when checkbox is checked
-	userTable.onchange = event => {
-		userActions.hidden = !selectAllCheckbox.checked && !selectAllCheckbox.indeterminate
-		const checked = userTable.querySelectorAll("tbody :checked")
-		userCount.innerText = checked.length
+		// Show actions when checkbox is checked
+		userTable.onchange = event => {
+			userActions.hidden = !selectAllCheckbox.checked && !selectAllCheckbox.indeterminate
+			const checked = userTable.querySelectorAll("tbody :checked")
+			userCount.innerText = checked.length
+		}
 	}
 
 	// Load sorting links
@@ -127,7 +129,7 @@ printButton.onclick = async () => {
 API.registerHandler("event/[eventID]/member/uninvite", {
 	form: userTable,
 	progressText: "Usuwanie użytkowników z akcji...",
-	successText: "Usunięto użytkowników z akcji"
+	successText: response => `Usunięto ${response.updated || 0} użytkowników z akcji`
 })
 
 
@@ -138,5 +140,6 @@ API.registerHandler("event/[eventID]/member/setParticipation", {
 	},
 	form: userTable,
 	progressText: "Cofanie zapisów...",
+	successText: response => `Cofnięto zapis ${response.updated || 0} uczestników`
 	successText: "Cofnięto zapis uczestników"
 })

@@ -23,9 +23,13 @@ export default async function({user, targetEvent, targetUsers, participation, si
 		if(!targetEvent.participants.hasID(targetUser.id)) throw new HTTPError(404, "Użytkownik nie jest uczestnikiem tej akcji")
 	}
 
+	let updateCount = 0
 	const requiredForms = []
 	for(const targetUser of targetUsers) {
 		const targetInvitation = targetEvent.participants.id(targetUser.id)
+
+		if(targetInvitation.state == participation) continue
+		updateCount += 1
 		
 		// Set participation state
 		await targetInvitation.setState(participation, signature)
@@ -50,6 +54,7 @@ export default async function({user, targetEvent, targetUsers, participation, si
 
 	return {
 		participation,
-		requiredFormResponses: requiredForms.length ? requiredForms : undefined
+		requiredFormResponses: requiredForms.length ? requiredForms : undefined,
+		updated: updateCount
 	}
 }

@@ -16,10 +16,16 @@ export default async function({user, targetEvent, targetUsers}) {
 	}
 
 	// Remove users from event
+	let updateCount = 0
 	for(const targetUser of targetUsers) {
 		await targetEvent.participants.id(targetUser).uninvite(false)
+		updateCount += 1
 	}
 
 	// Save event
 	await targetEvent.save()
+
+	return {
+		updated: updateCount
+	}
 }
