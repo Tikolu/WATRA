@@ -24,13 +24,8 @@ export async function ACCESS_MEMBERS(user) {
 
 /** Accessing archived members */
 export async function ACCESS_ARCHIVED_MEMBERS(user) {
-	// Lack of ACCESS_MEMBERS permission denies ACCESS_ARCHIVED_MEMBERS
-	if(await user.checkPermission(this.PERMISSIONS.ACCESS_MEMBERS, true) === false) return false
-
-	// "manageUser" roles in this unit or upper units can access archived members
-	if(await user.hasRoleInUnits("manageUser", this.traverse("upperUnits", {includeSelf: true}))) return true
-
-	return false
+	// MANAGE_MEMBERS permission implies ACCESS_ARCHIVED_MEMBERS
+	return await user.checkPermission(this.PERMISSIONS.MANAGE_MEMBERS)
 }
 
 /** Editing key unit details, such as name and type, and deleting the unit */
@@ -122,7 +117,16 @@ export async function CREATE_USER(user) {
 	// Cannot create users in a unit without a configured defaultRole
 	if(!this.config.defaultRole) return false
 
-	// "manageUser" roles in this unit or upper units can create new users
+	// MANAGE_MEMBERS permission grants CREATE_USER
+	return await user.checkPermission(this.PERMISSIONS.MANAGE_MEMBERS, true)
+}
+
+/** Managing the unit's members */
+export async function MANAGE_MEMBERS(user) {
+	// Lack of ACCESS_MEMBERS permission denies MANAGE_MEMBERS
+	if(!await user.checkPermission(this.PERMISSIONS.ACCESS_MEMBERS)) return false
+
+	// "manageUser" roles in this unit or upper units can manage members
 	if(await user.hasRoleInUnits("manageUser", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false

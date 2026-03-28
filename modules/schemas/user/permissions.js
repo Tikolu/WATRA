@@ -90,11 +90,12 @@ export async function ACCESS_DETAILS(user) {
 }
 
 export async function MANAGE(user) {
-	// Users with "manageUser" role in any unit/upperUnit of user can manage
+	// Users with MANAGE_MEMBERS permission in any unit of user can manage
 	for await(const unit of this.listUnits(true)) {
+		if(!await user.checkPermission(unit.PERMISSIONS.MANAGE_MEMBERS)) continue
+
 		// Get user's role in unit
 		const userRole = await user.getRoleInUnit(unit)
-		if(!userRole || !userRole.hasTag("manageUser")) continue
 		// Get target user's role in unit
 		const targetUserRole = await this.getRoleInUnit(unit)
 		// Skip if target user has higher role
@@ -254,8 +255,8 @@ export async function ARCHIVE(user) {
 
 	if(this.archived) {
 		await this.populate("archived")
-		// Users with "manageUser" role in archival unit/upperUnit can unarchive
-		if(await user.hasRoleInUnits("manageUser", this.archived.traverse("upperUnits", {includeSelf: true}))) return true
+		// Users with MANAGE_MEMBERS permission in user's archival unit can unarchive
+		if(await user.checkPermission(this.archived.PERMISSIONS.MANAGE_MEMBERS)) return true
 
 	} else {
 		// Cannot archive user with no roles

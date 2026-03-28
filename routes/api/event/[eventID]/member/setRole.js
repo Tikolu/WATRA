@@ -48,10 +48,10 @@ export default async function({user, targetEvent, targetUsers, roleType}) {
 				if(await user.checkPermission(targetEvent.PERMISSIONS.ACCESS_PARTICIPANTS)) return true
 			}
 
-			// If user has "manageUser" role in upperUnit, check subMembers of unit
+			// If user has MANAGE_MEMBERS permission in upperUnit, check subMembers of unit
 			await targetEvent.populate("upperUnits")
 			for(const unit of targetEvent.upperUnits) {
-				if(!await user.hasRoleInUnits("manageUser", unit.traverse("upperUnits", {includeSelf: true}))) continue
+				if(!await user.checkPermission(unit.PERMISSIONS.MANAGE_MEMBERS)) continue
 				if(await unit.listMembers(true).find(u => u.id == targetUser.id)) return true
 			}
 		})()
