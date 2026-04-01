@@ -1,6 +1,6 @@
 import Config from "modules/config.js"
 
-/** Accessing the user's profile page */
+/** Accessing the user's profile page, without personal details */
 export async function ACCESS(user) {
 	// User can access themselves
 	if(user.id == this.id) return true
@@ -26,6 +26,26 @@ export async function ACCESS(user) {
 		for(const event of u.eventInvites) {
 			const invite = event.participants.id(u.id)
 			if(await user.hasRoleInUnits("accessUser", event)) return true
+		}
+	}
+
+	// Parent can access other parents of their children
+	for(const child of this.children) {
+		if(child.isAdult) continue
+		if(user.children.hasID(child.id)) return true
+	}
+
+	// Users with "accessUser" role in any unit/upperUnit of any child can access parent details
+	if(this.parent) {
+		await this.populate({"children": "archived"})
+		for(const child of this.children) {
+			if(await user.hasRoleInUnits("accessUser", child.listUnits(true))) return true
+		}
+
+		// Users with ACCESS_ARCHIVED_MEMBERS permission in unit of any child can access parent details
+		for(const child of this.children) {
+			if(!child.archived) continue
+			if(await user.checkPermission(child.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
 		}
 	}
 
@@ -55,35 +75,12 @@ export async function ACCESS_DETAILS(user) {
 		if(await user.checkPermission(this.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
 	}
 
-	// Users with "accessUser" role in any unit/upperUnit of any child can access parent details
-	if(this.parent) {
-		await this.populate({"children": "archived"})
-		for(const child of this.children) {
-			if(await user.hasRoleInUnits("accessUser", child.listUnits(true))) return true
-		}
-
-		// Users with ACCESS_ARCHIVED_MEMBERS permission in unit of any child can access parent details
-		for(const child of this.children) {
-			if(!child.archived) continue
-			if(await user.checkPermission(child.archived.PERMISSIONS.ACCESS_ARCHIVED_MEMBERS)) return true
-		}
-	}
-
-	// Users with "accessUser" role in events in which user (or their child) is an accepted participant can access details
-	await this.populate("children")
-	for(const u of [this, ...this.children]) {
-		await u.populate("eventInvites")
-		for(const event of u.eventInvites) {
-			const invite = event.participants.id(u.id)
-			if(invite?.state != "accepted") continue
-			if(await user.hasRoleInUnits("accessUser", event)) return true
-		}
-	}
-
-	// Parent can access other parents of their children
-	for(const child of this.children) {
-		if(child.isAdult) continue
-		if(user.children.hasID(child.id)) return true
+	// Users with "accessUser" role in events in which user is an accepted participant can access details
+	await this.populate(["children", "eventInvites"])
+	for(const event of this.eventInvites) {
+		const invite = event.participants.id(this.id)
+		if(invite?.state != "accepted") continue
+		if(await user.hasRoleInUnits("accessUser", event)) return true
 	}
 
 	return false
