@@ -1,6 +1,7 @@
 import * as datetime from "datetime"
 import * as Text from "modules/text.js"
 import * as Phone from "modules/phone.js"
+import Config from "modules/config.js"
 
 export class UserFilter {
 	static numericOperations = ["equal", "greater", "less"]
@@ -152,8 +153,9 @@ export class DataColumn {
 		this.value = options.value
 		this.process = options.process
 		this.sortable = options.sortable || false
-		this.selected = false,
+		this.selected = false
 		this.position = options.position ?? Infinity
+		this.template = options.template
 	}
 
 	async setSelected(selectedList) {
@@ -234,11 +236,14 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 						await users.populate("parents")
 					}
 				},
-				{
-					id: "medical",
-					process,
-					name: "Dane medyczne / dietetyczne"
-				},
+				...Config.medicalCategories.map(category => (
+					{
+						id: category.id,
+						process,
+						name: category.title,
+						template: "medical"
+					}
+				)),
 				{
 					id: "image",
 					name: "Zdjęcie",

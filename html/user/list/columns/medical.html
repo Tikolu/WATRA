@@ -1,10 +1,15 @@
 <% if($.user.$locals.detailsAccess === false) { %>
 	<em>Brak dostępu</em>
-<% } else if($.user.medical.entries.length) { %>
-	<ul>
-		<% for(const entry of $.user.medical.entries) { %>
-			<li><%= entry.title %></li>
-		<% } %>
-	</ul>
-	<a href="/users/<%= $.user.id %>/medical" class="details-link"><%~ icon`medical_information` %> Szczegóły</a>
+<% } else { %>
+	<%
+		const medicalEntries = $.user.medical.entries.filter(entry => $.column.id != entry.category)
+	%>
+	<% if(medicalEntries.length) { %>
+		<ul>
+			<% for(const entry of medicalEntries) { %>
+				<li><%= entry.title %></li>
+			<% } %>
+		</ul>
+		<a href="/users/<%= $.user.id %>/medical" class="details-link"><%~ icon`medical_information` %> Szczegóły</a>
+	<% } %>
 <% } %>
