@@ -155,13 +155,6 @@ for(const unitID in Config.units) {
 	processName(unit)
 
 	processDefaultRole(unit)
-
-	// Default eventRules
-	unit.eventRules ||= {
-		create: true,
-		invite: true,
-		link: true
-	}
 }
 
 

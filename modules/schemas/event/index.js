@@ -233,6 +233,22 @@ export class EventClass extends UnitClass {
 		await this.calculateApprovers()
 	}
 
+	/** Checks if a unit can be invited to the event */
+	canInviteUnit(unit) {
+		// Check if unit is already invited
+		if(this.invitedUnits.id(unit.id)) return true
+
+		// Get event rank
+		let rank = -1
+		for(const upperUnit of this.upperUnits) {
+			if(upperUnit.config.rank > rank) {
+				rank = upperUnit.config.rank
+			}
+		}
+
+		return rank >= unit.config.rank
+	}
+
 	/** Invite unit to event */
 	async inviteUnit(unit, state="pending") {
 		// Remove existing invites

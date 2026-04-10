@@ -11,8 +11,7 @@
 		<%~ include("/unit/templates/unitPicker", {
 			tree: $.tree,
 			multiple: true,
-			selected: unit => $.targetEvent.upperUnits.hasID(unit.id),
-			filter: unit => unit.config.eventRules.create
+			selected: unit => $.targetEvent.upperUnits.hasID(unit.id)
 		}) %>
 	</section>
 </main>

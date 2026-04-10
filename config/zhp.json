@@ -35,11 +35,7 @@
 			"roles": [
 				"przewodniczącyZarząduOkręgu",
 				"członekZarząduOkręgu"
-			],
-			"eventRules": {
-				"create": false,
-				"invite": false
-			}
+			]
 		},
 		"chorągiew": {
 			"name": "Chorągiew",
@@ -48,11 +44,7 @@
 				"komendantChorągwi",
 				"referent",
 				"szeregowy"
-			],
-			"eventRules": {
-				"create": true,
-				"invite": false
-			}
+			]
 		},
 		"hufiec": {
 			"name": "Hufiec",
@@ -61,11 +53,7 @@
 				"hufcowy",
 				"referent",
 				"szeregowy"
-			],
-			"eventRules": {
-				"create": true,
-				"invite": true
-			}
+			]
 		},
 		"ośrodek": {
 			"name": "Ośrodek",
@@ -73,11 +61,7 @@
 			"maxUpperUnits": 2,
 			"roles": [
 				"opiekun"
-			],
-			"eventRules": {
-				"create": true,
-				"invite": false
-			}
+			]
 		},
 		"gromada": {
 			"name": "Gromada zuchowa",
@@ -141,11 +125,7 @@
 			"roles": [
 				"szóstkowy",
 				"zuch"
-			],
-			"eventRules": {
-				"create": false,
-				"invite": true
-			}
+			]
 		},
 		"zastęp": {
 			"name": {
@@ -159,11 +139,7 @@
 				"zastępowy",
 				"podzastępowy",
 				"szeregowy"
-			],
-			"eventRules": {
-				"create": false,
-				"invite": true
-			}
+			]
 		},
 		"patrol": {
 			"name": {
@@ -289,7 +265,6 @@
 		"opiekun": {
 			"name": "Opiekun",
 			"rank": 4,
-			"limit": 1,
 			"minAge": 18,
 			"tags": [
 				"public",
@@ -407,8 +382,7 @@
 		"opiekunAkcji": {
 			"name": "Opiekun",
 			"minAge": 18,
-			"rank": 3,
-			"limit": 1,
+			"rank": 4,
 			"tags": [
 				"public",
 				
@@ -420,13 +394,21 @@
 				"orgHarcerzy": "Komendant",
 				"orgHarcerek": "Komendantka"
 			},
-			"limit": 1,
-			"rank": 2,
+			"rank": 3,
 			"tags": [
 				"public",
 				
 				"manageEvent",
 				"setRole",
+				"accessUser",
+				"manageForms"
+			]
+		},
+		"zastępcaKomendanta": {
+			"name": "Zastępca komendanta",
+			"rank": 2,
+			"tags": [
+				"manageEvent",
 				"accessUser",
 				"manageForms"
 			]

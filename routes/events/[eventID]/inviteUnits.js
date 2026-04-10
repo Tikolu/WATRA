@@ -27,7 +27,7 @@ export default async function({user, targetEvent}) {
 			// Skip units in different org
 			if(eventOrg && unit.org && unit.org != eventOrg) return false
 			// Skip units which cannot be invited
-			return unit.config.eventRules.invite || unit.subUnits.length
+			return targetEvent.canInviteUnit(unit) || unit.subUnits.length
 		},
 		subUnitFilter: unit => targetEvent.invitedUnits.find(i => i.unit.id == unit.id)
 	}) || new UnitTree()

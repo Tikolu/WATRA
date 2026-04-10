@@ -58,9 +58,6 @@ export async function MANAGE_INVITES(user) {
 	// Lack of ACCESS permission denies MANAGE_INVITES
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// Cannot manage invites in unit without "invite" eventRule
-	if(!this.config.eventRules.invite) return false
-
 	// "manageEventInvite" roles in this unit or upper units can manage invites
 	if(await user.hasRoleInUnits("manageEventInvite", this.traverse("upperUnits", {includeSelf: true}))) return true
 
@@ -99,9 +96,6 @@ export async function ACCESS_EVENTS(user) {
 export async function CREATE_EVENT(user) {
 	// Lack of ACCESS permission denies CREATE_EVENT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
-
-	// Cannot create event in unit without "create" eventRule
-	if(!this.config.eventRules.create) return false
 
 	// "manageEvent" roles in this unit and upper units can create events
 	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true

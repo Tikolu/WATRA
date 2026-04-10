@@ -9,12 +9,12 @@
 
 <main>
 	<% function displayUnit(node) { %>
-		<details<%= node.unit.config.eventRules.invite ? "" : " open" %>>
+		<details<%= $.targetEvent.canInviteUnit(node.unit) ? "" : " open" %>>
 			<summary>
 				<h3><%= node.unit.displayName %></h3>
 			</summary>
 			<div class="unit-details">
-				<% if(node.unit.config.eventRules.invite) { %>
+				<% if($.targetEvent.canInviteUnit(node.unit)) { %>
 					<% const unitInvite = $.targetEvent.invitedUnits.find(i => i.unit == node.unit.id) %>
 					<p>
 						<% if(unitInvite?.state == "accepted") { %>

@@ -18,10 +18,8 @@ export default async function({user, targetUnit, name, startDate, endDate}) {
 	targetUnit.events.push(event.id)
 	event.upperUnits.push(targetUnit.id)
 
-	// Automatically invite unit
-	if(targetUnit.config.eventRules.invite) {
-		await event.inviteUnit(targetUnit, "accepted")
-	}
+	// Automatically invite parent unit
+	await event.inviteUnit(targetUnit)
 
 	// Automatically set user role
 	await event.inviteParticipant(user, undefined, false)
