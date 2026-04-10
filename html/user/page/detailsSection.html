@@ -57,25 +57,71 @@
 			))
 		) { %>
 			<form>
-				<label for="email-input">E-mail:</label>
-				<input
-					type="email"
-					id="email-input"
-					autocomplete="off"
-					value="<%= $.targetUser.email || "" %>"
-					api="user/[userID]/update/email"
-					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
-				>
+				<% if($.targetUser.email || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+					<label for="email-input">E-mail:</label>
+					<div class="action-input">
+						<input
+							type="email"
+							id="email-input"
+							autocomplete="off"
+							value="<%= $.targetUser.email || "" %>"
+							api="user/[userID]/update/email"
+							<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+						>
+						<% if(!$.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+							<div class="button-row">
+								<button class="icon" href="mailto:<%= $.targetUser.email %>">
+									<%~ icon`email` %>
+								</button>
+							</div>
+						<% } %>
+					</div>
+				<% } %>
 
-				<label for="phone-input">Telefon:</label>
-				<input
-					type="tel"
-					id="phone-input"
-					autocomplete="off"
-					value="<%= Phone.format($.targetUser.phone, !$.targetUser.phone?.startsWith(Config.phonePrefix)) || "" %>"
-					api="user/[userID]/update/phone"
-					<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
-				>
+				<% if($.targetUser.phone || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+					<label for="phone-input">Telefon:</label>
+					<div class="action-input">
+						<input
+							type="tel"
+							id="phone-input"
+							autocomplete="off"
+							value="<%= Phone.format($.targetUser.phone, !$.targetUser.phone?.startsWith(Config.phonePrefix)) || "" %>"
+							api="user/[userID]/update/phone"
+							<%= $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) ? "" : "disabled" %>
+						>
+						<% if(!$.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
+							<div class="button-row">
+								<button class="icon" href="tel:<%= $.targetUser.phone %>">
+									<%~ icon`phone` %>
+								</button>
+								<button class="icon" opens-dialog="message-dialog">
+									<%~ icon`message` %>
+								</button>
+								<dialog id="message-dialog">
+									<h1>Wysyłanie wiadomości na numer <%= $.targetUser.phone %></h1>
+									<section>
+										<h3>Wybierz metodę kontaktu:</h3>
+										<button href="sms:<%= $.targetUser.phone %>" class="big-button">
+											<%~ icon`message` %>
+											SMS
+										</button>
+										<button href="https://wa.me/<%= $.targetUser.phone %>" class="big-button">
+											<%~ icon`message` %>
+											WhatsApp
+										</button>
+									</section>
+									<hr>
+									<div class="button-row">
+										<button closes-dialog>
+											<%~ icon`arrow_back` %>
+											Zamknij
+										</button>
+									</div>
+								</dialog>
+							</div>
+						<% } %>
+					</div>
+				<% } %>
 			</form>
 		<% } %>
 	</div>

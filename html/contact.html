@@ -1,0 +1,78 @@
+<% layout("/layouts/body", {
+	title: $.method == "phone" ? "Połączenie telefoniczne" : "Wysyłanie wiadomości",
+	scripts: ["message"],
+	class: [
+		"no-unload",
+		"no-contact-links"
+	]
+}) %>
+<main>
+	<h1>
+		<% if($.method == "phone") { %>
+			<%~ icon`phone` %>
+			Połączenie telefoniczne
+		<% } else { %>
+			<%~ icon`message` %>
+			Wysyłanie wiadomości
+		<% } %>
+	</h1>
+
+	<% if($.link) { %>
+		<a id="handler-link" hidden href="<%= $.link %>"></a>
+		<article>
+			<p>
+				<%~ icon`progress_activity` %>
+				<% if($.method == "email") { %>
+					Otwieranie aplikacji poczty...
+				<% } else if($.method == "phone") { %>
+					Otwieranie aplikacji telefonicznej...
+				<% } else if($.method == "sms") { %>
+					Otwieranie aplikacji SMS...
+				<% } else if($.method == "whatsapp") { %>
+					Otwieranie WhatsApp...
+				<% } %>
+			</p>
+		</article>
+	<% } %>
+
+	<% if($.method == "whatsapp" && !$.link) { %>
+		<article>
+			<p>
+				<%~ icon`info` %>
+				WhatsApp nie obsługuje automatycznego wysyłania wiadomości do kilku odbiorców. Poniżej możesz wysłać wiadomości do poszczególnych odbiorców.
+			</p>
+		</article>
+	<% } %>
+
+	<section>
+		<% if($.link) { %>
+			<p>
+				<% if($.method == "sms" || $.method == "whatsapp") { %>
+					Wiadomość zostanie wysłana na następujące numery telefonów:
+				<% } else if($.method == "email") { %>
+					Wiadomość zostanie wysłana na następujące adresy:
+				<% } else if($.method == "phone") { %>
+					Połączene do następujących numerów:
+				<% } %>
+			</p>
+		<% } %>
+		<div class="entry-grid">
+			<% for(const entry of $.details) { %>
+				<% if($.details.length > 1 && ($.method == "phone" || $.method == "whatsapp")) { %>
+					<div>
+						<h3><%= entry %></h3>
+						<div class="button-row">
+							<% if($.method == "phone") { %>
+								<button href="tel:<%= entry %>"><%~ icon`phone` %> Zadzwoń</button>
+							<% } else if($.method == "whatsapp") { %>
+								<button href="https://wa.me/<%= entry %>"><%~ icon`message` %> Wyślij wiadomość</button>
+							<% } %>
+						</div>
+					</div>
+				<% } else { %>
+					<pre><%= entry %></pre>
+				<% } %>
+			<% } %>
+		</div>
+	</section>
+</main>

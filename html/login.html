@@ -17,7 +17,7 @@
 	<h2><%= Config.systemTitle %></h2>
 <% } %>
 
-<button id="login-button" class="important" api="login/getKeys">
+<button id="login-button" class="big-button" api="login/getKeys">
 	<%~ icon`passkey` %>
 	Zaloguj
 </button>
@@ -40,7 +40,7 @@
 						</div>
 					</div>
 					<div class="entry-content button-row">
-						<button api="login/getKeys?userID=<%= user.id %>" class="important">
+						<button api="login/getKeys?userID=<%= user.id %>">
 							<%~ icon`login` %>
 							<span>Zaloguj</span>
 						</button>

@@ -134,7 +134,7 @@ form > button:last-child, form > h1, form > h2, form > h3 {
 
 form input, form select {
 	width: 100%;
-	max-width: 20em;
+	max-width: 18rem;
 }
 
 form input:only-child, form select:only-child {
@@ -183,6 +183,21 @@ label > * {
 
 label + textarea {
 	margin-top: 0.5em;
+}
+
+.action-input {
+	width: 100%;
+	max-width: 18rem;
+	position: relative;
+
+	& > .button-row {
+		position: absolute;
+		right: 0.5em;
+		top: 0.35em;
+		bottom: 0.35em;
+		margin: 0;
+		z-index: 1;
+	}
 }
 
 /* Input elements */
@@ -421,7 +436,15 @@ button.icon {
 	background-color: transparent;
 	padding: 0;
 	margin: 0;
+	border-radius: 0;
 	transition: color 250ms;
+}
+
+button.big-button {
+	display: block;
+	margin: 0.5em 0;
+	padding: 1em 2em;
+	font-size: 1em;
 }
 
 @media (hover: hover) {
@@ -467,6 +490,7 @@ a {
 }
 
 a:has(button) {
+	color: unset;
 	text-decoration: none;
 }
 
@@ -621,8 +645,9 @@ p.warning, p.info {
 		margin-bottom: 0;
 	}
 
-	& > div, & > a {
+	& > * {
 		padding: 0.5em;
+		margin: 0;
 
 		overflow: hidden;
 		border-radius: var(--border-radius);
@@ -1055,7 +1080,7 @@ dialog:focus-visible {
 	margin: -0.5em;
 }
 
-body.unload::after {
+body.unload:not(.no-unload)::after {
 	position: fixed;
 	top: 45%;
 	left: 0;

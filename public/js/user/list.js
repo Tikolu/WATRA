@@ -149,3 +149,22 @@ API.registerHandler("unit/[unitID]/member/unconfirm", {
 	progressText: "Cofanie zatwierdzenia...",
 	successText: response => `Cofnięto zatwierdzenie ${response.updated || 0} użytkowników`
 })
+
+API.registerHandler("(unit|event)/[eventID]/member/contactDetails", {
+	form: ["send-message", userTable],
+	progressText: "Ładowanie danych kontaktowych...",
+	before: data => {
+		const contactMethods = {
+			email: "email",
+			sms: "phone",
+			whatsapp: "phone"
+		}
+		data.contactMethod = contactMethods[data.contactType]
+		return !!data.contactMethod
+	},
+	after: (response, data) => {
+		openPage(`/contact/${data.contactType}`, {
+			details: response.details
+		})
+	}
+})

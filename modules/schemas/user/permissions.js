@@ -93,6 +93,7 @@ export async function MANAGE(user) {
 
 		// Get user's role in unit
 		const userRole = await user.getRoleInUnit(unit)
+		if(!userRole) continue
 		// Get target user's role in unit
 		const targetUserRole = await this.getRoleInUnit(unit)
 		// Skip if target user has higher role

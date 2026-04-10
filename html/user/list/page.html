@@ -172,6 +172,7 @@
 			<% if($.targetUnit.modelName == "Unit") { %>
 				<button opens-dialog="unconfirm-user-details"><%~ icon`person_cancel` %> Cofnij zatwierdzenie danych</button>
 			<% } %>
+			<button opens-dialog="send-message"><%~ icon`mail` %> Wyślij wiadomość</button>
 		</div>
 	</section>
 
@@ -216,6 +217,51 @@
 			</div>
 		</dialog>
 	<% } %>
+	<dialog id="send-message">
+		<h1><%~ icon`mail` %> Wysyłanie wiadomości</h1>
+		<section>
+			<h3>Grupa docelowa</h3>
+			<form>
+				<input type="checkbox" id="message-direct" name="contactTarget" value="direct">
+				<label for="message-direct">
+					<b>Wybrani użytkownicy (bezpośrednio)</b><br>
+					<em>W przypadku użytkowników bez danych kontaktowych, wiadomość zostanie wysłana do ich rodziców</em>
+				</label>
+
+				<input type="checkbox" id="message-parents" name="contactTarget" value="parents" checked>
+				<label for="message-parents">
+					<b>Rodzice wybranych użytkowników</b><br>
+					<em>W przypadku osób pełnoletnich, wiadomość zostanie wysłana bezpośrednio do nich</em>
+				</label>
+			</form>
+		</section>
+
+		<section>
+			<h3>Metoda kontaktu</h3>
+			<form>
+				<input type="radio" id="message-email" name="contactType" value="email" checked>
+				<label for="message-email">
+					E-mail
+				</label>
+				<input type="radio" id="message-sms" name="contactType" value="sms">
+				<label for="message-sms">
+					SMS
+				</label>
+				<input type="radio" id="message-whatsapp" name="contactType" value="whatsapp">
+				<label for="message-whatsapp">
+					WhatsApp
+				</label>
+			</form>
+		</section>
+
+		<hr>
+		<div class="button-row">
+			<button><%~ icon`arrow_back` %> Anuluj</button>
+			<button api="<%= $.targetUnit.modelName.toLowerCase() %>/<%= $.targetUnit.id %>/member/contactDetails">
+				<%~ icon`send` %> Wyślij wiadomość
+			</button>
+		</div>
+	</dialog>
 <% } %>
 
 <section id="table-container">

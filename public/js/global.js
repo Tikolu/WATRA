@@ -99,6 +99,29 @@ function fileToBase64(file) {
 	})
 }
 
+// Open new page with POST data
+function openPage(url, data) {
+	const form = document.createElement("form")
+	form.method = "POST"
+	form.target = "_blank"
+	form.action = url
+	form.hidden = true
+	for(const key in data) {
+		let value = data[key]
+		if(Array.isArray(value)) value = value.join(",")
+		else if(typeof value == "object") value = JSON.stringify(value)
+
+		const input = document.createElement("input")
+		input.type = "hidden"
+		input.name = key
+		input.value = value
+		form.append(input)
+	}
+	document.body.append(form)
+	form.submit()
+	document.body.removeChild(form)
+}
+
 // Function for getting unique items from an array
 Object.defineProperty(Array.prototype, "unique", {
 	value: function(key, returnValues=false) {
@@ -316,7 +339,7 @@ async function refreshPageData() {
 
 	if(window.refreshing || window.unloading) return
 	window.refreshing = true
-	debug("Refreshing page data...")
+	console.groupCollapsed("Refreshing page data...")
 
 	let response
 	try {
@@ -514,6 +537,7 @@ async function refreshPageData() {
 	window.afterDataRefresh.forEach(f => f())
 
 	window.refreshing = false
+	console.groupEnd()
 }
 
 // List of functions to call after data refresh
@@ -633,35 +657,38 @@ const API = {
 
 			handler.form ||= element?.getAttribute("form")
 			if(element?.matches("form")) handler.form ||= element
-			if(handler.form) {
-				// Find form container element
-				let formContainer
-				if(handler.form instanceof HTMLElement) {
-					formContainer = handler.form
-				} else if(typeof handler.form == "function") {
-					formContainer = handler.form(element)
-				} else {
-					formContainer = document.getElementById(handler.form)
-				}
-				if(!formContainer) {
-					throw new Error(`Form not found for API handler ${api}`)
-				}
-				for(const formElement of formContainer.querySelectorAll("[name]") || []) {
-					// Skip already found element
-					if(elements.includes(formElement)) continue
-					
-					// Skip elements in embedded dialogs
-					let skipElement = false
-					for(const parentElement of formElement.parentElementChain) {
-						if(parentElement == formContainer) break
-						if(parentElement.matches("dialog")) {
-							skipElement = true
-							break
-						}
+			if(handler.form && !Array.isArray(handler.form)) handler.form = [handler.form]
+			if(handler.form?.length) {
+				for(const form of handler.form) {
+					// Find form container element
+					let formContainer
+					if(form instanceof HTMLElement) {
+						formContainer = form
+					} else if(typeof form == "function") {
+						formContainer = form(element)
+					} else {
+						formContainer = document.getElementById(form)
 					}
-					if(skipElement) continue
+					if(!formContainer) {
+						throw new Error(`Form not found for API handler ${api}`)
+					}
+					for(const formElement of formContainer.querySelectorAll("[name]") || []) {
+						// Skip already found element
+						if(elements.includes(formElement)) continue
 
-					elements.push(formElement)
+						// Skip elements in embedded dialogs
+						let skipElement = false
+						for(const parentElement of formElement.parentElementChain) {
+							if(parentElement == formContainer) break
+							if(parentElement.matches("dialog")) {
+								skipElement = true
+								break
+							}
+						}
+						if(skipElement) continue
+
+						elements.push(formElement)
+					}
 				}
 			}
 
@@ -1151,12 +1178,10 @@ document.documentElement.addEventListener("click", event => {
 	navigator.vibrate?.(10)
 })
 
-// Disable form elements
+// Prevent form submission
 function disableForms() {
-	for(const form of document.querySelectorAll("form")) {
-		form.onsubmit = event => {
-			event.preventDefault()
-		}
+	for(const button of document.querySelectorAll("form button")) {
+		button.type = "button"
 	}
 }
 disableForms()
@@ -1180,6 +1205,33 @@ function processLinkButtons() {
 }
 processLinkButtons()
 window.afterDataRefresh.push(processLinkButtons)
+
+// Handle contact links
+function processContactLinks() {
+	if(document.body.classList.contains("no-contact-links")) return
+
+	const schemes = {
+		"mailto:": "email",
+		"tel:": "phone",
+		"sms:": "sms",
+		"https://wa.me/": "whatsapp"
+	}
+
+	for(const scheme in schemes) {
+		const contactType = schemes[scheme]
+		for(const link of document.querySelectorAll(`a[href^="${scheme}"]`)) {
+			const value = link.href.slice(scheme.length)
+			link.addEventListener("click", event => {
+				event.preventDefault()
+				openPage(`/contact/${contactType}`, {
+					details: [value]
+				})
+			})
+		}
+	}
+}
+processContactLinks()
+window.afterDataRefresh.push(processContactLinks)
 
 // View Transition fallback function
 document.startViewTransition ||= async function(callback) {
