@@ -2,7 +2,7 @@
 	<em>Brak dostępu</em>
 <% } else { %>
 	<%
-		const medicalEntries = $.user.medical.entries.filter(entry => $.column.id != entry.category)
+		const medicalEntries = $.user.medical.entries.filter(entry => $.column.id == entry.category)
 	%>
 	<% if(medicalEntries.length) { %>
 		<ul>
