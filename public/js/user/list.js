@@ -103,7 +103,7 @@ exportButton.onclick = () => {
 				.replaceAll(",", "")
 				.replaceAll("\n", "; ")
 				// Remove icons
-				.replaceAll(/[\ue000-\ufffff]/g, "")
+				.replaceAll(/[\ue000-\uffff]/g, "")
 				.trim()
 			if(cellIndex < cells.length - 1) csv += ","
 		}

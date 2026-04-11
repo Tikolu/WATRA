@@ -105,7 +105,11 @@ body main {
 		th, td {
 			white-space: nowrap;
 		}
-		
+
+		th a i {
+			display: none;
+		}
+
 		td {
 			border-top: 1px solid var(--surface-4);
 		}
