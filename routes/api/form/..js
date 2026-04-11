@@ -56,7 +56,7 @@ export async function copy({user, type, id, formID}) {
 	// Get existing form for copying
 	const form = await Form.findById(formID)
 	if(!form) throw new HTTPError(404, "Formularz nie istnieje")
-	await user.requirePermission(form.PERMISSIONS.EDIT)
+	await user.requirePermission(form.PERMISSIONS.ACCESS)
 
 	// Create copy of form
 	const formObject = form.toObject()
