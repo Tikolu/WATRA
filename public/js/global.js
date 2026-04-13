@@ -245,7 +245,7 @@ const Popup = window.top.Popup || {
 		popup.scrollIntoView({behavior: "smooth"})
 
 		if(vibration) {
-			navigator.vibrate?.(vibration)
+			startVibration(vibration)
 		}
 
 		popup.closePromise = new Promise(resolve => {
@@ -1186,12 +1186,20 @@ Processing.register(function customInputs() {
 })
 
 // Vibrations
+function startVibration(pattern) {
+	if(!navigator.vibrate) return
+	try {
+		navigator.vibrate(pattern)
+	} catch(error) {
+		console.warn("Vibration failed:", error)
+	}
+}
 const vibrateElements = "button, a, input, select, textarea, [contenteditable], summary"
 document.documentElement.addEventListener("click", event => {
 	const chain = [event.target, ...event.target.parentElementChain]
 	const match = chain.find(p => !p.disabled && p.matches(vibrateElements))
 	if(!match) return
-	navigator.vibrate?.(10)
+	startVibration(10)
 })
 
 // Prevent form submission

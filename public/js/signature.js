@@ -64,7 +64,7 @@ Processing.register(function signature() {
 			signature.bounds = signature.getBoundingClientRect()
 			signature.classList.add("dragging")
 			signature.classList.remove("invalid")
-			navigator.vibrate?.(50)
+			startVibration(50)
 
 			document.addEventListener("pointermove", slider.update)
 
@@ -77,7 +77,7 @@ Processing.register(function signature() {
 				if(!slider.x || slider.x < signature.bounds.width * 0.9) return
 				
 				signature.classList.add("loading")
-				navigator.vibrate?.(150)
+				startVibration(150)
 				signature.start().catch(error => {
 					signature.reset()
 					signature.classList.add("invalid")
