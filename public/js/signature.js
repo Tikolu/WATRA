@@ -1,4 +1,4 @@
-function processSignatureElements() {
+Processing.register(function signature() {
 	for(const signature of document.querySelectorAll(".signature-container")) {
 		const slider = signature.querySelector(".signature-slider")
 		if(!slider || signature.classList.contains("complete")) {
@@ -65,7 +65,7 @@ function processSignatureElements() {
 			signature.classList.add("dragging")
 			signature.classList.remove("invalid")
 			navigator.vibrate?.(50)
-			
+
 			document.addEventListener("pointermove", slider.update)
 
 			document.addEventListener("pointerup", () => {
@@ -86,12 +86,10 @@ function processSignatureElements() {
 
 			}, {once: true})
 		}
-		
+
 		slider.update = event => {
 			slider.x = event.clientX - signature.bounds.left
 			slider.style.setProperty("--x", `${slider.x}px`)
 		}
 	}
-}
-window.afterDataRefresh.push(processSignatureElements)
-processSignatureElements()
+})

@@ -53,13 +53,11 @@ function registerRefreshCondition(path) {
 
 // Register a refresh condition for URL and all link elements
 registerRefreshCondition(document.location)
-function scanForRefreshConditions() {
+Processing.register(function refreshConditions() {
 	for(const link of document.querySelectorAll("a[href]")) {
 		registerRefreshCondition(link.href)
 	}
-}
-scanForRefreshConditions()
-window.afterDataRefresh.push(scanForRefreshConditions)
+})
 
 // Check if update should trigger a data refresh
 async function checkRefreshCondition(type, id) {
@@ -105,7 +103,7 @@ window.addEventListener("pageshow", event => {
 	if(window.refreshDataOnShow) refreshPageData()
 	window.refreshDataOnShow = false
 
-	// Check if any relevant updates occurred 
+	// Check if any relevant updates occurred
 	checkDataUpdates()
 })
 
@@ -118,7 +116,7 @@ document.onvisibilitychange = event => {
 
 // Construct nav path
 Session.history ||= []
-function constructNavPath() {
+Processing.register(function constructNavPath() {
 	const nav = document.querySelector("nav")
 	const homeLink = nav.querySelector("a:first-child")
 
@@ -159,11 +157,9 @@ function constructNavPath() {
 		path.append(icon, link)
 	}
 	homeLink.after(path)
-}
-constructNavPath()
+})
 // Scroll to end of nav
 document.querySelector("nav a:last-child").scrollIntoViewIfNeeded?.()
-window.afterDataRefresh.push(constructNavPath)
 
 // Custom refreshing
 window.addEventListener("keydown", event => {

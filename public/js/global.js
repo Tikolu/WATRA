@@ -41,7 +41,7 @@ const Base64 = {
 	decode: v => atob(v)
 }
 
-// Sleep function 
+// Sleep function
 function sleep(ms) {
 	return new Promise(resolve => {
 		if(ms == Infinity) return
@@ -68,7 +68,7 @@ Object.defineProperty(HTMLElement.prototype, "parentElementChain", {
 	}
 })
 
-// Create array function 
+// Create array function
 Array.create = value => {
 	if(Array.isArray(value)) return [...value]
 	if(!value) return []
@@ -200,7 +200,7 @@ const Popup = window.top.Popup || {
 			iconElement.innerText = icon
 			popup.append(iconElement)
 		}
-		
+
 		// Add message content
 		const content = document.createElement("p")
 		content.innerText = message
@@ -361,6 +361,7 @@ async function refreshPageData() {
 		"details": ["open"],
 		"body": ["class"],
 		"html": ["theme"],
+		"button": ["type"],
 		"*": ["style"]
 	}
 	const extraAttributes = {
@@ -409,7 +410,7 @@ async function refreshPageData() {
 				oldDoc[attr] = newDoc[attr]
 			}
 		}
-		
+
 		// Remove old attributes
 		for(const attr of oldDoc.attributes || []) {
 			if(ignoreAttrs.includes(attr.name)) continue
@@ -452,7 +453,7 @@ async function refreshPageData() {
 
 				if(oldChild.isEqualNode(newChild)) matchScore += 10
 				if(oldChild.id && oldChild.id == newChild.id) matchScore += 10
-				
+
 				if(oldChild.href && oldChild.href == newChild.href) matchScore += 2
 				if(oldChild.textContent && oldChild.textContent == newChild.textContent) matchScore += 2
 
@@ -469,7 +470,7 @@ async function refreshPageData() {
 			}
 			newChild.matchingElements.sort((a, b) => b.matchScore - a.matchScore)
 		}
-		
+
 		// Find most matching old element for each new element
 		const foundElements = []
 		for(const newChild of newChildren.toSorted((a, b) => b.totalMatchScore - a.totalMatchScore)) {
@@ -534,14 +535,35 @@ async function refreshPageData() {
 
 	mergeDocuments(document, newDocument)
 
-	window.afterDataRefresh.forEach(f => f())
+	Processing.execute()
 
 	window.refreshing = false
 	console.groupEnd()
 }
 
 // List of functions to call after data refresh
-window.afterDataRefresh = []
+const Processing = {
+	callbacks: [],
+	register(callback, timing="instant") {
+		Processing.callbacks.push({callback, timing})
+		if(timing == "instant" || document.readyState == "complete") {
+			// console.log("Processing", callback.name)
+			callback()
+		}
+	},
+	execute(timing) {
+		Processing.callbacks.forEach(entry => {
+			if(timing && entry.timing != timing) return
+			// console.log("Processing", entry.callback.name)
+			entry.callback()
+		})
+	},
+	removeFunction(name) {
+		Processing.callbacks = Processing.callbacks.filter(entry => entry.callback.name != name)
+	}
+}
+window.addEventListener("load", () => Processing.execute("load"))
+
 
 // API functions
 const API = {
@@ -694,7 +716,7 @@ const API = {
 
 			for(const formElement of elements) {
 				let elementValue = formElement.value
-				
+
 				// Clear validity
 				formElement.classList.remove("invalid")
 
@@ -759,7 +781,7 @@ const API = {
 						formData[valueKey] = [formData[valueKey]]
 					}
 					formData[valueKey].push(elementValue)
-					
+
 				} else {
 					formData[valueKey] = elementValue
 				}
@@ -807,7 +829,7 @@ const API = {
 			for(const element of elements) {
 				// Skip focused elements, unless button
 				if(element == document.activeElement && !element.matches("button")) continue
-				
+
 				sleep(10).then(() => element.disabled = true)
 				element.classList.add("loading")
 				element.classList.remove("invalid")
@@ -863,7 +885,7 @@ const API = {
 			}
 
 			// Trigger data refresh
-			if(handler.refresh === false) return	
+			if(handler.refresh === false) return
 			if(handler.refresh == "all") {
 				window.top.channel?.postMessage({event: "refresh"})
 				// Refresh dialog
@@ -886,13 +908,13 @@ const API = {
 			request,
 			promise: new Promise(resolve => completionPromiseResolver = resolve)
 		})
-		
+
 		// If queue contains other requests, wait for them to finish
 		if(this.executionQueue.length > 1) {
 			const previousRequest = this.executionQueue[this.executionQueue.length - 2]
 			await previousRequest.promise
 		}
-		
+
 		try {
 			// Execute this request
 			return await request()
@@ -906,15 +928,15 @@ const API = {
 }
 
 // API attribute system
-function processAPIAttributes() {
-	for (const element of window.APIElements || []) {
+Processing.register(function APIAttributes() {
+	for(const element of window.APIElements || []) {
 		if(element.removeAPI) element.removeAPI()
 	}
 	window.APIElements = []
-	
+
 	for(const element of document.querySelectorAll("[api]")) {
 		const api = element.getAttribute("api")
-		
+
 		let event
 		if(element.matches("button")) event = "click"
 		else if(element.matches("input[type=checkbox]")) event = "change"
@@ -933,9 +955,7 @@ function processAPIAttributes() {
 		element.removeAPI = () => element.removeEventListener(event, listener)
 		window.APIElements.push(element)
 	}
-}
-processAPIAttributes()
-window.afterDataRefresh.push(processAPIAttributes)
+})
 
 let urlDialogs = []
 function createURLDialog(url, open=false, closeOnRefresh=false) {
@@ -944,7 +964,7 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 	// Get existing dialog
 	if(dialog) {
 		iframe = dialog.querySelector("iframe")
-	
+
 	// Create new dialog
 	} else {
 		dialog = document.createElement("dialog")
@@ -958,11 +978,11 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 
 		iframe = document.createElement("iframe")
 		dialog.append(iframe)
-		
+
 		dialog.addEventListener("open", () => {
 			if(!iframe.getAttribute("src")) iframe.src = url
 		})
-		
+
 		document.body.append(dialog)
 
 		urlDialogs.push(dialog)
@@ -974,7 +994,7 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 		await sleep(250)
 		if(iframe.classList.contains("loaded")) return
 		if(!iframe.getAttribute("src")) return
-		
+
 		const errorElement = iframe.contentDocument?.querySelector("main h2")
 		let errorText = errorElement?.textContent || "Błąd ładowania strony"
 		Popup.error(errorText)
@@ -992,7 +1012,7 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 }
 
 // "opens-dialog" attribute
-function processDialogOpeners() {
+Processing.register(function dialogOpeners() {
 	// Remove all URL dialogs
 	urlDialogs = urlDialogs.filter(dialog => {
 		if(dialog.open && !dialog.closeOnRefresh) return true
@@ -1004,16 +1024,16 @@ function processDialogOpeners() {
 		}
 		return false
 	})
-	
+
 	for(const opener of window.dialogOpeners || []) {
 		if(opener.removeDialogOpener) opener.removeDialogOpener()
 	}
 	window.dialogOpeners = []
-	
+
 	for(const element of document.querySelectorAll("[opens-dialog]")) {
 		element.onclick = async event => {
 			event.preventDefault()
-			
+
 			const dialogID = element.getAttribute("opens-dialog")
 
 			// URL mode
@@ -1022,7 +1042,7 @@ function processDialogOpeners() {
 
 
 			// Dialog mode
-			} else {		
+			} else {
 				element.dialog = document.getElementById(dialogID)
 				if(!element.dialog) {
 					console.warn(`Dialog with ID ${dialogID} not found for element`, element)
@@ -1036,12 +1056,10 @@ function processDialogOpeners() {
 
 		window.dialogOpeners.push(element)
 	}
-}
-processDialogOpeners()
-window.afterDataRefresh.push(processDialogOpeners)
+})
 
 // Custom input fields
-function processCustomInputElements() {
+Processing.register(function customInputs() {
 	for(const input of document.querySelectorAll("input, [contenteditable=plaintext-only]")) {
 		// Skip if input has already been modified
 		if(input.customised) continue
@@ -1054,7 +1072,7 @@ function processCustomInputElements() {
 				set(value) { this.innerText = value }
 			})
 		}
-		
+
 		input.initialValue = input.value
 		Object.defineProperty(input, "modified", {
 			get() {
@@ -1073,11 +1091,11 @@ function processCustomInputElements() {
 			}
 			input.dispatchEvent(new Event("submit"))
 		})
-		
+
 		// Custom date input
 		if(input.matches("[type^=date]")) {
 			input.addEventListener("keydown", event => input.lastKeyboardInputTime = event.timeStamp)
-			
+
 			input.addEventListener("change", event => {
 				if(!input.value) return
 				input.lastKeyboardInputTime ||= 0
@@ -1099,7 +1117,7 @@ function processCustomInputElements() {
 					element
 				// Remove self from list
 				checkboxes = Array.from(checkboxes).filter(c => c != input)
-				
+
 				input.onchange = async () => {
 					for(const checkbox of checkboxes) {
 						if(checkbox.disabled) continue
@@ -1107,7 +1125,7 @@ function processCustomInputElements() {
 						// await sleep(150 / checkboxes.length)
 						checkbox.checked = input.checked
 					}
-					// Trigger change event 
+					// Trigger change event
 					if(element instanceof HTMLElement) {
 						element.dispatchEvent(new Event("change"))
 					}
@@ -1165,9 +1183,7 @@ function processCustomInputElements() {
 			})
 		}
 	}
-}
-processCustomInputElements()
-window.afterDataRefresh.push(processCustomInputElements)
+})
 
 // Vibrations
 const vibrateElements = "button, a, input, select, textarea, [contenteditable], summary"
@@ -1179,13 +1195,11 @@ document.documentElement.addEventListener("click", event => {
 })
 
 // Prevent form submission
-function disableForms() {
+Processing.register(function disableForms() {
 	for(const button of document.querySelectorAll("form button")) {
 		button.type = "button"
 	}
-}
-disableForms()
-window.afterDataRefresh.push(disableForms)
+})
 
 // Link buttons
 function linkButton(button) {
@@ -1200,14 +1214,12 @@ function linkButton(button) {
 	button.tabIndex = -1
 	a.append(button)
 }
-function processLinkButtons() {
+Processing.register(function linkButtons() {
 	document.querySelectorAll("button[href]").forEach(linkButton)
-}
-processLinkButtons()
-window.afterDataRefresh.push(processLinkButtons)
+})
 
 // Handle contact links
-function processContactLinks() {
+Processing.register(function contactLinks() {
 	if(document.body.classList.contains("no-contact-links")) return
 
 	const schemes = {
@@ -1229,15 +1241,13 @@ function processContactLinks() {
 			})
 		}
 	}
-}
-processContactLinks()
-window.afterDataRefresh.push(processContactLinks)
+})
 
 // View Transition fallback function
 document.startViewTransition ||= async function(callback) {
 	await callback()
 }
-	
+
 // Theme handling
 function setTheme() {
 	// Extract hue from theme attribute
@@ -1259,20 +1269,17 @@ function setTheme() {
 }
 const themeQuery = window.matchMedia("(prefers-color-scheme: dark)")
 themeQuery.onchange = () => setTheme()
-window.afterDataRefresh.push(setTheme)
-setTheme()
+Processing.register(setTheme)
 
 // Make all element IDs globally accessible
-function processCustomIDs() {
+Processing.register(function globalIDs() {
 	for(const element of document.querySelectorAll("[id]")) {
 		const replacer = r => r.toUpperCase().replace("-", "")
 		const id = element.id.replaceAll(/-\w/g, replacer)
 		window[id] = element
 	}
 	window["main"] ||= document.querySelector("main")
-}
-processCustomIDs()
-window.afterDataRefresh.push(processCustomIDs)
+})
 
 // Reusable JSON store wrapper
 class Store {
@@ -1336,7 +1343,7 @@ function trackDataUpdate(type, id) {
 // META tag system
 const META = {}
 window.META = META
-function processMetaTags() {
+Processing.register(function metaTags() {
 	for(const metaTag of document.querySelectorAll("meta[name]:not([name=viewport])")) {
 		let metaContent = metaTag.content
 		if(metaTag.hasAttribute("static")) continue
@@ -1346,9 +1353,7 @@ function processMetaTags() {
 		}
 		META[metaTag.name] = metaContent
 	}
-}
-processMetaTags()
-window.afterDataRefresh.push(processMetaTags)
+})
 
 // Parse URL parameters
 document.location.params = new URLSearchParams(document.location.search)

@@ -2,12 +2,12 @@ let sort
 
 async function updateState() {
 	userTable.classList.add("loading")
-	
+
 	const values = {}
 	for(const filter of filterOptions.querySelectorAll("[name]")) {
 		// Skip unchecked checkboxes
 		if(filter.type == "checkbox" && !filter.checked) continue
-		
+
 		const key = filter.name
 		// Convert duplicate values into array
 		if(key in values) {
@@ -33,7 +33,7 @@ async function updateState() {
 		if(columnOption.checked) columns.push(columnOption.name)
 	}
 	params.set("columns", columns)
-	
+
 	history.replaceState(null, "", `?${decodeURIComponent(params.toString())}`)
 
 	const progressMessage = Popup.create({
@@ -42,7 +42,7 @@ async function updateState() {
 		icon: "progress_activity",
 		time: false
 	})
-	
+
 	await refreshPageData()
 
 	progressMessage.close()
@@ -51,7 +51,8 @@ async function updateState() {
 confirmFiltersButton.onclick = updateState
 confirmColumnsButton.onclick = updateState
 
-function initialiseTable() {
+// Initialise table
+Processing.register(function initialiseUserTable() {
 	userTable.classList.remove("loading")
 	
 	if(window.selectAllCheckbox) {
@@ -69,7 +70,7 @@ function initialiseTable() {
 	for(const link of userTable.querySelectorAll("th a")) {
 		link.onclick = event => {
 			event.preventDefault()
-			sort = link.href.split("sort=")[1]	
+			sort = link.href.split("sort=")[1]
 			updateState()
 		}
 	}
@@ -82,10 +83,7 @@ function initialiseTable() {
 			cell.onclick = event => document.location.href = url
 		}
 	}
-}
-initialiseTable()
-
-window.afterDataRefresh.push(initialiseTable)
+})
 
 function toggleTableLinks(show) {
 	for(const link of userTable.querySelectorAll(".details-link")) link.hidden = !show

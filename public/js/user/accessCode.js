@@ -1,21 +1,18 @@
 const currentLoginTime = window.top?.META.lastLogin
 
-function callback() {
+window.top.processing?.register(function checkAccessCodeUsage() {
 	const newLoginTime = window.top?.META.lastLogin
 	if(currentLoginTime == newLoginTime) return
 
 	// Remove callback
-	if(window.top?.afterDataRefresh) {
-		window.top.afterDataRefresh = window.top.afterDataRefresh.filter(c => c != callback)
-	}
+	window.top.processing?.removeFunction("checkAccessCodeUsage")
+
 	// Close dialog
 	dialog.fullClose()
-}
+})
 
 const expiryTime = 1000 * 60 * 5
 sleep(expiryTime).then(() => dialog.fullClose())
-
-window.top.afterDataRefresh.push(callback)
 
 accessCodeContainer.onclick = () => {
 	copy(accessCode)
