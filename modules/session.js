@@ -4,7 +4,7 @@ import HTTPError from "modules/server/error.js"
 import User from "modules/schemas/user"
 
 // Logout after 6 hours
-const LOGIN_TIMEOUT = 1000 * 60 * 60
+const LOGIN_TIMEOUT = 1000 * 60 * 60 * 6
 
 export default class {
 	constructor(token) {
@@ -108,6 +108,7 @@ export default class {
 		// If timed out, logout
 		if(this.timedOut) {
 			this.logout()
+			delete this.token.time
 			return
 		}
 
