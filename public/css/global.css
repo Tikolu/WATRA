@@ -264,7 +264,10 @@ input.invalid, select.invalid {
 	background-color: var(--red-background) !important;
 }
 
-input[type^=date] {
+input[type^=date], input[type^=time], input[type^=month], input[type^=week] {
+	min-width: 6em;
+	min-height: 1em;
+	
 	&::-webkit-date-and-time-value {
 		text-align: start;
 	}
