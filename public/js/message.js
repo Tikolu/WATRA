@@ -1,1 +1,0 @@
-if(window.handlerLink) handlerLink.click()

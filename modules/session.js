@@ -3,7 +3,7 @@ import HTTPError from "modules/server/error.js"
 
 import User from "modules/schemas/user"
 
-// Logout after 60 minutes
+// Logout after 6 hours
 const LOGIN_TIMEOUT = 1000 * 60 * 60
 
 export default class {
@@ -18,7 +18,7 @@ export default class {
 
 		// Set active user
 		this.token.active = user.id
-		this.resetTimeout()
+		this.token.time = Date.now()
 
 		// Generate client ID
 		this.token.client ||= randomID()
@@ -46,11 +46,6 @@ export default class {
 		return true
 	}
 
-	/** Reset session timeout */
-	resetTimeout() {
-		this.token.loginTime = Date.now()
-	}
-
 	/** Login using an access code */
 	async codeLogin(accessCode) {
 		// Find user matching the access code
@@ -74,13 +69,15 @@ export default class {
 
 		// Remove active user
 		delete this.token.active
-		delete this.token.loginTime
 
 		if(full) {
 			// Remove user from saved users
 			this.token.saved = this.token.saved.filter(id => id != userID)
 			if(!this.token.saved.length) delete this.token.saved
 		}
+
+		// Save logout time
+		this.token.time = Date.now()
 	}
 
 	/** Loads saved users */
@@ -125,7 +122,7 @@ export default class {
 
 		// Reset timeout if less than half time remaining
 		if(this.remainingTime < LOGIN_TIMEOUT / 2) {
-			this.resetTimeout()
+			this.token.time = Date.now()
 		}
 
 		return user
@@ -149,11 +146,11 @@ export default class {
 		return challenge
 	}
 
-	/** Retruns the remaingin amount of time */
+	/** Returns the remaining amount of time before session timeout */
 	get remainingTime() {
-		this.token.loginTime ||= 0
+		this.token.time ||= 0
 
-		const time = LOGIN_TIMEOUT - (Date.now() - this.token.loginTime)
+		const time = LOGIN_TIMEOUT - (Date.now() - this.token.time)
 		if(time < 0) return 0
 		else return time
 	}

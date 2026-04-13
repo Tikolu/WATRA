@@ -40,11 +40,22 @@
 						</div>
 					</div>
 					<div class="entry-content button-row">
-						<button api="login/getKeys?userID=<%= user.id %>">
+						<button
+							api="login/getKeys?userID=<%= user.id %>"
+							<% if($.autoLogin) { %>
+								class="auto-click"
+							<% } %>
+						>
 							<%~ icon`login` %>
 							<span>Zaloguj</span>
 						</button>
-						<button api="logout?remove=<%= user.id %>" class="dangerous"<% if(user.auth.keys.length == 0) { %> data-warning<% } %>>
+						<button
+							api="logout?remove=<%= user.id %>"
+							class="dangerous"
+							<% if(user.auth.keys.length == 0) { %>
+								data-warning
+							<% } %>
+						>
 							<%~ icon`close` %>
 							<span>Usuń z listy</span>
 						</button>

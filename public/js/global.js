@@ -1251,6 +1251,13 @@ Processing.register(function contactLinks() {
 	}
 })
 
+// Click elements with "auto-click" class
+Processing.register(function autoClick() {
+	for(const element of document.getElementsByClassName("auto-click")) {
+		element.click()
+	}
+}, "load")
+
 // View Transition fallback function
 document.startViewTransition ||= async function(callback) {
 	await callback()

@@ -1,6 +1,5 @@
 <% layout("/layouts/body", {
 	title: $.method == "phone" ? "Połączenie telefoniczne" : "Wysyłanie wiadomości",
-	scripts: ["message"],
 	class: [
 		"no-unload",
 		"no-contact-links"
@@ -18,7 +17,7 @@
 	</h1>
 
 	<% if($.link) { %>
-		<a id="handler-link" hidden href="<%= $.link %>"></a>
+		<a id="handler-link" hidden href="<%= $.link %>" class="auto-click"></a>
 		<article>
 			<p>
 				<%~ icon`progress_activity` %>
