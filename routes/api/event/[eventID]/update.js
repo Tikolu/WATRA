@@ -33,8 +33,8 @@ export async function description({targetEvent, description}) {
 
 export async function dates({targetEvent, startDate, startTime, endDate, endTime}) {
 	targetEvent.dates = {
-		start: new Date(`${startDate} ${startTime || "00:00"}`),
-		end: new Date(`${endDate} ${endTime || "00:00"}`)
+		start: new Date(`${startDate} ${startTime || "00:00"}Z`),
+		end: new Date(`${endDate} ${endTime || "00:00"}Z`)
 	}
 	
 	await targetEvent.save()
