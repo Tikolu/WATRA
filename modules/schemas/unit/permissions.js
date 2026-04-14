@@ -112,7 +112,7 @@ export async function CREATE_USER(user) {
 	if(!this.config.defaultRole) return false
 
 	// MANAGE_MEMBERS permission grants CREATE_USER
-	return await user.checkPermission(this.PERMISSIONS.MANAGE_MEMBERS, true)
+	return await user.checkPermission(this.PERMISSIONS.MANAGE_MEMBERS)
 }
 
 /** Managing the unit's members */

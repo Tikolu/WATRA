@@ -1002,7 +1002,7 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 
 		await sleep(250)
 		dialog.remove()
-		processDialogOpeners()
+		DialogOpeners.scan()
 	}
 
 	if(open) {
@@ -1012,51 +1012,55 @@ function createURLDialog(url, open=false, closeOnRefresh=false) {
 }
 
 // "opens-dialog" attribute
-Processing.register(function dialogOpeners() {
-	// Remove all URL dialogs
-	urlDialogs = urlDialogs.filter(dialog => {
-		if(dialog.open && !dialog.closeOnRefresh) return true
-		if(dialog.closeOnRefresh) {
-			dialog.close()
-			sleep(250).then(() => dialog.remove())
-		} else {
-			dialog.remove()
-		}
-		return false
-	})
-
-	for(const opener of window.dialogOpeners || []) {
-		if(opener.removeDialogOpener) opener.removeDialogOpener()
-	}
-	window.dialogOpeners = []
-
-	for(const element of document.querySelectorAll("[opens-dialog]")) {
-		element.onclick = async event => {
-			event.preventDefault()
-
-			const dialogID = element.getAttribute("opens-dialog")
-
-			// URL mode
-			if(dialogID.startsWith("/")) {
-				element.dialog = createURLDialog(dialogID)
-
-
-			// Dialog mode
+const DialogOpeners = {
+	list: [],
+	scan() {
+		// Remove all URL dialogs
+		urlDialogs = urlDialogs.filter(dialog => {
+			if(dialog.open && !dialog.closeOnRefresh) return true
+			if(dialog.closeOnRefresh) {
+				dialog.close()
+				sleep(250).then(() => dialog.remove())
 			} else {
-				element.dialog = document.getElementById(dialogID)
-				if(!element.dialog) {
-					console.warn(`Dialog with ID ${dialogID} not found for element`, element)
-					return
-				}
+				dialog.remove()
 			}
+			return false
+		})
 
-			return await element.dialog.result()
+		for(const opener of DialogOpeners.list) {
+			if(opener.removeDialogOpener) opener.removeDialogOpener()
 		}
-		element.removeDialogOpener = () => element.onclick = undefined
+		DialogOpeners.list = []
 
-		window.dialogOpeners.push(element)
+		for(const element of document.querySelectorAll("[opens-dialog]")) {
+			element.onclick = async event => {
+				event.preventDefault()
+
+				const dialogID = element.getAttribute("opens-dialog")
+
+				// URL mode
+				if(dialogID.startsWith("/")) {
+					element.dialog = createURLDialog(dialogID)
+
+
+				// Dialog mode
+				} else {
+					element.dialog = document.getElementById(dialogID)
+					if(!element.dialog) {
+						console.warn(`Dialog with ID ${dialogID} not found for element`, element)
+						return
+					}
+				}
+
+				return await element.dialog.result()
+			}
+			element.removeDialogOpener = () => element.onclick = undefined
+
+			DialogOpeners.list.push(element)
+		}
 	}
-})
+}
+Processing.register(DialogOpeners.scan)
 
 // Custom input fields
 Processing.register(function customInputs() {
