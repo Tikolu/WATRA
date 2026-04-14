@@ -14,7 +14,7 @@ function redirectAfterLogin() {
 			event: "navigate",
 			path: "/"
 		})
-		window.top.location.href = "/"
+		window.top.location.replace("/")
 	}
 }
 
