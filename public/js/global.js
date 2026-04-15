@@ -1257,6 +1257,7 @@ Processing.register(function contactLinks() {
 
 // Click elements with "auto-click" class
 Processing.register(function autoClick() {
+	if(!document.hasFocus()) return
 	for(const element of document.getElementsByClassName("auto-click")) {
 		element.click()
 	}
