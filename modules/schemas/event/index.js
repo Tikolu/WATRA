@@ -359,8 +359,8 @@ export class EventClass extends UnitClass {
 		await this.populate("upperUnits")
 		let eventOrg
 		for(const upperUnit of this.upperUnits) {
-			// Skip units without org
-			if(!upperUnit.org) continue
+			// Unit without org causes event to have no org
+			if(!upperUnit.org) return null
 			// Clear event org if unit with other org is encountered
 			if(eventOrg && upperUnit.org != eventOrg) {
 				return null
