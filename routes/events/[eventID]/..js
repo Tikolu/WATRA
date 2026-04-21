@@ -18,7 +18,9 @@ export default async function({user, targetEvent}) {
 	await targetEvent.populate({
 		"upperUnits": {},
 		"invitedUnits": {
-			"unit": {},
+			"unit": {
+				"upperUnits": {}
+			}
 		},
 		"roles": "user"
 	})
@@ -48,8 +50,11 @@ export default async function({user, targetEvent}) {
 		}
 	}
 
-	// Sort invited units
-	targetEvent.invitedUnits.sort((a, b) => a.unit.displayName.localeCompare(b.unit.displayName))
+	// Sort invited units by rank and name
+	targetEvent.invitedUnits.sort((a, b) => {
+		if(a.unit.config.rank != b.unit.config.rank) return b.unit.config.rank - a.unit.config.rank
+		else return a.unit.displayName.localeCompare(b.unit.displayName)
+	})
 
 	// Check permissions on upper units
 	for(const upperUnit of targetEvent.upperUnits || []) {

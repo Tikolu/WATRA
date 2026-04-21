@@ -1,9 +1,9 @@
 <p>
 	<% if($.targetUnit.upperUnits?.length > 0) { %>
 		<%= $.targetUnit.typeName %> w <%~ include("/templates/linkList", {
-			links: $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName])
+			links: $.targetUnit.upperUnits.map(j => [`/units/${j.id}`, j.displayName || "(jednostka)"])
 		}) %>
-		<% if($.targetUnit.org && $.targetUnit.upperUnits.some(u => u.org != $.targetUnit.org)) { %>
+		<% if($.showOrg !== false && $.targetUnit.org && $.targetUnit.upperUnits.some(u => u.org != $.targetUnit.org)) { %>
 			&#x20;(<%= Config.orgs[$.targetUnit.org]?.name || $.targetUnit.org %>)
 		<% } %>
 	<% } else { %>

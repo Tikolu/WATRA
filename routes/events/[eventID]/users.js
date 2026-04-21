@@ -53,6 +53,7 @@ export default async function({user, targetEvent}) {
 						{value: "declined", name: "Odrzucone"},
 						{value: "pending", name: "Brak odpowiedzi"}
 					],
+					default: "accepted",
 					callback(targetUser) {
 						return !this.value || targetUser.$locals.participant.state == this.value
 					}

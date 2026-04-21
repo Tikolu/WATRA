@@ -24,6 +24,12 @@
 		</div>
 		<div class="entry-title">
 			<h3><%= $.unitInvite.unit.displayName %></h3>
+			<p>
+				<%~ include("/unit/upperUnitDescription", {
+					targetUnit: $.unitInvite.unit,
+					showOrg: false
+				}) %>
+			</p>
 		</div>
 	</div>
 
@@ -56,7 +62,7 @@
 			<% } %>
 
 			<% if($.user.hasPermission($.unitInvite.unit.PERMISSIONS.MANAGE_INVITES) && !$.targetEvent.isPast) { %>
-				<% if($.unitInvite.state == "accepted") { %>
+				<% if($.unitInvite.state == "accepted" && $.targetEvent.registrationOpen) { %>
 					<button opens-dialog="/units/<%= $.unitInvite.unit.id %>/events/<%= $.targetEvent.id %>/chooseParticipants">
 						<%~ icon`group_add` %>
 						<% if(invitedParticipants.length > 0) { %>
@@ -79,8 +85,6 @@
 				<% } %>
 			<% } %>
 		</div>
-	<% } else { %>
-		<%~ include("/unit/upperUnitDescription", {targetUnit: $.unitInvite.unit}) %>
 	<% } %>
 		
 	<% if(
@@ -97,6 +101,7 @@
 				declined: 0
 			}
 			for(const participant of invitedParticipants) {
+				if(!$.targetEvent.registrationOpen && participant.state != "accepted") continue
 				categories[participant.state] += 1
 			}
 		%>
