@@ -29,11 +29,23 @@ export default async function({user, targetUnit, userIDs, moveUser}) {
 
 		// Check permissions
 		let hasPermission = false
-		await targetUser.populate("children")
-		for(const unit of [...targetUser.listUnits(true), ...targetUser.children.flatMap(c => c.listUnits(true)).toArray()]) {
+		for await(const unit of targetUser.listUnits(true)) {
 			if(await user.checkPermission(unit.PERMISSIONS.MANAGE_MEMBERS)) {
 				hasPermission = true
 				break
+			}
+		}
+
+		if(!hasPermission) {
+			await targetUser.populate("children")
+			for(const child of targetUser.children) {
+				for await(const unit of child.listUnits(true)) {
+					if(await user.checkPermission(unit.PERMISSIONS.MANAGE_MEMBERS)) {
+						hasPermission = true
+						break
+					}
+				}
+				if(hasPermission) break
 			}
 		}
 
