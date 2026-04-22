@@ -8,7 +8,14 @@
 <main>
 	<section>
 		<h2>Wybierz dokument</h2>
-		<input type="file" name="files" accept="application/pdf, image/png, image/jpeg" required>
+		<input type="file" id="file-input" name="files" accept="application/pdf, image/png, image/jpeg" required>
+	</section>
+	<section>
+		<h2>Nazwa dokumentu</h2>
+		<p>Będzie wyświetlana na stronie akcji</p>
+		<form>
+			<input type="text" id="file-name" name="fileName" placeholder="(dokument bez nazwy)" required>
+		</form>
 	</section>
 	<section>
 		<h2>Dostęp do dokumentu</h2>
@@ -20,7 +27,7 @@
 			<label for="role-access">Kadra akcji</label>
 
 			<input type="checkbox" id="participant-access" name="access" value="participant">
-			<label for="participant-access">Zaproszeni na akcję</label>
+			<label for="participant-access">Uczestnicy (w tym nie zaakceptowani)</label>
 		</form>
 	</section>
 </main>

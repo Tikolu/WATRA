@@ -12,10 +12,11 @@ export async function _open({user, targetEvent}) {
 }
 
 const allowFileTypes = ["application/pdf", "image/png", "image/jpeg"]
-export async function add({user, targetEvent, files, access}) {
+export async function add({user, targetEvent, files, fileName, access}) {
 	if(!files?.length) throw new HTTPError(400, "Nie załączono dokumentu")
 	if(files.length > 1) throw new HTTPError(400, "Można dodać tylko jeden dokument na raz")
-	if(targetEvent.files.length > 4) throw new HTTPError(400, "Limit 4 dokumentów na akcję")
+	if(targetEvent.files.length > 8) throw new HTTPError(400, "Limit 8 dokumentów na akcję")
+	if(targetEvent.files.some(file => file.name == (fileName || files[0].name))) throw new HTTPError(400, "Dokument o tej nazwie już istnieje w tej akcji")
 
 	// Check access
 	if(access.includes("participant")) access = "participant"
@@ -28,7 +29,7 @@ export async function add({user, targetEvent, files, access}) {
 		throw new Error("Nieobsługiwany typ pliku")
 	}
 
-	targetEvent.files.push({file, access})
+	targetEvent.files.push({file, access, name: fileName || undefined})
 	await targetEvent.save()
 
 	await file.save()

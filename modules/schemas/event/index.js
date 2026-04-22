@@ -76,6 +76,12 @@ export class EventClass extends UnitClass {
 				deriveID: true,
 				ref: "File"
 			},
+			name: {
+				type: String,
+				get(name) {
+					return name || this.file.name
+				}
+			},
 			access: {
 				type: String,
 				enum: ["owner", "role", "participant"]

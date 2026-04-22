@@ -1208,6 +1208,9 @@ document.documentElement.addEventListener("click", event => {
 
 // Prevent form submission
 Processing.register(function disableForms() {
+	for(const form of document.querySelectorAll("form")) {
+		form.addEventListener("submit", event => event.preventDefault())
+	}
 	for(const button of document.querySelectorAll("form button")) {
 		button.type = "button"
 	}

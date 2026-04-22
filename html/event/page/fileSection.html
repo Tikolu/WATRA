@@ -1,13 +1,24 @@
 <section id="event-files">
 	<h2>
-		<%~ icon`draft` %>
+		<%~ icon`docs` %>
 		Dokumenty
 	</h2>
 	<% if($.files.length > 0) { %>
 		<div class="entry-grid">
 			<% for(const file of $.files) { %>
-				<div>
-					<h3><%= file.file.name %></h3>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+					<div>
+				<% } else { %>
+					<a href="<%= file.file.url %>" target="_blank">
+				<% } %>
+					<div class="entry-header">
+						<div class="entry-image">
+							<%~ icon`docs` %>
+						</div>
+						<div class="entry-title">
+							<h3><%= file.name %></h3>
+						</div>
+					</div>
 					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 						<p>
 							<% if(file.access == "owner") { %>
@@ -19,12 +30,12 @@
 							<% } %>
 						</p>
 					<% } %>
-					<div class="button-row">
-						<button href="<%= file.file.url %>" target="_blank">
-							<%~ icon`file_open` %>
-							Otwórz
-						</button>
-						<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+						<div class="button-row">
+							<button href="<%= file.file.url %>" target="_blank">
+								<%~ icon`file_open` %>
+								Otwórz
+							</button>
 							<button
 								class="dangerous"
 								api="event/<%= $.targetEvent.id %>/file/<%= file.id %>/delete"
@@ -35,9 +46,13 @@
 								<%~ icon`delete` %>
 								Usuń z akcji
 							</button>
-						<% } %>
+						</div>
+					<% } %>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 					</div>
-				</div>
+				<% } else { %>
+					</a>
+				<% } %>
 			<% } %>
 		</div>
 	<% } else { %>
