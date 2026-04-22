@@ -1,14 +1,14 @@
 <section>
 	<h2>
 		<%~ icon`assignment` %>
-		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS)) { %>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
 			Dane
 		<% } else { %>
 			Kontakt
 		<% } %>
 	</h2>
 	<div class="vertical-split">
-		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS)) { %>
+		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT)) { %>
 			<form>
 				<label for="first-name-input">Imię:</label>
 				<input

@@ -143,7 +143,7 @@
 	</div>
 </section>
 
-<% if(($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) || $.targetUser.email || $.targetUser.phone)) { %>
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) || $.user.hasPermission($.targetUser.PERMISSIONS.EDIT) || $.targetUser.email || $.targetUser.phone) { %>
 	<%~ include("detailsSection", $) %>
 <% } %>
 
