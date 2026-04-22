@@ -36,26 +36,24 @@
 						</div>
 						<div class="entry-title">
 							<h3><%= userInvite.user.displayName %></h3>
+								<p>
+									<% if(userInvite.state == "pending") { %>
+										<% if($.targetEvent.registrationOpen) { %>
+											<%~ icon`progress_activity` %>
+											Oczekiwana odpowiedź...
+										<% } else { %>
+											<%~ icon`question_mark` %>
+											Brak odpowiedzi
+										<% } %>
+									<% } else if(userInvite.state == "accepted") { %>
+										<%~ icon`check_circle` %>
+										Zaakceptowano
+									<% } else if(userInvite.state == "declined") { %>
+										<%~ icon`cancel` %>
+										Odrzucono
+									<% } %>
+								</p>
 						</div>
-					</div>
-					<div class="entry-content">
-						<p>
-							<% if(userInvite.state == "pending") { %>
-								<% if($.targetEvent.registrationOpen) { %>
-									<%~ icon`progress_activity` %>
-									Oczekiwana odpowiedź...
-								<% } else { %>
-									<%~ icon`question_mark` %>
-									Brak odpowiedzi
-								<% } %>
-							<% } else if(userInvite.state == "accepted") { %>
-								<%~ icon`check_circle` %>
-								Zaakceptowano
-							<% } else if(userInvite.state == "declined") { %>
-								<%~ icon`cancel` %>
-								Odrzucono
-							<% } %>
-						</p>
 					</div>
 					<% if(!$.targetEvent.isPast && ((userInvite.state != "accepted" && $.targetEvent.registrationOpen) || userInvite.state == "accepted")) { %>
 						<div class="entry-content">
