@@ -69,8 +69,8 @@ export default async function({user, targetUser}) {
 			const inviteState = event.participants.id(targetUser.id)?.state
 			// Skip invites in which user has role (will be shown in eventRoles section)
 			if(inviteState == "accepted" && targetUser.eventRoles.some(role => role.unit.id == event.id)) continue
-			// Skip invites for events which have closed registration and user has declined
-			if(event.registrationClosed && inviteState == "declined") continue
+			// Skip invites for events which have closed registration and user has not accepted
+			if(!event.registrationOpen && inviteState != "accepted") continue
 			eventInvites.push({event, inviteState})
 		}
 	}

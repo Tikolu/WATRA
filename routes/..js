@@ -160,7 +160,7 @@ export default async function({user}) {
 		if(approvalState === true && !inviteStates.length) continue
 
 		// If registration is closed, skip event if user is not an approver and declined participation
-		if(approvalState !== false && event.registrationClosed && inviteStates.every(s => !s || s == "declined")) continue
+		if(approvalState !== false && !event.registrationOpen && inviteStates.every(s => !s || s == "declined")) continue
 
 		events.push({
 			event,
