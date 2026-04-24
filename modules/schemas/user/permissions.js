@@ -160,7 +160,7 @@ export async function EDIT(user) {
 /** Creating parent users or adding existing users as parents to the user */
 export async function ADD_PARENT(user) {
 	// Lack of EDIT permission denies ADD_PARENT
-	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+	if(!await user.checkPermission(this.PERMISSIONS.EDIT)) return false
 
 	// Block adding parent if user has no passkeys
 	if(Config.passkeyRequired && user.auth.keys.length == 0) return false
@@ -209,7 +209,7 @@ export async function SET_IMAGE(user) {
 /** Deleting the user */
 export async function DELETE(user) {
 	// Lack of EDIT permission denies DELETE
-	if(await user.checkPermission(this.PERMISSIONS.EDIT, true) === false) return false
+	if(!await user.checkPermission(this.PERMISSIONS.EDIT)) return false
 
 	// User can never delete themselves
 	if(user.id == this.id) return false
