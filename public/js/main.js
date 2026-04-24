@@ -1,40 +1,49 @@
 // Connect to stream API to detect updates
-const eventSource = new EventSource("/api/stream")
+let eventSource
+function setupStreaming() {
+	eventSource?.close()
+	eventSource = new EventSource("/api/stream")
 
-// Listen for update events
-eventSource.addEventListener("update", event => {
-	if(!event.data) return
-	const {type, id} = JSON.parse(event.data)
-	trackDataUpdate(type, id)
-	checkRefreshCondition(type, id)
-})
+	// Listen for update events
+	eventSource.addEventListener("update", event => {
+		if(!event.data) return
+		const {type, id} = JSON.parse(event.data)
+		trackDataUpdate(type, id)
+		checkRefreshCondition(type, id)
+	})
 
-// Listen for error events
-eventSource.addEventListener("error", event => {
-	if(!event.data) return
-	// Attempt parsing JSON, otherwise report plain text
-	let error
-	try {
-		error = JSON.parse(event.data)
-	} catch {
-		error = event.data
-	}
+	// Listen for error events
+	eventSource.addEventListener("error", event => {
+		if(!event.data) return
+		// Attempt parsing JSON, otherwise report plain text
+		let error
+		try {
+			error = JSON.parse(event.data)
+		} catch {
+			error = event.data
+		}
 
-	// Shut down event source
+		// Shut down event source
+		eventSource.close()
+
+		if(error.code == 403) {
+			// Redirect to login page
+			window.top.channel?.postMessage({
+				event: "navigate",
+				path: "/login"
+			})
+			// Reload page
+			window.top.location.reload()
+
+		} else {
+			throw error.message || error
+		}
+	})
+}
+
+// Close event source when page is unloaded
+window.addEventListener("beforeunload", () => {
 	eventSource.close()
-
-	if(error.code == 403) {
-		// Redirect to login page
-		window.top.channel?.postMessage({
-			event: "navigate",
-			path: "/login"
-		})
-		// Reload page
-		window.top.location.reload()
-
-	} else {
-		throw error.message || error
-	}
 })
 
 // Refresh conditions system
@@ -85,6 +94,9 @@ function checkDataUpdates() {
 window.initialLoadTime = Date.now()
 window.updatedTime = Date.now()
 window.addEventListener("pageshow", event => {
+	// Start streaming
+	setupStreaming()
+
 	// Check if page restored from bfcache
 	if(!event.persisted) {
 		window.pageShowCount = 0

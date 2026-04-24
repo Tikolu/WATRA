@@ -28,6 +28,9 @@ export default async function * ({user}) {
 			sleep(10000)
 		])
 
+		// Check if connection is still open
+		if(!this.response.open) return
+
 		// Check if session has timed out
 		if(this.session.timedOut) {
 			throw new HTTPError(403)
