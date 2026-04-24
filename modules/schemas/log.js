@@ -21,6 +21,7 @@ const eventTypes = {
 	"user/*/unconfirm": "Cofnięto zatwierdzenie danych $USER",
 	"user/*/parent/create": "Utworzono rodzica dla $USER",
 	"user/*/parent/link": "Dodano rodzica do $USER",
+	"user/*/parent/*/remove": "Usunięto rodzica z $USER",
 	"user/*/medical/*": "Edytowano dane medyczne $USER",
 	"user/*/archive": "Zarchiwizowano $USER",
 	"user/*/unarchive": "Cofnięto archiwizację $USER",

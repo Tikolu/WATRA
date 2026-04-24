@@ -12,7 +12,7 @@ async function updateFilters() {
 	}
 	
 	let url = `?start=${filterStart.value}&end=${filterEnd.value}`
-	url += `&direct=${directFilter.checked}`
+	if(window.directFilter) url += `&direct=${directFilter.checked}`
 	if(eventTypeFilter.value) url += `&type=${eventTypeFilter.value}`
 	history.replaceState(null, "", url)
 
@@ -30,5 +30,5 @@ async function updateFilters() {
 
 filterStart.addEventListener("submit", updateFilters)
 filterEnd.addEventListener("submit", updateFilters)
-directFilter.addEventListener("change", updateFilters)
+if(window.directFilter) directFilter.addEventListener("change", updateFilters)
 eventTypeFilter.addEventListener("change", updateFilters)

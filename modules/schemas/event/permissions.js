@@ -68,6 +68,17 @@ export async function DELETE(user) {
 	return false
 }
 
+/** Accessing the event's activity log */
+export async function ACCESS_ACTIVITY(user) {
+	// Lack of ACCESS permission denies ACCESS_ACTIVITY
+	if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
+
+	// "accessActivity" roles in event or upper units can access activity log
+	if(await user.hasRoleInUnits("accessActivity", this.traverse("upperUnits", {includeSelf: true}))) return true
+
+	return false
+}
+
 /** Setting roles of users within the event */
 export async function SET_ROLE(user) {
 	// Lack of ACCESS permission denies SET_ROLE

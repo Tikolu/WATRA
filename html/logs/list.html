@@ -39,6 +39,7 @@
 				<option value>Wszystkie</option>
 				<hr>
 				<% for(const eventType in $.Log.eventTypes) { %>
+					<% if($.eventTypeFilter && !$.eventTypeFilter(eventType)) continue %>
 					<option
 						value="<%= eventType %>"
 						<% if($.type == eventType) { %>
@@ -50,10 +51,12 @@
 				<% } %>
 			</select>
 		</form>
-		<form>
-			<input type="checkbox" id="direct-filter" name="direct"<%= $.directOnly ? "checked" : "" %>>
-			<label for="direct-filter">Bezpośrednio dotyczące <%= $.targetUser?.displayName || $.targetUnit?.displayName %></label>
-		</form>
+		<% if($.directOnly !== null) { %>
+			<form>
+				<input type="checkbox" id="direct-filter" name="direct"<%= $.directOnly ? "checked" : "" %>>
+				<label for="direct-filter">Bezpośrednio dotyczące <%= $.targetUser?.displayName || $.targetUnit?.displayName %></label>
+			</form>
+		<% } %>
 	</div>
 </div>
 <hr>

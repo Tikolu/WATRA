@@ -33,4 +33,10 @@ export async function add({user, targetEvent, files, fileName, access}) {
 	await targetEvent.save()
 
 	await file.save()
+
+	return {
+		file: file.name,
+		name: fileName,
+		access
+	}
 }

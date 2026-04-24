@@ -386,7 +386,8 @@
 			"tags": [
 				"public",
 				
-				"accessUser"
+				"accessUser",
+				"accessActivity"
 			]
 		},
 		"komendant": {
@@ -401,7 +402,8 @@
 				"manageEvent",
 				"setRole",
 				"accessUser",
-				"manageForms"
+				"manageForms",
+				"accessActivity"
 			]
 		},
 		"zastępcaKomendanta": {
@@ -410,7 +412,8 @@
 			"tags": [
 				"manageEvent",
 				"accessUser",
-				"manageForms"
+				"manageForms",
+				"accessActivity"
 			]
 		},
 		"oboźny": {
