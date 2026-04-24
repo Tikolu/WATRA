@@ -188,16 +188,28 @@
 				<%~ include("/user/templates/userEntry", {targetUser: parent}) %>
 			<% } %>
 		</div>
-		<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
-			<button id="add-parent-button" opens-dialog="/users/<%= $.targetUser.id %>/addParent">
-				<%~ icon`person_add` %>
-				<% if($.targetUser.isAdult) { %>
-					Dodaj kontakt alarmowy
-				<% } else { %>
-					Dodaj rodzica / opiekuna
-				<% } %>
-			</button>
-		<% } %>
+		<div class="button-row">
+			<% if($.user.hasPermission($.targetUser.PERMISSIONS.ADD_PARENT)) { %>
+				<button id="add-parent-button" opens-dialog="/users/<%= $.targetUser.id %>/parents/add">
+					<%~ icon`person_add` %>
+					<% if($.targetUser.isAdult) { %>
+						Dodaj kontakt alarmowy
+					<% } else { %>
+						Dodaj rodzica / opiekuna
+					<% } %>
+				</button>
+			<% } %>
+			<% if($.user.hasPermission($.targetUser.PERMISSIONS.EDIT) && $.parents.length > 0) { %>
+				<button id="manage-parents-button" opens-dialog="/users/<%= $.targetUser.id %>/parents/manage">
+					<%~ icon`delete` %>
+					<% if($.targetUser.isAdult) { %>
+						Usuń kontakty alarmowe
+					<% } else { %>
+						Usuń rodziców / opiekunów
+					<% } %>
+				</button>
+			<% } %>
+		</div>
 	</section>
 <% } %>
 

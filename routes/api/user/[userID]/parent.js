@@ -50,3 +50,27 @@ export async function link({user, targetUser, parentID}) {
 		userID: parentUser.id
 	}
 }
+
+export async function remove({user, targetUser, parentID}) {
+	// Check permissions
+	await user.requirePermission(targetUser.PERMISSIONS.EDIT)
+
+	const parents = Array.create(parentID)
+
+	if(!parents.length) {
+		throw new HTTPError(400, "Nie wybrano użytkowników")
+	}
+	await parents.populate({}, {
+		ref: "User",
+		placeholders: new HTTPError(404, "Użytkownik nie istnieje")
+	})
+
+	for(const parent of parents) {
+		if(parent.children.length > 1 || parent.roles.length > 0 || parent.eventRoles.length > 0) {
+			await targetUser.removeParent(parent)
+		} else {
+			await user.requirePermission(parent.PERMISSIONS.DELETE)
+			await parent.delete()
+		}
+	}
+}

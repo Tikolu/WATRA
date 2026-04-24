@@ -2,7 +2,7 @@ import html from "modules/html.js"
 import Config from "modules/config.js"
 import UnitTree from "modules/schemas/unit/tree.js"
 
-export default async function({user, targetUser, action}) {
+export async function add({user, targetUser, action}) {
 	// Check for permissions
 	await user.requirePermission(targetUser.PERMISSIONS.ADD_PARENT)
 
@@ -36,7 +36,7 @@ export default async function({user, targetUser, action}) {
 			return true
 		},
 		sortMembers: (a, b) => {
-			// Sort, priorising same last name
+			// Sort, prioritising same last name
 			if(!a.name.last || !b.name.last) return 0
 			if(!a.name.first || !b.name.first) return 0
 			const aSameLastName = (a.name.last.includes(targetUser.name.last) || targetUser.name.last.includes(a.name.last)) ? 1 : 0
@@ -57,10 +57,22 @@ export default async function({user, targetUser, action}) {
 		}
 	}
 
-	return html("user/addParent", {
+	return html("user/parents/add", {
 		user,
 		targetUser,
 		tree,
 		action
+	})
+}
+
+export async function manage({user, targetUser}) {
+	// Check for permissions
+	await user.requirePermission(targetUser.PERMISSIONS.EDIT)
+
+	await targetUser.populate("parents")
+
+	return html("user/parents/manage", {
+		user,
+		targetUser
 	})
 }

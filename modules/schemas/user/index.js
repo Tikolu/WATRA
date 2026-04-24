@@ -228,6 +228,14 @@ export class UserClass {
 		await this.save()
 	}
 
+	/** Removes the provided user as a parent from the user */
+	async removeParent(parent) {
+		this.parents = this.parents.filter(id => id != parent.id)
+		parent.children = parent.children.filter(id => id != this.id)
+		await parent.save()
+		await this.save()
+	}
+
 	/** Returns the user's role in the given unit */
 	async getRoleInUnit(unit) {
 		await unit.populate("roles")

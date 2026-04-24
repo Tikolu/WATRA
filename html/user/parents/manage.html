@@ -1,0 +1,60 @@
+<% layout("/layouts/dialog", {
+	scripts: ["user/parent/manage"],
+	meta: {
+		userID: $.targetUser.id
+	}
+}) %>
+<% if($.targetUser.isAdult) { %>
+	<h1><%= $.targetUser.displayName %> - Usuwanie kontaktów alarmowych</h1>
+<% } else { %>
+	<h1><%= $.targetUser.displayName %> - Usuwanie rodziców / opiekunów</h1>
+<% } %>
+<main>
+	<section>
+		<% if($.targetUser.isAdult) { %>
+			<h2>Wybierz kontakty alarmowe do usunięcia</h2>
+		<% } else { %>
+			<h2>Wybierz rodziców / opiekunów do usunięcia</h2>
+		<% } %>
+		<div class="entry-grid full">
+			<% for(const parent of $.targetUser.parents) { %>
+				<div class="entry">
+					<div class="entry-header">
+						<input type="checkbox" name="parentID" value="<%= parent.id %>" id="parent-<%= parent.id %>"
+							<% if(parent.children.length == 1 && parent.roles.length == 0 && parent.eventRoles.length == 0 && parent.auth.lastLogin) { %>
+								disabled
+							<% } %>
+						>
+						<label for="parent-<%= parent.id %>">
+							<h3><%= parent.displayName %></h3>
+						</label>
+					</div>
+					<div class="entry-content">
+						<% if(parent.children.length > 1 || parent.roles.length > 0 || parent.eventRoles.length > 0) { %>
+							<p>Profil zostanie odłączony od profilu <%= $.targetUser.displayName %>, ale nie zostanie usunięty.</p>
+						<% } else if(parent.auth.lastLogin) { %>
+							<p>Nie można usunąć aktywnego profilu.</p>
+						<% } else { %>
+							<p>Profil i wszystkie jego dane zostaną trwale usunięte.</p>
+						<% } %>
+					</div>
+				</div>
+			<% } %>
+		</div>
+	</section>
+</main>
+<hr>
+<div class="button-row">
+	<button>
+		<%~ icon`arrow_back` %>
+		Anuluj
+	</button>
+	<button api="user/[userID]/parent/remove" class="confirm dangerous">
+		<%~ icon`delete` %>
+		<% if($.targetUser.isAdult) { %>
+			Usuń kontakty alarmowe
+		<% } else { %>
+			Usuń rodziców / opiekunów
+		<% } %>
+	</button>
+</div>
