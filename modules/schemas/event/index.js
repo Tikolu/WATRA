@@ -137,7 +137,6 @@ export class EventClass extends UnitClass {
 		return Array.conditional(
 			!this.name, "name",
 			!this.description, "description",
-			!this.location, "location",
 			!this.dates.start || !this.dates.end, "dates"
 		)
 	}
