@@ -1,21 +1,33 @@
-<section>
-	<h2>
-		<%~ icon`info` %>
-		Szczegóły akcji
-	</h2>
-	<h3>
-		<%~ icon`assignment` %>
-		Opis akcji
-	</h3>
-	<textarea
-		id="event-description-input"
-		api="event/[eventID]/update/description"
-		name="description"
-		placeholder="(brak opisu)"
-		<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
-			disabled
+<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.description) { %>
+	<section>
+		<h2>
+			<%~ icon`assignment` %>
+			Opis
+		</h2>
+		<article id="event-description">
+			<%~ include("/templates/formatting", {
+				content: $.targetEvent.description || "(brak opisu)"
+			}) %>
+		</article>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+			<textarea
+				id="event-description-input"
+				api="event/[eventID]/update/description"
+				name="description"
+				placeholder="(brak opisu)"
+				hidden
+			><%= $.targetEvent.description || "" %></textarea>
 		<% } %>
-	><%= $.targetEvent.description || "" %></textarea>
+		<div class="button-row">
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+				<button id="event-description-button">
+					<%~ icon`edit` %>
+					Edytuj opis
+				</button>
+			<% } %>
+		</div>
+	</section>
+<% } %>
 
 	<div class="vertical-split">
 		<% if($.targetEvent.dates.start || $.targetEvent.dates.end || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>

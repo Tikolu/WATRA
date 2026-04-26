@@ -1,0 +1,39 @@
+<%
+	// HTML escape content
+	$.content = capture(() => { %><%= $.content %><% })
+
+	// Bold text
+	$.content = $.content.replace(/\*(.+?)\*/g, "<strong>$1</strong>")
+
+	// Italic text
+	$.content = $.content.replace(/_(.+?)_/g, "<em>$1</em>")
+
+	// Links
+	$.content = $.content.replace(/((https?:\/\/)[^\s]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>")
+
+	// Line breaks
+	$.content = $.content.replace(/(?<!\n)\n(?![\n-])/g, "<br>")
+
+	let groupOpen = false
+%>
+<% for(let line of $.content.split("\n")) { %>
+	<% line = line.trim() %>
+	<% if(line.startsWith("- ")) { %>
+		<% if(!groupOpen) { %>
+			<ul>
+			<% groupOpen = true %>
+		<% } %>
+		<li><%~ line.substring(2).trim() %></li>
+	<% } else { %>
+		<% if(groupOpen) { %>
+			</ul>
+			<% groupOpen = false %>
+		<% } %>
+		<% if(!line) continue %>
+		<% if(line.startsWith("#")) { %>
+			<h3><%~ line.substring(1).trim() %></h3>
+		<% } else { %>
+			<p><%~ line %></p>
+		<% } %>
+	<% } %>
+<% } %>

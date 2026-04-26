@@ -9,7 +9,7 @@ API.registerHandler("event/[eventID]/update/name", {
 })
 
 API.registerHandler("event/[eventID]/update/description", {
-	successText: "Zapisano opis",
+	successText: "Zapisano opis"
 })
 
 API.registerHandler("event/[eventID]/update/dates", {
@@ -49,3 +49,22 @@ API.registerHandler("event/[eventID]/approval/clear", {
 	progressText: "Usuwanie zatwierdzenia...",
 	successText: "Usunięto zatwierdzenie"
 })
+
+if(window.eventDescriptionButton) {
+	eventDescriptionButton.onclick = () => {
+		document.startViewTransition(() => {
+			eventDescriptionButton.hidden = true
+			eventDescription.hidden = true
+			eventDescriptionInput.hidden = false
+			eventDescriptionInput.focus()
+		})
+	}
+
+	eventDescriptionInput.onblur = () => {
+		document.startViewTransition(() => {
+			eventDescriptionButton.hidden = false
+			eventDescription.hidden = false
+			eventDescriptionInput.hidden = true
+		})
+	}
+}
