@@ -45,22 +45,7 @@ API.registerHandler("event/[eventID]/file/[fileID]/delete", {
 	successText: "Usunięto"
 })
 
-// Unlock editing
-if(window.confirmUnlockEditingButton) {
-	window.confirmUnlockEditingButton.onclick = () => {
-		unlockEditingButton.remove()
-	
-		const disabledElements = [
-			eventTitleInput,
-			eventDescriptionInput,
-			eventStartDateInput,
-			eventStartTimeInput,
-			eventEndDateInput,
-			eventEndTimeInput,
-			eventLocationInput,
-			...eventFiles.querySelectorAll("button[disabled]")
-		]
-
-		disabledElements.forEach(e => e.disabled = false)
-	}
-}
+API.registerHandler("event/[eventID]/approval/clear", {
+	progressText: "Usuwanie zatwierdzenia...",
+	successText: "Usunięto zatwierdzenie"
+})

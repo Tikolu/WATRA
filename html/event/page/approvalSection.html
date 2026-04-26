@@ -11,6 +11,27 @@
 			<p><%~ icon`cancel` %> Akcja nie jest zatwierdzona!</p>
 		<% } %>
 	</article>
+	<% if($.targetEvent.approvalState && $.user.hasPermission($.targetEvent.PERMISSIONS.MANAGE)) { %>
+		<button opens-dialog="unapprove-dialog">
+			<%~ icon`close` %>
+			Usuń zatwierdzenia
+		</button>
+		<dialog id="unapprove-dialog">
+			<h1>Usuwanie zatwierdzeń akcji</h1>
+			<p>Usuń zatwierdzenia aby odblokować edycję szczegółów akcji.</p>
+			<p>Akcja będzie wymagać ponownego zatwierdzenia.</p>
+			<div class="button-row">
+				<button>
+					<%~ icon`arrow_back` %>
+					Anuluj
+				</button>
+				<button api="event/[eventID]/approval/clear" class="dangerous">
+					<%~ icon`close` %>
+					Usuń zatwierdzenia
+				</button>
+			</div>
+		</dialog>
+	<% } %>
 
 	<% const md = $.targetEvent.missingDetails %>
 	<% const warnings = Array.conditional(

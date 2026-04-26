@@ -17,14 +17,25 @@ export async function ACCESS(user) {
 		if(this.participants.hasID(child.id)) return true
 	}
 
-	// "manageEvent" roles in event and upperUnit can access
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
+	// "manageEvent" roles in upperUnits can access
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits"))) return true
 
 	// "manageEventInvite" roles in any invited unit (or upper units) can access
 	await this.populate({"invitedUnits": "unit"})
 	for(const i of this.invitedUnits) {
 		if(await user.hasRoleInUnits("manageEventInvite", i.unit.traverse("upperUnits", {includeSelf: true}))) return true
 	}
+
+	return false
+}
+
+/** Managing the event */
+export async function MANAGE(user) {
+	// Lack of ACCESS permission denies MANAGE
+	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
+
+	// "manageEvent" roles in event and upper units can manage
+	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
 
 	return false
 }
@@ -48,8 +59,11 @@ export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// "manageEvent" roles in event and upperUnits can edit
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
+	// Cannot edit approved events
+	if(this.approvalState) return false
+
+	// MANAGE permission grants EDIT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	return false
 }
@@ -104,8 +118,8 @@ export async function INVITE_PARTICIPANT(user) {
 	// Cannot invite once event has started
 	if(this.isPast) return false
 
-	// "manageEvent" roles in event and upper units can invite units
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
+	// MANAGE permission grants INVITE_PARTICIPANT
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	return false
 }
@@ -115,8 +129,8 @@ export async function EDIT_PARTICIPANTS(user) {
 	// Lack of ACCESS permission denies EDIT_PARTICIPANTS
 	if(await user.checkPermission(this.PERMISSIONS.ACCESS, true) === false) return false
 
-	// "manageEvent" roles in event and upper units can edit participants
-	if(await user.hasRoleInUnits("manageEvent", this.traverse("upperUnits", {includeSelf: true}))) return true
+	// MANAGE permission grants EDIT_PARTICIPANTS
+	if(await user.checkPermission(this.PERMISSIONS.MANAGE)) return true
 
 	return false
 }

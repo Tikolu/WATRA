@@ -438,6 +438,14 @@ export class EventClass extends UnitClass {
 		
 		return this.approvers
 	}
+
+	/** Clears all approvals */
+	async clearApprovals() {
+		for(const approver of this.approvers) {
+			approver.approvedAt = null
+		}
+		await this.save()
+	}
 }
 
 const schema = mongoose.Schema.fromClass(EventClass)
