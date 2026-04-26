@@ -145,12 +145,18 @@ form input[type=checkbox] + label, form input[type=radio] + label {
 	margin-left: 0;
 }
 
-div.vertical-split > form {
-	margin-top: 0;
-}
+div.vertical-split {
+	section {
+		height: stretch;
+	}
 
-div.vertical-split:last-child form:last-child {
-	margin-bottom: 0;
+	& > form {
+		margin-top: 0;
+	}
+
+	&:last-child form:last-child {
+		margin-bottom: 0;
+	}
 }
 
 form :only-child {
@@ -783,7 +789,11 @@ p.warning, p.info {
 	div.vertical-split {
 		display: flex;
 		align-items: flex-start;
-		gap: 2em;
+		gap: 1em;
+
+		section {
+			margin: 0;
+		}
 	}
 
 	div.vertical-split > * {

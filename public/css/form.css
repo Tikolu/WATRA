@@ -2,7 +2,6 @@
 	display: block;
 	border-radius: var(--border-radius);
 	transition: padding 250ms, background-color 250ms;
-	cursor: text;
 
 	&:focus {
 		padding: 0.25em;

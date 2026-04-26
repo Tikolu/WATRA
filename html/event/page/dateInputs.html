@@ -5,20 +5,18 @@
 	let endTime = datetime.format($.targetEvent.dates.end, "HH:mm", {timeZone: "UTC"})
 	if(endTime == "00:00") endTime = ""
 %>
-<div>
-	<h3>
+<section>
+	<h2>
 		<%~ icon`calendar_today` %>
-		<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.length == 0) { %>
-			Data
-		<% } else { %>
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.length > 0) { %>
 			Daty
+		<% } else { %>
+			Data
 		<% } %>
-	</h3>
-	<form id="event-dates">
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.dates.start - $.targetEvent.dates.end != 0) { %>
+	</h2>
+	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<form id="event-dates">
 			<label for="event-start-date-input">Od:</label>
-		<% } %>
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 			<div id="event-start-inputs">
 				<input
 					type="date"
@@ -30,9 +28,6 @@
 					<% } %>
 					api="event/[eventID]/update/dates"
 					name="startDate"
-					<% if($.targetEvent.approvalState) { %>
-						disabled
-					<%- } %>
 				>
 				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 					<input
@@ -43,72 +38,88 @@
 						<% } %>
 						api="event/[eventID]/update/dates"
 						name="startTime"
-						<% if($.targetEvent.approvalState) { %>
-							disabled
-						<%- } %>
 					>
 				<% } %>
 			</div>
-		<% } else if(startTime) { %>
-			<input
-				type="datetime-local"
-				value="<%= datetime.format($.targetEvent.dates.start, "yyyy-MM-dd'T'HH:mm") %>"
-				disabled
-			>
-		<% } else { %>
-			<input
-				type="date"
-				value="<%= formatDate($.targetEvent.dates.start) %>"
-				disabled
-			>
-		<% } %>
 
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.dates.start - $.targetEvent.dates.end != 0) { %>
 			<label for="event-end-date-input">Do:</label>
-			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-				<div id="event-end-inputs">
-					<input
-						type="date"
-						id="event-end-date-input"
-						min="<%= formatDate(MIN_DATE) %>"
-						max="<%= formatDate(MAX_DATE) %>"
-						<% if($.targetEvent.dates.end) { %>
-							value="<%= formatDate($.targetEvent.dates.end) %>"
-						<% } %>
-						api="event/[eventID]/update/dates"
-						name="endDate"
-						<% if($.targetEvent.approvalState) { %>
-							disabled
-						<%- } %>
-					>
-					<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-						<input
-							type="time"
-							id="event-end-time-input"
-							<% if(endTime) { %>
-								value="<%= endTime %>"
-							<% } %>
-							api="event/[eventID]/update/dates"
-							name="endTime"
-							<% if($.targetEvent.approvalState) { %>
-								disabled
-							<%- } %>
-						>
-					<% } %>
-				</div>
-			<% } else if(endTime) { %>
-				<input
-					type="datetime-local"
-					value="<%= datetime.format($.targetEvent.dates.end, "yyyy-MM-dd'T'HH:mm") %>"
-					disabled
-				>
-			<% } else { %>
+			<div id="event-end-inputs">
 				<input
 					type="date"
-					value="<%= formatDate($.targetEvent.dates.end) %>"
-					disabled
+					id="event-end-date-input"
+					min="<%= formatDate(MIN_DATE) %>"
+					max="<%= formatDate(MAX_DATE) %>"
+					<% if($.targetEvent.dates.end) { %>
+						value="<%= formatDate($.targetEvent.dates.end) %>"
+					<% } %>
+					api="event/[eventID]/update/dates"
+					name="endDate"
 				>
+				<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+					<input
+						type="time"
+						id="event-end-time-input"
+						<% if(endTime) { %>
+							value="<%= endTime %>"
+						<% } %>
+						api="event/[eventID]/update/dates"
+						name="endTime"
+					>
+				<% } %>
+			</div>
+		</form>
+	<% } else { %>
+		<% const formatter = new Intl.DateTimeFormat("pl", {
+			timeZone: "UTC",
+			dateStyle: "full"
+		}) %>
+		<article>
+			<% if($.targetEvent.length == 0) { %>
+				<p><%= formatter.format($.targetEvent.dates.start) %></p>
 			<% } %>
+			</dl>
+			<dl>
+				<% if($.targetEvent.dates.start && ($.targetEvent.length > 0 || startTime)) { %>
+					<dt>Od:</dt>
+					<dd>
+						<% if($.targetEvent.length == 0) { %>
+							<%= startTime %>
+						<% } else { %>
+							<%= formatter.format($.targetEvent.dates.start) %>
+							<% if(startTime) { %>
+								, <%= startTime %>
+							<% } %>
+						<% } %>
+					</dd>
+				<% } %>
+				<% if($.targetEvent.dates.end && ($.targetEvent.length > 0 || endTime)) { %>
+					<dt>Do:</dt>
+					<dd>
+						<% if($.targetEvent.length == 0) { %>
+							<%= endTime %>
+						<% } else { %>
+							<%= formatter.format($.targetEvent.dates.end) %>
+							<% if(endTime) { %>
+								, <%= endTime %>
+							<% } %>
+						<% } %>
+					</dd>
+				<% } %>
+			</dl>
 		<% } %>
-	</form>
-</div>
+	</article>
+
+	<div class="event-row">
+		<% if($.targetEvent.dates.start && $.targetEvent.dates.end) { %>
+			<button target="_blank" href="https://calendar.google.com/calendar/render?action=TEMPLATE
+				&dates=<%= datetime.format($.targetEvent.dates.start, "yyyyMMdd'T'HHmmss") %>/<%= datetime.format($.targetEvent.dates.end, "yyyyMMdd'T'HHmmss") %>
+				&location=<%= encodeURIComponent($.targetEvent.location || "") %>&text=<%= encodeURIComponent($.targetEvent.displayName || "") %>
+				&details=<%= encodeURIComponent($.targetEvent.description || "") %>
+				&ctz=UTC"
+			>
+				<%~ icon`calendar_month` %>
+				Dodaj do kalendarza
+			</button>
+		<% } %>
+	</div>
+</section>

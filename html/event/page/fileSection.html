@@ -36,13 +36,7 @@
 								<%~ icon`file_open` %>
 								Otwórz
 							</button>
-							<button
-								class="dangerous"
-								api="event/<%= $.targetEvent.id %>/file/<%= file.id %>/delete"
-								<% if($.targetEvent.approvalState) { %>
-									disabled
-								<% } %>
-							>
+							<button class="dangerous" api="event/<%= $.targetEvent.id %>/file/<%= file.id %>/delete">
 								<%~ icon`delete` %>
 								Usuń z akcji
 							</button>
@@ -60,12 +54,7 @@
 	<% } %>
 	<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 		<div class="button-row">
-			<button
-				opens-dialog="/events/<%= $.targetEvent.id %>/addFile"
-				<% if($.targetEvent.approvalState) { %>
-					disabled
-				<% } %>
-			>
+			<button opens-dialog="/events/<%= $.targetEvent.id %>/addFile">
 				<%~ icon`note_add` %>
 				Dodaj dokument
 			</button>

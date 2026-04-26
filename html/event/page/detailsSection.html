@@ -29,16 +29,18 @@
 	</section>
 <% } %>
 
-	<div class="vertical-split">
-		<% if($.targetEvent.dates.start || $.targetEvent.dates.end || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-			<%~ include("dateInputs", $) %>
-		<% } %>
-		<% if($.targetEvent.location || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
-			<div>
-				<h3>
-					<%~ icon`distance` %>
-					Lokalizacja
-				</h3>
+<div class="vertical-split">
+	<% if($.targetEvent.dates.start || $.targetEvent.dates.end || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<%~ include("dateInputs", $) %>
+	<% } %>
+
+	<% if($.targetEvent.location || $.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
+		<section>
+			<h2>
+				<%~ icon`distance` %>
+				Lokalizacja
+			</h2>
+			<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT)) { %>
 				<form>
 					<textarea
 						type="text"
@@ -47,65 +49,23 @@
 						api="event/[eventID]/update/location"
 						name="location"
 						placeholder="(brak lokalizacji)"
-						<% if(!$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) || $.targetEvent.approvalState) { %>
-							disabled
-						<% } %>
 					><%= $.targetEvent.location || "" %></textarea>
 				</form>
-			</div>
-		<% } %>
-	</div>
-
-	<div class="button-row">
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) && $.targetEvent.approvalState) { %>
-			<button id="unlock-editing-button" opens-dialog="edit-event-dialog">
-				<%~ icon`edit` %>
-				Edytuj szczegóły
-			</button>
-			<dialog id="edit-event-dialog">
-				<h1>
-					<%~ icon`edit` %>
-					Edytowanie szczegółów
-				</h1>
-				<p><b>Akcja jest zatwierdzona</b> - jakakolwiek zmiana do szczegółów lub dokumentów sprawi że akcja będzie wymagała ponownego zatwierdzenia.</p>
+			<% } else { %>
+				<article>
+					<%~ include("/templates/formatting", {
+						content: $.targetEvent.location || "(brak lokalizacji)"
+					}) %>
+				</article>
+			<% } %>
+			<% if($.targetEvent.location) { %>
 				<div class="button-row">
-					<button>
-						<%~ icon`arrow_back` %>
-						Anuluj
-					</button>
-					<button id="confirm-unlock-editing-button">
-						<%~ icon`edit` %>
-						Edytuj
+					<button href="https://www.google.com/maps/search/<%= encodeURIComponent($.targetEvent.location) %>" target="_blank">
+						<%~ icon`navigation` %>
+						Nawigacja
 					</button>
 				</div>
-			</dialog>
-		<% } %>
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.DELETE)) { %>
-			<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
-				<%~ icon`delete` %>
-				Usuń akcję
-			</button>
-			<dialog id="delete-event-dialog">
-				<h1>Trwale usunąć <%= $.targetEvent.displayName %>?</h1>
-				<p>Akcja i wszystkie związane z nią dane zostaną trwale usunięte.</p>
-				<div class="button-row">
-					<button>
-						<%~ icon`arrow_back` %>
-						Anuluj
-					</button>
-					<button class="dangerous" command>
-						<%~ icon`delete` %>
-						Usuń
-					</button>
-				</div>
-			</dialog>
-		<% } %>
-
-		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_ACTIVITY)) { %>
-			<button id="activity-log-button" href="/events/<%= $.targetEvent.id %>/log">
-				<%~ icon`history` %>
-				<span>Log aktywności</span>
-			</button>
-		<% } %>
-	</div>
-</section>
+			<% } %>
+		</section>
+	<% } %>
+</div>

@@ -26,9 +26,6 @@
 						value="<%= $.targetEvent.name || "" %>"
 						title="Zmień nazwę"
 						id="event-title-input"
-						<% if($.targetEvent.approvalState) { %>
-							disabled
-						<% } %>
 					>
 				<% } else { %>
 					<%= $.targetEvent.displayName %>
@@ -46,6 +43,35 @@
 				<% } %>
 			</p>
 		</div>
+	</div>
+	<div class="button-row">
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.DELETE)) { %>
+			<button id="delete-event-button" class="dangerous" api="event/[eventID]/delete">
+				<%~ icon`delete` %>
+				Usuń akcję
+			</button>
+			<dialog id="delete-event-dialog">
+				<h1>Trwale usunąć <%= $.targetEvent.displayName %>?</h1>
+				<p>Akcja i wszystkie związane z nią dane zostaną trwale usunięte.</p>
+				<div class="button-row">
+					<button>
+						<%~ icon`arrow_back` %>
+						Anuluj
+					</button>
+					<button class="dangerous" command>
+						<%~ icon`delete` %>
+						Usuń
+					</button>
+				</div>
+			</dialog>
+		<% } %>
+
+		<% if($.user.hasPermission($.targetEvent.PERMISSIONS.ACCESS_ACTIVITY)) { %>
+			<button id="activity-log-button" href="/events/<%= $.targetEvent.id %>/log">
+				<%~ icon`history` %>
+				<span>Log aktywności</span>
+			</button>
+		<% } %>
 	</div>
 </section>
 
