@@ -11,6 +11,9 @@
 	// Links
 	$.content = $.content.replace(/((https?:\/\/)[^\s]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>")
 
+	// Horizontal lines
+	$.content = $.content.replace(/^-{3,}$/gm, "\n<hr>\n")
+
 	// Line breaks
 	$.content = $.content.replace(/(?<!\n)\n(?![\n-])/g, "<br>")
 
