@@ -9,7 +9,7 @@ export default async function({fileID, fileName, alt}) {
 	if(!file) throw new HTTPError(404)
 
 	// Verify name
-	if(file.name !== fileName) throw new HTTPError(404)
+	if(file.name.normalize() !== fileName.normalize()) throw new HTTPError(404)
 
 	// Get data
 	let data
