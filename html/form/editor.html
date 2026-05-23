@@ -27,14 +27,14 @@
 				<%~ icon`text_fields_alt` %>
 				<span>Dodaj pole tekstowe</span>
 			</button>
-			<button api="form/[formID]/element/add?type=choice" disabled>
+			<button api="form/[formID]/element/add?type=choice">
 				<%~ icon`format_list_bulleted` %>
 				<span>Dodaj wybór</span>
 			</button>
-			<button api="form/[formID]/element/add?type=file" disabled>
+			<!-- <button api="form/[formID]/element/add?type=file">
 				<%~ icon`upload_file` %>
 				<span>Dodaj plik</span>
-			</button>
+			</button> -->
 			<% if(Config.stripeEnabled) { %>
 				<button api="form/[formID]/element/add?type=payment">
 					<%~ icon`payments` %>

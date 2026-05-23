@@ -13,6 +13,30 @@ const elementTypes = {
 			return typeof value == "string"
 		}
 	},
+	choice: {
+		name: "Wybór",
+		create(form, element) {
+			element.value = {
+				text: "Wybór",
+				options: ["Opcja 1", "Opcja 2", "Opcja 3"],
+			}
+		},
+		setValue(value) {
+			if(
+				!Object.keys(value).equals(["text", "options"]) ||
+				!Array.isArray(value.options) ||
+				typeof value.text != "string"
+			) throw new Error("Nieprawidłowa wartość")
+			value.options = value.options.map(option => option.trim()).unique().filter(option => option)
+			if(!value.options.length) value.options = ["Opcja 1"]
+			return value
+		},
+		input(value) {
+			if(typeof value != "string") return false
+			if(!this.value?.options.includes(value)) throw new Error("Wybierz jedną z dostępnych opcji")
+			return true
+		}
+	},
 	payment: {
 		name: "Płatność",
 		create(form, element) {
@@ -76,6 +100,6 @@ export default class {
 	validateInput(value) {
 		const validator = this.config?.input
 		if(!validator) return false
-		return validator(value)
+		return validator.call(this, value)
 	}
 }

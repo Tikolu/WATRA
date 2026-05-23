@@ -16,8 +16,21 @@ API.registerHandler("form/[formID]/element/add", {
 
 API.registerHandler("form/[formID]/element/[elementID]/update", {
 	validate: (data, element) => {
-		if(!data.value.trim()) return {
-			api: `form/[formID]/element/${element.id || element.htmlFor}/remove`,
+		if(element.htmlFor) element = document.getElementById(element.htmlFor)
+
+		let value = data.value
+
+		if(element.tagName == "UL") {
+			data.value = {
+				text: element.previousElementSibling?.value || "",
+				options: [...element.querySelectorAll("li")].map(li => li.textContent)
+			}
+
+			value = data.value.text
+		}
+
+		if(!value.trim()) return {
+			api: `form/[formID]/element/${element.id}/remove`,
 			progressText: "Usuwanie...",
 			successText: "Usunięto element"
 		}

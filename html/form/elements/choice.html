@@ -1,0 +1,30 @@
+<label
+	for="<%= $.element.id %>"
+	class="form-element"
+	<% if($.editable) { %>
+		contenteditable="plaintext-only"
+		api="form/[formID]/element/<%= $.element.id %>/update"
+	<% } %>
+><%= $.element.value.text %></label>
+<% if($.editable) { %>
+	<ul contenteditable api="form/[formID]/element/<%= $.element.id %>/update" id="<%= $.element.id %>">
+		<% for(const option of $.element.value.options) { %>
+			<li><%= option %></li>
+		<% } %>
+	</ul>
+<% } else { %>
+	<br>
+	<select
+		id="<%= $.element.id %>"
+		class="form-element"
+		<% if($.responding) { %>
+			api="form/[formID]/response/[responseID]/element/<%= $.element.id %>/update"
+		<% } else { %>
+			disabled
+		<% } %>
+	>
+		<% for(const option of $.element.value.options) { %>
+			<option<%= $.response?.getElement($.element.id) == option ? " selected" : "" %>><%= option %></option>
+		<% } %>
+	</select>
+<% } %>

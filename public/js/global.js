@@ -945,6 +945,7 @@ Processing.register(function APIAttributes() {
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
 		else if(element.matches("[contenteditable=plaintext-only]")) event = "submit"
+		else if(element.matches("[contenteditable]")) event = "blur"
 		else if(element.matches("form")) event = "change"
 		else {
 			console.warn("API attribute not supported for this element:\n", element)
@@ -1064,13 +1065,13 @@ Processing.register(DialogOpeners.scan)
 
 // Custom input fields
 Processing.register(function customInputs() {
-	for(const input of document.querySelectorAll("input, [contenteditable=plaintext-only]")) {
+	for(const input of document.querySelectorAll("input, [contenteditable]")) {
 		// Skip if input has already been modified
 		if(input.customised) continue
 		input.customised = true
 
 		// contenteditable value getter
-		if(input.contentEditable == "plaintext-only") {
+		if(input.contentEditable != "inherit") {
 			Object.defineProperty(input, "value", {
 				get() { return this.innerText.replace(/(^\n|\n$)/, "") },
 				set(value) { this.innerText = value }
@@ -1083,11 +1084,13 @@ Processing.register(function customInputs() {
 				return this.value != this.initialValue
 			}
 		})
-		input.addEventListener("keypress", event => {
-			if(event.key != "Enter" && event.key != "\n") return
-			if(input.matches("p") && !event.ctrlKey) return
-			input.blur()
-		})
+		if(input.contentEditable != "true") {
+			input.addEventListener("keypress", event => {
+				if(event.key != "Enter" && event.key != "\n") return
+				if(input.matches("p") && !event.ctrlKey) return
+				input.blur()
+			})
+		}
 		input.addEventListener("blur", event => {
 			if(!input.modified) {
 				input.classList.remove("invalid")
