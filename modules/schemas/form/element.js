@@ -31,6 +31,9 @@ const elementTypes = {
 			if(!value.options.length) value.options = ["Opcja 1"]
 			return value
 		},
+		getText(value) {
+			return value.text
+		},
 		input(value) {
 			if(typeof value != "string") return false
 			if(!this.value?.options.includes(value)) throw new Error("Wybierz jedną z dostępnych opcji")
@@ -92,6 +95,12 @@ export default class {
 
 	get config() {
 		return elementTypes[this.type]
+	}
+
+	get text() {
+		if(this.config.getText) return this.config.getText(this.value)
+		else if(typeof this.value == "string") return this.value
+		else return this.config.name || this.type
 	}
 
 	/* * Methods * */

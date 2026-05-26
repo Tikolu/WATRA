@@ -63,15 +63,14 @@
 				response: $.targetResponse
 			}) %>
 		<% } %>
-	</section>
-	<% if($.targetResponse.signature?.valid || $.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
-		<section>
+		<% if($.targetResponse.signature?.valid || $.user.hasPermission($.targetResponse.PERMISSIONS.SUBMIT)) { %>
+			<hr>
 			<%~ include("/templates/signature", {
 				user: $.user,
 				signature: $.targetResponse.signature
 			}) %>
-		</section>
-	<% } %>
+		<% } %>
+	</section>
 </main>
 <hr>
 <div class="button-row">

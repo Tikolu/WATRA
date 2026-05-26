@@ -944,8 +944,7 @@ Processing.register(function APIAttributes() {
 		else if(element.matches("input")) event = "submit"
 		else if(element.matches("select")) event = "change"
 		else if(element.matches("textarea")) event = "change"
-		else if(element.matches("[contenteditable=plaintext-only]")) event = "submit"
-		else if(element.matches("[contenteditable]")) event = "blur"
+		else if(element.matches("[contenteditable]")) event = "submit"
 		else if(element.matches("form")) event = "change"
 		else {
 			console.warn("API attribute not supported for this element:\n", element)

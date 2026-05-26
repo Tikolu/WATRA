@@ -1,6 +1,7 @@
 import * as datetime from "datetime"
 import * as Text from "modules/text.js"
 import * as Phone from "modules/phone.js"
+import FormElement from "modules/schemas/form/element.js"
 import Config from "modules/config.js"
 
 export class UserFilter {
@@ -68,6 +69,32 @@ export class FilterCategory {
 
 export class FormFilterCategory extends FilterCategory {
 	constructor(form) {
+		const formElements = []
+
+		for(const element of form.elements) {
+			// Filter out non-choice elements
+			if(element.type != "choice") continue
+
+			formElements.push({
+				id: `form.${form.id}.value.${element.id}`,
+				name: element.text || element.id,
+				type: "select",
+				options: element.value.options.map(option => ({value: option, name: option})),
+				async callback(user) {
+					if(!this.value) return true
+
+					// Load all responses
+					form.$locals.responses ||= await form.getUserResponses(null)
+					for(const response of form.$locals.responses) {
+						if(response.user.id != user.id) continue
+						const responseElement = response.getElement(element.id)
+						if(responseElement === this.value) return true
+					}
+					return false
+				}
+			})
+		}
+
 		super({
 			name: form.displayName,
 			icon: "ballot",
@@ -96,7 +123,8 @@ export class FormFilterCategory extends FilterCategory {
 							return form.userFilter(user)
 						}
 					}
-				}
+				},
+				...formElements
 			]
 		})
 	}
@@ -149,6 +177,7 @@ export class DataColumn {
 	constructor(options={}) {
 		this.id = options.id
 		this.name = options.name
+		this.shortName = options.shortName
 		this.default = options.default
 		this.value = options.value
 		this.process = options.process
@@ -256,13 +285,40 @@ export class PersonalDetailsColumnCategory extends ColumnCategory {
 
 export class FormColumnCategory extends ColumnCategory {
 	constructor(form) {
+		const formElements = []
+
+		for(const element of form.elements) {
+			// Filter out non-input elements
+			if(!element.config.input) continue
+
+			formElements.push({
+				id: `form.${form.id}.value.${element.id}`,
+				name: `${form.displayName} - ${element.text || element.id}`,
+				shortName: element.text || element.id,
+				sortable: true,
+				async process() {
+					form.$locals.responses ||= await form.getUserResponses(null)
+				},
+				value(targetUser) {
+					const values = []
+					for(const response of form.$locals.responses) {
+						if(response.user.id != targetUser.id) continue
+						const responseElement = response.getElement(element.id)
+						if(responseElement) values.push(responseElement)
+					}
+					return values.join(", ")
+				}
+			})
+		}
+
 		super({
 			name: form.displayName,
 			icon: "ballot",
 			columns: [
 				{
 					id: `form.${form.id}.response`,
-					name: `Odpowiedź na "${form.displayName}"`,
+					name: `${form.displayName} - Odpowiedź`,
+					shortName: "Stan odpowiedzi",
 					async process() {
 						form.$locals.responses ||= await form.getUserResponses(null)
 					},
@@ -280,7 +336,8 @@ export class FormColumnCategory extends ColumnCategory {
 						}
 					},
 					sortable: true
-				}
+				},
+				...formElements
 			]
 		})
 	}

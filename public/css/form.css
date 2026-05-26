@@ -1,3 +1,16 @@
+.form-element-container {
+	margin: 1em 0;
+
+	h3 {
+		margin: 0;
+	}
+
+	label + .form-element {
+		margin-top: 0.5em;
+		display: block;
+	}
+}
+
 .form-element[contenteditable] {
 	display: block;
 	border-radius: var(--border-radius);
