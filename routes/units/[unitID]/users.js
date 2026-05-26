@@ -7,6 +7,7 @@ import {
 	FilterCategory,
 	AgeFilterCategory,
 	FormFilterCategory,
+	MedicalFilterCategory,
 
 	ColumnCategory,
 	FormColumnCategory,
@@ -58,6 +59,7 @@ export default async function({user, targetUnit}) {
 				}
 			]
 		}),
+		new MedicalFilterCategory(),
 		...targetUnit.forms.map(form => new FormFilterCategory(form))
 	]
 

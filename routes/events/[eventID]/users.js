@@ -9,6 +9,7 @@ import {
 	FilterCategory,
 	AgeFilterCategory,
 	FormFilterCategory,
+	MedicalFilterCategory,
 	
 	ColumnCategory,
 	PersonalDetailsColumnCategory,
@@ -99,6 +100,7 @@ export default async function({user, targetEvent}) {
 			]
 		}),
 		new AgeFilterCategory(),
+		new MedicalFilterCategory(),
 		...targetEvent.forms.map(form => new FormFilterCategory(form))
 	]
 

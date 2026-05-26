@@ -155,6 +155,24 @@ export class AgeFilterCategory extends FilterCategory {
 	}
 }
 
+export class MedicalFilterCategory extends FilterCategory {
+	constructor() {
+		super({
+			name: "Dane medyczne / dietetyczne",
+			icon: "medical_information",
+			filters: Config.medicalCategories.map(category => ({
+				id: `medical.${category.id}`,
+				name: category.title,
+				type: "checkbox",
+				callback(user) {
+					if(!this.value) return true
+					return user.medical?.entries?.some(m => m.category == category.id)
+				}
+			}))
+		})
+	}
+}
+
 export class ColumnCategory {
 	constructor(options={}) {
 		this.name = options.name
