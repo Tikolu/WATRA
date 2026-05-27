@@ -91,43 +91,45 @@
 			</dl>
 		</article>
 
-		<article>
-			<h3>Dane medyczne</h3>
-			<% if($.targetUser.medical.entries.length == 0) { %>
-				<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
-			<% } else { %>
-				<p><%= $.targetUser.displayName %> ma następujące wymagania:</p>
-				<ul>
-					<% for(const entry of $.targetUser.medical.entries) { %>
-						<li>
-							<h4><%= entry.title %></h4>
-							<dl>
-								<% if(entry.symptoms) { %>
-									<dt>Opis:</dt>
-									<dd>
-										<%= entry.symptoms %>
-									</dd>
-								<% } else { %>
-									<% confirmationAllowed = false %>
-									<dt>Opis:</dt>
-									<dd><%~ icon`warning` %> Nie podano opisu!</dd>
-								<% } %>
-								<% if(entry.solutions) { %>
-									<dt>Zalecenia:</dt>
-									<dd>
-										<%= entry.solutions %>
-									</dd>
-								<% } else { %>
-									<% confirmationAllowed = false %>
-									<dt>Zalecenia:</dt>
-									<dd><%~ icon`warning` %> Nie podano zaleceń!</dd>
-								<% } %>
-							</dl>
-						</li>
-					<% } %>
-				</ul>
-			<% } %>
-		</article>
+		<% if($.targetUser.medical.entries.length > 0 || Config.medicalCategories.length > 0) { %>
+			<article>
+				<h3>Dane medyczne</h3>
+				<% if($.targetUser.medical.entries.length == 0) { %>
+					<p><%= $.targetUser.displayName %> nie ma żadnych wymagań medycznych ani dietetycznych.</p>
+				<% } else { %>
+					<p><%= $.targetUser.displayName %> ma następujące wymagania:</p>
+					<ul>
+						<% for(const entry of $.targetUser.medical.entries) { %>
+							<li>
+								<h4><%= entry.title %></h4>
+								<dl>
+									<% if(entry.symptoms) { %>
+										<dt>Opis:</dt>
+										<dd>
+											<%= entry.symptoms %>
+										</dd>
+									<% } else { %>
+										<% confirmationAllowed = false %>
+										<dt>Opis:</dt>
+										<dd><%~ icon`warning` %> Nie podano opisu!</dd>
+									<% } %>
+									<% if(entry.solutions) { %>
+										<dt>Zalecenia:</dt>
+										<dd>
+											<%= entry.solutions %>
+										</dd>
+									<% } else { %>
+										<% confirmationAllowed = false %>
+										<dt>Zalecenia:</dt>
+										<dd><%~ icon`warning` %> Nie podano zaleceń!</dd>
+									<% } %>
+								</dl>
+							</li>
+						<% } %>
+					</ul>
+				<% } %>
+			</article>
+		<% } %>
 
 		<% if($.targetUser.parents.length > 0) { %>
 			<article>

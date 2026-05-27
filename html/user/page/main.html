@@ -148,7 +148,7 @@
 <% } %>
 
 <% if(!blockAccess && $.user.hasPermission($.targetUser.PERMISSIONS.ACCESS_DETAILS) &&
-	 ($.targetUser.roles.length > 0 || $.targetUser.medical.entries.length > 0)) { %>
+	 ($.targetUser.medical.entries.length > 0 || ($.targetUser.roles.length > 0 && Config.medicalCategories.length > 0))) { %>
 	<%~ include("medicalSection", $) %>
 <% } %>
 

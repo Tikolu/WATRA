@@ -126,9 +126,16 @@
 <% } %>
 
 <% if(
-	$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
-	$.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) ||
-	$.targetEvent.upperUnits.some(u => $.user.hasPermission(u.PERMISSIONS.ACCESS_EVENTS))
+	(
+		Config.event.approvalsRequired > 0 ||
+		$.targetEvent.approvers.length > 0
+	)
+	&&
+	(
+		$.user.hasPermission($.targetEvent.PERMISSIONS.EDIT) ||
+		$.user.hasPermission($.targetEvent.PERMISSIONS.APPROVE) ||
+		$.targetEvent.upperUnits.some(u => $.user.hasPermission(u.PERMISSIONS.ACCESS_EVENTS))
+	)
 ) { %>
 	<%~ include("approvalSection", $) %>
 <% } %>

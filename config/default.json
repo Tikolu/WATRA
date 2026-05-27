@@ -1,0 +1,48 @@
+{
+	"units": {
+		"group": {
+			"name": "Group",
+			"roles": [
+				"leader"
+			]
+		}
+	},
+
+	"roles": {
+		"leader": {
+			"name": "Leader",
+			"tags": [
+				"public",
+
+				"manageSubUnit",
+				"setRole",
+				"accessUser",
+				"manageUser",
+				"manageEvent",
+				"manageEventInvite",
+				"accessActivity",
+				"manageForms"
+			]
+		},
+
+		"eventLeader": {
+			"name": "Event Leader",
+			"tags": [
+				"public",
+
+				"manageEvent",
+				"setRole",
+				"accessUser",
+				"manageForms",
+				"accessActivity"
+			]
+		}
+	},
+
+	"event": {
+		"roles": [
+			"eventLeader"
+		],
+		"creatorRole": "eventLeader"
+	}
+}

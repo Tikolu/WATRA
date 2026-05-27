@@ -377,6 +377,13 @@ export class EventClass extends UnitClass {
 
 	/** Generates a list of approvers required for this event */
 	async calculateApprovers() {
+		// Clear approvers if no approvals required
+		if(Config.event.approvalsRequired == 0) {
+			this.approvers = []
+			await this.save()
+			return []
+		}
+
 		await this.populate("roles")
 		let approverCandidates = []
 		const alternativeCandidates = []

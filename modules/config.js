@@ -108,6 +108,7 @@ for(const orgID in Config.orgs) {
 }
 
 // Process roles
+Config.roles ||= {}
 for(const roleID in Config.roles) {
 	const role = Config.roles[roleID]
 	
@@ -143,6 +144,7 @@ for(const departmentID in Config.departments) {
 }
 
 // Process units
+Config.units ||= {}
 for(const unitID in Config.units) {
 	const unit = Config.units[unitID]
 
@@ -162,6 +164,7 @@ for(const unitID in Config.units) {
 if(!Config.event) {
 	throw new ConfigError("Missing event config")
 }
+Config.event.approvalsRequired ||= 0
 Config.event.roles ||= []
 
 // Ensure roles exist
@@ -174,10 +177,15 @@ for(const roleName of Config.event.roles || []) {
 processDefaultRole(Config.event)
 
 
+// Process medical
+Config.medicalCategories ||= []
+
+
 // Other defaults
 Config.news ||= []
 Config.passkeyRequired ??= true
 Config.paymentCurrency ||= "EUR"
+Config.adultAge ||= 18
 
 // Get host from args if not set
 const args = cli.parseArgs(Deno.args, {

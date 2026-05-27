@@ -6,6 +6,6 @@
 scrap
 /import
 /html/custom
-/config/custom*.json
+/config
 /cert
 /backup
