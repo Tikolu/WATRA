@@ -6,6 +6,14 @@
 	<% if($.user.hasPermission($.targetForm.PERMISSIONS.ACCESS_RESPONSES)) { %>
 		<article>
 			<dl>
+				<%
+					let columns = ["firstname", "lastname", `form.${$.targetForm.id}.response`]
+					for(const element of $.targetForm.elements) {
+						if(!element.config.input) continue
+						columns.push(`form.${$.targetForm.id}.value.${element.id}`)
+					}
+					columns = columns.join(",")
+				%>
 				<% if($.counts.required > 0) { %>
 					<dt>
 						<% if($.targetForm.config.enabled) { %>
@@ -15,7 +23,7 @@
 						<% } %>
 					</dt>
 					<dd>
-						<a href="<%= $.targetForm.unit.rootUrl %>/users?form.<%= $.targetForm.id %>.response=required">
+						<a href="<%= `${$.targetForm.unit.rootUrl}/users?columns=${columns}&form.${$.targetForm.id}.response=required` %>">
 							<%= $.counts.required %>
 						</a>
 					</dd>
@@ -23,14 +31,14 @@
 				<% if($.counts.drafts > 0) { %>
 					<dt><%~ icon`edit_note` %> Wersje robocze:</dt>
 					<dd>
-						<a href="<%= $.targetForm.unit.rootUrl %>/users?form.<%= $.targetForm.id %>.response=draft">
+						<a href="<%= `${$.targetForm.unit.rootUrl}/users?columns=${columns}&form.${$.targetForm.id}.response=draft` %>">
 							<%= $.counts.drafts %>
 						</a>
 					</dd>
 				<% } %>
 				<dt><%~ icon`check` %> Przesłane:</dt>
 				<dd>
-					<a href="<%= $.targetForm.unit.rootUrl %>/users?form.<%= $.targetForm.id %>.response=submitted">
+					<a href="<%= `${$.targetForm.unit.rootUrl}/users?columns=${columns}&form.${$.targetForm.id}.response=submitted` %>">
 						<%= $.counts.submitted %>
 					</a>
 				</dd>
