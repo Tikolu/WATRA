@@ -22,6 +22,7 @@
 			disabled
 		<% } %>
 	>
+		<option value="" disabled selected></option>
 		<% for(const option of $.element.value.options) { %>
 			<option<%= $.response?.getElement($.element.id) == option ? " selected" : "" %>><%= option %></option>
 		<% } %>
