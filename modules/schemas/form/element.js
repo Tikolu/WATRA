@@ -38,6 +38,9 @@ const elementTypes = {
 			if(typeof value != "string") return false
 			if(!this.value?.options.includes(value)) throw new Error("Wybierz jedną z dostępnych opcji")
 			return true
+		},
+		submit(value) {
+			if(!value) throw new Error("Wybierz jedną z dostępnych opcji")
 		}
 	},
 	payment: {
