@@ -28,9 +28,11 @@ export default async function({user, targetUser}) {
 	// Check all permissions
 	await user.checkPermission(targetUser.PERMISSIONS)
 	
-	if(user.id == targetUser.id) {
+	if(user.hasPermission(targetUser.PERMISSIONS.MANAGE_PASSKEYS)) {
 		await targetUser.auth.populate("keys")
-
+	}
+	
+	if(user.id == targetUser.id) {
 		// Check child permissions
 		for(const child of targetUser.children) {
 			await user.checkPermission(child.PERMISSIONS.APPROVE)

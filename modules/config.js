@@ -8,6 +8,8 @@ const Config = {}
 Config.tags = {
 	"public": {},			
 
+	"admin": {},
+	
 	"editUnit": {},
 	"manageSubUnit": {},
 	"setRole": {},

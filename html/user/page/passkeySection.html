@@ -35,16 +35,18 @@
 			</div>
 		<% } %>
 	</div>
-	<div class="button-row">
-		<button id="add-passkey-button" api="passkey/create">
-			<%~ icon`add` %>
-			<span>Utwórz klucz dostępu</span>
-		</button>
-		<button opens-dialog="/users/passkeyInfo">
-			<%~ icon`help` %>
-			<span>Więcej informacji</span>
-		</button>
-	</div>
+	<% if($.user.id == $.targetUser.id) { %>
+		<div class="button-row">
+			<button id="add-passkey-button" api="passkey/create">
+				<%~ icon`add` %>
+				<span>Utwórz klucz dostępu</span>
+			</button>
+			<button opens-dialog="/users/passkeyInfo">
+				<%~ icon`help` %>
+				<span>Więcej informacji</span>
+			</button>
+		</div>
+	<% } %>
 </section>
 <dialog id="delete-passkey-dialog">
 	<h1>Trwale usunąć klucz dostępu?</h1>

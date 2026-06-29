@@ -105,6 +105,31 @@ export async function MANAGE(user) {
 	return false
 }
 
+/** Listing and deleting the users passkeys */
+export async function MANAGE_PASSKEYS(user) {
+	// Lack of ACCESS permission denies MANAGE_PASSKEYS
+	if(!await user.checkPermission(this.PERMISSIONS.ACCESS)) return false
+
+	// Users can manage their own passkeys
+	if(user.id == this.id) return true
+
+	// Parent can manage their child's passkeys
+	if(user.children.hasID(this.id)) return true
+
+	// User with "admin" role in any unit/upperUnit of user can manage passkeys
+	if(await user.hasRoleInUnits("admin", this.listUnits(true))) return true
+
+	// User with "admin" role in any unit/upperUnit of any child can manage parent's passkeys
+	if(this.parent) {
+		await this.populate("children")
+		for(const child of this.children) {
+			if(await user.hasRoleInUnits("admin", child.listUnits(true))) return true
+		}
+	}
+	
+	return false
+}
+
 /** Editing user details, such as name, contact details, medical */
 export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT

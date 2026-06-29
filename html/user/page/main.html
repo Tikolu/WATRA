@@ -270,7 +270,7 @@
 	</section>
 <% } %>
 
-<% if($.targetUser.id == $.user.id) { %>
+<% if($.user.hasPermission($.targetUser.PERMISSIONS.MANAGE_PASSKEYS)) { %>
 	<%~ include("passkeySection", $) %>
 <% } %>
 
