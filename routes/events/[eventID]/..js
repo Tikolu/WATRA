@@ -95,10 +95,11 @@ export default async function({user, targetEvent}) {
 	// Get event files
 	const files = []
 	const userRoleInEvent = await user.getRoleInUnit(targetEvent)
+	const userRoleInUpperUnits = await user.hasRoleInUnits("manageEvent", targetEvent.traverse("upperUnits"))
 	for(const file of targetEvent.files) {
-		if(!user.hasPermission(targetEvent.PERMISSIONS.EDIT) && !user.hasPermission(targetEvent.PERMISSIONS.APPROVE)) {
+		if(!userRoleInUpperUnits) {
 			if(file.access == "owner") continue
-			else if(file.access == "role" && !userRoleInEvent) continue
+			if(file.access == "role" && !userRoleInEvent) continue
 		}
 		files.push(file)
 	}
