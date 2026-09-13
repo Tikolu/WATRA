@@ -115,7 +115,6 @@ async function handler(req, ip) {
 }
 
 let server
-const controller = new AbortController()
 
 // Attempt to load certificate
 async function loadCert() {
@@ -136,12 +135,12 @@ export function start({host, port, proxy=false, beforeRequest}) {
 	server = Deno.serve({
 		hostname: host,
 		port,
-		signal: controller.signal,
 		cert,
 		key,
+		automaticCompression: true,
 		onListen({port}) {
 			logger.log(` Started on ${host}:${port}${proxy ? " (proxy mode)" : ""}`)
-		},
+		}
 	}, async (req, conn) => {
 		await beforeRequest?.()
 		return await handler(req, !proxy ? conn.remoteAddr.hostname : null)
@@ -149,7 +148,6 @@ export function start({host, port, proxy=false, beforeRequest}) {
 }
 
 export async function stop() {
-	controller.abort()
-	await server.finished
-	return
+	logger.log("Stopping server...")
+	await server.shutdown()
 }

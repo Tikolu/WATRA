@@ -2,7 +2,7 @@
 	"version": "2.6.6",
 	"permissions": {
 		"default": {
-			"net": ["localhost:27017", "localhost:8888", "api.stripe.com:443"],
+			"net": ["localhost:27017", "127.0.0.1:27017", "localhost:8888", "api.stripe.com:443"],
 			"read": ["config", "html", "import", "modules", "public", "routes"],
 			"sys": ["osRelease"],
 			"env": true
@@ -12,6 +12,9 @@
 		"watra": "deno --permission-set=default --env-file --no-prompt index.js",
 		"watra-dev": "deno --inspect --watch-hmr --watch-exclude=public --permission-set=default --env-file --no-prompt index.js --development"
 	},
+	"unstable": [
+		"no-legacy-abort"
+	],
 	"imports": {
 		"modules/": "./modules/",
 		"modules/database": "./modules/database/index.js",
