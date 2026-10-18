@@ -106,6 +106,21 @@ export default class {
 		else return this.config.name || this.type
 	}
 
+	get position() {
+		const form = this.ownerDocument()
+		const index = form.elements.indexOf(this)
+		if(index == -1) throw new Error("Element nie należy do formularza")
+		return index
+	}
+
+	set position(index) {
+		const form = this.ownerDocument()
+		form.elements.splice(this.position, 1)
+		if(index < 0) index = 0
+		else if(index > form.elements.length) index = form.elements.length
+		form.elements.splice(index, 0, this)
+	}
+
 	/* * Methods * */
 
 	/** Checks input against the element's validator */

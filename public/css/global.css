@@ -447,6 +447,10 @@ button.icon {
 	margin: 0;
 	border-radius: 0;
 	transition: color 250ms;
+
+	&:disabled {
+		opacity: 0.5;
+	}
 }
 
 button.big-button {

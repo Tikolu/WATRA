@@ -1,3 +1,24 @@
 <div class="form-element-container">
+	<% if($.editable) { %>
+		<div class="button-row">
+			<button class="icon" api="form/[formID]/element/<%= $.element.id %>/move?direction=up" title="Przesuń w górę"
+				<% if($.element.position == 0) { %>
+					disabled
+				<% } %>
+			>
+				<%~ icon`arrow_upward` %>
+			</button>
+			<button class="icon" api="form/[formID]/element/<%= $.element.id %>/move?direction=down" title="Przesuń w dół"
+				<% if($.element.position == $.targetForm.elements.length - 1) { %>
+					disabled
+				<% } %>
+			>
+				<%~ icon`arrow_downward` %>
+			</button>
+			<button class="icon" api="form/[formID]/element/<%= $.element.id %>/remove" title="Usuń element">
+				<%~ icon`delete` %>
+			</button>
+		</div>
+	<% } %>
 	<%~ include(`elements/${$.element.type}`, $) %>
 </div>

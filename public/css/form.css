@@ -1,3 +1,64 @@
+#form-editor {
+	.form-element-container {
+		padding: 1em;
+		background: var(--surface-2);
+		border-radius: var(--border-radius);
+		position: relative;
+
+		.button-row {
+			position: absolute;
+			top: 1em;
+			right: 1em;
+			margin: 0;
+			transition: opacity 250ms;
+		}
+
+		[contenteditable] {
+			display: block;
+			border-radius: var(--border-radius);
+			transition: padding 250ms, background-color 250ms;
+
+			&:focus {
+				background-color: var(--surface-3);
+
+				&:not(ul) {
+					padding: 0.25em;
+				}
+			}
+		}
+
+		p {
+			margin: 0;
+		}
+
+		ul, li:last-child {
+			margin-bottom: 0;
+		}
+
+		textarea {
+			background-color: var(--surface-3);
+		}
+
+		&:focus-within .button-row {
+			opacity: 0;
+		}
+	}
+}
+
+@media (hover: hover) {
+	#form-editor {
+		.form-element-container {
+			.button-row {
+				opacity: 0;
+			}
+
+			&:hover:not(:focus-within) .button-row {
+				opacity: 1;
+			}
+		}
+	}
+}
+
 .form-element-container {
 	margin: 1em 0;
 
@@ -8,17 +69,6 @@
 	label + .form-element {
 		margin-top: 0.5em;
 		display: block;
-	}
-}
-
-.form-element[contenteditable] {
-	display: block;
-	border-radius: var(--border-radius);
-	transition: padding 250ms, background-color 250ms;
-
-	&:focus {
-		padding: 0.25em;
-		background-color: var(--surface-3);
 	}
 }
 

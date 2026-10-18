@@ -20,6 +20,12 @@ export function remove({targetElement}) {
 	targetElement.delete()
 }
 
+export function move({targetElement, direction}) {
+	if(direction == "up") targetElement.position -= 1
+	else if(direction == "down") targetElement.position += 1
+	else throw new HTTPError(400)
+}
+
 export async function _exit({targetForm}) {	
 	await targetForm.save()
 

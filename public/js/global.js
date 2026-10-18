@@ -629,7 +629,7 @@ const API = {
 	 *  - refresh: Whether to refresh page data after execution, defaults to "true", set to "all" to refresh other tabs
 	 *  - successText: Text to show on success, can be a function that takes response data as argument
 	 */
-	registerHandler(api, handler) {
+	registerHandler(api, handler={}) {
 		if(api in this.handlers && !handler.overwrite) {
 			throw new Error(`API handler already registered for ${api}`)
 		}

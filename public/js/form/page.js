@@ -28,16 +28,17 @@ API.registerHandler("form/[formID]/element/[elementID]/update", {
 
 			value = data.value.text
 		}
-
-		if(!value.trim()) return {
-			api: `form/[formID]/element/${element.id}/remove`,
-			progressText: "Usuwanie...",
-			successText: "Usunięto element"
-		}
 		return true
 	},
 	successText: "Zapisano"
 })
+
+API.registerHandler("form/[formID]/element/[elementID]/remove", {
+	progressText: "Usuwanie...",
+	successText: "Usunięto element"
+})
+
+API.registerHandler("form/[formID]/element/[elementID]/move")
 
 API.registerHandler("form/[formID]/update/config", {
 	progressText: "Zapisywanie ustawień...",
