@@ -10,12 +10,14 @@
 	},
 	"tasks": {
 		"watra": "deno --permission-set=default --env-file --no-prompt index.js",
-		"watra-dev": "deno --inspect --watch-hmr --watch-exclude=public --permission-set=default --env-file --no-prompt index.js --development"
+		"watra-dev": "deno --inspect --watch-hmr --watch-exclude=public --permission-set=default --env-file --no-prompt index.js --development",
+		"watra-repl": "deno repl --inspect --allow-all --env-file --eval-file dev/repl.js"
 	},
 	"unstable": [
 		"no-legacy-abort"
 	],
 	"imports": {
+		"index": "./index.js",
 		"modules/": "./modules/",
 		"modules/database": "./modules/database/index.js",
 		"modules/server": "./modules/server/index.js",
