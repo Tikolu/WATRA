@@ -63,7 +63,7 @@ class PopulationContext {
 		if(Array.isArray(graph)) graph = graph.reduce((p, c) => (p[c] = {}, p), {})
 				
 		for(const key in graph) {
-			if(typeof key != "string") throw Error("Invalid populate path")
+			if(typeof key != "string") throw new Error("Invalid populate path")
 			const selectedFields = document[key]?.$locals?.selectedFields
 			if(selectedFields && selectedFields != options.select) {
 				document[key] = document[key].id
@@ -82,7 +82,7 @@ class PopulationContext {
 				}
 			} else if(!Array.isArray(document[key]) || document[key].length > 0) {
 				let schemaDefinition = document.schema.tree[key]
-				if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
+				if(!schemaDefinition) throw new Error(`Unknown populate path ${key}`)
 				const arrayPopulate = schemaDefinition instanceof Array
 				if(arrayPopulate) schemaDefinition = schemaDefinition[0]
 
@@ -90,9 +90,9 @@ class PopulationContext {
 				if(typeof ref == "function") {
 					ref = ref.call(document)
 				} else if(typeof ref != "string") {
-					throw Error(`Path ${key} cannot be populated, invalid ref`)
+					throw new Error(`Path ${key} cannot be populated, invalid ref`)
 				}
-				if(!ref) throw Error(`Path ${key} cannot be populated, no ref defined`)
+				if(!ref) throw new Error(`Path ${key} cannot be populated, no ref defined`)
 
 				const subDocuments = arrayPopulate ? [...document[key]] : [document[key]]
 				const populateIDs = []
@@ -157,7 +157,7 @@ class PopulationContext {
 export function populate(graph, options={}) {
 	const label = Array.isArray(this) ? "array" : (this.constructor.modelName + " " + this.id)
 
-	if(typeof options != "object") throw Error(`Invalid options argument "${options}"`)
+	if(typeof options != "object") throw new Error(`Invalid options argument "${options}"`)
 
 	if(options.log) logger.log("Populating", label)
 	options.known = [...(options.known || [])]
@@ -189,7 +189,7 @@ export function populate(graph, options={}) {
 				}
 			}
 			if(unpopulated.length) {
-				if(!options.ref) throw Error("Direct array populate requires ref to be specified")
+				if(!options.ref) throw new Error("Direct array populate requires ref to be specified")
 				populationContext.registerPopulateCallback(options.ref, unpopulated.map(i => this[i].id), results => {
 					const newArray = []
 					for(const index of unpopulated) {
@@ -224,7 +224,7 @@ export function populate(graph, options={}) {
 				if(!required.length) continue
 				logger.log(`${model}s still required:`, required)
 			}
-			throw Error("Database population loop count exceeded")
+			throw new Error("Database population loop count exceeded")
 		}
 		if(options.log) logger.log(`Pass ${loopCount}, ${findCount} populatable paths required`)
 
@@ -236,7 +236,7 @@ export function populate(graph, options={}) {
 			if(queryIDs.length) {
 				if(options.sync) {
 					logger.log(`Pending ${ref} queries: ${queryIDs.join(", ")}`)
-					throw Error("Cannot perform synchronous population with pending database queries")
+					throw new Error("Cannot perform synchronous population with pending database queries")
 				}
 
 				const query = async () => {

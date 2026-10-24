@@ -607,7 +607,7 @@ const API = {
 			throw text
 		}
 		if(json.error) {
-			const text = json.error.message.replace(/^Error: /, "")
+			const text = json.error.message?.replace(/^Error: /, "") || json.error.stack?.[0] || "Unknown error"
 			// Prevent logging error on server
 			loggedErrors.push(text)
 			throw new Error(text, {cause: json.error})

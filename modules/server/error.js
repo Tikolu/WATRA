@@ -7,6 +7,12 @@ const errorMessages = {
 	500: "Server error"
 }
 
+const stackFilters = [
+	" (ext:",
+	"file:///",
+	"modules/server/"
+]
+
 function isValidCode(code) {
 	code = Number(code)
 	if(isNaN(code)) return false
@@ -58,14 +64,13 @@ export default class HTTPError extends Error {
 		if(defaultMessage) this.defaultMessage = true
 
 		// Clean up stack trace
-		let stack = super.stack || message.stack || this.stack
+		let stack = this.stack || message.stack
 		if(stack) {
 			stack = stack.split("\n")
 			const newStack = []
 			for(let line of stack) {
-				if(line.includes(" (ext:")) continue
 				line = line.replaceAll(SERVER_ROOT, "")
-				if(line.includes("file:///")) continue
+				if(stackFilters.some(filter => line.includes(filter))) continue
 				newStack.push(line)
 			}
 			this.stack = newStack.join("\n")

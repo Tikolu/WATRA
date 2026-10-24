@@ -109,7 +109,7 @@ mongoose.plugin(schema => {
 	schema.methods.populate = populate
 	schema.method("populated", function(key) {
 		const schemaDefinition = schema.tree[key]
-		if(!schemaDefinition) throw Error(`Unknown populate path ${key}`)
+		if(!schemaDefinition) throw new Error(`Unknown populate path ${key}`)
 		const arrayPopulate = schemaDefinition instanceof Array
 		if(arrayPopulate) return this[key].every(i => isPopulated(i))
 		else return isPopulated(this[key])
@@ -125,13 +125,13 @@ mongoose.Schema.fromClass = function(classInput) {
 		let propertyDefinintion = instance[property]
 		if(propertyDefinintion === undefined) continue
 
-		if(property == "_id" && "_id" in schemaDefinition) throw Error("_id property already defined or derived")
+		if(property == "_id" && "_id" in schemaDefinition) throw new Error("_id property already defined or derived")
 		if(typeof propertyDefinintion == "object" && "deriveID" in propertyDefinintion) {
 			if(propertyDefinintion["deriveID"] !== true) {
-				throw Error("Invalid deriveID value")
+				throw new Error("Invalid deriveID value")
 			}
 			if(!propertyDefinintion["ref"]) {
-				throw Error("Cannot derive ID without ref")
+				throw new Error("Cannot derive ID without ref")
 			}
 			schemaDefinition["_id"] = {
 				type: String,
@@ -162,7 +162,7 @@ mongoose.Schema.fromClass = function(classInput) {
 // Refresh function
 mongoose.plugin(schema => schema.methods.refresh = async function() {
 	const newDocument = await this.constructor.findById(this.id)
-	if(!newDocument) throw Error(`Document ${this.constructor.modelName} ${this.id} not found`)
+	if(!newDocument) throw new Error(`Document ${this.constructor.modelName} ${this.id} not found`)
 	Object.assign(this, newDocument.toObject())
 	logger.log("Refreshed document", this)
 })
@@ -175,8 +175,8 @@ mongoose.plugin(schema => schema.methods.delete = async function() {
 
 // Function for traversing trees of related documents
 mongoose.plugin(schema => schema.methods.traverse = async function * (path, options={}) {
-	if(!schema.tree[path]) throw Error(`Invalid or unknown traversal path ${path}`)
-	
+	if(!schema.tree[path]) throw new Error(`Invalid or unknown traversal path ${path}`)
+
 	// Default options
 	let {
 		includeSelf=false,
