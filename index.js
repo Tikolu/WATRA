@@ -28,6 +28,26 @@ const args = cli.parseArgs(Deno.args, {
 
 // Dev mode
 globalThis.DEV = args.development
+if(DEV && args.host == "localhost") {
+	// Chrome DevTools compatibility
+	const devtoolsData = {
+		workspace: {
+			root: Deno.cwd(),
+			uuid: crypto.randomUUID()
+		}
+	}
+	const json = JSON.stringify(devtoolsData, null, 2)
+
+	try {
+		await Deno.mkdir("public/.well-known/appspecific", {recursive: true})
+		const file = await Deno.open("public/.well-known/appspecific/com.chrome.devtools.json", {createNew: true, write: true})
+		await file.write(new TextEncoder().encode(json))
+		file.close()
+	} catch {
+		// Skip - already exists
+	}
+	Deno.permissions.revoke({name: "write"})
+}
 
 if(!args.db) {
 	console.log("Database name is required (--db)")

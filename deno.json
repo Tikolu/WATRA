@@ -10,7 +10,7 @@
 	},
 	"tasks": {
 		"watra": "deno --permission-set=default --env-file --no-prompt index.js",
-		"watra-dev": "deno --inspect --watch-hmr --watch-exclude=public --permission-set=default --env-file --no-prompt index.js --development",
+		"watra-dev": "deno --inspect --watch-hmr --watch-exclude=public --permission-set=default --allow-write=public/.well-known/appspecific --env-file --no-prompt index.js --development",
 		"watra-repl": "deno repl --inspect --allow-all --env-file --eval-file dev/repl.js"
 	},
 	"unstable": [
