@@ -68,9 +68,9 @@ export default class HTTPError extends Error {
 		if(stack) {
 			stack = stack.split("\n")
 			const newStack = []
-			for(let line of stack) {
-				line = line.replaceAll(SERVER_ROOT, "")
-				if(stackFilters.some(filter => line.includes(filter))) continue
+			for(const index in stack) {
+				const line = stack[index].replaceAll(SERVER_ROOT, "")
+				if(index > 1 && stackFilters.some(filter => line.includes(filter))) continue
 				newStack.push(line)
 			}
 			this.stack = newStack.join("\n")
