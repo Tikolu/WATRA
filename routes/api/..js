@@ -4,18 +4,18 @@ export async function _open() {
 	this.response.headers.set("Content-Type", "application/json")
 	this.logging = {}
 
+	// Ensure request is not cross-origin
+	const fetchSite = this.request.headers.get("Sec-Fetch-Site")
+	if(fetchSite && fetchSite != "same-origin") {
+		throw new HTTPError(403, `Request blocked due to header "Sec-Fetch-Site: ${fetchSite}"`)
+	}
+
 	// Load request body
 	let input = ""
 	if(this.request.method == "POST") {
 		input = await this.request.getBody()
 	} else if(!this.routePath.equals(["api"]) && !this.routePath.equals(["api", "stream"])) {
-		throw new HTTPError(405, "Only POST method is allowed")
-	}
-
-	// Ensure request is not cross-origin
-	const fetchSite = this.request.headers.get("Sec-Fetch-Site")
-	if(fetchSite && fetchSite != "same-origin") {
-		throw new HTTPError(403, `Request blocked due to header "Sec-Fetch-Site: ${fetchSite}"`)
+		throw new HTTPError(405, "api.only_post_allowed")
 	}
 
 	// Parse JSON
