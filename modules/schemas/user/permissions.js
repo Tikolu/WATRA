@@ -130,6 +130,17 @@ export async function MANAGE_PASSKEYS(user) {
 	return false
 }
 
+/** Creating passkeys for the user */
+export async function CREATE_PASSKEY(user) {
+	// Lack of MANAGE_PASSKEYS permission denies CREATE_PASSKEY
+	if(!await user.checkPermission(this.PERMISSIONS.MANAGE_PASSKEYS)) return false
+
+	// Only the user can create a passkey
+	if(user.id == this.id) return true
+
+	return false
+}
+
 /** Editing user details, such as name, contact details, medical */
 export async function EDIT(user) {
 	// Lack of ACCESS permission denies EDIT

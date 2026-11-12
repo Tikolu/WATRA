@@ -35,7 +35,7 @@
 			</div>
 		<% } %>
 	</div>
-	<% if($.user.id == $.targetUser.id) { %>
+	<% if($.user.hasPermission($.targetUser.PERMISSIONS.CREATE_PASSKEY)) { %>
 		<div class="button-row">
 			<button id="add-passkey-button" api="passkey/create">
 				<%~ icon`add` %>
