@@ -53,7 +53,7 @@ export default async function({user, targetEvent}) {
 	// Sort invited units by rank and name
 	targetEvent.invitedUnits.sort((a, b) => {
 		if(a.unit.config.rank != b.unit.config.rank) return b.unit.config.rank - a.unit.config.rank
-		else return a.unit.displayName.localeCompare(b.unit.displayName)
+		else return a.unit.displayName.localeCompare(b.unit.displayName, undefined, {numeric: true})
 	})
 
 	// Check permissions on upper units
