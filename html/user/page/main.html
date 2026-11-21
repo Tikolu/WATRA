@@ -290,7 +290,8 @@
 					dialog: `/forms/${response.form.id}/responses/${response.id}`,
 					target: response.form,
 					icon: "ballot",
-					description: response.user.id == $.targetUser.id ? "" : `(${response.user.displayName})`,
+					description: response.form.unit.displayName,
+					content: response.user.id == $.targetUser.id ? "" : response.user.displayName,
 					warnings: response.submitted ? [] : ["Odpowiedź nie wysłana"]
 				}) %>
 			<% } %>

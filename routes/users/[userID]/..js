@@ -90,7 +90,7 @@ export default async function({user, targetUser}) {
 			{submittedBy: targetUser.id}
 		]})
 		await formResponses.submitted.populate({
-			"form": {},
+			"form": "unit",
 			"user": {}
 		}, {known: [targetUser]})
 		formResponses.submitted.sort((a, b) => a.date - b.date)
