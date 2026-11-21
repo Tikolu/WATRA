@@ -2,9 +2,21 @@
 	$.classList ||= []
 	if(!Array.isArray($.classList)) $.classList = [$.classList]
 
-	$.url ||= `/${$.target.modelName.toLowerCase()}s/${$.target.id}`
+	if(!$.dialog) {
+		$.url ||= `/${$.target.modelName.toLowerCase()}s/${$.target.id}`
+	}
 %>
-<a href="<%= $.url %>"<% if($.classList.length) { %> class="<%= $.classList.join(" ") %>"<% } %>>
+<a
+	<% if($.url) { %>
+		href="<%= $.url %>"
+	<% } %>
+	<% if($.dialog) { %>
+		opens-dialog="<%= $.dialog %>"
+	<% } %>
+	<% if($.classList.length) { %>
+		class="<%= $.classList.join(" ") %>"
+	<% } %>
+>
 	<div class="entry-header">
 		<div class="entry-image">
 			<% if($.target.image) { %>

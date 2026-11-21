@@ -270,6 +270,34 @@
 	</section>
 <% } %>
 
+<% if(!blockAccess && ($.formResponses.submitted.length || $.formResponses.required.length)) { %>
+	<section>
+		<h2>
+		<%~ icon`assignment` %>
+			Odpowiedzi na formularze
+		</h2>
+		<div class="entry-grid">
+			<% for(const form of $.formResponses.required) { %>
+				<%~ include("/templates/entry", {
+					target: form,
+					icon: "assignment",
+					warnings: ["Wymagana odpowiedź"]
+				}) %>
+			<% } %>
+			<hr class="grid-break">
+			<% for(const response of $.formResponses.submitted) { %>
+				<%~ include("/templates/entry", {
+					dialog: `/forms/${response.form.id}/responses/${response.id}`,
+					target: response.form,
+					icon: "ballot",
+					description: response.user.id == $.targetUser.id ? "" : `(${response.user.displayName})`,
+					warnings: response.submitted ? [] : ["Odpowiedź nie wysłana"]
+				}) %>
+			<% } %>
+		</div>
+	</section>
+<% } %>
+
 <% if(
 	$.user.hasPermission($.targetUser.PERMISSIONS.CREATE_PASSKEY) ||
 	($.user.hasPermission($.targetUser.PERMISSIONS.MANAGE_PASSKEYS) && $.targetUser.auth.keys?.length))

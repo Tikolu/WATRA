@@ -1,6 +1,7 @@
 import html from "modules/html.js"
 import User from "modules/schemas/user"
 import HTTPError from "modules/server/error.js"
+import FormResponse from "modules/schemas/form/response.js"
 
 export async function _open({user, userID}) {
 	// Get user from DB, and check if exists
@@ -77,6 +78,35 @@ export default async function({user, targetUser}) {
 		}
 	}
 
+	const formResponses = {
+		submitted: [],
+		required: []
+	}
+
+	if(await user.checkPermission(targetUser.PERMISSIONS.ACCESS_DETAILS)) {
+		// Load all submitted form responses
+		formResponses.submitted = await FormResponse.find({$or: [
+			{user: targetUser.id},
+			{submittedBy: targetUser.id}
+		]})
+		await formResponses.submitted.populate({
+			"form": {},
+			"user": {}
+		}, {known: [targetUser]})
+		formResponses.submitted.sort((a, b) => a.date - b.date)
+
+
+		// Find required form responses
+		for(const unit of [...await targetUser.listUnits(true).toArray(), ...eventRoles.map(r => r.unit)]) {
+			await unit.loadFormsForUser(targetUser)
+			for(const form of unit.forms) {
+				if(!form.$locals.requiredUserResponses?.length) continue
+				if(formResponses.required.find(f => f.id == form.id)) continue
+				formResponses.required.push(form)
+			}
+		}
+	}
+
 	// Sort parents and children
 	targetUser.parents.sort((a, b) => a.displayName.localeCompare(b.displayName))
 	targetUser.children.sort((a, b) => a.displayName.localeCompare(b.displayName))
@@ -88,7 +118,8 @@ export default async function({user, targetUser}) {
 		eventRoles,
 		eventInvites,
 		children,
-		parents
+		parents,
+		formResponses
 	})
 }
 

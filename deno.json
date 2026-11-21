@@ -1,5 +1,5 @@
 {
-	"version": "2.6.6",
+	"version": "2.6.8",
 	"permissions": {
 		"default": {
 			"net": ["localhost:27017", "127.0.0.1:27017", "localhost:8888", "api.stripe.com:443"],
